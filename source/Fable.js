@@ -29,20 +29,9 @@ var Fable = function()
 		*/
 		var tmpNewFableObject = (
 		{
+			addServices: addServices,
 			new: createNew
 		});
-
-		/**
-		 * Settings
-		 *
-		 * @property settings
-		 * @type Object
-		 */
-		Object.defineProperty(tmpNewFableObject, 'settings',
-			{
-				get: function() { return _Settings.settings; },
-				enumerable: false
-			});
 
 		/**
 		 * Settings Management Library
@@ -56,18 +45,46 @@ var Fable = function()
 				enumerable: false
 			});
 
-		/**
-		 * Log Streams
-		 *
-		 * @property log
-		 * @type Object
-		 */
-		Object.defineProperty(tmpNewFableObject, 'log',
-			{
-				get: function() { return _Log; },
-				enumerable: false
-			});
+		var addServices = function(pObject)
+		{
+			/**
+			 * Fable Pass-through
+			 *
+			 * @property fable
+			 */
+			Object.defineProperty(pObject, 'fable',
+				{
+					get: function() { return tmpNewFableObject; },
+					enumerable: false
+				})
 
+			/**
+			 * Settings
+			 *
+			 * @property settings
+			 * @type Object
+			 */
+			Object.defineProperty(pObject, 'settings',
+				{
+					get: function() { return _Settings.settings; },
+					enumerable: false
+				});
+
+			/**
+			 * Log Streams
+			 *
+			 * @property log
+			 * @type Object
+			 */
+			Object.defineProperty(pObject, 'log',
+				{
+					get: function() { return _Log; },
+					enumerable: false
+				});
+		}
+
+		// Add services to ourself.
+		addServices(tmpNewFableObject);
 
 		return tmpNewFableObject;
 	}

@@ -41,6 +41,8 @@ suite
 						.that.is.a('object');
 						Expect(testFable).to.have.a.property('settings')
 						.that.is.a('object');
+						Expect(testFable).to.have.a.property('fable')
+						.that.is.a('object');
 						Expect(testFable.settings.Product)
 							.to.equal('Fable')
 					}
