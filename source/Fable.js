@@ -25,15 +25,6 @@ var Fable = function()
 		_Log.initialize();
 
 		/**
-		* Container Object for our Factory Pattern
-		*/
-		var tmpNewFableObject = (
-		{
-			addServices: addServices,
-			new: createNew
-		});
-
-		/**
 		 * Add Services references (e.g. log & settings) to an Object
 		 *
 		 * @function addServices
@@ -75,6 +66,15 @@ var Fable = function()
 					enumerable: false
 				});
 		}
+
+		/**
+		* Container Object for our Factory Pattern
+		*/
+		var tmpNewFableObject = (
+		{
+			addServices: addServices,
+			new: createNew
+		});
 
 		/**
 		 * Settings Management Library
