@@ -34,17 +34,10 @@ var Fable = function()
 		});
 
 		/**
-		 * Settings Management Library
+		 * Add Services references (e.g. log & settings) to an Object
 		 *
-		 * @property settingsmanager
-		 * @type Object
+		 * @function addServices
 		 */
-		Object.defineProperty(tmpNewFableObject, 'settingsManager',
-			{
-				get: function() { return _Settings; },
-				enumerable: false
-			});
-
 		var addServices = function(pObject)
 		{
 			/**
@@ -82,6 +75,18 @@ var Fable = function()
 					enumerable: false
 				});
 		}
+
+		/**
+		 * Settings Management Library
+		 *
+		 * @property settingsmanager
+		 * @type Object
+		 */
+		Object.defineProperty(tmpNewFableObject, 'settingsManager',
+			{
+				get: function() { return _Settings; },
+				enumerable: false
+			});
 
 		// Add services to ourself.
 		addServices(tmpNewFableObject);
