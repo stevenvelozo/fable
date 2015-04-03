@@ -1,5 +1,5 @@
 /**
-* Fable Entity, Behavior and API Library
+* Fable Web Services Support Packaging Library
 *
 * @license MIT
 *
@@ -7,97 +7,67 @@
 * @module Fable
 */
 
-// We use Underscore.js for utility
-var libUnderscore = require('underscore');
-// The logger uses Bunyan to write logs
-var libLog = require('./Logger.js');
-// Each query object gets a UUID, using flake-idgen and biguint-format
-var libFlakeIDGen = require('flake-idgen');
-var flakeIDGen = new libFlakeIDGen();
-var libIntFormat = require('biguint-format')
-// TODO: Load parameters for FlakeID generation from a .json config if it exists
-
-// FoxHound is the default query generator
-var libFoxHound = require('foxhound');
-var libMeadow = require('meadow');
-
 /**
-* Fable Entity, Behavior and API Library
+* Fable Web Services Support Packaging Library
 *
 * @class Fable
 * @constructor
 */
 var Fable = function()
 {
-	function createNew(pScope, pSchema)
+	function createNew(pSettings)
 	{
-		// A universally unique identifier for this object
-		var _UUID = libIntFormat(flakeIDGen.next(), 'hex', { prefix: '0x' });
+		// Setup the application settings object
+		var _Settings = require('fable-settings').new(pSettings);
 
-		// The name for this Entity.  Often matches the Scope
-		var _Name = 'Unknown';
-
-		var _DataAccess = libMeadow;
-		// Set the scope of the Data Access object to our name, by default.
-		_DataAccess.scope = _Name;
-
-		/**
-		* Get a Data Access Library (Meadow) object for this entity.
-		*
-		* @method data
-		* @return {Object} Returns a Query object.  This is chainable.
-		*/
-		var data = function()
-		{
-			return _DataAccess;
-		}
+		// Instantiate the logger
+		var _Log = require('fable-log').new(_Settings.settings);
+		_Log.initialize();
 
 		/**
 		* Container Object for our Factory Pattern
 		*/
 		var tmpNewFableObject = (
 		{
-			data: data,
-
 			new: createNew
 		});
 
-
-
 		/**
-		 * Scope from the Data Access Library
+		 * Settings
 		 *
-		 * @property scope
-		 * @type String
+		 * @property settings
+		 * @type Object
 		 */
-		Object.defineProperty(tmpNewFableObject, 'scope',
+		Object.defineProperty(tmpNewFableObject, 'settings',
 			{
-				get: function() { return _DataAccess.scope; },
-				set: function(pScope) { _DataAccess.scope = pScope; },
-				enumerable: true
+				get: function() { return _Settings.settings; },
+				enumerable: false
 			});
 
-
-
 		/**
-		 * Universally Unique Identifier
+		 * Settings Management Library
 		 *
-		 * @property uuid
-		 * @type string
+		 * @property settingsmanager
+		 * @type Object
 		 */
-		Object.defineProperty(tmpNewFableObject, 'uuid',
+		Object.defineProperty(tmpNewFableObject, 'settingsManager',
 			{
-				get: function() { return _UUID; },
-				enumerable: true
+				get: function() { return _Settings; },
+				enumerable: false
 			});
 
+		/**
+		 * Log Streams
+		 *
+		 * @property log
+		 * @type Object
+		 */
+		Object.defineProperty(tmpNewFableObject, 'log',
+			{
+				get: function() { return _Log; },
+				enumerable: false
+			});
 
-
-		var __initialize = function ()
-		{
-			// TODO: Load a json file with any necessary config settings.
-		};
-		__initialize();
 
 		return tmpNewFableObject;
 	}
