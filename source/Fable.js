@@ -40,7 +40,7 @@ var Fable = function()
 				{
 					get: function() { return tmpNewFableObject; },
 					enumerable: false
-				})
+				});
 
 			/**
 			 * Settings
@@ -65,7 +65,7 @@ var Fable = function()
 					get: function() { return _Log; },
 					enumerable: false
 				});
-		}
+		};
 
 		/**
 		* Container Object for our Factory Pattern
@@ -97,4 +97,4 @@ var Fable = function()
 	return createNew();
 };
 
-module.exports = Fable();
+module.exports = new Fable();
