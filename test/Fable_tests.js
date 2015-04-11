@@ -61,6 +61,22 @@ suite
 				);
 				test
 				(
+					'Generate a uuid...',
+					function(fDone)
+					{
+						testFable = require('../source/Fable.js').new({Product:'LogTest', LogStreams:[{streamtype:'process.stdout'}]});
+						Expect(testFable).to.have.a.property('log')
+							.that.is.a('object');
+						var tmpUUID = testFable.getUUID();
+						testFable.log.info('Generating a uuid: '+tmpUUID);
+						Expect(tmpUUID)
+							.to.be.a('string')
+							.to.not.be.empty;
+						fDone();
+					}
+				);
+				test
+				(
 					'Change some settings later...',
 					function(fDone)
 					{

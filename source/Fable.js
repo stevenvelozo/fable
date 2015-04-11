@@ -24,6 +24,17 @@ var Fable = function()
 		var _Log = require('fable-log').new(_Settings.settings);
 		_Log.initialize();
 
+		// Instantiate the UUID generator
+		var libUUID = require('fable-uuid').new(_Settings.settings);
+
+		/**
+		 * Get a UUID based on the settings
+		 */
+		var getUUID = function()
+		{
+			return libUUID.getUUID();
+		}
+
 		/**
 		 * Add Services references (e.g. log & settings) to an Object
 		 *
@@ -73,6 +84,7 @@ var Fable = function()
 		var tmpNewFableObject = (
 		{
 			addServices: addServices,
+			getUUID: getUUID,
 			new: createNew
 		});
 
