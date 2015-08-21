@@ -1,6 +1,6 @@
 {
   "name": "fable",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "An entity behavior management and API bundling library.",
   "main": "source/Fable.js",
   "scripts": {
@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "fable-log": "^0.1.3",
-    "fable-settings": "^0.0.2",
+    "fable-settings": "^0.0.3",
     "fable-uuid": "^0.1.3"
   }
 }
