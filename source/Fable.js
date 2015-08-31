@@ -1,17 +1,15 @@
+// ##### Part of the **[retold](https://stevenvelozo.github.io/retold/)** system
 /**
-* Fable Web Services Support Packaging Library
-*
 * @license MIT
-*
-* @author Steven Velozo <steven@velozo.com>
-* @module Fable
+* @author <steven@velozo.com>
 */
+var libUnderscore = require('underscore');
+var libFoxHound = require('foxhound');
 
 /**
-* Fable Web Services Support Packaging Library
+* Fable Application Services Support Library
 *
 * @class Fable
-* @constructor
 */
 var Fable = function()
 {
