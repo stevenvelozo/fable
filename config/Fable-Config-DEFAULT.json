@@ -1,0 +1,30 @@
+{
+	"APIServerPort": 8080,
+
+
+	"UUID":
+		{
+			"DataCenter": 0,
+			"Worker": 0
+		},
+
+	"LogStreams":
+		[
+			{
+				"level": "trace",
+				"streamtype": "process.stdout"
+			}
+		],
+
+	"MongoDBURL":"mongodb://127.0.0.1/FableLogOutput",
+
+	"MySQL":
+		{
+			"Server": "127.0.0.1",
+			"Port": 3306,
+			"User": "MYSQL_USER_HERE",
+			"Password": "MYSQL_PASSWORD_HERE",
+			"Database": "DATABASE_NAME_HERE",
+			"ConnectionPoolLimit": 20
+		}
+}
