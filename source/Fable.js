@@ -4,7 +4,6 @@
 * @author <steven@velozo.com>
 */
 var libUnderscore = require('underscore');
-var libFoxHound = require('foxhound');
 
 /**
 * Fable Application Services Support Library
