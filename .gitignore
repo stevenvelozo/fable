@@ -29,3 +29,5 @@ node_modules
 
 # Auto generated documentation
 doc
+
+package-lock.json

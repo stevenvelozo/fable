@@ -1,7 +1,6 @@
 Fable Overview
 =====
 
-[![Code Climate](https://codeclimate.com/github/stevenvelozo/fable/badges/gpa.svg)](https://codeclimate.com/github/stevenvelozo/fable)
 [![Coverage Status](https://coveralls.io/repos/stevenvelozo/fable/badge.svg?branch=master)](https://coveralls.io/r/stevenvelozo/fable?branch=master)
 [![Build Status](https://travis-ci.org/stevenvelozo/fable.svg?branch=master)](https://travis-ci.org/stevenvelozo/fable)
 [![Dependency Status](https://david-dm.org/stevenvelozo/fable.svg)](https://david-dm.org/stevenvelozo/fable)
