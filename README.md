@@ -3,8 +3,6 @@ Fable Overview
 
 [![Coverage Status](https://coveralls.io/repos/stevenvelozo/fable/badge.svg?branch=master)](https://coveralls.io/r/stevenvelozo/fable?branch=master)
 [![Build Status](https://travis-ci.org/stevenvelozo/fable.svg?branch=master)](https://travis-ci.org/stevenvelozo/fable)
-[![Dependency Status](https://david-dm.org/stevenvelozo/fable.svg)](https://david-dm.org/stevenvelozo/fable)
-[![devDependency Status](https://david-dm.org/stevenvelozo/fable/dev-status.svg)](https://david-dm.org/stevenvelozo/fable#info=devDependencies)
 
 It is tiring to setup logging and settings management in every application you write. Fable provides a single line solution to have simple logging to the console via [bunyan](https://github.com/trentm/node-bunyan). Add a simple configuration object and it can also write the log to a file. Or even mongodb!
 

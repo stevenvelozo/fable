@@ -44,7 +44,7 @@ suite
 						Expect(testFable).to.have.a.property('fable')
 						.that.is.a('object');
 						Expect(testFable.settings.Product)
-							.to.equal('Fable')
+							.to.equal('ApplicationNameHere')
 					}
 				);
 				test
@@ -84,7 +84,7 @@ suite
 						Expect(testFable).to.have.a.property('settings')
 						.that.is.a('object');
 						Expect(testFable.settings.Product)
-							.to.equal('Fable');
+							.to.equal('ApplicationNameHere');
 						Expect(testFable.settings.ProductVersion)
 							.to.equal('0.0.0');
 						testFable.settingsManager.merge({Product:'TestProduct'});

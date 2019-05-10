@@ -3,107 +3,51 @@
 * @license MIT
 * @author <steven@velozo.com>
 */
-var libUnderscore = require('underscore');
+const libFableSettings = require('fable-settings').FableSettings;
+const libFableUUID = require('fable-uuid').FableUUID;
+const libFableLog = require('fable-log').FableLog;
+
 
 /**
 * Fable Application Services Support Library
 *
 * @class Fable
 */
-var Fable = function()
+class Fable
 {
-	function createNew(pSettings)
+	constructor(pSettings)
 	{
-		// Setup the application settings object
-		var _Settings = require('fable-settings').new(pSettings);
+		let tmpSettings = new libFableSettings(pSettings);
 
-		// Instantiate the logger
-		var _Log = require('fable-log').new(_Settings.settings);
-		_Log.initialize();
+		this.settingsManager = tmpSettings;
 
 		// Instantiate the UUID generator
-		var libUUID = require('fable-uuid').new(_Settings.settings);
+		this.libUUID = new libFableUUID(tmpSettings);
 
-		/**
-		 * Get a UUID based on the settings
-		 */
-		var getUUID = function()
-		{
-			return libUUID.getUUID();
-		}
-
-		/**
-		 * Add Services references (e.g. log & settings) to an Object
-		 *
-		 * @function addServices
-		 */
-		var addServices = function(pObject)
-		{
-			/**
-			 * Fable Pass-through
-			 *
-			 * @property fable
-			 */
-			Object.defineProperty(pObject, 'fable',
-				{
-					get: function() { return tmpNewFableObject; },
-					enumerable: false
-				});
-
-			/**
-			 * Settings
-			 *
-			 * @property settings
-			 * @type Object
-			 */
-			Object.defineProperty(pObject, 'settings',
-				{
-					get: function() { return _Settings.settings; },
-					enumerable: false
-				});
-
-			/**
-			 * Log Streams
-			 *
-			 * @property log
-			 * @type Object
-			 */
-			Object.defineProperty(pObject, 'log',
-				{
-					get: function() { return _Log; },
-					enumerable: false
-				});
-		};
-
-		/**
-		* Container Object for our Factory Pattern
-		*/
-		var tmpNewFableObject = (
-		{
-			addServices: addServices,
-			getUUID: getUUID,
-			new: createNew
-		});
-
-		/**
-		 * Settings Management Library
-		 *
-		 * @property settingsmanager
-		 * @type Object
-		 */
-		Object.defineProperty(tmpNewFableObject, 'settingsManager',
-			{
-				get: function() { return _Settings; },
-				enumerable: false
-			});
-
-		// Add services to ourself.
-		addServices(tmpNewFableObject);
-
-		return tmpNewFableObject;
+		this.log = new libFableLog(tmpSettings);
+		this.log.initialize();
 	}
 
-	return createNew();
-};
+	get settings()
+	{
+		return this.settingsManager.settings;
+	}
 
-module.exports = new Fable();
+	get fable()
+	{
+		return this;
+	}
+
+	getUUID()
+	{
+		return this.libUUID.getUUID();
+	}
+}
+
+// This is for backwards compatibility
+function autoConstruct(pSettings)
+{
+	return new Fable(pSettings);
+}
+
+module.exports = {new:autoConstruct, Fable:Fable};
