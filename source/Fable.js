@@ -22,9 +22,9 @@ class Fable
 		this.settingsManager = tmpSettings;
 
 		// Instantiate the UUID generator
-		this.libUUID = new libFableUUID(tmpSettings);
+		this.libUUID = new libFableUUID(this.settingsManager.settings);
 
-		this.log = new libFableLog(tmpSettings);
+		this.log = new libFableLog(this.settingsManager.settings);
 		this.log.initialize();
 	}
 
