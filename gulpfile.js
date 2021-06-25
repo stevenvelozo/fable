@@ -20,9 +20,9 @@ libGulp.task('minified',
 		var tmpBrowserify = libBrowserify(
 		{
 			entries: './source/Fable.js',
+			standalone: 'Fable',
 			debug: true
 		});
-		//tmpBrowserify.ignore('underscore');
 
 		return tmpBrowserify.bundle()
 			.pipe(libVinylSourceStream('fable.min.js'))
@@ -44,6 +44,7 @@ libGulp.task('debug',
 		var tmpBrowserify = libBrowserify(
 		{
 			entries: './source/Fable.js',
+			standalone: 'Fable',
 			debug: true
 		});
 
