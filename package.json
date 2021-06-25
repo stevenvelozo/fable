@@ -1,6 +1,6 @@
 {
   "name": "fable",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "An entity behavior management and API bundling library.",
   "main": "source/Fable.js",
   "scripts": {
