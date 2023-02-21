@@ -1,13 +1,33 @@
 {
   "name": "fable",
-  "version": "2.0.5",
+  "version": "3.0.0",
   "description": "An entity behavior management and API bundling library.",
   "main": "source/Fable.js",
   "scripts": {
     "start": "node source/Fable.js",
-    "coverage": "./node_modules/nyc/bin/nyc.js --reporter=lcov --reporter=text-lcov ./node_modules/mocha/bin/_mocha -- -u tdd -R spec",
-    "test": "./node_modules/mocha/bin/_mocha -u tdd -R spec",
-    "harness": "node debug/Harness.js"
+    "coverage": "./node_modules/.bin/nyc --reporter=lcov --reporter=text-lcov ./node_modules/mocha/bin/_mocha -- -u tdd -R spec",
+    "test": "./node_modules/.bin/mocha -u tdd -R spec",
+    "build": "./node_modules/.bin/gulp build",
+    "docker-dev-build-image": "docker build ./ -f Dockerfile_LUXURYCode -t retold/fable:local",
+    "docker-dev-run": "docker run -it -d --name retold-fable-dev -p 30001:8080 -v \"$PWD/.config:/home/coder/.config\"  -v \"$PWD:/home/coder/fable\" -u \"$(id -u):$(id -g)\" -e \"DOCKER_USER=$USER\" retold/fable:local"
+  },
+  "mocha": {
+    "diff": true,
+    "extension": [
+      "js"
+    ],
+    "package": "./package.json",
+    "reporter": "spec",
+    "slow": "75",
+    "timeout": "5000",
+    "ui": "tdd",
+    "watch-files": [
+      "source/**/*.js",
+      "test/**/*.js"
+    ],
+    "watch-ignore": [
+      "lib/vendor"
+    ]
   },
   "repository": {
     "type": "git",
@@ -24,24 +44,21 @@
   },
   "homepage": "https://github.com/stevenvelozo/fable",
   "devDependencies": {
-    "@babel/core": "^7.4.4",
-    "@babel/preset-env": "^7.4.4",
-    "async": "^2.6.2",
-    "browserify": "^16.2.3",
-    "chai": "4.2.0",
+    "browserify": "^17.0.0",
+    "chai": "4.3.7",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
-    "gulp-sourcemaps": "^2.6.5",
-    "gulp-terser": "^1.1.7",
+    "gulp-sourcemaps": "^3.0.0",
+    "gulp-terser": "^2.1.0",
     "gulp-util": "^3.0.8",
-    "mocha": "6.1.4",
-    "nyc": "^14.1.0",
+    "mocha": "10.2.0",
+    "nyc": "^15.1.0",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
   },
   "dependencies": {
-    "fable-log": "^2.0.0",
-    "fable-settings": "^2.0.0",
-    "fable-uuid": "^2.0.0"
+    "fable-log": "^3.0.0",
+    "fable-settings": "^3.0.0",
+    "fable-uuid": "^3.0.1"
   }
 }
