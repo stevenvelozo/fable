@@ -6,6 +6,8 @@
 * @author      Steven Velozo <steven@velozo.com>
 */
 
+var libFable = require('../source/Fable.js');
+
 var Chai = require("chai");
 var Expect = Chai.expect;
 var Assert = Chai.assert;
@@ -34,7 +36,7 @@ suite
 					'The class should initialize itself into a happy little object.',
 					function()
 					{
-						testFable = require('../source/Fable.js').new({LogStreams: false});
+						testFable = new libFable({LogStreams: false});
 						// Instantiate the logger
 						Expect(testFable).to.be.an('object', 'Fable should initialize as an object directly from the require statement.');
 						Expect(testFable).to.have.a.property('log')
@@ -52,7 +54,7 @@ suite
 					'Logging should happen...',
 					function(fDone)
 					{
-						testFable = require('../source/Fable.js').new({Product:'LogTest', LogStreams:[{streamtype:'process.stdout'}]});
+						testFable = new libFable({Product:'LogTest', LogStreams:[{streamtype:'process.stdout'}]});
 						Expect(testFable).to.have.a.property('log')
 						.that.is.a('object');
 						testFable.log.info('There should be a visible log entry here...');
@@ -64,7 +66,7 @@ suite
 					'Generate a uuid...',
 					function(fDone)
 					{
-						testFable = require('../source/Fable.js').new({Product:'LogTest', LogStreams:[{streamtype:'process.stdout'}]});
+						testFable = new libFable({Product:'LogTest', LogStreams:[{streamtype:'process.stdout'}]});
 						Expect(testFable).to.have.a.property('log')
 							.that.is.a('object');
 						var tmpUUID = testFable.getUUID();
@@ -80,7 +82,7 @@ suite
 					'Change some settings later...',
 					function(fDone)
 					{
-						testFable = require('../source/Fable.js').new();
+						testFable = new libFable();
 						Expect(testFable).to.have.a.property('settings')
 						.that.is.a('object');
 						Expect(testFable.settings.Product)

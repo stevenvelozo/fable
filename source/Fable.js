@@ -50,4 +50,4 @@ function autoConstruct(pSettings)
 	return new Fable(pSettings);
 }
 
-module.exports = {new:autoConstruct, Fable:Fable};
+module.exports = Fable;
