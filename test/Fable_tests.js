@@ -12,8 +12,6 @@ var Chai = require("chai");
 var Expect = Chai.expect;
 var Assert = Chai.assert;
 
-let libFable = require('../source/Fable.js');
-
 suite
 (
 	'Fable',
