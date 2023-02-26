@@ -6,6 +6,8 @@
 * @author      Steven Velozo <steven@velozo.com>
 */
 
+var libFable = require('../source/Fable.js');
+
 var Chai = require("chai");
 var Expect = Chai.expect;
 var Assert = Chai.assert;
