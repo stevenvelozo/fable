@@ -1,5 +1,14 @@
 class FableUtility
 {
+	// Underscore and lodash have a behavior, _.template, which compiles a
+	// string-based template with code snippets into simple executable pieces,
+	// with the added twist of returning a precompiled function ready to go.
+	//
+	// NOTE: This does not implement underscore escape expressions
+	// NOTE: This does not implement underscore magic browser variable assignment
+	//
+	// This is an implementation of that.
+	// TODO: Make this use precedent, add configuration, add debugging.
 	constructor(pFable, pTemplateText)
 	{
 		this.fable = pFable;
@@ -56,15 +65,6 @@ class FableUtility
 		return fRenderTemplateBound;
 	}
 
-	// Underscore and lodash have a behavior, _.template, which compiles a
-	// string-based template with code snippets into simple executable pieces,
-	// with the added twist of returning a precompiled function ready to go.
-	//
-	// NOTE: This does not implement underscore escape expressions
-	// NOTE: This does not implement underscore magic browser variable assignment
-	//
-	// This is an implementation of that.
-	// TODO: Make this use precedent, add configuration, add debugging.
 	buildTemplateFunction(pTemplateText, pData)
     {
     	// For now this is being kept in a weird form ... this is to mimic the old

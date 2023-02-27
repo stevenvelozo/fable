@@ -1,10 +1,16 @@
 const libFableUtilityTemplate = require('./Fable-Utility-Template.js');
+const libAsyncWaterfall = require('async/waterfall');
+const libAsyncEachLimit = require('async/eachLimit');
 
 class FableUtility
 {
 	constructor(pFable)
 	{
 		this.fable = pFable;
+
+		// These two functions are used extensively throughout
+		this.waterfall = libAsyncWaterfall;
+		this.eachLimit = libAsyncEachLimit;
 	}
 
 	// Underscore and lodash have a behavior, _.extend, which merges objects.

@@ -45,6 +45,704 @@
     return r;
   }()({
     1: [function (require, module, exports) {
+      'use strict';
+
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+      exports.default = asyncify;
+      var _initialParams = require('./internal/initialParams.js');
+      var _initialParams2 = _interopRequireDefault(_initialParams);
+      var _setImmediate = require('./internal/setImmediate.js');
+      var _setImmediate2 = _interopRequireDefault(_setImmediate);
+      var _wrapAsync = require('./internal/wrapAsync.js');
+      function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+          default: obj
+        };
+      }
+
+      /**
+       * Take a sync function and make it async, passing its return value to a
+       * callback. This is useful for plugging sync functions into a waterfall,
+       * series, or other async functions. Any arguments passed to the generated
+       * function will be passed to the wrapped function (except for the final
+       * callback argument). Errors thrown will be passed to the callback.
+       *
+       * If the function passed to `asyncify` returns a Promise, that promises's
+       * resolved/rejected state will be used to call the callback, rather than simply
+       * the synchronous return value.
+       *
+       * This also means you can asyncify ES2017 `async` functions.
+       *
+       * @name asyncify
+       * @static
+       * @memberOf module:Utils
+       * @method
+       * @alias wrapSync
+       * @category Util
+       * @param {Function} func - The synchronous function, or Promise-returning
+       * function to convert to an {@link AsyncFunction}.
+       * @returns {AsyncFunction} An asynchronous wrapper of the `func`. To be
+       * invoked with `(args..., callback)`.
+       * @example
+       *
+       * // passing a regular synchronous function
+       * async.waterfall([
+       *     async.apply(fs.readFile, filename, "utf8"),
+       *     async.asyncify(JSON.parse),
+       *     function (data, next) {
+       *         // data is the result of parsing the text.
+       *         // If there was a parsing error, it would have been caught.
+       *     }
+       * ], callback);
+       *
+       * // passing a function returning a promise
+       * async.waterfall([
+       *     async.apply(fs.readFile, filename, "utf8"),
+       *     async.asyncify(function (contents) {
+       *         return db.model.create(contents);
+       *     }),
+       *     function (model, next) {
+       *         // `model` is the instantiated model object.
+       *         // If there was an error, this function would be skipped.
+       *     }
+       * ], callback);
+       *
+       * // es2017 example, though `asyncify` is not needed if your JS environment
+       * // supports async functions out of the box
+       * var q = async.queue(async.asyncify(async function(file) {
+       *     var intermediateStep = await processFile(file);
+       *     return await somePromise(intermediateStep)
+       * }));
+       *
+       * q.push(files);
+       */
+      function asyncify(func) {
+        if ((0, _wrapAsync.isAsync)(func)) {
+          return function (...args /*, callback*/) {
+            const callback = args.pop();
+            const promise = func.apply(this, args);
+            return handlePromise(promise, callback);
+          };
+        }
+        return (0, _initialParams2.default)(function (args, callback) {
+          var result;
+          try {
+            result = func.apply(this, args);
+          } catch (e) {
+            return callback(e);
+          }
+          // if result is Promise object
+          if (result && typeof result.then === 'function') {
+            return handlePromise(result, callback);
+          } else {
+            callback(null, result);
+          }
+        });
+      }
+      function handlePromise(promise, callback) {
+        return promise.then(value => {
+          invokeCallback(callback, null, value);
+        }, err => {
+          invokeCallback(callback, err && err.message ? err : new Error(err));
+        });
+      }
+      function invokeCallback(callback, error, value) {
+        try {
+          callback(error, value);
+        } catch (err) {
+          (0, _setImmediate2.default)(e => {
+            throw e;
+          }, err);
+        }
+      }
+      module.exports = exports['default'];
+    }, {
+      "./internal/initialParams.js": 8,
+      "./internal/setImmediate.js": 13,
+      "./internal/wrapAsync.js": 15
+    }],
+    2: [function (require, module, exports) {
+      'use strict';
+
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+      var _eachOfLimit = require('./internal/eachOfLimit.js');
+      var _eachOfLimit2 = _interopRequireDefault(_eachOfLimit);
+      var _withoutIndex = require('./internal/withoutIndex.js');
+      var _withoutIndex2 = _interopRequireDefault(_withoutIndex);
+      var _wrapAsync = require('./internal/wrapAsync.js');
+      var _wrapAsync2 = _interopRequireDefault(_wrapAsync);
+      var _awaitify = require('./internal/awaitify.js');
+      var _awaitify2 = _interopRequireDefault(_awaitify);
+      function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+          default: obj
+        };
+      }
+
+      /**
+       * The same as [`each`]{@link module:Collections.each} but runs a maximum of `limit` async operations at a time.
+       *
+       * @name eachLimit
+       * @static
+       * @memberOf module:Collections
+       * @method
+       * @see [async.each]{@link module:Collections.each}
+       * @alias forEachLimit
+       * @category Collection
+       * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
+       * @param {number} limit - The maximum number of async operations at a time.
+       * @param {AsyncFunction} iteratee - An async function to apply to each item in
+       * `coll`.
+       * The array index is not passed to the iteratee.
+       * If you need the index, use `eachOfLimit`.
+       * Invoked with (item, callback).
+       * @param {Function} [callback] - A callback which is called when all
+       * `iteratee` functions have finished, or an error occurs. Invoked with (err).
+       * @returns {Promise} a promise, if a callback is omitted
+       */
+      function eachLimit(coll, limit, iteratee, callback) {
+        return (0, _eachOfLimit2.default)(limit)(coll, (0, _withoutIndex2.default)((0, _wrapAsync2.default)(iteratee)), callback);
+      }
+      exports.default = (0, _awaitify2.default)(eachLimit, 4);
+      module.exports = exports['default'];
+    }, {
+      "./internal/awaitify.js": 4,
+      "./internal/eachOfLimit.js": 6,
+      "./internal/withoutIndex.js": 14,
+      "./internal/wrapAsync.js": 15
+    }],
+    3: [function (require, module, exports) {
+      'use strict';
+
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+      exports.default = asyncEachOfLimit;
+      var _breakLoop = require('./breakLoop.js');
+      var _breakLoop2 = _interopRequireDefault(_breakLoop);
+      function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+          default: obj
+        };
+      }
+
+      // for async generators
+      function asyncEachOfLimit(generator, limit, iteratee, callback) {
+        let done = false;
+        let canceled = false;
+        let awaiting = false;
+        let running = 0;
+        let idx = 0;
+        function replenish() {
+          //console.log('replenish')
+          if (running >= limit || awaiting || done) return;
+          //console.log('replenish awaiting')
+          awaiting = true;
+          generator.next().then(({
+            value,
+            done: iterDone
+          }) => {
+            //console.log('got value', value)
+            if (canceled || done) return;
+            awaiting = false;
+            if (iterDone) {
+              done = true;
+              if (running <= 0) {
+                //console.log('done nextCb')
+                callback(null);
+              }
+              return;
+            }
+            running++;
+            iteratee(value, idx, iterateeCallback);
+            idx++;
+            replenish();
+          }).catch(handleError);
+        }
+        function iterateeCallback(err, result) {
+          //console.log('iterateeCallback')
+          running -= 1;
+          if (canceled) return;
+          if (err) return handleError(err);
+          if (err === false) {
+            done = true;
+            canceled = true;
+            return;
+          }
+          if (result === _breakLoop2.default || done && running <= 0) {
+            done = true;
+            //console.log('done iterCb')
+            return callback(null);
+          }
+          replenish();
+        }
+        function handleError(err) {
+          if (canceled) return;
+          awaiting = false;
+          done = true;
+          callback(err);
+        }
+        replenish();
+      }
+      module.exports = exports['default'];
+    }, {
+      "./breakLoop.js": 5
+    }],
+    4: [function (require, module, exports) {
+      'use strict';
+
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+      exports.default = awaitify;
+      // conditionally promisify a function.
+      // only return a promise if a callback is omitted
+      function awaitify(asyncFn, arity = asyncFn.length) {
+        if (!arity) throw new Error('arity is undefined');
+        function awaitable(...args) {
+          if (typeof args[arity - 1] === 'function') {
+            return asyncFn.apply(this, args);
+          }
+          return new Promise((resolve, reject) => {
+            args[arity - 1] = (err, ...cbArgs) => {
+              if (err) return reject(err);
+              resolve(cbArgs.length > 1 ? cbArgs : cbArgs[0]);
+            };
+            asyncFn.apply(this, args);
+          });
+        }
+        return awaitable;
+      }
+      module.exports = exports['default'];
+    }, {}],
+    5: [function (require, module, exports) {
+      "use strict";
+
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+      // A temporary value used to identify if the loop should be broken.
+      // See #1064, #1293
+      const breakLoop = {};
+      exports.default = breakLoop;
+      module.exports = exports["default"];
+    }, {}],
+    6: [function (require, module, exports) {
+      'use strict';
+
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+      var _once = require('./once.js');
+      var _once2 = _interopRequireDefault(_once);
+      var _iterator = require('./iterator.js');
+      var _iterator2 = _interopRequireDefault(_iterator);
+      var _onlyOnce = require('./onlyOnce.js');
+      var _onlyOnce2 = _interopRequireDefault(_onlyOnce);
+      var _wrapAsync = require('./wrapAsync.js');
+      var _asyncEachOfLimit = require('./asyncEachOfLimit.js');
+      var _asyncEachOfLimit2 = _interopRequireDefault(_asyncEachOfLimit);
+      var _breakLoop = require('./breakLoop.js');
+      var _breakLoop2 = _interopRequireDefault(_breakLoop);
+      function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+          default: obj
+        };
+      }
+      exports.default = limit => {
+        return (obj, iteratee, callback) => {
+          callback = (0, _once2.default)(callback);
+          if (limit <= 0) {
+            throw new RangeError('concurrency limit cannot be less than 1');
+          }
+          if (!obj) {
+            return callback(null);
+          }
+          if ((0, _wrapAsync.isAsyncGenerator)(obj)) {
+            return (0, _asyncEachOfLimit2.default)(obj, limit, iteratee, callback);
+          }
+          if ((0, _wrapAsync.isAsyncIterable)(obj)) {
+            return (0, _asyncEachOfLimit2.default)(obj[Symbol.asyncIterator](), limit, iteratee, callback);
+          }
+          var nextElem = (0, _iterator2.default)(obj);
+          var done = false;
+          var canceled = false;
+          var running = 0;
+          var looping = false;
+          function iterateeCallback(err, value) {
+            if (canceled) return;
+            running -= 1;
+            if (err) {
+              done = true;
+              callback(err);
+            } else if (err === false) {
+              done = true;
+              canceled = true;
+            } else if (value === _breakLoop2.default || done && running <= 0) {
+              done = true;
+              return callback(null);
+            } else if (!looping) {
+              replenish();
+            }
+          }
+          function replenish() {
+            looping = true;
+            while (running < limit && !done) {
+              var elem = nextElem();
+              if (elem === null) {
+                done = true;
+                if (running <= 0) {
+                  callback(null);
+                }
+                return;
+              }
+              running += 1;
+              iteratee(elem.value, elem.key, (0, _onlyOnce2.default)(iterateeCallback));
+            }
+            looping = false;
+          }
+          replenish();
+        };
+      };
+      module.exports = exports['default'];
+    }, {
+      "./asyncEachOfLimit.js": 3,
+      "./breakLoop.js": 5,
+      "./iterator.js": 10,
+      "./once.js": 11,
+      "./onlyOnce.js": 12,
+      "./wrapAsync.js": 15
+    }],
+    7: [function (require, module, exports) {
+      "use strict";
+
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+      exports.default = function (coll) {
+        return coll[Symbol.iterator] && coll[Symbol.iterator]();
+      };
+      module.exports = exports["default"];
+    }, {}],
+    8: [function (require, module, exports) {
+      "use strict";
+
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+      exports.default = function (fn) {
+        return function (...args /*, callback*/) {
+          var callback = args.pop();
+          return fn.call(this, args, callback);
+        };
+      };
+      module.exports = exports["default"];
+    }, {}],
+    9: [function (require, module, exports) {
+      'use strict';
+
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+      exports.default = isArrayLike;
+      function isArrayLike(value) {
+        return value && typeof value.length === 'number' && value.length >= 0 && value.length % 1 === 0;
+      }
+      module.exports = exports['default'];
+    }, {}],
+    10: [function (require, module, exports) {
+      'use strict';
+
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+      exports.default = createIterator;
+      var _isArrayLike = require('./isArrayLike.js');
+      var _isArrayLike2 = _interopRequireDefault(_isArrayLike);
+      var _getIterator = require('./getIterator.js');
+      var _getIterator2 = _interopRequireDefault(_getIterator);
+      function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+          default: obj
+        };
+      }
+      function createArrayIterator(coll) {
+        var i = -1;
+        var len = coll.length;
+        return function next() {
+          return ++i < len ? {
+            value: coll[i],
+            key: i
+          } : null;
+        };
+      }
+      function createES2015Iterator(iterator) {
+        var i = -1;
+        return function next() {
+          var item = iterator.next();
+          if (item.done) return null;
+          i++;
+          return {
+            value: item.value,
+            key: i
+          };
+        };
+      }
+      function createObjectIterator(obj) {
+        var okeys = obj ? Object.keys(obj) : [];
+        var i = -1;
+        var len = okeys.length;
+        return function next() {
+          var key = okeys[++i];
+          if (key === '__proto__') {
+            return next();
+          }
+          return i < len ? {
+            value: obj[key],
+            key
+          } : null;
+        };
+      }
+      function createIterator(coll) {
+        if ((0, _isArrayLike2.default)(coll)) {
+          return createArrayIterator(coll);
+        }
+        var iterator = (0, _getIterator2.default)(coll);
+        return iterator ? createES2015Iterator(iterator) : createObjectIterator(coll);
+      }
+      module.exports = exports['default'];
+    }, {
+      "./getIterator.js": 7,
+      "./isArrayLike.js": 9
+    }],
+    11: [function (require, module, exports) {
+      "use strict";
+
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+      exports.default = once;
+      function once(fn) {
+        function wrapper(...args) {
+          if (fn === null) return;
+          var callFn = fn;
+          fn = null;
+          callFn.apply(this, args);
+        }
+        Object.assign(wrapper, fn);
+        return wrapper;
+      }
+      module.exports = exports["default"];
+    }, {}],
+    12: [function (require, module, exports) {
+      "use strict";
+
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+      exports.default = onlyOnce;
+      function onlyOnce(fn) {
+        return function (...args) {
+          if (fn === null) throw new Error("Callback was already called.");
+          var callFn = fn;
+          fn = null;
+          callFn.apply(this, args);
+        };
+      }
+      module.exports = exports["default"];
+    }, {}],
+    13: [function (require, module, exports) {
+      (function (process, setImmediate) {
+        (function () {
+          'use strict';
+
+          Object.defineProperty(exports, "__esModule", {
+            value: true
+          });
+          exports.fallback = fallback;
+          exports.wrap = wrap;
+          /* istanbul ignore file */
+
+          var hasQueueMicrotask = exports.hasQueueMicrotask = typeof queueMicrotask === 'function' && queueMicrotask;
+          var hasSetImmediate = exports.hasSetImmediate = typeof setImmediate === 'function' && setImmediate;
+          var hasNextTick = exports.hasNextTick = typeof process === 'object' && typeof process.nextTick === 'function';
+          function fallback(fn) {
+            setTimeout(fn, 0);
+          }
+          function wrap(defer) {
+            return (fn, ...args) => defer(() => fn(...args));
+          }
+          var _defer;
+          if (hasQueueMicrotask) {
+            _defer = queueMicrotask;
+          } else if (hasSetImmediate) {
+            _defer = setImmediate;
+          } else if (hasNextTick) {
+            _defer = process.nextTick;
+          } else {
+            _defer = fallback;
+          }
+          exports.default = wrap(_defer);
+        }).call(this);
+      }).call(this, require('_process'), require("timers").setImmediate);
+    }, {
+      "_process": 30,
+      "timers": 31
+    }],
+    14: [function (require, module, exports) {
+      "use strict";
+
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+      exports.default = _withoutIndex;
+      function _withoutIndex(iteratee) {
+        return (value, index, callback) => iteratee(value, callback);
+      }
+      module.exports = exports["default"];
+    }, {}],
+    15: [function (require, module, exports) {
+      'use strict';
+
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+      exports.isAsyncIterable = exports.isAsyncGenerator = exports.isAsync = undefined;
+      var _asyncify = require('../asyncify.js');
+      var _asyncify2 = _interopRequireDefault(_asyncify);
+      function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+          default: obj
+        };
+      }
+      function isAsync(fn) {
+        return fn[Symbol.toStringTag] === 'AsyncFunction';
+      }
+      function isAsyncGenerator(fn) {
+        return fn[Symbol.toStringTag] === 'AsyncGenerator';
+      }
+      function isAsyncIterable(obj) {
+        return typeof obj[Symbol.asyncIterator] === 'function';
+      }
+      function wrapAsync(asyncFn) {
+        if (typeof asyncFn !== 'function') throw new Error('expected a function');
+        return isAsync(asyncFn) ? (0, _asyncify2.default)(asyncFn) : asyncFn;
+      }
+      exports.default = wrapAsync;
+      exports.isAsync = isAsync;
+      exports.isAsyncGenerator = isAsyncGenerator;
+      exports.isAsyncIterable = isAsyncIterable;
+    }, {
+      "../asyncify.js": 1
+    }],
+    16: [function (require, module, exports) {
+      'use strict';
+
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+      var _once = require('./internal/once.js');
+      var _once2 = _interopRequireDefault(_once);
+      var _onlyOnce = require('./internal/onlyOnce.js');
+      var _onlyOnce2 = _interopRequireDefault(_onlyOnce);
+      var _wrapAsync = require('./internal/wrapAsync.js');
+      var _wrapAsync2 = _interopRequireDefault(_wrapAsync);
+      var _awaitify = require('./internal/awaitify.js');
+      var _awaitify2 = _interopRequireDefault(_awaitify);
+      function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+          default: obj
+        };
+      }
+
+      /**
+       * Runs the `tasks` array of functions in series, each passing their results to
+       * the next in the array. However, if any of the `tasks` pass an error to their
+       * own callback, the next function is not executed, and the main `callback` is
+       * immediately called with the error.
+       *
+       * @name waterfall
+       * @static
+       * @memberOf module:ControlFlow
+       * @method
+       * @category Control Flow
+       * @param {Array} tasks - An array of [async functions]{@link AsyncFunction}
+       * to run.
+       * Each function should complete with any number of `result` values.
+       * The `result` values will be passed as arguments, in order, to the next task.
+       * @param {Function} [callback] - An optional callback to run once all the
+       * functions have completed. This will be passed the results of the last task's
+       * callback. Invoked with (err, [results]).
+       * @returns {Promise} a promise, if a callback is omitted
+       * @example
+       *
+       * async.waterfall([
+       *     function(callback) {
+       *         callback(null, 'one', 'two');
+       *     },
+       *     function(arg1, arg2, callback) {
+       *         // arg1 now equals 'one' and arg2 now equals 'two'
+       *         callback(null, 'three');
+       *     },
+       *     function(arg1, callback) {
+       *         // arg1 now equals 'three'
+       *         callback(null, 'done');
+       *     }
+       * ], function (err, result) {
+       *     // result now equals 'done'
+       * });
+       *
+       * // Or, with named functions:
+       * async.waterfall([
+       *     myFirstFunction,
+       *     mySecondFunction,
+       *     myLastFunction,
+       * ], function (err, result) {
+       *     // result now equals 'done'
+       * });
+       * function myFirstFunction(callback) {
+       *     callback(null, 'one', 'two');
+       * }
+       * function mySecondFunction(arg1, arg2, callback) {
+       *     // arg1 now equals 'one' and arg2 now equals 'two'
+       *     callback(null, 'three');
+       * }
+       * function myLastFunction(arg1, callback) {
+       *     // arg1 now equals 'three'
+       *     callback(null, 'done');
+       * }
+       */
+      function waterfall(tasks, callback) {
+        callback = (0, _once2.default)(callback);
+        if (!Array.isArray(tasks)) return callback(new Error('First argument to waterfall must be an array of functions'));
+        if (!tasks.length) return callback();
+        var taskIndex = 0;
+        function nextTask(args) {
+          var task = (0, _wrapAsync2.default)(tasks[taskIndex++]);
+          task(...args, (0, _onlyOnce2.default)(next));
+        }
+        function next(err, ...args) {
+          if (err === false) return;
+          if (err || taskIndex === tasks.length) {
+            return callback(err, ...args);
+          }
+          nextTask(args);
+        }
+        nextTask([]);
+      }
+      exports.default = (0, _awaitify2.default)(waterfall);
+      module.exports = exports['default'];
+    }, {
+      "./internal/awaitify.js": 4,
+      "./internal/once.js": 11,
+      "./internal/onlyOnce.js": 12,
+      "./internal/wrapAsync.js": 15
+    }],
+    17: [function (require, module, exports) {
       /**
       * Base Logger Class
       *
@@ -108,7 +806,7 @@
       }
       module.exports = BaseLogger;
     }, {}],
-    2: [function (require, module, exports) {
+    18: [function (require, module, exports) {
       /**
       * Default Logger Provider Function
       *
@@ -126,16 +824,16 @@
       };
       module.exports = getDefaultProviders();
     }, {
-      "./Fable-Log-Logger-Console.js": 4
+      "./Fable-Log-Logger-Console.js": 20
     }],
-    3: [function (require, module, exports) {
+    19: [function (require, module, exports) {
       module.exports = [{
         "loggertype": "console",
         "streamtype": "console",
         "level": "trace"
       }];
     }, {}],
-    4: [function (require, module, exports) {
+    20: [function (require, module, exports) {
       let libBaseLogger = require('./Fable-Log-BaseLogger.js');
       class ConsoleLogger extends libBaseLogger {
         constructor(pLogStreamSettings, pFableLog) {
@@ -181,9 +879,9 @@
       }
       module.exports = ConsoleLogger;
     }, {
-      "./Fable-Log-BaseLogger.js": 1
+      "./Fable-Log-BaseLogger.js": 17
     }],
-    5: [function (require, module, exports) {
+    21: [function (require, module, exports) {
       /**
       * Fable Logging Add-on
       *
@@ -365,10 +1063,10 @@
         FableLog: FableLog
       };
     }, {
-      "./Fable-Log-DefaultProviders-Node.js": 2,
-      "./Fable-Log-DefaultStreams.json": 3
+      "./Fable-Log-DefaultProviders-Node.js": 18,
+      "./Fable-Log-DefaultStreams.json": 19
     }],
-    6: [function (require, module, exports) {
+    22: [function (require, module, exports) {
       module.exports = {
         "Product": "ApplicationNameHere",
         "ProductVersion": "0.0.0",
@@ -378,7 +1076,7 @@
         }]
       };
     }, {}],
-    7: [function (require, module, exports) {
+    23: [function (require, module, exports) {
       (function (process) {
         (function () {
           /**
@@ -420,9 +1118,9 @@
         }).call(this);
       }).call(this, require('_process'));
     }, {
-      "_process": 14
+      "_process": 30
     }],
-    8: [function (require, module, exports) {
+    24: [function (require, module, exports) {
       /**
       * Fable Settings Add-on
       *
@@ -569,11 +1267,11 @@
         FableSettings: FableSettings
       };
     }, {
-      "./Fable-Settings-Default": 6,
-      "./Fable-Settings-TemplateProcessor.js": 7,
-      "precedent": 11
+      "./Fable-Settings-Default": 22,
+      "./Fable-Settings-TemplateProcessor.js": 23,
+      "precedent": 27
     }],
-    9: [function (require, module, exports) {
+    25: [function (require, module, exports) {
       /**
       * Random Byte Generator - Browser version
       *
@@ -626,7 +1324,7 @@
       }
       module.exports = RandomBytes;
     }, {}],
-    10: [function (require, module, exports) {
+    26: [function (require, module, exports) {
       /**
       * Fable UUID Generator
       *
@@ -709,9 +1407,9 @@
         FableUUID: FableUUID
       };
     }, {
-      "./Fable-UUID-Random.js": 9
+      "./Fable-UUID-Random.js": 25
     }],
-    11: [function (require, module, exports) {
+    27: [function (require, module, exports) {
       /**
       * Precedent Meta-Templating
       *
@@ -757,10 +1455,10 @@
       }
       module.exports = Precedent;
     }, {
-      "./StringParser.js": 12,
-      "./WordTree.js": 13
+      "./StringParser.js": 28,
+      "./WordTree.js": 29
     }],
-    12: [function (require, module, exports) {
+    28: [function (require, module, exports) {
       /**
       * String Parser
       *
@@ -906,7 +1604,7 @@
       }
       module.exports = StringParser;
     }, {}],
-    13: [function (require, module, exports) {
+    29: [function (require, module, exports) {
       /**
       * Word Tree
       *
@@ -965,7 +1663,7 @@
       }
       module.exports = WordTree;
     }, {}],
-    14: [function (require, module, exports) {
+    30: [function (require, module, exports) {
       // shim for using process in browser
       var process = module.exports = {};
 
@@ -1142,17 +1840,103 @@
         return 0;
       };
     }, {}],
-    15: [function (require, module, exports) {
+    31: [function (require, module, exports) {
+      (function (setImmediate, clearImmediate) {
+        (function () {
+          var nextTick = require('process/browser.js').nextTick;
+          var apply = Function.prototype.apply;
+          var slice = Array.prototype.slice;
+          var immediateIds = {};
+          var nextImmediateId = 0;
+
+          // DOM APIs, for completeness
+
+          exports.setTimeout = function () {
+            return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
+          };
+          exports.setInterval = function () {
+            return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
+          };
+          exports.clearTimeout = exports.clearInterval = function (timeout) {
+            timeout.close();
+          };
+          function Timeout(id, clearFn) {
+            this._id = id;
+            this._clearFn = clearFn;
+          }
+          Timeout.prototype.unref = Timeout.prototype.ref = function () {};
+          Timeout.prototype.close = function () {
+            this._clearFn.call(window, this._id);
+          };
+
+          // Does not start the time, just sets up the members needed.
+          exports.enroll = function (item, msecs) {
+            clearTimeout(item._idleTimeoutId);
+            item._idleTimeout = msecs;
+          };
+          exports.unenroll = function (item) {
+            clearTimeout(item._idleTimeoutId);
+            item._idleTimeout = -1;
+          };
+          exports._unrefActive = exports.active = function (item) {
+            clearTimeout(item._idleTimeoutId);
+            var msecs = item._idleTimeout;
+            if (msecs >= 0) {
+              item._idleTimeoutId = setTimeout(function onTimeout() {
+                if (item._onTimeout) item._onTimeout();
+              }, msecs);
+            }
+          };
+
+          // That's not how node.js implements it but the exposed api is the same.
+          exports.setImmediate = typeof setImmediate === "function" ? setImmediate : function (fn) {
+            var id = nextImmediateId++;
+            var args = arguments.length < 2 ? false : slice.call(arguments, 1);
+            immediateIds[id] = true;
+            nextTick(function onNextTick() {
+              if (immediateIds[id]) {
+                // fn.call() is faster so we optimize for the common use-case
+                // @see http://jsperf.com/call-apply-segu
+                if (args) {
+                  fn.apply(null, args);
+                } else {
+                  fn.call(null);
+                }
+                // Prevent ids from leaking
+                exports.clearImmediate(id);
+              }
+            });
+            return id;
+          };
+          exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate : function (id) {
+            delete immediateIds[id];
+          };
+        }).call(this);
+      }).call(this, require("timers").setImmediate, require("timers").clearImmediate);
+    }, {
+      "process/browser.js": 30,
+      "timers": 31
+    }],
+    32: [function (require, module, exports) {
       var libNPMModuleWrapper = require('./Fable.js');
       if (typeof window === 'object' && !window.hasOwnProperty('Fable')) {
         window.Fable = libNPMModuleWrapper;
       }
       module.exports = libNPMModuleWrapper;
     }, {
-      "./Fable.js": 18
+      "./Fable.js": 35
     }],
-    16: [function (require, module, exports) {
+    33: [function (require, module, exports) {
       class FableUtility {
+        // Underscore and lodash have a behavior, _.template, which compiles a
+        // string-based template with code snippets into simple executable pieces,
+        // with the added twist of returning a precompiled function ready to go.
+        //
+        // NOTE: This does not implement underscore escape expressions
+        // NOTE: This does not implement underscore magic browser variable assignment
+        //
+        // This is an implementation of that.
+        // TODO: Make this use precedent, add configuration, add debugging.
         constructor(pFable, pTemplateText) {
           this.fable = pFable;
 
@@ -1203,16 +1987,6 @@
           let fRenderTemplateBound = this.renderTemplate.bind(this);
           return fRenderTemplateBound;
         }
-
-        // Underscore and lodash have a behavior, _.template, which compiles a
-        // string-based template with code snippets into simple executable pieces,
-        // with the added twist of returning a precompiled function ready to go.
-        //
-        // NOTE: This does not implement underscore escape expressions
-        // NOTE: This does not implement underscore magic browser variable assignment
-        //
-        // This is an implementation of that.
-        // TODO: Make this use precedent, add configuration, add debugging.
         buildTemplateFunction(pTemplateText, pData) {
           // For now this is being kept in a weird form ... this is to mimic the old
           // underscore code until this is rewritten using precedent.
@@ -1238,11 +2012,17 @@
       }
       module.exports = FableUtility;
     }, {}],
-    17: [function (require, module, exports) {
+    34: [function (require, module, exports) {
       const libFableUtilityTemplate = require('./Fable-Utility-Template.js');
+      const libAsyncWaterfall = require('async/waterfall');
+      const libAsyncEachLimit = require('async/eachLimit');
       class FableUtility {
         constructor(pFable) {
           this.fable = pFable;
+
+          // These two functions are used extensively throughout
+          this.waterfall = libAsyncWaterfall;
+          this.eachLimit = libAsyncEachLimit;
         }
 
         // Underscore and lodash have a behavior, _.extend, which merges objects.
@@ -1280,9 +2060,11 @@
       }
       module.exports = FableUtility;
     }, {
-      "./Fable-Utility-Template.js": 16
+      "./Fable-Utility-Template.js": 33,
+      "async/eachLimit": 2,
+      "async/waterfall": 16
     }],
-    18: [function (require, module, exports) {
+    35: [function (require, module, exports) {
       /**
       * Fable Application Services Support Library
       * @license MIT
@@ -1315,10 +2097,10 @@
       }
       module.exports = Fable;
     }, {
-      "./Fable-Utility.js": 17,
-      "fable-log": 5,
-      "fable-settings": 8,
-      "fable-uuid": 10
+      "./Fable-Utility.js": 34,
+      "fable-log": 21,
+      "fable-settings": 24,
+      "fable-uuid": 26
     }]
-  }, {}, [15])(15);
+  }, {}, [32])(32);
 });

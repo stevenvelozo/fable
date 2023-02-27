@@ -111,7 +111,7 @@ suite
 				);
 				test
 				(
-					'chunk should work like underscore',
+					'chunk should work _exactly_ like underscore',
 					function()
 					{
 						testFable = new libFable();
@@ -137,8 +137,65 @@ suite
 
 					    Expect(testFable.Utility.chunk([10, 20, 30, 40, 50, 60, 70], 2)).to.deep.equal([[10, 20], [30, 40], [50, 60], [70]]);   // chunk into parts of less then current array length elements');
 					    Expect(testFable.Utility.chunk([10, 20, 30, 40, 50, 60, 70], 3)).to.deep.equal([[10, 20, 30], [40, 50, 60], [70]]);   // chunk into parts of less then current array length elements');
-					});
-			}
+					}
+				);
+				test
+				(
+					'waterfall should be passed in from async',
+					function(fDone)
+					{
+						testFable = new libFable();
+
+						let tmpState = {};
+
+						testFable.Utility.waterfall([
+							(fStageComplete)=>
+							{
+								tmpState.Name = 'The Pixies';
+								fStageComplete();
+							},
+							(fStageComplete)=>
+							{
+								tmpState.Type = 'Band';
+								fStageComplete();
+							}],
+							(pError)=>
+							{
+								Expect(tmpState.Name).to.equal('The Pixies');
+								Expect(tmpState.Type).to.equal('Band');
+								fDone();
+							})
+					}
+				);
+				test
+				(
+					'eachLimit should be passed in from async',
+					function(fDone)
+					{
+						testFable = new libFable();
+
+						let tmpState = {};
+
+						let tmpData = ['a','b','c','d','e'];
+
+						testFable.Utility.eachLimit(tmpData, 2,
+							(pItem, fCallback)=>
+							{
+								tmpState[pItem] = pItem;
+								fCallback();
+							},
+							(pError)=>
+							{
+								Expect(tmpState).to.have.a.property('a');
+								Expect(tmpState).to.have.a.property('b');
+								Expect(tmpState).to.have.a.property('c');
+								Expect(tmpState).to.have.a.property('d');
+								Expect(tmpState).to.have.a.property('e');
+								Expect(tmpState.c).to.equal('c');
+								fDone();
+							})
+					}
+				);			}
 		);
 	}
 );
