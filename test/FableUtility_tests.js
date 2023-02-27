@@ -109,6 +109,35 @@ suite
 						Expect(tmpResult.Size).to.equal(15);
 					}
 				);
+				test
+				(
+					'chunk should work like underscore',
+					function()
+					{
+						testFable = new libFable();
+						// These are *literally* the tests from underscore
+						/* Here for posterity
+						 *
+
+						 *
+						 */
+						// Regular Expressions for easy conversion of underscore tests:
+						// S: assert.deepEqual\(_.chunk\((.*)\), (.*), '
+						// R: Expect(testFable.Utility.chunk($1)).to.deep.equal($2);   // $3
+					    Expect(testFable.Utility.chunk([], 2)).to.deep.equal([]);   // chunk for empty array returns an empty array');
+
+					    Expect(testFable.Utility.chunk([1, 2, 3], 0)).to.deep.equal([]);   // chunk into parts of 0 elements returns empty array');
+					    Expect(testFable.Utility.chunk([1, 2, 3], -1)).to.deep.equal([]);   // chunk into parts of negative amount of elements returns an empty array');
+					    Expect(testFable.Utility.chunk([1, 2, 3])).to.deep.equal([]);   // defaults to empty array (chunk size 0)');
+
+					    Expect(testFable.Utility.chunk([1, 2, 3], 1)).to.deep.equal([[1], [2], [3]]);   // chunk into parts of 1 elements returns original array');
+
+					    Expect(testFable.Utility.chunk([1, 2, 3], 3)).to.deep.equal([[1, 2, 3]]);   // chunk into parts of current array length elements returns the original array');
+					    Expect(testFable.Utility.chunk([1, 2, 3], 5)).to.deep.equal([[1, 2, 3]]);   // chunk into parts of more then current array length elements returns the original array');
+
+					    Expect(testFable.Utility.chunk([10, 20, 30, 40, 50, 60, 70], 2)).to.deep.equal([[10, 20], [30, 40], [50, 60], [70]]);   // chunk into parts of less then current array length elements');
+					    Expect(testFable.Utility.chunk([10, 20, 30, 40, 50, 60, 70], 3)).to.deep.equal([[10, 20, 30], [40, 50, 60], [70]]);   // chunk into parts of less then current array length elements');
+					});
 			}
 		);
 	}
