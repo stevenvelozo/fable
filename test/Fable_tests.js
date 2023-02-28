@@ -51,6 +51,24 @@ suite
 				);
 				test
 				(
+					'The class should initialize itself into a happy little object.',
+					function()
+					{
+						testFable = libFable.new({Product:'LegacyApplicationNameHere', LogStreams: false});
+						// Instantiate the logger
+						Expect(testFable).to.be.an('object', 'Fable should initialize as an object directly from the require statement.');
+						Expect(testFable).to.have.a.property('log')
+						.that.is.a('object');
+						Expect(testFable).to.have.a.property('settings')
+						.that.is.a('object');
+						Expect(testFable).to.have.a.property('fable')
+						.that.is.a('object');
+						Expect(testFable.settings.Product)
+							.to.equal('LegacyApplicationNameHere')
+					}
+				);
+				test
+				(
 					'Logging should happen...',
 					function(fDone)
 					{

@@ -754,7 +754,7 @@
       class BaseLogger {
         constructor(pLogStreamSettings, pFableLog) {
           // This should not possibly be able to be instantiated without a settings object
-          this._Settings = pLogStreamSettings;
+          this._Settings = typeof pLogStreamSettings == 'object' ? pLogStreamSettings : {};
 
           // The base logger does nothing but associate a UUID with itself
           // We added this as the mechanism for tracking loggers to allow multiple simultaneous streams
@@ -838,13 +838,13 @@
       class ConsoleLogger extends libBaseLogger {
         constructor(pLogStreamSettings, pFableLog) {
           super(pLogStreamSettings);
-          this._ShowTimeStamps = pLogStreamSettings.hasOwnProperty('showtimestamps') ? pLogStreamSettings.showtimestamps == true : false;
-          this._FormattedTimeStamps = pLogStreamSettings.hasOwnProperty('formattedtimestamps') ? pLogStreamSettings.formattedtimestamps == true : false;
-          this._ContextMessage = pLogStreamSettings.hasOwnProperty('Context') ? `(${pLogStreamSettings.Context})` : pFableLog._Settings.hasOwnProperty('Product') ? `(${pFableLog._Settings.Product})` : 'Unnamed_Log_Context';
+          this._ShowTimeStamps = this._Settings.hasOwnProperty('showtimestamps') ? this._Settings.showtimestamps == true : false;
+          this._FormattedTimeStamps = this._Settings.hasOwnProperty('formattedtimestamps') ? this._Settings.formattedtimestamps == true : false;
+          this._ContextMessage = this._Settings.hasOwnProperty('Context') ? `(${this._Settings.Context})` : pFableLog._Settings.hasOwnProperty('Product') ? `(${pFableLog._Settings.Product})` : 'Unnamed_Log_Context';
 
           // Allow the user to decide what gets output to the console
-          this._OutputLogLinesToConsole = pLogStreamSettings.hasOwnProperty('outputloglinestoconsole') ? pLogStreamSettings.outputloglinestoconsole : true;
-          this._OutputObjectsToConsole = pLogStreamSettings.hasOwnProperty('outputobjectstoconsole') ? pLogStreamSettings.outputobjectstoconsole : true;
+          this._OutputLogLinesToConsole = this._Settings.hasOwnProperty('outputloglinestoconsole') ? this._Settings.outputloglinestoconsole : true;
+          this._OutputObjectsToConsole = this._Settings.hasOwnProperty('outputobjectstoconsole') ? this._Settings.outputobjectstoconsole : true;
 
           // Precompute the prefix for each level
           this.prefixCache = {};
@@ -1058,11 +1058,11 @@
       function autoConstruct(pSettings) {
         return new FableLog(pSettings);
       }
-      module.exports = {
-        new: autoConstruct,
-        FableLog: FableLog
-      };
+      module.exports = FableLog;
+      module.exports.new = autoConstruct;
+      module.exports.LogProviderBase = require('./Fable-Log-BaseLogger.js');
     }, {
+      "./Fable-Log-BaseLogger.js": 17,
       "./Fable-Log-DefaultProviders-Node.js": 18,
       "./Fable-Log-DefaultStreams.json": 19
     }],
@@ -1262,10 +1262,9 @@
       function autoConstruct(pSettings) {
         return new FableSettings(pSettings);
       }
-      module.exports = {
-        new: autoConstruct,
-        FableSettings: FableSettings
-      };
+      module.exports = FableSettings;
+      module.exports.new = autoConstruct;
+      module.exports.precedent = libPrecedent;
     }, {
       "./Fable-Settings-Default": 22,
       "./Fable-Settings-TemplateProcessor.js": 23,
@@ -1402,10 +1401,8 @@
       function autoConstruct(pSettings) {
         return new FableUUID(pSettings);
       }
-      module.exports = {
-        new: autoConstruct,
-        FableUUID: FableUUID
-      };
+      module.exports = FableUUID;
+      module.exports.new = autoConstruct;
     }, {
       "./Fable-UUID-Random.js": 25
     }],
@@ -2070,9 +2067,9 @@
       * @license MIT
       * @author <steven@velozo.com>
       */
-      const libFableSettings = require('fable-settings').FableSettings;
-      const libFableUUID = require('fable-uuid').FableUUID;
-      const libFableLog = require('fable-log').FableLog;
+      const libFableSettings = require('fable-settings');
+      const libFableUUID = require('fable-uuid');
+      const libFableLog = require('fable-log');
       const libFableUtility = require('./Fable-Utility.js');
       class Fable {
         constructor(pSettings) {
@@ -2084,6 +2081,11 @@
           this.log = new libFableLog(this.settingsManager.settings);
           this.log.initialize();
           this.Utility = new libFableUtility(this);
+
+          // Built-in dependencies ... more can be added here.
+          this.Dependencies = {
+            precedent: libFableSettings.precedent
+          };
         }
         get settings() {
           return this.settingsManager.settings;
@@ -2095,7 +2097,15 @@
           return this.libUUID.getUUID();
         }
       }
+
+      // This is for backwards compatibility
+      function autoConstruct(pSettings) {
+        return new Fable(pSettings);
+      }
       module.exports = Fable;
+      module.exports.new = autoConstruct;
+      module.exports.LogProviderBase = libFableLog.LogProviderBase;
+      module.exports.precedent = libFableSettings.precedent;
     }, {
       "./Fable-Utility.js": 34,
       "fable-log": 21,
