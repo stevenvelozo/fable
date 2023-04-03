@@ -9,6 +9,8 @@ const libFableLog = require('fable-log');
 
 const libFableUtility = require('./Fable-Utility.js')
 
+const libFableOperation = require('./Fable-Operation.js');
+
 class Fable
 {
 	constructor(pSettings)
@@ -23,13 +25,17 @@ class Fable
 		this.log = new libFableLog(this.settingsManager.settings);
 		this.log.initialize();
 
+		// Built-in utility belt functions
 		this.Utility = new libFableUtility(this);
 
-		// Built-in dependencies ... more can be added here.
+		// Built-in dependencies
 		this.Dependencies = (
 			{
 				precedent: libFableSettings.precedent
 			});
+
+		// Location for Operation state
+		this.Operations = {};
 	}
 
 	get settings()
@@ -45,6 +51,35 @@ class Fable
 	getUUID()
 	{
 		return this.libUUID.getUUID();
+	}
+
+	createOperation(pOperationName, pOperationHash)
+	{
+		let tmpOperation = new libFableOperation(this, pOperationName, pOperationHash);
+
+		if (this.Operations.hasOwnProperty(tmpOperation.Hash))
+		{
+			// Uh Oh ...... Operation Hash Collision!
+			// TODO: What to do?!
+		}
+		else
+		{
+			this.Operations[tmpOperation.Hash] = tmpOperation;
+		}
+
+		return tmpOperation;
+	}
+
+	getOperation(pOperationHash)
+	{
+		if (!this.Operations.hasOwnProperty(pOperationHash))
+		{
+			return false;
+		}
+		else
+		{
+			return this.pOperations[pOperationHash];
+		}
 	}
 }
 

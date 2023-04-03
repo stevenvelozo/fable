@@ -1,4 +1,5 @@
 const libFableUtilityTemplate = require('./Fable-Utility-Template.js');
+// TODO: These are still pretty big -- consider the smaller polyfills
 const libAsyncWaterfall = require('async/waterfall');
 const libAsyncEachLimit = require('async/eachLimit');
 

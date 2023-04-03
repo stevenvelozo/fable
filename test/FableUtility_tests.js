@@ -14,7 +14,7 @@ var Assert = Chai.assert;
 
 suite
 (
-	'FableUtility',
+	'Fable Utility',
 	function()
 	{
 		var testFable = false;
@@ -195,7 +195,8 @@ suite
 								fDone();
 							})
 					}
-				);			}
+				);
+			}
 		);
 	}
 );
