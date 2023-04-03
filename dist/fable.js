@@ -1921,9 +1921,90 @@
       }
       module.exports = libNPMModuleWrapper;
     }, {
-      "./Fable.js": 35
+      "./Fable.js": 36
     }],
     33: [function (require, module, exports) {
+      const _OperationStatePrototype = JSON.stringify({
+        "Metadata": {
+          "GUID": false,
+          "Hash": false,
+          "Title": "",
+          "Summary": "",
+          "Version": 0
+        },
+        "Status": {
+          "Completed": false,
+          "CompletionProgress": 0,
+          "CompletionTimeElapsed": 0,
+          "Steps": 1,
+          "StepsCompleted": 0,
+          "StartTime": 0,
+          "EndTime": 0
+        },
+        "Errors": [],
+        "Log": []
+      });
+      class FableOperation {
+        constructor(pFable, pOperationName, pOperationHash) {
+          this.fable = pFable;
+          this.state = JSON.parse(_OperationStatePrototype);
+          this.state.Metadata.GUID = this.fable.getUUID();
+          this.state.Metadata.Hash = this.state.GUID;
+          if (typeof pOperationHash == 'string') {
+            this.state.Metadata.Hash = pOperationHash;
+          }
+        }
+        get GUID() {
+          return this.state.Metadata.GUID;
+        }
+        get Hash() {
+          return this.state.Metadata.Hash;
+        }
+        get log() {
+          return this;
+        }
+        writeOperationLog(pLogLevel, pLogText, pLogObject) {
+          this.state.Log.push(`${new Date().toUTCString()} [${pLogLevel}]: ${pLogText}`);
+          if (typeof pLogObject == 'object') {
+            this.state.Log.push(JSON.stringify(pLogObject));
+          }
+        }
+        writeOperationErrors(pLogText, pLogObject) {
+          this.state.Errors.push(`${pLogText}`);
+          if (typeof pLogObject == 'object') {
+            this.state.Errors.push(JSON.stringify(pLogObject));
+          }
+        }
+        trace(pLogText, pLogObject) {
+          this.writeOperationLog('TRACE', pLogText, pLogObject);
+          this.fable.log.trace(pLogText, pLogObject);
+        }
+        debug(pLogText, pLogObject) {
+          this.writeOperationLog('DEBUG', pLogText, pLogObject);
+          this.fable.log.debug(pLogText, pLogObject);
+        }
+        info(pLogText, pLogObject) {
+          this.writeOperationLog('INFO', pLogText, pLogObject);
+          this.fable.log.info(pLogText, pLogObject);
+        }
+        warn(pLogText, pLogObject) {
+          this.writeOperationLog('WARN', pLogText, pLogObject);
+          this.fable.log.warn(pLogText, pLogObject);
+        }
+        error(pLogText, pLogObject) {
+          this.writeOperationLog('ERROR', pLogText, pLogObject);
+          this.writeOperationErrors(pLogText, pLogObject);
+          this.fable.log.error(pLogText, pLogObject);
+        }
+        fatal(pLogText, pLogObject) {
+          this.writeOperationLog('FATAL', pLogText, pLogObject);
+          this.writeOperationErrors(pLogText, pLogObject);
+          this.fable.log.fatal(pLogText, pLogObject);
+        }
+      }
+      module.exports = FableOperation;
+    }, {}],
+    34: [function (require, module, exports) {
       class FableUtility {
         // Underscore and lodash have a behavior, _.template, which compiles a
         // string-based template with code snippets into simple executable pieces,
@@ -2009,8 +2090,9 @@
       }
       module.exports = FableUtility;
     }, {}],
-    34: [function (require, module, exports) {
+    35: [function (require, module, exports) {
       const libFableUtilityTemplate = require('./Fable-Utility-Template.js');
+      // TODO: These are still pretty big -- consider the smaller polyfills
       const libAsyncWaterfall = require('async/waterfall');
       const libAsyncEachLimit = require('async/eachLimit');
       class FableUtility {
@@ -2057,11 +2139,11 @@
       }
       module.exports = FableUtility;
     }, {
-      "./Fable-Utility-Template.js": 33,
+      "./Fable-Utility-Template.js": 34,
       "async/eachLimit": 2,
       "async/waterfall": 16
     }],
-    35: [function (require, module, exports) {
+    36: [function (require, module, exports) {
       /**
       * Fable Application Services Support Library
       * @license MIT
@@ -2071,6 +2153,7 @@
       const libFableUUID = require('fable-uuid');
       const libFableLog = require('fable-log');
       const libFableUtility = require('./Fable-Utility.js');
+      const libFableOperation = require('./Fable-Operation.js');
       class Fable {
         constructor(pSettings) {
           let tmpSettings = new libFableSettings(pSettings);
@@ -2080,12 +2163,17 @@
           this.libUUID = new libFableUUID(this.settingsManager.settings);
           this.log = new libFableLog(this.settingsManager.settings);
           this.log.initialize();
+
+          // Built-in utility belt functions
           this.Utility = new libFableUtility(this);
 
-          // Built-in dependencies ... more can be added here.
+          // Built-in dependencies
           this.Dependencies = {
             precedent: libFableSettings.precedent
           };
+
+          // Location for Operation state
+          this.Operations = {};
         }
         get settings() {
           return this.settingsManager.settings;
@@ -2095,6 +2183,23 @@
         }
         getUUID() {
           return this.libUUID.getUUID();
+        }
+        createOperation(pOperationName, pOperationHash) {
+          let tmpOperation = new libFableOperation(this, pOperationName, pOperationHash);
+          if (this.Operations.hasOwnProperty(tmpOperation.Hash)) {
+            // Uh Oh ...... Operation Hash Collision!
+            // TODO: What to do?!
+          } else {
+            this.Operations[tmpOperation.Hash] = tmpOperation;
+          }
+          return tmpOperation;
+        }
+        getOperation(pOperationHash) {
+          if (!this.Operations.hasOwnProperty(pOperationHash)) {
+            return false;
+          } else {
+            return this.pOperations[pOperationHash];
+          }
         }
       }
 
@@ -2107,7 +2212,8 @@
       module.exports.LogProviderBase = libFableLog.LogProviderBase;
       module.exports.precedent = libFableSettings.precedent;
     }, {
-      "./Fable-Utility.js": 34,
+      "./Fable-Operation.js": 33,
+      "./Fable-Utility.js": 35,
       "fable-log": 21,
       "fable-settings": 24,
       "fable-uuid": 26
