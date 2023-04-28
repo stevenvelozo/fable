@@ -2094,6 +2094,7 @@
       class FableOperation {
         constructor(pFable, pOperationName, pOperationHash) {
           this.fable = pFable;
+          this.name = pOperationName;
           this.state = JSON.parse(_OperationStatePrototype);
           this.state.Metadata.GUID = this.fable.getUUID();
           this.state.Metadata.Hash = this.state.GUID;
@@ -2152,93 +2153,8 @@
       module.exports = FableOperation;
     }, {}],
     36: [function (require, module, exports) {
-      /**
-      * Fable Application Services Management
-      * @license MIT
-      * @author <steven@velozo.com>
-      */
-
       const libFableServiceBase = require('./Fable-ServiceProviderBase.js');
-      class FableService {
-        constructor(pFable) {
-          this.fable = pFable;
-          this.serviceTypes = [];
-
-          // A map of instantiated services
-          this.services = {};
-
-          // A map of the default instantiated service by type
-          this.defaultServices = {};
-
-          // A map of class constructors for services
-          this.serviceClasses = {};
-        }
-        addServiceType(pServiceType, pServiceClass) {
-          // Add the type to the list of types
-          this.serviceTypes.push(pServiceType);
-
-          // Add the container for instantiated services to go in
-          this.services[pServiceType] = {};
-          if (typeof pServiceClass == 'object' && pServiceClass.prototype instanceof libFableServiceBase) {
-            // Add the class to the list of classes
-            this.serviceClasses[pServiceType] = pServiceClass;
-          } else {
-            // Add the base class to the list of classes
-            this.serviceClasses[pServiceType] = libFableServiceBase;
-          }
-        }
-        instantiateServiceProvider(pServiceType, pOptions, pCustomServiceHash) {
-          // Instantiate the service
-          let tmpService = new this.serviceClasses[pServiceType](this.fable, pOptions, pCustomServiceHash);
-
-          // Add the service to the service map
-          this.services[pServiceType][tmpService.Hash] = tmpService;
-
-          // If this is the first service of this type, make it the default
-          if (!this.defaultServices.hasOwnProperty(pServiceType)) {
-            this.defaultServices[pServiceType] = tmpService;
-          }
-          return tmpService;
-        }
-        setDefaultServiceInstantiation(pServiceType, pServiceHash) {
-          if (this.services[pServiceType].hasOwnProperty(pServiceHash)) {
-            this.defaultServices[pServiceType] = this.services[pServiceType][pServiceHash];
-            return true;
-          }
-          return false;
-        }
-        getServiceByHash(pServiceHash) {
-          if (this.services.hasOwnProperty(pServiceHash)) {
-            return this.services[pServiceHash];
-          }
-          return false;
-        }
-      }
-      module.exports = FableService;
-      module.exports.FableServiceBase = libFableServiceBase;
-    }, {
-      "./Fable-ServiceProviderBase.js": 37
-    }],
-    37: [function (require, module, exports) {
-      /**
-      * Fable Service Base
-      * @license MIT
-      * @author <steven@velozo.com>
-      */
-
-      class FableServiceProviderBase {
-        constructor(pFable, pOptions, pServiceHash) {
-          this.fable = pFable;
-          this.options = pOptions;
-          this.serviceType = 'Unknown';
-          this.UUID = pFable.getUUID();
-          this.Hash = typeof pServiceHash === 'string' ? pServiceHash : `${this.UUID}`;
-        }
-      }
-      module.exports = FableServiceProviderBase;
-    }, {}],
-    38: [function (require, module, exports) {
-      class FableUtility {
+      class FableServiceTemplate extends libFableServiceBase {
         // Underscore and lodash have a behavior, _.template, which compiles a
         // string-based template with code snippets into simple executable pieces,
         // with the added twist of returning a precompiled function ready to go.
@@ -2248,8 +2164,9 @@
         //
         // This is an implementation of that.
         // TODO: Make this use precedent, add configuration, add debugging.
-        constructor(pFable, pTemplateText) {
-          this.fable = pFable;
+        constructor(pFable, pOptions, pServiceHash) {
+          super(pFable, pOptions, pServiceHash);
+          this.serviceType = 'Template';
 
           // These are the exact regex's used in lodash/underscore
           // TODO: Switch this to precedent
@@ -2281,15 +2198,8 @@
 
           // This is defined as such to underscore that it is a dynamic programming
           // function on this class.
-          this.renderFunction = () => {
-            return ``;
-          };
-        }
-
-        // Underscore and lodash have a behavior, _.extend, which merges objects.
-        // Now that es6 gives us this, use the native thingy.
-        extend(pDestinationObject, ...pSourceObjects) {
-          return Object.assign(pDestinationObject, ...pSourceObjects);
+          this.renderFunction = false;
+          this.templateString = false;
         }
         renderTemplate(pData) {
           return this.renderFunction(pData);
@@ -2321,16 +2231,105 @@
           return this.templateFunction();
         }
       }
-      module.exports = FableUtility;
+      module.exports = FableServiceTemplate;
+    }, {
+      "./Fable-ServiceProviderBase.js": 38
+    }],
+    37: [function (require, module, exports) {
+      /**
+      * Fable Application Services Management
+      * @license MIT
+      * @author <steven@velozo.com>
+      */
+
+      const libFableServiceBase = require('./Fable-ServiceProviderBase.js');
+      class FableService {
+        constructor(pFable) {
+          this.fable = pFable;
+          this.serviceTypes = [];
+
+          // A map of instantiated services
+          this.services = {};
+
+          // A map of the default instantiated service by type
+          this.defaultServices = {};
+
+          // A map of class constructors for services
+          this.serviceClasses = {};
+        }
+        addServiceType(pServiceType, pServiceClass) {
+          // Add the type to the list of types
+          this.serviceTypes.push(pServiceType);
+
+          // Add the container for instantiated services to go in
+          this.services[pServiceType] = {};
+          if (typeof pServiceClass == 'function' && pServiceClass.prototype instanceof libFableServiceBase) {
+            // Add the class to the list of classes
+            this.serviceClasses[pServiceType] = pServiceClass;
+          } else {
+            // Add the base class to the list of classes
+            this.serviceClasses[pServiceType] = libFableServiceBase;
+          }
+        }
+        instantiateServiceProvider(pServiceType, pOptions, pCustomServiceHash) {
+          // Instantiate the service
+          let tmpService = this.instantiateServiceProviderWithoutRegistration(pServiceType, pOptions, pCustomServiceHash);
+
+          // Add the service to the service map
+          this.services[pServiceType][tmpService.Hash] = tmpService;
+
+          // If this is the first service of this type, make it the default
+          if (!this.defaultServices.hasOwnProperty(pServiceType)) {
+            this.defaultServices[pServiceType] = tmpService;
+          }
+          return tmpService;
+        }
+
+        // Create a service provider but don't register it to live forever in fable.services
+        instantiateServiceProviderWithoutRegistration(pServiceType, pOptions, pCustomServiceHash) {
+          // Instantiate the service
+          let tmpService = new this.serviceClasses[pServiceType](this.fable, pOptions, pCustomServiceHash);
+          return tmpService;
+        }
+        setDefaultServiceInstantiation(pServiceType, pServiceHash) {
+          if (this.services[pServiceType].hasOwnProperty(pServiceHash)) {
+            this.defaultServices[pServiceType] = this.services[pServiceType][pServiceHash];
+            return true;
+          }
+          return false;
+        }
+      }
+      module.exports = FableService;
+      module.exports.ServiceProviderBase = libFableServiceBase;
+    }, {
+      "./Fable-ServiceProviderBase.js": 38
+    }],
+    38: [function (require, module, exports) {
+      /**
+      * Fable Service Base
+      * @license MIT
+      * @author <steven@velozo.com>
+      */
+
+      class FableServiceProviderBase {
+        constructor(pFable, pOptions, pServiceHash) {
+          this.fable = pFable;
+          this.options = typeof pOptions === 'object' ? pOptions : {};
+          this.serviceType = 'Unknown';
+          this.UUID = pFable.getUUID();
+          this.Hash = typeof pServiceHash === 'string' ? pServiceHash : `${this.UUID}`;
+        }
+      }
+      module.exports = FableServiceProviderBase;
     }, {}],
     39: [function (require, module, exports) {
-      const libFableUtilityTemplate = require('./Fable-Utility-Template.js');
       // TODO: These are still pretty big -- consider the smaller polyfills
       const libAsyncWaterfall = require('async.waterfall');
-      const libAsyncEachLimit = require('async.eachLimit');
+      const libAsyncEachLimit = require('async.eachlimit');
       class FableUtility {
         constructor(pFable) {
           this.fable = pFable;
+          this.templates = {};
 
           // These two functions are used extensively throughout
           this.waterfall = libAsyncWaterfall;
@@ -2347,8 +2346,15 @@
         // string-based template with code snippets into simple executable pieces,
         // with the added twist of returning a precompiled function ready to go.
         template(pTemplateText, pData) {
-          let tmpTemplate = new libFableUtilityTemplate(this.fable, pTemplateText);
+          let tmpTemplate = this.fable.serviceManager.instantiateServiceProviderWithoutRegistration('Template');
           return tmpTemplate.buildTemplateFunction(pTemplateText, pData);
+        }
+
+        // Build a template function from a template hash, and, register it with the service provider
+        buildHashedTemplate(pTemplateHash, pTemplateText, pData) {
+          let tmpTemplate = this.fable.serviceManager.instantiateServiceProvider('Template', {}, pTemplateHash);
+          this.templates[pTemplateHash] = tmpTemplate.buildTemplateFunction(pTemplateText, pData);
+          return this.templates[pTemplateHash];
         }
 
         // This is a safe, modern version of chunk from underscore
@@ -2372,8 +2378,7 @@
       }
       module.exports = FableUtility;
     }, {
-      "./Fable-Utility-Template.js": 38,
-      "async.eachLimit": 1,
+      "async.eachlimit": 1,
       "async.waterfall": 15
     }],
     40: [function (require, module, exports) {
@@ -2387,6 +2392,7 @@
       const libFableLog = require('fable-log');
       const libFableUtility = require('./Fable-Utility.js');
       const libFableServiceManager = require('./Fable-ServiceManager.js');
+      const libFableServiceTemplate = require('./Fable-Service-Template.js');
       const libFableOperation = require('./Fable-Operation.js');
       class Fable {
         constructor(pSettings) {
@@ -2409,6 +2415,9 @@
           // Location for Operation state
           this.Operations = {};
           this.serviceManager = new libFableServiceManager(this);
+          this.serviceManager.addServiceType('Template', libFableServiceTemplate);
+          this.services = this.serviceManager.services;
+          this.defaultServices = this.serviceManager.defaultServices;
         }
         get settings() {
           return this.settingsManager.settings;
@@ -2433,7 +2442,7 @@
           if (!this.Operations.hasOwnProperty(pOperationHash)) {
             return false;
           } else {
-            return this.pOperations[pOperationHash];
+            return this.Operations[pOperationHash];
           }
         }
       }
@@ -2449,7 +2458,8 @@
       module.exports.precedent = libFableSettings.precedent;
     }, {
       "./Fable-Operation.js": 35,
-      "./Fable-ServiceManager.js": 36,
+      "./Fable-Service-Template.js": 36,
+      "./Fable-ServiceManager.js": 37,
       "./Fable-Utility.js": 39,
       "fable-log": 22,
       "fable-settings": 25,
