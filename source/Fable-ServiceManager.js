@@ -47,7 +47,7 @@ class FableService
 	instantiateServiceProvider(pServiceType, pOptions, pCustomServiceHash)
 	{
 		// Instantiate the service
-		let tmpService = new this.serviceClasses[pServiceType](this.fable, pOptions, pCustomServiceHash);
+		let tmpService = this.instantiateServiceProviderWithoutRegistration(pServiceType, pOptions, pCustomServiceHash);
 
 		// Add the service to the service map
 		this.services[pServiceType][tmpService.Hash] = tmpService;
@@ -58,6 +58,14 @@ class FableService
 			this.defaultServices[pServiceType] = tmpService;
 		}
 
+		return tmpService;
+	}
+
+	// Create a service provider but don't register it to live forever in fable.services
+	instantiateServiceProviderWithoutRegistration(pServiceType, pOptions, pCustomServiceHash)
+	{
+		// Instantiate the service
+		let tmpService = new this.serviceClasses[pServiceType](this.fable, pOptions, pCustomServiceHash);
 		return tmpService;
 	}
 

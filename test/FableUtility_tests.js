@@ -65,6 +65,39 @@ suite
 				);
 				test
 				(
+					'Processed Template like Underscore Work With Variables and no scope leakage',
+					function()
+					{
+						testFable = new libFable();
+						let tmpTemplate = testFable.Utility.template('There are so many of these things (<%= Count %> to be exact)....');
+						Expect(tmpTemplate).to.be.a('function');
+						Expect(tmpTemplate({Count:1000})).to.equal('There are so many of these things (1000 to be exact)....');
+						let tmpOtherTemplate = testFable.Utility.template('Things count: <%= Count %>');
+						Expect(tmpOtherTemplate).to.be.a('function');
+						Expect(tmpOtherTemplate({Count:600})).to.equal('Things count: 600');
+						Expect(tmpTemplate({Count:256})).to.equal('There are so many of these things (256 to be exact)....');
+					}
+				);
+				test
+				(
+					'Processed Template like Underscore Work With Variables and no scope leakage',
+					function()
+					{
+						testFable = new libFable();
+						testFable.Utility.buildHashedTemplate('HeadLine', '<h1><%= TitleText %> Page</h1>');
+						testFable.Utility.buildHashedTemplate('Slogan', '<p>Some people, like <%= Name %>, have all the fun.</p>');
+						
+						// Access the low level service render function
+						Expect(testFable.services.Template.HeadLine.renderFunction({TitleText:'Test'})).to.equal('<h1>Test Page</h1>');
+						Expect(testFable.services.Template.Slogan.renderFunction({Name:'Jim'})).to.equal('<p>Some people, like Jim, have all the fun.</p>');
+
+						// Use the high level simpler one
+						Expect(testFable.Utility.templates.HeadLine({TitleText:'A New'})).to.equal('<h1>A New Page</h1>');
+						Expect(testFable.Utility.templates.Slogan({Name:'Bob'})).to.equal('<p>Some people, like Bob, have all the fun.</p>');
+					}
+				);
+				test
+				(
 					'Processed Template with default scope',
 					function()
 					{

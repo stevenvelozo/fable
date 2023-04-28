@@ -10,7 +10,7 @@ class FableServiceProviderBase
 	{
 		this.fable = pFable;
 
-		this.options = pOptions;
+		this.options = (typeof(pOptions) === 'object') ? pOptions : {};
 
         this.serviceType = 'Unknown';
 

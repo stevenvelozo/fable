@@ -31,6 +31,8 @@ class FableOperation
 	{
 		this.fable = pFable;
 
+		this.name = pOperationName;
+
 		this.state = JSON.parse(_OperationStatePrototype);
 
 		this.state.Metadata.GUID = this.fable.getUUID();

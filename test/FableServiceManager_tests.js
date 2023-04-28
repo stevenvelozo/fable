@@ -114,6 +114,23 @@ suite
 
                 test
                 (
+                    'Instantiate a service without registering it to Fable',
+                    function()
+                    {
+                        let testFable = new libFable({});
+
+                        testFable.serviceManager.addServiceType('SimpleService', SimpleService);
+
+                        let tmpService = testFable.serviceManager.instantiateServiceProviderWithoutRegistration('SimpleService', {SomeOption: true}, 'SimpleService-99');
+
+                        Expect(testFable.services.SimpleService['SimpleService-99']).to.be.an('undefined');
+
+                        Expect(tmpService).to.be.an('object');
+                    }
+                );
+
+                test
+                (
                     'Change the default service provider',
                     function()
                     {

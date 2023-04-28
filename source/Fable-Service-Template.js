@@ -48,8 +48,7 @@ class FableServiceTemplate extends libFableServiceBase
 
 		// This is defined as such to underscore that it is a dynamic programming
 		// function on this class.
-		this.renderFunction = ()=>{return ``};
-
+		this.renderFunction = false;
         this.templateString = false;
 	}
 

@@ -8,6 +8,8 @@ class FableUtility
 	{
 		this.fable = pFable;
 
+		this.templates = {};
+
 		// These two functions are used extensively throughout
 		this.waterfall = libAsyncWaterfall;
 		this.eachLimit = libAsyncEachLimit;
@@ -25,14 +27,19 @@ class FableUtility
 	// with the added twist of returning a precompiled function ready to go.
 	template(pTemplateText, pData)
 	{
-		let tmpTemplate = this.fable.serviceManager.defaultServices.Template;
-
-		if (!tmpTemplate)
-		{
-			tmpTemplate = this.fable.serviceManager.instantiateServiceProvider('Template');
-		}
+		let tmpTemplate = this.fable.serviceManager.instantiateServiceProviderWithoutRegistration('Template');
 
 		return tmpTemplate.buildTemplateFunction(pTemplateText, pData);
+	}
+
+	// Build a template function from a template hash, and, register it with the service provider
+	buildHashedTemplate(pTemplateHash, pTemplateText, pData)
+	{
+		let tmpTemplate = this.fable.serviceManager.instantiateServiceProvider('Template', {}, pTemplateHash);
+
+		this.templates[pTemplateHash] = tmpTemplate.buildTemplateFunction(pTemplateText, pData);
+
+		return this.templates[pTemplateHash];
 	}
 
 	// This is a safe, modern version of chunk from underscore

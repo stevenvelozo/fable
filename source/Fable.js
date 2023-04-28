@@ -43,6 +43,9 @@ class Fable
 		this.serviceManager = new libFableServiceManager(this);
 
 		this.serviceManager.addServiceType('Template', libFableServiceTemplate);
+
+		this.services = this.serviceManager.services;
+		this.defaultServices = this.serviceManager.defaultServices;
 	}
 
 	get settings()
@@ -85,7 +88,7 @@ class Fable
 		}
 		else
 		{
-			return this.pOperations[pOperationHash];
+			return this.Operations[pOperationHash];
 		}
 	}
 }
