@@ -1,7 +1,6 @@
-const libFableUtilityTemplate = require('./Fable-Utility-Template.js');
 // TODO: These are still pretty big -- consider the smaller polyfills
 const libAsyncWaterfall = require('async.waterfall');
-const libAsyncEachLimit = require('async.eachLimit');
+const libAsyncEachLimit = require('async.eachlimit');
 
 class FableUtility
 {
@@ -26,7 +25,12 @@ class FableUtility
 	// with the added twist of returning a precompiled function ready to go.
 	template(pTemplateText, pData)
 	{
-		let tmpTemplate = new libFableUtilityTemplate(this.fable, pTemplateText);
+		let tmpTemplate = this.fable.serviceManager.defaultServices.Template;
+
+		if (!tmpTemplate)
+		{
+			tmpTemplate = this.fable.serviceManager.instantiateServiceProvider('Template');
+		}
 
 		return tmpTemplate.buildTemplateFunction(pTemplateText, pData);
 	}

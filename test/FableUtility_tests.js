@@ -58,9 +58,19 @@ suite
 					function()
 					{
 						testFable = new libFable();
-						let tmpTemplate = testFable.Utility.template('There are <%= Count %> things....');
+						let tmpTemplate = testFable.Utility.template('There // %> are \\ */ /* <%= Count %> things....');
 						Expect(tmpTemplate).to.be.a('function');
-						Expect(tmpTemplate({Count:1000})).to.equal('There are 1000 things....');
+						Expect(tmpTemplate({Count:1000})).to.equal('There // %> are \\ */ /* 1000 things....');
+					}
+				);
+				test
+				(
+					'Processed Template with default scope',
+					function()
+					{
+						testFable = new libFable();
+						let tmpTemplate = testFable.Utility.template('There are <%= Count %> things....', {Count:1000});
+						Expect(tmpTemplate).to.equal('There are 1000 things....');
 					}
 				);
 				test

@@ -32,7 +32,7 @@ class FableService
 		// Add the container for instantiated services to go in
 		this.services[pServiceType] = {};
 
-		if (typeof(pServiceClass) == 'object' && pServiceClass.prototype instanceof libFableServiceBase)
+		if ((typeof(pServiceClass) == 'function') && (pServiceClass.prototype instanceof libFableServiceBase))
 		{
 			// Add the class to the list of classes
 			this.serviceClasses[pServiceType] = pServiceClass;
@@ -71,18 +71,8 @@ class FableService
 
 		return false;
 	}
-
-	getServiceByHash(pServiceHash)
-	{
-		if (this.services.hasOwnProperty(pServiceHash))
-		{
-			return this.services[pServiceHash];
-		}
-
-		return false;
-	}
 }
 
 module.exports = FableService;
 
-module.exports.FableServiceBase = libFableServiceBase;
+module.exports.ServiceProviderBase = libFableServiceBase;

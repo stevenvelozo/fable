@@ -10,6 +10,8 @@ const libFableLog = require('fable-log');
 const libFableUtility = require('./Fable-Utility.js');
 const libFableServiceManager = require('./Fable-ServiceManager.js');
 
+const libFableServiceTemplate = require('./Fable-Service-Template.js');
+
 const libFableOperation = require('./Fable-Operation.js');
 
 class Fable
@@ -39,6 +41,8 @@ class Fable
 		this.Operations = {};
 
 		this.serviceManager = new libFableServiceManager(this);
+
+		this.serviceManager.addServiceType('Template', libFableServiceTemplate);
 	}
 
 	get settings()
