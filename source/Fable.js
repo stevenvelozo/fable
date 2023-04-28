@@ -7,7 +7,8 @@ const libFableSettings = require('fable-settings');
 const libFableUUID = require('fable-uuid');
 const libFableLog = require('fable-log');
 
-const libFableUtility = require('./Fable-Utility.js')
+const libFableUtility = require('./Fable-Utility.js');
+const libFableServiceManager = require('./Fable-ServiceManager.js');
 
 const libFableOperation = require('./Fable-Operation.js');
 
@@ -36,6 +37,8 @@ class Fable
 
 		// Location for Operation state
 		this.Operations = {};
+
+		this.serviceManager = new libFableServiceManager(this);
 	}
 
 	get settings()
@@ -93,5 +96,6 @@ module.exports = Fable;
 module.exports.new = autoConstruct;
 
 module.exports.LogProviderBase = libFableLog.LogProviderBase;
+module.exports.ServiceProviderBase = libFableServiceManager.ServiceProviderBase;
 
 module.exports.precedent = libFableSettings.precedent;

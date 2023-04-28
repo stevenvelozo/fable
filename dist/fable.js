@@ -47,701 +47,283 @@
     1: [function (require, module, exports) {
       'use strict';
 
-      Object.defineProperty(exports, "__esModule", {
-        value: true
-      });
-      exports.default = asyncify;
-      var _initialParams = require('./internal/initialParams.js');
-      var _initialParams2 = _interopRequireDefault(_initialParams);
-      var _setImmediate = require('./internal/setImmediate.js');
-      var _setImmediate2 = _interopRequireDefault(_setImmediate);
-      var _wrapAsync = require('./internal/wrapAsync.js');
-      function _interopRequireDefault(obj) {
-        return obj && obj.__esModule ? obj : {
-          default: obj
-        };
-      }
-
-      /**
-       * Take a sync function and make it async, passing its return value to a
-       * callback. This is useful for plugging sync functions into a waterfall,
-       * series, or other async functions. Any arguments passed to the generated
-       * function will be passed to the wrapped function (except for the final
-       * callback argument). Errors thrown will be passed to the callback.
-       *
-       * If the function passed to `asyncify` returns a Promise, that promises's
-       * resolved/rejected state will be used to call the callback, rather than simply
-       * the synchronous return value.
-       *
-       * This also means you can asyncify ES2017 `async` functions.
-       *
-       * @name asyncify
-       * @static
-       * @memberOf module:Utils
-       * @method
-       * @alias wrapSync
-       * @category Util
-       * @param {Function} func - The synchronous function, or Promise-returning
-       * function to convert to an {@link AsyncFunction}.
-       * @returns {AsyncFunction} An asynchronous wrapper of the `func`. To be
-       * invoked with `(args..., callback)`.
-       * @example
-       *
-       * // passing a regular synchronous function
-       * async.waterfall([
-       *     async.apply(fs.readFile, filename, "utf8"),
-       *     async.asyncify(JSON.parse),
-       *     function (data, next) {
-       *         // data is the result of parsing the text.
-       *         // If there was a parsing error, it would have been caught.
-       *     }
-       * ], callback);
-       *
-       * // passing a function returning a promise
-       * async.waterfall([
-       *     async.apply(fs.readFile, filename, "utf8"),
-       *     async.asyncify(function (contents) {
-       *         return db.model.create(contents);
-       *     }),
-       *     function (model, next) {
-       *         // `model` is the instantiated model object.
-       *         // If there was an error, this function would be skipped.
-       *     }
-       * ], callback);
-       *
-       * // es2017 example, though `asyncify` is not needed if your JS environment
-       * // supports async functions out of the box
-       * var q = async.queue(async.asyncify(async function(file) {
-       *     var intermediateStep = await processFile(file);
-       *     return await somePromise(intermediateStep)
-       * }));
-       *
-       * q.push(files);
-       */
-      function asyncify(func) {
-        if ((0, _wrapAsync.isAsync)(func)) {
-          return function (...args /*, callback*/) {
-            const callback = args.pop();
-            const promise = func.apply(this, args);
-            return handlePromise(promise, callback);
-          };
-        }
-        return (0, _initialParams2.default)(function (args, callback) {
-          var result;
-          try {
-            result = func.apply(this, args);
-          } catch (e) {
-            return callback(e);
-          }
-          // if result is Promise object
-          if (result && typeof result.then === 'function') {
-            return handlePromise(result, callback);
-          } else {
-            callback(null, result);
-          }
-        });
-      }
-      function handlePromise(promise, callback) {
-        return promise.then(value => {
-          invokeCallback(callback, null, value);
-        }, err => {
-          invokeCallback(callback, err && err.message ? err : new Error(err));
-        });
-      }
-      function invokeCallback(callback, error, value) {
-        try {
-          callback(error, value);
-        } catch (err) {
-          (0, _setImmediate2.default)(e => {
-            throw e;
-          }, err);
-        }
-      }
-      module.exports = exports['default'];
+      var eachOfLimit = require('async.util.eachoflimit');
+      var withoutIndex = require('async.util.withoutindex');
+      module.exports = function eachLimit(arr, limit, iterator, cb) {
+        return eachOfLimit(limit)(arr, withoutIndex(iterator), cb);
+      };
     }, {
-      "./internal/initialParams.js": 8,
-      "./internal/setImmediate.js": 13,
-      "./internal/wrapAsync.js": 15
+      "async.util.eachoflimit": 3,
+      "async.util.withoutindex": 14
     }],
     2: [function (require, module, exports) {
       'use strict';
 
-      Object.defineProperty(exports, "__esModule", {
-        value: true
-      });
-      var _eachOfLimit = require('./internal/eachOfLimit.js');
-      var _eachOfLimit2 = _interopRequireDefault(_eachOfLimit);
-      var _withoutIndex = require('./internal/withoutIndex.js');
-      var _withoutIndex2 = _interopRequireDefault(_withoutIndex);
-      var _wrapAsync = require('./internal/wrapAsync.js');
-      var _wrapAsync2 = _interopRequireDefault(_wrapAsync);
-      var _awaitify = require('./internal/awaitify.js');
-      var _awaitify2 = _interopRequireDefault(_awaitify);
-      function _interopRequireDefault(obj) {
-        return obj && obj.__esModule ? obj : {
-          default: obj
-        };
-      }
-
-      /**
-       * The same as [`each`]{@link module:Collections.each} but runs a maximum of `limit` async operations at a time.
-       *
-       * @name eachLimit
-       * @static
-       * @memberOf module:Collections
-       * @method
-       * @see [async.each]{@link module:Collections.each}
-       * @alias forEachLimit
-       * @category Collection
-       * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-       * @param {number} limit - The maximum number of async operations at a time.
-       * @param {AsyncFunction} iteratee - An async function to apply to each item in
-       * `coll`.
-       * The array index is not passed to the iteratee.
-       * If you need the index, use `eachOfLimit`.
-       * Invoked with (item, callback).
-       * @param {Function} [callback] - A callback which is called when all
-       * `iteratee` functions have finished, or an error occurs. Invoked with (err).
-       * @returns {Promise} a promise, if a callback is omitted
-       */
-      function eachLimit(coll, limit, iteratee, callback) {
-        return (0, _eachOfLimit2.default)(limit)(coll, (0, _withoutIndex2.default)((0, _wrapAsync2.default)(iteratee)), callback);
-      }
-      exports.default = (0, _awaitify2.default)(eachLimit, 4);
-      module.exports = exports['default'];
-    }, {
-      "./internal/awaitify.js": 4,
-      "./internal/eachOfLimit.js": 6,
-      "./internal/withoutIndex.js": 14,
-      "./internal/wrapAsync.js": 15
-    }],
+      module.exports = function (tasks) {
+        function makeCallback(index) {
+          function fn() {
+            if (tasks.length) {
+              tasks[index].apply(null, arguments);
+            }
+            return fn.next();
+          }
+          fn.next = function () {
+            return index < tasks.length - 1 ? makeCallback(index + 1) : null;
+          };
+          return fn;
+        }
+        return makeCallback(0);
+      };
+    }, {}],
     3: [function (require, module, exports) {
-      'use strict';
-
-      Object.defineProperty(exports, "__esModule", {
-        value: true
-      });
-      exports.default = asyncEachOfLimit;
-      var _breakLoop = require('./breakLoop.js');
-      var _breakLoop2 = _interopRequireDefault(_breakLoop);
-      function _interopRequireDefault(obj) {
-        return obj && obj.__esModule ? obj : {
-          default: obj
-        };
-      }
-
-      // for async generators
-      function asyncEachOfLimit(generator, limit, iteratee, callback) {
-        let done = false;
-        let canceled = false;
-        let awaiting = false;
-        let running = 0;
-        let idx = 0;
-        function replenish() {
-          //console.log('replenish')
-          if (running >= limit || awaiting || done) return;
-          //console.log('replenish awaiting')
-          awaiting = true;
-          generator.next().then(({
-            value,
-            done: iterDone
-          }) => {
-            //console.log('got value', value)
-            if (canceled || done) return;
-            awaiting = false;
-            if (iterDone) {
-              done = true;
-              if (running <= 0) {
-                //console.log('done nextCb')
-                callback(null);
-              }
-              return;
-            }
-            running++;
-            iteratee(value, idx, iterateeCallback);
-            idx++;
-            replenish();
-          }).catch(handleError);
-        }
-        function iterateeCallback(err, result) {
-          //console.log('iterateeCallback')
-          running -= 1;
-          if (canceled) return;
-          if (err) return handleError(err);
-          if (err === false) {
-            done = true;
-            canceled = true;
-            return;
-          }
-          if (result === _breakLoop2.default || done && running <= 0) {
-            done = true;
-            //console.log('done iterCb')
-            return callback(null);
-          }
-          replenish();
-        }
-        function handleError(err) {
-          if (canceled) return;
-          awaiting = false;
-          done = true;
-          callback(err);
-        }
-        replenish();
-      }
-      module.exports = exports['default'];
-    }, {
-      "./breakLoop.js": 5
-    }],
-    4: [function (require, module, exports) {
-      'use strict';
-
-      Object.defineProperty(exports, "__esModule", {
-        value: true
-      });
-      exports.default = awaitify;
-      // conditionally promisify a function.
-      // only return a promise if a callback is omitted
-      function awaitify(asyncFn, arity = asyncFn.length) {
-        if (!arity) throw new Error('arity is undefined');
-        function awaitable(...args) {
-          if (typeof args[arity - 1] === 'function') {
-            return asyncFn.apply(this, args);
-          }
-          return new Promise((resolve, reject) => {
-            args[arity - 1] = (err, ...cbArgs) => {
-              if (err) return reject(err);
-              resolve(cbArgs.length > 1 ? cbArgs : cbArgs[0]);
-            };
-            asyncFn.apply(this, args);
-          });
-        }
-        return awaitable;
-      }
-      module.exports = exports['default'];
-    }, {}],
-    5: [function (require, module, exports) {
-      "use strict";
-
-      Object.defineProperty(exports, "__esModule", {
-        value: true
-      });
-      // A temporary value used to identify if the loop should be broken.
-      // See #1064, #1293
-      const breakLoop = {};
-      exports.default = breakLoop;
-      module.exports = exports["default"];
-    }, {}],
-    6: [function (require, module, exports) {
-      'use strict';
-
-      Object.defineProperty(exports, "__esModule", {
-        value: true
-      });
-      var _once = require('./once.js');
-      var _once2 = _interopRequireDefault(_once);
-      var _iterator = require('./iterator.js');
-      var _iterator2 = _interopRequireDefault(_iterator);
-      var _onlyOnce = require('./onlyOnce.js');
-      var _onlyOnce2 = _interopRequireDefault(_onlyOnce);
-      var _wrapAsync = require('./wrapAsync.js');
-      var _asyncEachOfLimit = require('./asyncEachOfLimit.js');
-      var _asyncEachOfLimit2 = _interopRequireDefault(_asyncEachOfLimit);
-      var _breakLoop = require('./breakLoop.js');
-      var _breakLoop2 = _interopRequireDefault(_breakLoop);
-      function _interopRequireDefault(obj) {
-        return obj && obj.__esModule ? obj : {
-          default: obj
-        };
-      }
-      exports.default = limit => {
-        return (obj, iteratee, callback) => {
-          callback = (0, _once2.default)(callback);
+      var once = require('async.util.once');
+      var noop = require('async.util.noop');
+      var onlyOnce = require('async.util.onlyonce');
+      var keyIterator = require('async.util.keyiterator');
+      module.exports = function eachOfLimit(limit) {
+        return function (obj, iterator, cb) {
+          cb = once(cb || noop);
+          obj = obj || [];
+          var nextKey = keyIterator(obj);
           if (limit <= 0) {
-            throw new RangeError('concurrency limit cannot be less than 1');
+            return cb(null);
           }
-          if (!obj) {
-            return callback(null);
-          }
-          if ((0, _wrapAsync.isAsyncGenerator)(obj)) {
-            return (0, _asyncEachOfLimit2.default)(obj, limit, iteratee, callback);
-          }
-          if ((0, _wrapAsync.isAsyncIterable)(obj)) {
-            return (0, _asyncEachOfLimit2.default)(obj[Symbol.asyncIterator](), limit, iteratee, callback);
-          }
-          var nextElem = (0, _iterator2.default)(obj);
           var done = false;
-          var canceled = false;
           var running = 0;
-          var looping = false;
-          function iterateeCallback(err, value) {
-            if (canceled) return;
-            running -= 1;
-            if (err) {
-              done = true;
-              callback(err);
-            } else if (err === false) {
-              done = true;
-              canceled = true;
-            } else if (value === _breakLoop2.default || done && running <= 0) {
-              done = true;
-              return callback(null);
-            } else if (!looping) {
-              replenish();
+          var errored = false;
+          (function replenish() {
+            if (done && running <= 0) {
+              return cb(null);
             }
-          }
-          function replenish() {
-            looping = true;
-            while (running < limit && !done) {
-              var elem = nextElem();
-              if (elem === null) {
+            while (running < limit && !errored) {
+              var key = nextKey();
+              if (key === null) {
                 done = true;
                 if (running <= 0) {
-                  callback(null);
+                  cb(null);
                 }
                 return;
               }
               running += 1;
-              iteratee(elem.value, elem.key, (0, _onlyOnce2.default)(iterateeCallback));
+              iterator(obj[key], key, onlyOnce(function (err) {
+                running -= 1;
+                if (err) {
+                  cb(err);
+                  errored = true;
+                } else {
+                  replenish();
+                }
+              }));
             }
-            looping = false;
-          }
-          replenish();
+          })();
         };
       };
-      module.exports = exports['default'];
     }, {
-      "./asyncEachOfLimit.js": 3,
-      "./breakLoop.js": 5,
-      "./iterator.js": 10,
-      "./once.js": 11,
-      "./onlyOnce.js": 12,
-      "./wrapAsync.js": 15
+      "async.util.keyiterator": 7,
+      "async.util.noop": 9,
+      "async.util.once": 10,
+      "async.util.onlyonce": 11
+    }],
+    4: [function (require, module, exports) {
+      'use strict';
+
+      var setImmediate = require('async.util.setimmediate');
+      var restParam = require('async.util.restparam');
+      module.exports = function (fn) {
+        return restParam(function (args) {
+          var callback = args.pop();
+          args.push(function () {
+            var innerArgs = arguments;
+            if (sync) {
+              setImmediate(function () {
+                callback.apply(null, innerArgs);
+              });
+            } else {
+              callback.apply(null, innerArgs);
+            }
+          });
+          var sync = true;
+          fn.apply(this, args);
+          sync = false;
+        });
+      };
+    }, {
+      "async.util.restparam": 12,
+      "async.util.setimmediate": 13
+    }],
+    5: [function (require, module, exports) {
+      'use strict';
+
+      module.exports = Array.isArray || function isArray(obj) {
+        return Object.prototype.toString.call(obj) === '[object Array]';
+      };
+    }, {}],
+    6: [function (require, module, exports) {
+      'use strict';
+
+      var isArray = require('async.util.isarray');
+      module.exports = function isArrayLike(arr) {
+        return isArray(arr) ||
+        // has a positive integer length property
+        typeof arr.length === 'number' && arr.length >= 0 && arr.length % 1 === 0;
+      };
+    }, {
+      "async.util.isarray": 5
     }],
     7: [function (require, module, exports) {
-      "use strict";
+      'use strict';
 
-      Object.defineProperty(exports, "__esModule", {
-        value: true
-      });
-      exports.default = function (coll) {
-        return coll[Symbol.iterator] && coll[Symbol.iterator]();
+      var _keys = require('async.util.keys');
+      var isArrayLike = require('async.util.isarraylike');
+      module.exports = function keyIterator(coll) {
+        var i = -1;
+        var len;
+        var keys;
+        if (isArrayLike(coll)) {
+          len = coll.length;
+          return function next() {
+            i++;
+            return i < len ? i : null;
+          };
+        } else {
+          keys = _keys(coll);
+          len = keys.length;
+          return function next() {
+            i++;
+            return i < len ? keys[i] : null;
+          };
+        }
       };
-      module.exports = exports["default"];
-    }, {}],
+    }, {
+      "async.util.isarraylike": 6,
+      "async.util.keys": 8
+    }],
     8: [function (require, module, exports) {
-      "use strict";
+      'use strict';
 
-      Object.defineProperty(exports, "__esModule", {
-        value: true
-      });
-      exports.default = function (fn) {
-        return function (...args /*, callback*/) {
-          var callback = args.pop();
-          return fn.call(this, args, callback);
-        };
+      module.exports = Object.keys || function keys(obj) {
+        var _keys = [];
+        for (var k in obj) {
+          if (obj.hasOwnProperty(k)) {
+            _keys.push(k);
+          }
+        }
+        return _keys;
       };
-      module.exports = exports["default"];
     }, {}],
     9: [function (require, module, exports) {
       'use strict';
 
-      Object.defineProperty(exports, "__esModule", {
-        value: true
-      });
-      exports.default = isArrayLike;
-      function isArrayLike(value) {
-        return value && typeof value.length === 'number' && value.length >= 0 && value.length % 1 === 0;
-      }
-      module.exports = exports['default'];
+      module.exports = function noop() {};
     }, {}],
     10: [function (require, module, exports) {
       'use strict';
 
-      Object.defineProperty(exports, "__esModule", {
-        value: true
-      });
-      exports.default = createIterator;
-      var _isArrayLike = require('./isArrayLike.js');
-      var _isArrayLike2 = _interopRequireDefault(_isArrayLike);
-      var _getIterator = require('./getIterator.js');
-      var _getIterator2 = _interopRequireDefault(_getIterator);
-      function _interopRequireDefault(obj) {
-        return obj && obj.__esModule ? obj : {
-          default: obj
-        };
-      }
-      function createArrayIterator(coll) {
-        var i = -1;
-        var len = coll.length;
-        return function next() {
-          return ++i < len ? {
-            value: coll[i],
-            key: i
-          } : null;
-        };
-      }
-      function createES2015Iterator(iterator) {
-        var i = -1;
-        return function next() {
-          var item = iterator.next();
-          if (item.done) return null;
-          i++;
-          return {
-            value: item.value,
-            key: i
-          };
-        };
-      }
-      function createObjectIterator(obj) {
-        var okeys = obj ? Object.keys(obj) : [];
-        var i = -1;
-        var len = okeys.length;
-        return function next() {
-          var key = okeys[++i];
-          if (key === '__proto__') {
-            return next();
-          }
-          return i < len ? {
-            value: obj[key],
-            key
-          } : null;
-        };
-      }
-      function createIterator(coll) {
-        if ((0, _isArrayLike2.default)(coll)) {
-          return createArrayIterator(coll);
-        }
-        var iterator = (0, _getIterator2.default)(coll);
-        return iterator ? createES2015Iterator(iterator) : createObjectIterator(coll);
-      }
-      module.exports = exports['default'];
-    }, {
-      "./getIterator.js": 7,
-      "./isArrayLike.js": 9
-    }],
-    11: [function (require, module, exports) {
-      "use strict";
-
-      Object.defineProperty(exports, "__esModule", {
-        value: true
-      });
-      exports.default = once;
-      function once(fn) {
-        function wrapper(...args) {
+      module.exports = function once(fn) {
+        return function () {
           if (fn === null) return;
-          var callFn = fn;
+          fn.apply(this, arguments);
           fn = null;
-          callFn.apply(this, args);
-        }
-        Object.assign(wrapper, fn);
-        return wrapper;
-      }
-      module.exports = exports["default"];
+        };
+      };
+    }, {}],
+    11: [function (require, module, exports) {
+      'use strict';
+
+      module.exports = function only_once(fn) {
+        return function () {
+          if (fn === null) throw new Error('Callback was already called.');
+          fn.apply(this, arguments);
+          fn = null;
+        };
+      };
     }, {}],
     12: [function (require, module, exports) {
-      "use strict";
+      'use strict';
 
-      Object.defineProperty(exports, "__esModule", {
-        value: true
-      });
-      exports.default = onlyOnce;
-      function onlyOnce(fn) {
-        return function (...args) {
-          if (fn === null) throw new Error("Callback was already called.");
-          var callFn = fn;
-          fn = null;
-          callFn.apply(this, args);
+      module.exports = function restParam(func, startIndex) {
+        startIndex = startIndex == null ? func.length - 1 : +startIndex;
+        return function () {
+          var length = Math.max(arguments.length - startIndex, 0);
+          var rest = new Array(length);
+          for (var index = 0; index < length; index++) {
+            rest[index] = arguments[index + startIndex];
+          }
+          switch (startIndex) {
+            case 0:
+              return func.call(this, rest);
+            case 1:
+              return func.call(this, arguments[0], rest);
+          }
         };
-      }
-      module.exports = exports["default"];
+      };
     }, {}],
     13: [function (require, module, exports) {
-      (function (process, setImmediate) {
+      (function (setImmediate) {
         (function () {
           'use strict';
 
-          Object.defineProperty(exports, "__esModule", {
-            value: true
-          });
-          exports.fallback = fallback;
-          exports.wrap = wrap;
-          /* istanbul ignore file */
-
-          var hasQueueMicrotask = exports.hasQueueMicrotask = typeof queueMicrotask === 'function' && queueMicrotask;
-          var hasSetImmediate = exports.hasSetImmediate = typeof setImmediate === 'function' && setImmediate;
-          var hasNextTick = exports.hasNextTick = typeof process === 'object' && typeof process.nextTick === 'function';
-          function fallback(fn) {
+          var _setImmediate = typeof setImmediate === 'function' && setImmediate;
+          var fallback = function (fn) {
             setTimeout(fn, 0);
-          }
-          function wrap(defer) {
-            return (fn, ...args) => defer(() => fn(...args));
-          }
-          var _defer;
-          if (hasQueueMicrotask) {
-            _defer = queueMicrotask;
-          } else if (hasSetImmediate) {
-            _defer = setImmediate;
-          } else if (hasNextTick) {
-            _defer = process.nextTick;
-          } else {
-            _defer = fallback;
-          }
-          exports.default = wrap(_defer);
+          };
+          module.exports = function setImmediate(fn) {
+            // not a direct alias for IE10 compatibility
+            return (_setImmediate || fallback)(fn);
+          };
         }).call(this);
-      }).call(this, require('_process'), require("timers").setImmediate);
+      }).call(this, require("timers").setImmediate);
     }, {
-      "_process": 30,
-      "timers": 31
+      "timers": 33
     }],
     14: [function (require, module, exports) {
-      "use strict";
+      'use strict';
 
-      Object.defineProperty(exports, "__esModule", {
-        value: true
-      });
-      exports.default = _withoutIndex;
-      function _withoutIndex(iteratee) {
-        return (value, index, callback) => iteratee(value, callback);
-      }
-      module.exports = exports["default"];
+      module.exports = function withoutIndex(iterator) {
+        return function (value, index, callback) {
+          return iterator(value, callback);
+        };
+      };
     }, {}],
     15: [function (require, module, exports) {
       'use strict';
 
-      Object.defineProperty(exports, "__esModule", {
-        value: true
-      });
-      exports.isAsyncIterable = exports.isAsyncGenerator = exports.isAsync = undefined;
-      var _asyncify = require('../asyncify.js');
-      var _asyncify2 = _interopRequireDefault(_asyncify);
-      function _interopRequireDefault(obj) {
-        return obj && obj.__esModule ? obj : {
-          default: obj
-        };
-      }
-      function isAsync(fn) {
-        return fn[Symbol.toStringTag] === 'AsyncFunction';
-      }
-      function isAsyncGenerator(fn) {
-        return fn[Symbol.toStringTag] === 'AsyncGenerator';
-      }
-      function isAsyncIterable(obj) {
-        return typeof obj[Symbol.asyncIterator] === 'function';
-      }
-      function wrapAsync(asyncFn) {
-        if (typeof asyncFn !== 'function') throw new Error('expected a function');
-        return isAsync(asyncFn) ? (0, _asyncify2.default)(asyncFn) : asyncFn;
-      }
-      exports.default = wrapAsync;
-      exports.isAsync = isAsync;
-      exports.isAsyncGenerator = isAsyncGenerator;
-      exports.isAsyncIterable = isAsyncIterable;
-    }, {
-      "../asyncify.js": 1
-    }],
-    16: [function (require, module, exports) {
-      'use strict';
-
-      Object.defineProperty(exports, "__esModule", {
-        value: true
-      });
-      var _once = require('./internal/once.js');
-      var _once2 = _interopRequireDefault(_once);
-      var _onlyOnce = require('./internal/onlyOnce.js');
-      var _onlyOnce2 = _interopRequireDefault(_onlyOnce);
-      var _wrapAsync = require('./internal/wrapAsync.js');
-      var _wrapAsync2 = _interopRequireDefault(_wrapAsync);
-      var _awaitify = require('./internal/awaitify.js');
-      var _awaitify2 = _interopRequireDefault(_awaitify);
-      function _interopRequireDefault(obj) {
-        return obj && obj.__esModule ? obj : {
-          default: obj
-        };
-      }
-
-      /**
-       * Runs the `tasks` array of functions in series, each passing their results to
-       * the next in the array. However, if any of the `tasks` pass an error to their
-       * own callback, the next function is not executed, and the main `callback` is
-       * immediately called with the error.
-       *
-       * @name waterfall
-       * @static
-       * @memberOf module:ControlFlow
-       * @method
-       * @category Control Flow
-       * @param {Array} tasks - An array of [async functions]{@link AsyncFunction}
-       * to run.
-       * Each function should complete with any number of `result` values.
-       * The `result` values will be passed as arguments, in order, to the next task.
-       * @param {Function} [callback] - An optional callback to run once all the
-       * functions have completed. This will be passed the results of the last task's
-       * callback. Invoked with (err, [results]).
-       * @returns {Promise} a promise, if a callback is omitted
-       * @example
-       *
-       * async.waterfall([
-       *     function(callback) {
-       *         callback(null, 'one', 'two');
-       *     },
-       *     function(arg1, arg2, callback) {
-       *         // arg1 now equals 'one' and arg2 now equals 'two'
-       *         callback(null, 'three');
-       *     },
-       *     function(arg1, callback) {
-       *         // arg1 now equals 'three'
-       *         callback(null, 'done');
-       *     }
-       * ], function (err, result) {
-       *     // result now equals 'done'
-       * });
-       *
-       * // Or, with named functions:
-       * async.waterfall([
-       *     myFirstFunction,
-       *     mySecondFunction,
-       *     myLastFunction,
-       * ], function (err, result) {
-       *     // result now equals 'done'
-       * });
-       * function myFirstFunction(callback) {
-       *     callback(null, 'one', 'two');
-       * }
-       * function mySecondFunction(arg1, arg2, callback) {
-       *     // arg1 now equals 'one' and arg2 now equals 'two'
-       *     callback(null, 'three');
-       * }
-       * function myLastFunction(arg1, callback) {
-       *     // arg1 now equals 'three'
-       *     callback(null, 'done');
-       * }
-       */
-      function waterfall(tasks, callback) {
-        callback = (0, _once2.default)(callback);
-        if (!Array.isArray(tasks)) return callback(new Error('First argument to waterfall must be an array of functions'));
-        if (!tasks.length) return callback();
-        var taskIndex = 0;
-        function nextTask(args) {
-          var task = (0, _wrapAsync2.default)(tasks[taskIndex++]);
-          task(...args, (0, _onlyOnce2.default)(next));
+      var once = require('async.util.once');
+      var noop = require('async.util.noop');
+      var isArray = require('async.util.isarray');
+      var restParam = require('async.util.restparam');
+      var ensureAsync = require('async.util.ensureasync');
+      var iterator = require('async.iterator');
+      module.exports = function (tasks, cb) {
+        cb = once(cb || noop);
+        if (!isArray(tasks)) return cb(new Error('First argument to waterfall must be an array of functions'));
+        if (!tasks.length) return cb();
+        function wrapIterator(iterator) {
+          return restParam(function (err, args) {
+            if (err) {
+              cb.apply(null, [err].concat(args));
+            } else {
+              var next = iterator.next();
+              if (next) {
+                args.push(wrapIterator(next));
+              } else {
+                args.push(cb);
+              }
+              ensureAsync(iterator).apply(null, args);
+            }
+          });
         }
-        function next(err, ...args) {
-          if (err === false) return;
-          if (err || taskIndex === tasks.length) {
-            return callback(err, ...args);
-          }
-          nextTask(args);
-        }
-        nextTask([]);
-      }
-      exports.default = (0, _awaitify2.default)(waterfall);
-      module.exports = exports['default'];
+        wrapIterator(iterator(tasks))();
+      };
     }, {
-      "./internal/awaitify.js": 4,
-      "./internal/once.js": 11,
-      "./internal/onlyOnce.js": 12,
-      "./internal/wrapAsync.js": 15
+      "async.iterator": 2,
+      "async.util.ensureasync": 4,
+      "async.util.isarray": 5,
+      "async.util.noop": 9,
+      "async.util.once": 10,
+      "async.util.restparam": 12
     }],
+    16: [function (require, module, exports) {}, {}],
     17: [function (require, module, exports) {
       /**
       * Base Logger Class
@@ -838,8 +420,8 @@
       class ConsoleLogger extends libBaseLogger {
         constructor(pLogStreamSettings, pFableLog) {
           super(pLogStreamSettings);
-          this._ShowTimeStamps = this._Settings.hasOwnProperty('showtimestamps') ? this._Settings.showtimestamps == true : false;
-          this._FormattedTimeStamps = this._Settings.hasOwnProperty('formattedtimestamps') ? this._Settings.formattedtimestamps == true : false;
+          this._ShowTimeStamps = this._Settings.hasOwnProperty('showtimestamps') ? this._Settings.showtimestamps == true : true;
+          this._FormattedTimeStamps = this._Settings.hasOwnProperty('formattedtimestamps') ? this._Settings.formattedtimestamps == true : true;
           this._ContextMessage = this._Settings.hasOwnProperty('Context') ? `(${this._Settings.Context})` : pFableLog._Settings.hasOwnProperty('Product') ? `(${pFableLog._Settings.Product})` : 'Unnamed_Log_Context';
 
           // Allow the user to decide what gets output to the console
@@ -882,6 +464,96 @@
       "./Fable-Log-BaseLogger.js": 17
     }],
     21: [function (require, module, exports) {
+      const libConsoleLog = require('./Fable-Log-Logger-Console.js');
+      const libFS = require('fs');
+      const libPath = require('path');
+      class SimpleFlatFileLogger extends libConsoleLog {
+        constructor(pLogStreamSettings, pFableLog) {
+          super(pLogStreamSettings, pFableLog);
+
+          // If a path isn't provided for the logfile, it tries to use the ProductName or Context
+          this.logFileRawPath = this._Settings.hasOwnProperty('path') ? this._Settings.path : `./${this._ContextMessage}.log`;
+          this.logFilePath = libPath.normalize(this.logFileRawPath);
+          this.logFileStreamOptions = this._Settings.hasOwnProperty('fileStreamoptions') ? this._Settings.fileStreamOptions : {
+            "flags": "a",
+            "encoding": "utf8"
+          };
+          this.fileWriter = libFS.createWriteStream(this.logFilePath, this.logFileStreamOptions);
+          this.activelyWriting = false;
+          this.logLineStrings = [];
+          this.logObjectStrings = [];
+          this.defaultWriteCompleteCallback = () => {};
+          this.defaultBufferFlushCallback = () => {};
+        }
+        closeWriter(fCloseComplete) {
+          let tmpCloseComplete = typeof fCloseComplete == 'function' ? fCloseComplete : () => {};
+          if (this.fileWriter) {
+            this.fileWriter.end('\n');
+            return this.fileWriter.once('finish', tmpCloseComplete.bind(this));
+          }
+        }
+        completeBufferFlushToLogFile(fFlushComplete) {
+          this.activelyWriting = false;
+          let tmpFlushComplete = typeof fFlushComplete == 'function' ? fFlushComplete : this.defaultBufferFlushCallback;
+          if (this.logLineStrings.length > 0) {
+            this.flushBufferToLogFile(tmpFlushComplete);
+          } else {
+            return tmpFlushComplete();
+          }
+        }
+        flushBufferToLogFile(fFlushComplete) {
+          if (!this.activelyWriting) {
+            // Only want to be writing one thing at a time....
+            this.activelyWriting = true;
+            let tmpFlushComplete = typeof fFlushComplete == 'function' ? fFlushComplete : this.defaultBufferFlushCallback;
+
+            // Get the current buffer arrays.  These should always have matching number of elements.
+            let tmpLineStrings = this.logLineStrings;
+            let tmpObjectStrings = this.logObjectStrings;
+
+            // Reset these to be filled while we process this queue...
+            this.logLineStrings = [];
+            this.logObjectStrings = [];
+
+            // This is where we will put each line before writing it to the file...
+            let tmpConstructedBufferOutputString = '';
+            for (let i = 0; i < tmpLineStrings.length; i++) {
+              // TODO: Windows Newline?   ....... yo no se!
+              tmpConstructedBufferOutputString += `${tmpLineStrings[i]}\n`;
+              if (tmpObjectStrings[i] !== false) {
+                tmpConstructedBufferOutputString += `${tmpObjectStrings[i]}\n`;
+              }
+            }
+            if (!this.fileWriter.write(tmpConstructedBufferOutputString, 'utf8')) {
+              // If the streamwriter returns false, we need to wait for it to drain.
+              this.fileWriter.once('drain', this.completeBufferFlushToLogFile.bind(this, tmpFlushComplete));
+            } else {
+              return this.completeBufferFlushToLogFile(tmpFlushComplete);
+            }
+          }
+        }
+        write(pLevel, pLogText, pObject) {
+          let tmpLogLine = super.write(pLevel, pLogText, pObject);
+
+          // Use a very simple array as the write buffer
+          this.logLineStrings.push(tmpLogLine);
+
+          // Write out the object on a separate line if it is passed in
+          if (typeof pObject !== 'undefined') {
+            this.logObjectStrings.push(JSON.stringify(pObject, null, 4));
+          } else {
+            this.logObjectStrings.push(false);
+          }
+          this.flushBufferToLogFile();
+        }
+      }
+      module.exports = SimpleFlatFileLogger;
+    }, {
+      "./Fable-Log-Logger-Console.js": 20,
+      "fs": 16,
+      "path": 28
+    }],
+    22: [function (require, module, exports) {
       /**
       * Fable Logging Add-on
       *
@@ -1061,12 +733,16 @@
       module.exports = FableLog;
       module.exports.new = autoConstruct;
       module.exports.LogProviderBase = require('./Fable-Log-BaseLogger.js');
+      module.exports.LogProviderConsole = require('./Fable-Log-Logger-Console.js');
+      module.exports.LogProviderConsole = require('./Fable-Log-Logger-SimpleFlatFile.js');
     }, {
       "./Fable-Log-BaseLogger.js": 17,
       "./Fable-Log-DefaultProviders-Node.js": 18,
-      "./Fable-Log-DefaultStreams.json": 19
+      "./Fable-Log-DefaultStreams.json": 19,
+      "./Fable-Log-Logger-Console.js": 20,
+      "./Fable-Log-Logger-SimpleFlatFile.js": 21
     }],
-    22: [function (require, module, exports) {
+    23: [function (require, module, exports) {
       module.exports = {
         "Product": "ApplicationNameHere",
         "ProductVersion": "0.0.0",
@@ -1076,7 +752,7 @@
         }]
       };
     }, {}],
-    23: [function (require, module, exports) {
+    24: [function (require, module, exports) {
       (function (process) {
         (function () {
           /**
@@ -1118,9 +794,9 @@
         }).call(this);
       }).call(this, require('_process'));
     }, {
-      "_process": 30
+      "_process": 32
     }],
-    24: [function (require, module, exports) {
+    25: [function (require, module, exports) {
       /**
       * Fable Settings Add-on
       *
@@ -1266,11 +942,11 @@
       module.exports.new = autoConstruct;
       module.exports.precedent = libPrecedent;
     }, {
-      "./Fable-Settings-Default": 22,
-      "./Fable-Settings-TemplateProcessor.js": 23,
-      "precedent": 27
+      "./Fable-Settings-Default": 23,
+      "./Fable-Settings-TemplateProcessor.js": 24,
+      "precedent": 29
     }],
-    25: [function (require, module, exports) {
+    26: [function (require, module, exports) {
       /**
       * Random Byte Generator - Browser version
       *
@@ -1323,7 +999,7 @@
       }
       module.exports = RandomBytes;
     }, {}],
-    26: [function (require, module, exports) {
+    27: [function (require, module, exports) {
       /**
       * Fable UUID Generator
       *
@@ -1404,9 +1080,480 @@
       module.exports = FableUUID;
       module.exports.new = autoConstruct;
     }, {
-      "./Fable-UUID-Random.js": 25
+      "./Fable-UUID-Random.js": 26
     }],
-    27: [function (require, module, exports) {
+    28: [function (require, module, exports) {
+      (function (process) {
+        (function () {
+          // 'path' module extracted from Node.js v8.11.1 (only the posix part)
+          // transplited with Babel
+
+          // Copyright Joyent, Inc. and other Node contributors.
+          //
+          // Permission is hereby granted, free of charge, to any person obtaining a
+          // copy of this software and associated documentation files (the
+          // "Software"), to deal in the Software without restriction, including
+          // without limitation the rights to use, copy, modify, merge, publish,
+          // distribute, sublicense, and/or sell copies of the Software, and to permit
+          // persons to whom the Software is furnished to do so, subject to the
+          // following conditions:
+          //
+          // The above copyright notice and this permission notice shall be included
+          // in all copies or substantial portions of the Software.
+          //
+          // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+          // OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+          // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+          // NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+          // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+          // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+          // USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+          'use strict';
+
+          function assertPath(path) {
+            if (typeof path !== 'string') {
+              throw new TypeError('Path must be a string. Received ' + JSON.stringify(path));
+            }
+          }
+
+          // Resolves . and .. elements in a path with directory names
+          function normalizeStringPosix(path, allowAboveRoot) {
+            var res = '';
+            var lastSegmentLength = 0;
+            var lastSlash = -1;
+            var dots = 0;
+            var code;
+            for (var i = 0; i <= path.length; ++i) {
+              if (i < path.length) code = path.charCodeAt(i);else if (code === 47 /*/*/) break;else code = 47 /*/*/;
+              if (code === 47 /*/*/) {
+                if (lastSlash === i - 1 || dots === 1) {
+                  // NOOP
+                } else if (lastSlash !== i - 1 && dots === 2) {
+                  if (res.length < 2 || lastSegmentLength !== 2 || res.charCodeAt(res.length - 1) !== 46 /*.*/ || res.charCodeAt(res.length - 2) !== 46 /*.*/) {
+                    if (res.length > 2) {
+                      var lastSlashIndex = res.lastIndexOf('/');
+                      if (lastSlashIndex !== res.length - 1) {
+                        if (lastSlashIndex === -1) {
+                          res = '';
+                          lastSegmentLength = 0;
+                        } else {
+                          res = res.slice(0, lastSlashIndex);
+                          lastSegmentLength = res.length - 1 - res.lastIndexOf('/');
+                        }
+                        lastSlash = i;
+                        dots = 0;
+                        continue;
+                      }
+                    } else if (res.length === 2 || res.length === 1) {
+                      res = '';
+                      lastSegmentLength = 0;
+                      lastSlash = i;
+                      dots = 0;
+                      continue;
+                    }
+                  }
+                  if (allowAboveRoot) {
+                    if (res.length > 0) res += '/..';else res = '..';
+                    lastSegmentLength = 2;
+                  }
+                } else {
+                  if (res.length > 0) res += '/' + path.slice(lastSlash + 1, i);else res = path.slice(lastSlash + 1, i);
+                  lastSegmentLength = i - lastSlash - 1;
+                }
+                lastSlash = i;
+                dots = 0;
+              } else if (code === 46 /*.*/ && dots !== -1) {
+                ++dots;
+              } else {
+                dots = -1;
+              }
+            }
+            return res;
+          }
+          function _format(sep, pathObject) {
+            var dir = pathObject.dir || pathObject.root;
+            var base = pathObject.base || (pathObject.name || '') + (pathObject.ext || '');
+            if (!dir) {
+              return base;
+            }
+            if (dir === pathObject.root) {
+              return dir + base;
+            }
+            return dir + sep + base;
+          }
+          var posix = {
+            // path.resolve([from ...], to)
+            resolve: function resolve() {
+              var resolvedPath = '';
+              var resolvedAbsolute = false;
+              var cwd;
+              for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
+                var path;
+                if (i >= 0) path = arguments[i];else {
+                  if (cwd === undefined) cwd = process.cwd();
+                  path = cwd;
+                }
+                assertPath(path);
+
+                // Skip empty entries
+                if (path.length === 0) {
+                  continue;
+                }
+                resolvedPath = path + '/' + resolvedPath;
+                resolvedAbsolute = path.charCodeAt(0) === 47 /*/*/;
+              }
+
+              // At this point the path should be resolved to a full absolute path, but
+              // handle relative paths to be safe (might happen when process.cwd() fails)
+
+              // Normalize the path
+              resolvedPath = normalizeStringPosix(resolvedPath, !resolvedAbsolute);
+              if (resolvedAbsolute) {
+                if (resolvedPath.length > 0) return '/' + resolvedPath;else return '/';
+              } else if (resolvedPath.length > 0) {
+                return resolvedPath;
+              } else {
+                return '.';
+              }
+            },
+            normalize: function normalize(path) {
+              assertPath(path);
+              if (path.length === 0) return '.';
+              var isAbsolute = path.charCodeAt(0) === 47 /*/*/;
+              var trailingSeparator = path.charCodeAt(path.length - 1) === 47 /*/*/;
+
+              // Normalize the path
+              path = normalizeStringPosix(path, !isAbsolute);
+              if (path.length === 0 && !isAbsolute) path = '.';
+              if (path.length > 0 && trailingSeparator) path += '/';
+              if (isAbsolute) return '/' + path;
+              return path;
+            },
+            isAbsolute: function isAbsolute(path) {
+              assertPath(path);
+              return path.length > 0 && path.charCodeAt(0) === 47 /*/*/;
+            },
+
+            join: function join() {
+              if (arguments.length === 0) return '.';
+              var joined;
+              for (var i = 0; i < arguments.length; ++i) {
+                var arg = arguments[i];
+                assertPath(arg);
+                if (arg.length > 0) {
+                  if (joined === undefined) joined = arg;else joined += '/' + arg;
+                }
+              }
+              if (joined === undefined) return '.';
+              return posix.normalize(joined);
+            },
+            relative: function relative(from, to) {
+              assertPath(from);
+              assertPath(to);
+              if (from === to) return '';
+              from = posix.resolve(from);
+              to = posix.resolve(to);
+              if (from === to) return '';
+
+              // Trim any leading backslashes
+              var fromStart = 1;
+              for (; fromStart < from.length; ++fromStart) {
+                if (from.charCodeAt(fromStart) !== 47 /*/*/) break;
+              }
+              var fromEnd = from.length;
+              var fromLen = fromEnd - fromStart;
+
+              // Trim any leading backslashes
+              var toStart = 1;
+              for (; toStart < to.length; ++toStart) {
+                if (to.charCodeAt(toStart) !== 47 /*/*/) break;
+              }
+              var toEnd = to.length;
+              var toLen = toEnd - toStart;
+
+              // Compare paths to find the longest common path from root
+              var length = fromLen < toLen ? fromLen : toLen;
+              var lastCommonSep = -1;
+              var i = 0;
+              for (; i <= length; ++i) {
+                if (i === length) {
+                  if (toLen > length) {
+                    if (to.charCodeAt(toStart + i) === 47 /*/*/) {
+                      // We get here if `from` is the exact base path for `to`.
+                      // For example: from='/foo/bar'; to='/foo/bar/baz'
+                      return to.slice(toStart + i + 1);
+                    } else if (i === 0) {
+                      // We get here if `from` is the root
+                      // For example: from='/'; to='/foo'
+                      return to.slice(toStart + i);
+                    }
+                  } else if (fromLen > length) {
+                    if (from.charCodeAt(fromStart + i) === 47 /*/*/) {
+                      // We get here if `to` is the exact base path for `from`.
+                      // For example: from='/foo/bar/baz'; to='/foo/bar'
+                      lastCommonSep = i;
+                    } else if (i === 0) {
+                      // We get here if `to` is the root.
+                      // For example: from='/foo'; to='/'
+                      lastCommonSep = 0;
+                    }
+                  }
+                  break;
+                }
+                var fromCode = from.charCodeAt(fromStart + i);
+                var toCode = to.charCodeAt(toStart + i);
+                if (fromCode !== toCode) break;else if (fromCode === 47 /*/*/) lastCommonSep = i;
+              }
+              var out = '';
+              // Generate the relative path based on the path difference between `to`
+              // and `from`
+              for (i = fromStart + lastCommonSep + 1; i <= fromEnd; ++i) {
+                if (i === fromEnd || from.charCodeAt(i) === 47 /*/*/) {
+                  if (out.length === 0) out += '..';else out += '/..';
+                }
+              }
+
+              // Lastly, append the rest of the destination (`to`) path that comes after
+              // the common path parts
+              if (out.length > 0) return out + to.slice(toStart + lastCommonSep);else {
+                toStart += lastCommonSep;
+                if (to.charCodeAt(toStart) === 47 /*/*/) ++toStart;
+                return to.slice(toStart);
+              }
+            },
+            _makeLong: function _makeLong(path) {
+              return path;
+            },
+            dirname: function dirname(path) {
+              assertPath(path);
+              if (path.length === 0) return '.';
+              var code = path.charCodeAt(0);
+              var hasRoot = code === 47 /*/*/;
+              var end = -1;
+              var matchedSlash = true;
+              for (var i = path.length - 1; i >= 1; --i) {
+                code = path.charCodeAt(i);
+                if (code === 47 /*/*/) {
+                  if (!matchedSlash) {
+                    end = i;
+                    break;
+                  }
+                } else {
+                  // We saw the first non-path separator
+                  matchedSlash = false;
+                }
+              }
+              if (end === -1) return hasRoot ? '/' : '.';
+              if (hasRoot && end === 1) return '//';
+              return path.slice(0, end);
+            },
+            basename: function basename(path, ext) {
+              if (ext !== undefined && typeof ext !== 'string') throw new TypeError('"ext" argument must be a string');
+              assertPath(path);
+              var start = 0;
+              var end = -1;
+              var matchedSlash = true;
+              var i;
+              if (ext !== undefined && ext.length > 0 && ext.length <= path.length) {
+                if (ext.length === path.length && ext === path) return '';
+                var extIdx = ext.length - 1;
+                var firstNonSlashEnd = -1;
+                for (i = path.length - 1; i >= 0; --i) {
+                  var code = path.charCodeAt(i);
+                  if (code === 47 /*/*/) {
+                    // If we reached a path separator that was not part of a set of path
+                    // separators at the end of the string, stop now
+                    if (!matchedSlash) {
+                      start = i + 1;
+                      break;
+                    }
+                  } else {
+                    if (firstNonSlashEnd === -1) {
+                      // We saw the first non-path separator, remember this index in case
+                      // we need it if the extension ends up not matching
+                      matchedSlash = false;
+                      firstNonSlashEnd = i + 1;
+                    }
+                    if (extIdx >= 0) {
+                      // Try to match the explicit extension
+                      if (code === ext.charCodeAt(extIdx)) {
+                        if (--extIdx === -1) {
+                          // We matched the extension, so mark this as the end of our path
+                          // component
+                          end = i;
+                        }
+                      } else {
+                        // Extension does not match, so our result is the entire path
+                        // component
+                        extIdx = -1;
+                        end = firstNonSlashEnd;
+                      }
+                    }
+                  }
+                }
+                if (start === end) end = firstNonSlashEnd;else if (end === -1) end = path.length;
+                return path.slice(start, end);
+              } else {
+                for (i = path.length - 1; i >= 0; --i) {
+                  if (path.charCodeAt(i) === 47 /*/*/) {
+                    // If we reached a path separator that was not part of a set of path
+                    // separators at the end of the string, stop now
+                    if (!matchedSlash) {
+                      start = i + 1;
+                      break;
+                    }
+                  } else if (end === -1) {
+                    // We saw the first non-path separator, mark this as the end of our
+                    // path component
+                    matchedSlash = false;
+                    end = i + 1;
+                  }
+                }
+                if (end === -1) return '';
+                return path.slice(start, end);
+              }
+            },
+            extname: function extname(path) {
+              assertPath(path);
+              var startDot = -1;
+              var startPart = 0;
+              var end = -1;
+              var matchedSlash = true;
+              // Track the state of characters (if any) we see before our first dot and
+              // after any path separator we find
+              var preDotState = 0;
+              for (var i = path.length - 1; i >= 0; --i) {
+                var code = path.charCodeAt(i);
+                if (code === 47 /*/*/) {
+                  // If we reached a path separator that was not part of a set of path
+                  // separators at the end of the string, stop now
+                  if (!matchedSlash) {
+                    startPart = i + 1;
+                    break;
+                  }
+                  continue;
+                }
+                if (end === -1) {
+                  // We saw the first non-path separator, mark this as the end of our
+                  // extension
+                  matchedSlash = false;
+                  end = i + 1;
+                }
+                if (code === 46 /*.*/) {
+                  // If this is our first dot, mark it as the start of our extension
+                  if (startDot === -1) startDot = i;else if (preDotState !== 1) preDotState = 1;
+                } else if (startDot !== -1) {
+                  // We saw a non-dot and non-path separator before our dot, so we should
+                  // have a good chance at having a non-empty extension
+                  preDotState = -1;
+                }
+              }
+              if (startDot === -1 || end === -1 ||
+              // We saw a non-dot character immediately before the dot
+              preDotState === 0 ||
+              // The (right-most) trimmed path component is exactly '..'
+              preDotState === 1 && startDot === end - 1 && startDot === startPart + 1) {
+                return '';
+              }
+              return path.slice(startDot, end);
+            },
+            format: function format(pathObject) {
+              if (pathObject === null || typeof pathObject !== 'object') {
+                throw new TypeError('The "pathObject" argument must be of type Object. Received type ' + typeof pathObject);
+              }
+              return _format('/', pathObject);
+            },
+            parse: function parse(path) {
+              assertPath(path);
+              var ret = {
+                root: '',
+                dir: '',
+                base: '',
+                ext: '',
+                name: ''
+              };
+              if (path.length === 0) return ret;
+              var code = path.charCodeAt(0);
+              var isAbsolute = code === 47 /*/*/;
+              var start;
+              if (isAbsolute) {
+                ret.root = '/';
+                start = 1;
+              } else {
+                start = 0;
+              }
+              var startDot = -1;
+              var startPart = 0;
+              var end = -1;
+              var matchedSlash = true;
+              var i = path.length - 1;
+
+              // Track the state of characters (if any) we see before our first dot and
+              // after any path separator we find
+              var preDotState = 0;
+
+              // Get non-dir info
+              for (; i >= start; --i) {
+                code = path.charCodeAt(i);
+                if (code === 47 /*/*/) {
+                  // If we reached a path separator that was not part of a set of path
+                  // separators at the end of the string, stop now
+                  if (!matchedSlash) {
+                    startPart = i + 1;
+                    break;
+                  }
+                  continue;
+                }
+                if (end === -1) {
+                  // We saw the first non-path separator, mark this as the end of our
+                  // extension
+                  matchedSlash = false;
+                  end = i + 1;
+                }
+                if (code === 46 /*.*/) {
+                  // If this is our first dot, mark it as the start of our extension
+                  if (startDot === -1) startDot = i;else if (preDotState !== 1) preDotState = 1;
+                } else if (startDot !== -1) {
+                  // We saw a non-dot and non-path separator before our dot, so we should
+                  // have a good chance at having a non-empty extension
+                  preDotState = -1;
+                }
+              }
+              if (startDot === -1 || end === -1 ||
+              // We saw a non-dot character immediately before the dot
+              preDotState === 0 ||
+              // The (right-most) trimmed path component is exactly '..'
+              preDotState === 1 && startDot === end - 1 && startDot === startPart + 1) {
+                if (end !== -1) {
+                  if (startPart === 0 && isAbsolute) ret.base = ret.name = path.slice(1, end);else ret.base = ret.name = path.slice(startPart, end);
+                }
+              } else {
+                if (startPart === 0 && isAbsolute) {
+                  ret.name = path.slice(1, startDot);
+                  ret.base = path.slice(1, end);
+                } else {
+                  ret.name = path.slice(startPart, startDot);
+                  ret.base = path.slice(startPart, end);
+                }
+                ret.ext = path.slice(startDot, end);
+              }
+              if (startPart > 0) ret.dir = path.slice(0, startPart - 1);else if (isAbsolute) ret.dir = '/';
+              return ret;
+            },
+            sep: '/',
+            delimiter: ':',
+            win32: null,
+            posix: null
+          };
+          posix.posix = posix;
+          module.exports = posix;
+        }).call(this);
+      }).call(this, require('_process'));
+    }, {
+      "_process": 32
+    }],
+    29: [function (require, module, exports) {
       /**
       * Precedent Meta-Templating
       *
@@ -1452,10 +1599,10 @@
       }
       module.exports = Precedent;
     }, {
-      "./StringParser.js": 28,
-      "./WordTree.js": 29
+      "./StringParser.js": 30,
+      "./WordTree.js": 31
     }],
-    28: [function (require, module, exports) {
+    30: [function (require, module, exports) {
       /**
       * String Parser
       *
@@ -1601,7 +1748,7 @@
       }
       module.exports = StringParser;
     }, {}],
-    29: [function (require, module, exports) {
+    31: [function (require, module, exports) {
       /**
       * Word Tree
       *
@@ -1660,7 +1807,7 @@
       }
       module.exports = WordTree;
     }, {}],
-    30: [function (require, module, exports) {
+    32: [function (require, module, exports) {
       // shim for using process in browser
       var process = module.exports = {};
 
@@ -1837,7 +1984,7 @@
         return 0;
       };
     }, {}],
-    31: [function (require, module, exports) {
+    33: [function (require, module, exports) {
       (function (setImmediate, clearImmediate) {
         (function () {
           var nextTick = require('process/browser.js').nextTick;
@@ -1911,19 +2058,19 @@
         }).call(this);
       }).call(this, require("timers").setImmediate, require("timers").clearImmediate);
     }, {
-      "process/browser.js": 30,
-      "timers": 31
+      "process/browser.js": 32,
+      "timers": 33
     }],
-    32: [function (require, module, exports) {
+    34: [function (require, module, exports) {
       var libNPMModuleWrapper = require('./Fable.js');
       if (typeof window === 'object' && !window.hasOwnProperty('Fable')) {
         window.Fable = libNPMModuleWrapper;
       }
       module.exports = libNPMModuleWrapper;
     }, {
-      "./Fable.js": 36
+      "./Fable.js": 40
     }],
-    33: [function (require, module, exports) {
+    35: [function (require, module, exports) {
       const _OperationStatePrototype = JSON.stringify({
         "Metadata": {
           "GUID": false,
@@ -2004,7 +2151,93 @@
       }
       module.exports = FableOperation;
     }, {}],
-    34: [function (require, module, exports) {
+    36: [function (require, module, exports) {
+      /**
+      * Fable Application Services Management
+      * @license MIT
+      * @author <steven@velozo.com>
+      */
+
+      const libFableServiceBase = require('./Fable-ServiceProviderBase.js');
+      class FableService {
+        constructor(pFable) {
+          this.fable = pFable;
+          this.serviceTypes = [];
+
+          // A map of instantiated services
+          this.services = {};
+
+          // A map of the default instantiated service by type
+          this.defaultServices = {};
+
+          // A map of class constructors for services
+          this.serviceClasses = {};
+        }
+        addServiceType(pServiceType, pServiceClass) {
+          // Add the type to the list of types
+          this.serviceTypes.push(pServiceType);
+
+          // Add the container for instantiated services to go in
+          this.services[pServiceType] = {};
+          if (typeof pServiceClass == 'object' && pServiceClass.prototype instanceof libFableServiceBase) {
+            // Add the class to the list of classes
+            this.serviceClasses[pServiceType] = pServiceClass;
+          } else {
+            // Add the base class to the list of classes
+            this.serviceClasses[pServiceType] = libFableServiceBase;
+          }
+        }
+        instantiateServiceProvider(pServiceType, pOptions, pCustomServiceHash) {
+          // Instantiate the service
+          let tmpService = new this.serviceClasses[pServiceType](this.fable, pOptions, pCustomServiceHash);
+
+          // Add the service to the service map
+          this.services[pServiceType][tmpService.Hash] = tmpService;
+
+          // If this is the first service of this type, make it the default
+          if (!this.defaultServices.hasOwnProperty(pServiceType)) {
+            this.defaultServices[pServiceType] = tmpService;
+          }
+          return tmpService;
+        }
+        setDefaultServiceInstantiation(pServiceType, pServiceHash) {
+          if (this.services[pServiceType].hasOwnProperty(pServiceHash)) {
+            this.defaultServices[pServiceType] = this.services[pServiceType][pServiceHash];
+            return true;
+          }
+          return false;
+        }
+        getServiceByHash(pServiceHash) {
+          if (this.services.hasOwnProperty(pServiceHash)) {
+            return this.services[pServiceHash];
+          }
+          return false;
+        }
+      }
+      module.exports = FableService;
+      module.exports.FableServiceBase = libFableServiceBase;
+    }, {
+      "./Fable-ServiceProviderBase.js": 37
+    }],
+    37: [function (require, module, exports) {
+      /**
+      * Fable Service Base
+      * @license MIT
+      * @author <steven@velozo.com>
+      */
+
+      class FableServiceProviderBase {
+        constructor(pFable, pOptions, pServiceHash) {
+          this.fable = pFable;
+          this.options = pOptions;
+          this.serviceType = 'Unknown';
+          this.UUID = pFable.getUUID();
+          this.Hash = typeof pServiceHash === 'string' ? pServiceHash : `${this.UUID}`;
+        }
+      }
+      module.exports = FableServiceProviderBase;
+    }, {}],
+    38: [function (require, module, exports) {
       class FableUtility {
         // Underscore and lodash have a behavior, _.template, which compiles a
         // string-based template with code snippets into simple executable pieces,
@@ -2090,11 +2323,11 @@
       }
       module.exports = FableUtility;
     }, {}],
-    35: [function (require, module, exports) {
+    39: [function (require, module, exports) {
       const libFableUtilityTemplate = require('./Fable-Utility-Template.js');
       // TODO: These are still pretty big -- consider the smaller polyfills
-      const libAsyncWaterfall = require('async/waterfall');
-      const libAsyncEachLimit = require('async/eachLimit');
+      const libAsyncWaterfall = require('async.waterfall');
+      const libAsyncEachLimit = require('async.eachLimit');
       class FableUtility {
         constructor(pFable) {
           this.fable = pFable;
@@ -2139,11 +2372,11 @@
       }
       module.exports = FableUtility;
     }, {
-      "./Fable-Utility-Template.js": 34,
-      "async/eachLimit": 2,
-      "async/waterfall": 16
+      "./Fable-Utility-Template.js": 38,
+      "async.eachLimit": 1,
+      "async.waterfall": 15
     }],
-    36: [function (require, module, exports) {
+    40: [function (require, module, exports) {
       /**
       * Fable Application Services Support Library
       * @license MIT
@@ -2153,6 +2386,7 @@
       const libFableUUID = require('fable-uuid');
       const libFableLog = require('fable-log');
       const libFableUtility = require('./Fable-Utility.js');
+      const libFableServiceManager = require('./Fable-ServiceManager.js');
       const libFableOperation = require('./Fable-Operation.js');
       class Fable {
         constructor(pSettings) {
@@ -2174,6 +2408,7 @@
 
           // Location for Operation state
           this.Operations = {};
+          this.serviceManager = new libFableServiceManager(this);
         }
         get settings() {
           return this.settingsManager.settings;
@@ -2210,13 +2445,15 @@
       module.exports = Fable;
       module.exports.new = autoConstruct;
       module.exports.LogProviderBase = libFableLog.LogProviderBase;
+      module.exports.ServiceProviderBase = libFableServiceManager.ServiceProviderBase;
       module.exports.precedent = libFableSettings.precedent;
     }, {
-      "./Fable-Operation.js": 33,
-      "./Fable-Utility.js": 35,
-      "fable-log": 21,
-      "fable-settings": 24,
-      "fable-uuid": 26
+      "./Fable-Operation.js": 35,
+      "./Fable-ServiceManager.js": 36,
+      "./Fable-Utility.js": 39,
+      "fable-log": 22,
+      "fable-settings": 25,
+      "fable-uuid": 27
     }]
-  }, {}, [32])(32);
+  }, {}, [34])(34);
 });
