@@ -1,6 +1,6 @@
 {
   "name": "fable",
-  "version": "3.0.18",
+  "version": "3.0.19",
   "description": "An entity behavior management and API bundling library.",
   "main": "source/Fable.js",
   "scripts": {
@@ -44,6 +44,8 @@
   },
   "homepage": "https://github.com/stevenvelozo/fable",
   "devDependencies": {
+    "@babel/core": "^7.21.5",
+    "@babel/preset-env": "^7.21.5",
     "browserify": "^17.0.0",
     "chai": "4.3.7",
     "gulp": "^4.0.2",
@@ -62,5 +64,8 @@
     "fable-log": "^3.0.6",
     "fable-settings": "^3.0.3",
     "fable-uuid": "^3.0.2"
-  }
+  },
+  "browserslist": [
+    "> 0.01%"
+  ]
 }
