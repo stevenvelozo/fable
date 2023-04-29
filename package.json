@@ -1,6 +1,6 @@
 {
   "name": "fable",
-  "version": "3.0.19",
+  "version": "3.0.20",
   "description": "An entity behavior management and API bundling library.",
   "main": "source/Fable.js",
   "scripts": {
@@ -8,6 +8,7 @@
     "coverage": "./node_modules/.bin/nyc --reporter=lcov --reporter=text-lcov ./node_modules/mocha/bin/_mocha -- -u tdd -R spec",
     "test": "./node_modules/.bin/mocha -u tdd -R spec",
     "build": "./node_modules/.bin/gulp build",
+    "build-compatible": "GULP_CUSTOM_BUILD_TARGET=compatible ./node_modules/.bin/gulp build",
     "docker-dev-build-image": "docker build ./ -f Dockerfile_LUXURYCode -t retold/fable:local",
     "docker-dev-run": "docker run -it -d --name retold-fable-dev -p 30001:8080 -v \"$PWD/.config:/home/coder/.config\"  -v \"$PWD:/home/coder/fable\" -u \"$(id -u):$(id -g)\" -e \"DOCKER_USER=$USER\" retold/fable:local"
   },
@@ -50,6 +51,7 @@
     "chai": "4.3.7",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
+    "gulp-env": "^0.4.0",
     "gulp-sourcemaps": "^3.0.0",
     "gulp-terser": "^2.1.0",
     "gulp-util": "^3.0.8",
@@ -64,8 +66,5 @@
     "fable-log": "^3.0.6",
     "fable-settings": "^3.0.3",
     "fable-uuid": "^3.0.2"
-  },
-  "browserslist": [
-    "> 0.01%"
-  ]
+  }
 }
