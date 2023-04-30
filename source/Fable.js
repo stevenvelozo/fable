@@ -7,10 +7,11 @@ const libFableSettings = require('fable-settings');
 const libFableUUID = require('fable-uuid');
 const libFableLog = require('fable-log');
 
-const libFableUtility = require('./Fable-Utility.js');
 const libFableServiceManager = require('./Fable-ServiceManager.js');
 
+const libFableServiceDataArithmatic = require('./Fable-Service-DataArithmatic.js');
 const libFableServiceTemplate = require('./Fable-Service-Template.js');
+const libFableServiceUtility = require('./Fable-Service-Utility.js');
 
 const libFableOperation = require('./Fable-Operation.js');
 
@@ -28,9 +29,6 @@ class Fable
 		this.log = new libFableLog(this.settingsManager.settings);
 		this.log.initialize();
 
-		// Built-in utility belt functions
-		this.Utility = new libFableUtility(this);
-
 		// Built-in dependencies
 		this.Dependencies = (
 			{
@@ -42,7 +40,19 @@ class Fable
 
 		this.serviceManager = new libFableServiceManager(this);
 
+		// Initialize and instantiate the default baked-in Data Arithmatic service
+		this.serviceManager.addServiceType('DataArithmatic', libFableServiceDataArithmatic);
+		this.fable.serviceManager.instantiateServiceProvider('DataArithmatic', {}, 'Default-Service-DataArithmatic');
+		// This service is passing through the data arithmatic library
+		this.DataArithmatic = this.serviceManager.defaultServices.DataArithmatic._DataArithmaticLibrary;
+
+		// Initialize the template service
 		this.serviceManager.addServiceType('Template', libFableServiceTemplate);
+
+		// Initialize and instantiate the default baked-in Utility service
+		this.serviceManager.addServiceType('Utility', libFableServiceUtility)
+		this.fable.serviceManager.instantiateServiceProvider('Utility', {}, 'Default-Service-Utility');
+		this.Utility = this.serviceManager.defaultServices.Utility;
 
 		this.services = this.serviceManager.services;
 		this.defaultServices = this.serviceManager.defaultServices;

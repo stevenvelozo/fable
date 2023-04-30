@@ -297,7 +297,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         }).call(this);
       }).call(this, require("timers").setImmediate);
     }, {
-      "timers": 33
+      "timers": 34
     }],
     14: [function (require, module, exports) {
       'use strict';
@@ -348,6 +348,462 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     }],
     16: [function (require, module, exports) {}, {}],
     17: [function (require, module, exports) {
+      /**
+      * @license MIT
+      * @author <steven@velozo.com>
+      */
+      /**
+      * Data Arithmatic
+      *
+      * @class DataArithmatic
+      */
+      var DataArithmatic = /*#__PURE__*/function () {
+        function DataArithmatic() {
+          _classCallCheck(this, DataArithmatic);
+          // Regular Expressions (so they don't have to be recompiled every time)
+          // These could be defined as static, but I'm not sure if that will work with browserify ... and specifically the QT browser.
+          this._Regex_formatterInsertCommas = /.{1,3}/g;
+          // Match Function:
+          // function(pMatch, pSign, pZeros, pBefore, pDecimal, pAfter)
+          // Thoughts about below:   /^([+-]?)(0*)(\d+)(\.(\d+))?$/;
+          this._Regex_formatterAddCommasToNumber = /^([-+]?)(0?)(\d+)(.?)(\d+)$/g;
+          this._Regex_formatterDollarsRemoveCommas = /,/gi;
+          this._Regex_formatterCleanNonAlpha = /[^a-z0-9]/gi;
+
+          // TODO: Potentially pull these in from a configuration.
+          // TODO: Use locale data for this if it's defaults all the way down.
+          this._Value_MoneySign_Currency = '$';
+          this._Value_NaN_Currency = '--';
+          this._Value_GroupSeparator_Number = ',';
+          this._Value_Prefix_StringHash = 'HSH';
+          this._Value_Clean_formatterCleanNonAlpha = '_';
+          this._UseEngineStringStartsWith = typeof String.prototype.startsWith === 'function';
+          this._UseEngineStringEndsWith = typeof String.prototype.endsWith === 'function';
+        }
+
+        /*************************************************************************
+         * String Manipulation and Comparison Functions
+         *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+
+        /**
+         * Reverse a string
+         *
+         * @param {string} pString - The string to reverse
+         * @returns {string}
+         */
+        _createClass(DataArithmatic, [{
+          key: "stringReverse",
+          value: function stringReverse(pString) {
+            // TODO: Benchmark if there are faster ways we want to do this with all the newer JS stuff
+            //       ... and if it will work with browserify in a clean way.
+            return pString.split('').reverse().join('');
+          }
+
+          /**
+           * Test if a string starts with a given substring.
+           *
+           * @param {*} pString
+           * @param {*} pSearchString
+           * @param {*} pStartIndex
+           * @returns {*}
+           */
+        }, {
+          key: "stringStartsWith",
+          value: function stringStartsWith(pString, pSearchString, pStartIndex) {
+            if (this._UseEngineStringStartsWith) {
+              return pString.startsWith(pSearchString, pStartIndex);
+            } else {
+              return this.stringStartsWith_Polyfill.call(pString, pSearchString, pStartIndex);
+            }
+          }
+
+          /**
+           * Check if a string starts with a given substring.  This is a safe polyfill for the ES6 string.startsWith() function.
+           *
+           * @param {*} pSearchString - The string to search for
+           * @param {*} pStartIndex - The index to start the search at
+           * @returns {boolean}
+           */
+        }, {
+          key: "stringStartsWith_Polyfill",
+          value: function stringStartsWith_Polyfill(pSearchString, pStartIndex) {
+            return this.slice(pStartIndex || 0, pSearchString.length) === pSearchString;
+          }
+
+          /**
+           * Test if a string starts with a given substring.
+           *
+           * @param {*} pString
+           * @param {*} pSearchString
+           * @param {*} pEndIndex
+           * @returns {*}
+           */
+        }, {
+          key: "stringEndsWith",
+          value: function stringEndsWith(pString, pSearchString, pEndIndex) {
+            if (this._UseEngineStringEndsWith) {
+              return pString.endsWith(pSearchString, pEndIndex);
+            } else {
+              return this.stringEndsWith_Polyfill.call(pString, pSearchString, pEndIndex);
+            }
+          }
+
+          /**
+           * Check if a string starts with a given substring.  This is a safe polyfill for the ES6 string.startsWith() function.
+           *
+           * @param {*} pSearchString - The string to search for
+           * @param {*} pEndIndex - The index to end the search at
+           * @returns {boolean}
+           */
+        }, {
+          key: "stringEndsWith_Polyfill",
+          value: function stringEndsWith_Polyfill(pSearchString, pEndIndex) {
+            // This works much better than >= because
+            // it compensates for NaN:
+            if (!(pEndIndex < this.length)) {
+              pEndIndex = this.length;
+            } else {
+              pEndIndex |= 0; // round position
+            }
+
+            return this.substr(pEndIndex - pSearchString.length, pSearchString.length) === pSearchString;
+          }
+
+          /**
+           * Generate an insecure string hash.  Not meant to be secure, just a quick way to generate a hash for a string.  This is not a cryptographic hash.  Additional warranty and disclaimer ... this is not for passwords!
+           *
+           * @param {string} pString
+           * @returns {string}
+           */
+        }, {
+          key: "insecureStringHash",
+          value: function insecureStringHash(pString) {
+            var tmpHash = 0;
+            var tmpStringLength = pString.length;
+            var tmpCharacterIndex = 0;
+            while (tmpCharacterIndex < tmpStringLength) {
+              tmpHash = (tmpHash << 5) - tmpHash + pString.charCodeAt(tmpCharacterIndex++) | 0;
+            }
+            return "".concat(this._Value_Prefix_StringHash).concat(tmpHash);
+          }
+
+          /**
+           * Clean wrapping characters if they exist consistently around the string.  If they do not, the string is returned unchanged.
+           *
+           * @param {string} pWrapCharacter - The character expected as the wrapping character
+           * @param {string} pString - the string to clean
+           * @returns {string}
+           */
+        }, {
+          key: "cleanEnclosureWrapCharacters",
+          value: function cleanEnclosureWrapCharacters(pWrapCharacter, pString) {
+            // # Use case from ManyFest DSL:
+            //
+            // When a boxed property is passed in, it should have quotes of some
+            // kind around it.
+            //
+            // For instance:
+            // 		MyValues['Name']
+            // 		MyValues["Age"]
+            // 		MyValues[`Cost`]
+            //
+            // This function is necessary to remove the wrapping quotes before object
+            // resolution can occur.
+            if (pString.startsWith(pWrapCharacter) && pString.endsWith(pWrapCharacter)) {
+              return pString.substring(1, pString.length - 1);
+            } else {
+              return pString;
+            }
+          }
+
+          /**
+           *
+           * @param {*} pString
+           * @returns
+           */
+        }, {
+          key: "cleanNonAlphaCharacters",
+          value: function cleanNonAlphaCharacters(pString) {
+            if (typeof pString == 'string' && pString != '') {
+              return pString.replace(this._Regex_formatterCleanNonAlpha, this._Value_Clean_formatterCleanNonAlpha);
+            }
+          }
+
+          /*************************************************************************
+           * Number Formatting Functions
+           *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+
+          /**
+           * Insert commas every 3 characters from the right.  Used by formatterAddCommasToNumber().
+           *
+           * @param {*} pString
+           * @returns {*}
+           */
+        }, {
+          key: "formatterInsertCommas",
+          value: function formatterInsertCommas(pString) {
+            // Reverse, because it's easier to do things from the left, given arbitrary digit counts
+            var tmpReversed = this.stringReverse(pString);
+            // Add commas every three characters
+            var tmpReversedWithCommas = tmpReversed.match(this._Regex_formatterInsertCommas).join(',');
+            // Reverse again (back to normal direction)
+            return this.stringReverse(tmpReversedWithCommas);
+          }
+        }, {
+          key: "processAddCommasToNumberRegex",
+          value: function processAddCommasToNumberRegex(pMatch, pSign, pZeros, pBefore, pDecimal, pAfter) {
+            // If there was no decimal, the last capture grabs the final digit, so
+            // we have to put it back together with the 'before' substring
+            return pSign + (pDecimal ? this.formatterInsertCommas(pBefore) + pDecimal + pAfter : this.formatterInsertCommas(pBefore + pAfter));
+          }
+
+          /**
+           * Add Commas to a Number for readability.
+           *
+           * @param {*} pNumber
+           * @returns {string}
+           */
+        }, {
+          key: "formatterAddCommasToNumber",
+          value: function formatterAddCommasToNumber(pNumber) {
+            // If the regex doesn't match, `replace` returns the string unmodified
+            return pNumber.toString().replace(this._Regex_formatterAddCommasToNumber, this.processAddCommasToNumberRegex.bind(this));
+          }
+
+          /**
+           * This will take a number and format it as a dollar string.  It will also add commas to the number.  If the number is not a number, it will return '--'.
+           *
+           * @param {*} pValue
+           * @returns {string}
+           */
+        }, {
+          key: "formatterDollars",
+          value: function formatterDollars(pValue) {
+            var tmpDollarAmount = parseFloat(pValue).toFixed(2);
+            if (isNaN(tmpDollarAmount)) {
+              // Try again and see if what was passed in was a dollars string.
+              if (typeof pValue == 'string') {
+                // TODO: Better rounding function?  This is a hack to get rid of the currency symbol and commas.
+                tmpDollarAmount = parseFloat(pValue.replace(this._Value_MoneySign_Currency, '').replace(this._Regex_formatterDollarsRemoveCommas, '')).toFixed(2);
+              }
+              // If we didn't get a number, return the "not a number" string.
+              if (isNaN(tmpDollarAmount)) {
+                return this._Value_NaN_Currency;
+              }
+            }
+
+            // TODO: Get locale data and use that for this stuff.
+            return "$".concat(this.formatterAddCommasToNumber(tmpDollarAmount));
+          }
+
+          /**
+           * Round a number to a certain number of digits.  If the number is not a number, it will return 0.  If no digits are specified, it will default to 2 significant digits.
+           *
+           * @param {*} pValue
+           * @param {number} pDigits
+           * @returns {string}
+           */
+        }, {
+          key: "formatterRoundNumber",
+          value: function formatterRoundNumber(pValue, pDigits) {
+            var tmpDigits = typeof pDigits == 'undefined' ? 2 : pDigits;
+            var tmpValue = Number.parseFloat(pValue).toFixed(tmpDigits);
+            if (isNaN(tmpValue)) {
+              var tmpZed = 0;
+              return tmpZed.toFixed(tmpDigits);
+            } else {
+              return tmpValue;
+            }
+          }
+
+          /*************************************************************************
+           * String Tokenization Functions
+           *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+
+          /**
+           * Return the string before the matched substring.
+           *
+           * If the substring is not found, the entire string is returned.  This only deals with the *first* match.
+           *
+           * @param {string} pString
+           * @param {string} pMatch
+           * @returns {string}
+           */
+        }, {
+          key: "stringBeforeMatch",
+          value: function stringBeforeMatch(pString, pMatch) {
+            return pString.split(pMatch)[0];
+          }
+
+          /**
+           * Return the string after the matched substring.
+           *
+           * If the substring is not found, an empty string is returned.  This only deals with the *first* match.
+           *
+           * @param {string} pString
+           * @param {string} pMatch
+           * @returns {string}
+           */
+        }, {
+          key: "stringAfterMatch",
+          value: function stringAfterMatch(pString, pMatch) {
+            var tmpStringSplitLocation = pString.indexOf(pMatch);
+            if (tmpStringSplitLocation < 0 || tmpStringSplitLocation + pMatch.length >= pString.length) {
+              return '';
+            }
+            return pString.substring(tmpStringSplitLocation + pMatch.length);
+          }
+
+          /**
+           * Count the number of enclosures in a string based on the start and end characters.
+           *
+           * If no start or end characters are specified, it will default to parentheses.  If the string is not a string, it will return 0.
+           *
+           * @param {string} pString
+           * @param {string} pEnclosureStart
+           * @param {string} pEnclosureEnd
+           * @returns the count of full in the string
+           */
+        }, {
+          key: "stringCountEnclosures",
+          value: function stringCountEnclosures(pString, pEnclosureStart, pEnclosureEnd) {
+            var tmpString = typeof pString == 'string' ? pString : '';
+            var tmpEnclosureStart = typeof pEnclosureStart == 'string' ? pEnclosureStart : '(';
+            var tmpEnclosureEnd = typeof pEnclosureEnd == 'string' ? pEnclosureEnd : ')';
+            var tmpEnclosureCount = 0;
+            var tmpEnclosureDepth = 0;
+            for (var i = 0; i < tmpString.length; i++) {
+              // This is the start of an enclosure
+              if (tmpString[i] == tmpEnclosureStart) {
+                if (tmpEnclosureDepth == 0) {
+                  tmpEnclosureCount++;
+                }
+                tmpEnclosureDepth++;
+              } else if (tmpString[i] == tmpEnclosureEnd) {
+                tmpEnclosureDepth--;
+              }
+            }
+            return tmpEnclosureCount;
+          }
+
+          /**
+           * Get the value of the enclosure at the specified index.
+           *
+           * If the index is not a number, it will default to 0.  If the string is not a string, it will return an empty string.  If the enclosure is not found, it will return an empty string.  If the enclosure
+           *
+           * @param {string} pString
+           * @param {number} pEnclosureIndexToGet
+           * @param {string} pEnclosureStart
+           * @param {string}} pEnclosureEnd
+           * @returns {string}
+           */
+        }, {
+          key: "stringGetEnclosureValueByIndex",
+          value: function stringGetEnclosureValueByIndex(pString, pEnclosureIndexToGet, pEnclosureStart, pEnclosureEnd) {
+            var tmpString = typeof pString == 'string' ? pString : '';
+            var tmpEnclosureIndexToGet = typeof pEnclosureIndexToGet == 'number' ? pEnclosureIndexToGet : 0;
+            var tmpEnclosureStart = typeof pEnclosureStart == 'string' ? pEnclosureStart : '(';
+            var tmpEnclosureEnd = typeof pEnclosureEnd == 'string' ? pEnclosureEnd : ')';
+            var tmpEnclosureCount = 0;
+            var tmpEnclosureDepth = 0;
+            var tmpMatchedEnclosureIndex = false;
+            var tmpEnclosedValueStartIndex = 0;
+            var tmpEnclosedValueEndIndex = 0;
+            for (var i = 0; i < tmpString.length; i++) {
+              // This is the start of an enclosure
+              if (tmpString[i] == tmpEnclosureStart) {
+                tmpEnclosureDepth++;
+
+                // Only count enclosures at depth 1, but still this parses both pairs of all of them.
+                if (tmpEnclosureDepth == 1) {
+                  tmpEnclosureCount++;
+                  if (tmpEnclosureIndexToGet == tmpEnclosureCount - 1) {
+                    // This is the start of *the* enclosure
+                    tmpMatchedEnclosureIndex = true;
+                    tmpEnclosedValueStartIndex = i;
+                  }
+                }
+              }
+              // This is the end of an enclosure
+              else if (tmpString[i] == tmpEnclosureEnd) {
+                tmpEnclosureDepth--;
+
+                // Again, only count enclosures at depth 1, but still this parses both pairs of all of them.
+                if (tmpEnclosureDepth == 0 && tmpMatchedEnclosureIndex && tmpEnclosedValueEndIndex <= tmpEnclosedValueStartIndex) {
+                  tmpEnclosedValueEndIndex = i;
+                  tmpMatchedEnclosureIndex = false;
+                }
+              }
+            }
+            if (tmpEnclosureCount <= tmpEnclosureIndexToGet) {
+              // Return an empty string if the enclosure is not found
+              return '';
+            }
+            if (tmpEnclosedValueEndIndex > 0 && tmpEnclosedValueEndIndex > tmpEnclosedValueStartIndex) {
+              return tmpString.substring(tmpEnclosedValueStartIndex + 1, tmpEnclosedValueEndIndex);
+            } else {
+              return tmpString.substring(tmpEnclosedValueStartIndex + 1);
+            }
+          }
+
+          /**
+           * Remove an enclosure from a string based on the index of the enclosure.
+           *
+           * @param {string} pString
+           * @param {number} pEnclosureIndexToRemove
+           * @param {number} pEnclosureStart
+           * @param {number} pEnclosureEnd
+           * @returns {string}
+           */
+        }, {
+          key: "stringRemoveEnclosureByIndex",
+          value: function stringRemoveEnclosureByIndex(pString, pEnclosureIndexToRemove, pEnclosureStart, pEnclosureEnd) {
+            var tmpString = typeof pString == 'string' ? pString : '';
+            var tmpEnclosureIndexToRemove = typeof pEnclosureIndexToRemove == 'number' ? pEnclosureIndexToRemove : 0;
+            var tmpEnclosureStart = typeof pEnclosureStart == 'string' ? pEnclosureStart : '(';
+            var tmpEnclosureEnd = typeof pEnclosureEnd == 'string' ? pEnclosureEnd : ')';
+            var tmpEnclosureCount = 0;
+            var tmpEnclosureDepth = 0;
+            var tmpMatchedEnclosureIndex = false;
+            var tmpEnclosureStartIndex = 0;
+            var tmpEnclosureEndIndex = 0;
+            for (var i = 0; i < tmpString.length; i++) {
+              // This is the start of an enclosure
+              if (tmpString[i] == tmpEnclosureStart) {
+                tmpEnclosureDepth++;
+                if (tmpEnclosureDepth == 1) {
+                  tmpEnclosureCount++;
+                  if (tmpEnclosureIndexToRemove == tmpEnclosureCount - 1) {
+                    tmpMatchedEnclosureIndex = true;
+                    tmpEnclosureStartIndex = i;
+                  }
+                }
+              } else if (tmpString[i] == tmpEnclosureEnd) {
+                tmpEnclosureDepth--;
+                if (tmpEnclosureDepth == 0 && tmpMatchedEnclosureIndex && tmpEnclosureEndIndex <= tmpEnclosureStartIndex) {
+                  tmpEnclosureEndIndex = i;
+                  tmpMatchedEnclosureIndex = false;
+                }
+              }
+            }
+            if (tmpEnclosureCount <= tmpEnclosureIndexToRemove) {
+              return tmpString;
+            }
+            var tmpReturnString = '';
+            if (tmpEnclosureStartIndex > 1) {
+              tmpReturnString = tmpString.substring(0, tmpEnclosureStartIndex);
+            }
+            if (tmpString.length > tmpEnclosureEndIndex + 1 && tmpEnclosureEndIndex > tmpEnclosureStartIndex) {
+              tmpReturnString += tmpString.substring(tmpEnclosureEndIndex + 1);
+            }
+            return tmpReturnString;
+          }
+        }]);
+        return DataArithmatic;
+      }();
+      module.exports = DataArithmatic;
+    }, {}],
+    18: [function (require, module, exports) {
       /**
       * Base Logger Class
       *
@@ -431,7 +887,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       }();
       module.exports = BaseLogger;
     }, {}],
-    18: [function (require, module, exports) {
+    19: [function (require, module, exports) {
       /**
       * Default Logger Provider Function
       *
@@ -449,16 +905,16 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       };
       module.exports = getDefaultProviders();
     }, {
-      "./Fable-Log-Logger-Console.js": 20
+      "./Fable-Log-Logger-Console.js": 21
     }],
-    19: [function (require, module, exports) {
+    20: [function (require, module, exports) {
       module.exports = [{
         "loggertype": "console",
         "streamtype": "console",
         "level": "trace"
       }];
     }, {}],
-    20: [function (require, module, exports) {
+    21: [function (require, module, exports) {
       var libBaseLogger = require('./Fable-Log-BaseLogger.js');
       var ConsoleLogger = /*#__PURE__*/function (_libBaseLogger) {
         _inherits(ConsoleLogger, _libBaseLogger);
@@ -513,9 +969,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       }(libBaseLogger);
       module.exports = ConsoleLogger;
     }, {
-      "./Fable-Log-BaseLogger.js": 17
+      "./Fable-Log-BaseLogger.js": 18
     }],
-    21: [function (require, module, exports) {
+    22: [function (require, module, exports) {
       var libConsoleLog = require('./Fable-Log-Logger-Console.js');
       var libFS = require('fs');
       var libPath = require('path');
@@ -616,11 +1072,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       }(libConsoleLog);
       module.exports = SimpleFlatFileLogger;
     }, {
-      "./Fable-Log-Logger-Console.js": 20,
+      "./Fable-Log-Logger-Console.js": 21,
       "fs": 16,
-      "path": 28
+      "path": 29
     }],
-    22: [function (require, module, exports) {
+    23: [function (require, module, exports) {
       /**
       * Fable Logging Add-on
       *
@@ -839,13 +1295,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       module.exports.LogProviderConsole = require('./Fable-Log-Logger-Console.js');
       module.exports.LogProviderConsole = require('./Fable-Log-Logger-SimpleFlatFile.js');
     }, {
-      "./Fable-Log-BaseLogger.js": 17,
-      "./Fable-Log-DefaultProviders-Node.js": 18,
-      "./Fable-Log-DefaultStreams.json": 19,
-      "./Fable-Log-Logger-Console.js": 20,
-      "./Fable-Log-Logger-SimpleFlatFile.js": 21
+      "./Fable-Log-BaseLogger.js": 18,
+      "./Fable-Log-DefaultProviders-Node.js": 19,
+      "./Fable-Log-DefaultStreams.json": 20,
+      "./Fable-Log-Logger-Console.js": 21,
+      "./Fable-Log-Logger-SimpleFlatFile.js": 22
     }],
-    23: [function (require, module, exports) {
+    24: [function (require, module, exports) {
       module.exports = {
         "Product": "ApplicationNameHere",
         "ProductVersion": "0.0.0",
@@ -855,7 +1311,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         }]
       };
     }, {}],
-    24: [function (require, module, exports) {
+    25: [function (require, module, exports) {
       (function (process) {
         (function () {
           /**
@@ -901,9 +1357,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         }).call(this);
       }).call(this, require('_process'));
     }, {
-      "_process": 32
+      "_process": 33
     }],
-    25: [function (require, module, exports) {
+    26: [function (require, module, exports) {
       /**
       * Fable Settings Add-on
       *
@@ -1067,11 +1523,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       module.exports["new"] = autoConstruct;
       module.exports.precedent = libPrecedent;
     }, {
-      "./Fable-Settings-Default": 23,
-      "./Fable-Settings-TemplateProcessor.js": 24,
-      "precedent": 29
+      "./Fable-Settings-Default": 24,
+      "./Fable-Settings-TemplateProcessor.js": 25,
+      "precedent": 30
     }],
-    26: [function (require, module, exports) {
+    27: [function (require, module, exports) {
       /**
       * Random Byte Generator - Browser version
       *
@@ -1132,7 +1588,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       }();
       module.exports = RandomBytes;
     }, {}],
-    27: [function (require, module, exports) {
+    28: [function (require, module, exports) {
       /**
       * Fable UUID Generator
       *
@@ -1222,9 +1678,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       module.exports = FableUUID;
       module.exports["new"] = autoConstruct;
     }, {
-      "./Fable-UUID-Random.js": 26
+      "./Fable-UUID-Random.js": 27
     }],
-    28: [function (require, module, exports) {
+    29: [function (require, module, exports) {
       (function (process) {
         (function () {
           // 'path' module extracted from Node.js v8.11.1 (only the posix part)
@@ -1693,9 +2149,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         }).call(this);
       }).call(this, require('_process'));
     }, {
-      "_process": 32
+      "_process": 33
     }],
-    29: [function (require, module, exports) {
+    30: [function (require, module, exports) {
       /**
       * Precedent Meta-Templating
       *
@@ -1748,10 +2204,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       }();
       module.exports = Precedent;
     }, {
-      "./StringParser.js": 30,
-      "./WordTree.js": 31
+      "./StringParser.js": 31,
+      "./WordTree.js": 32
     }],
-    30: [function (require, module, exports) {
+    31: [function (require, module, exports) {
       /**
       * String Parser
       *
@@ -1914,7 +2370,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       }();
       module.exports = StringParser;
     }, {}],
-    31: [function (require, module, exports) {
+    32: [function (require, module, exports) {
       /**
       * Word Tree
       *
@@ -1979,7 +2435,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       }();
       module.exports = WordTree;
     }, {}],
-    32: [function (require, module, exports) {
+    33: [function (require, module, exports) {
       // shim for using process in browser
       var process = module.exports = {};
 
@@ -2156,7 +2612,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         return 0;
       };
     }, {}],
-    33: [function (require, module, exports) {
+    34: [function (require, module, exports) {
       (function (setImmediate, clearImmediate) {
         (function () {
           var nextTick = require('process/browser.js').nextTick;
@@ -2230,19 +2686,19 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         }).call(this);
       }).call(this, require("timers").setImmediate, require("timers").clearImmediate);
     }, {
-      "process/browser.js": 32,
-      "timers": 33
+      "process/browser.js": 33,
+      "timers": 34
     }],
-    34: [function (require, module, exports) {
+    35: [function (require, module, exports) {
       var libNPMModuleWrapper = require('./Fable.js');
       if ((typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' && !window.hasOwnProperty('Fable')) {
         window.Fable = libNPMModuleWrapper;
       }
       module.exports = libNPMModuleWrapper;
     }, {
-      "./Fable.js": 40
+      "./Fable.js": 42
     }],
-    35: [function (require, module, exports) {
+    36: [function (require, module, exports) {
       var _OperationStatePrototype = JSON.stringify({
         "Metadata": {
           "GUID": false,
@@ -2349,11 +2805,32 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       }();
       module.exports = FableOperation;
     }, {}],
-    36: [function (require, module, exports) {
+    37: [function (require, module, exports) {
       var libFableServiceBase = require('./Fable-ServiceProviderBase.js');
-      var FableServiceTemplate = /*#__PURE__*/function (_libFableServiceBase) {
-        _inherits(FableServiceTemplate, _libFableServiceBase);
-        var _super3 = _createSuper(FableServiceTemplate);
+      var libDataArithmatic = require('data-arithmatic');
+      var FableServiceDataArithmatic = /*#__PURE__*/function (_libFableServiceBase) {
+        _inherits(FableServiceDataArithmatic, _libFableServiceBase);
+        var _super3 = _createSuper(FableServiceDataArithmatic);
+        function FableServiceDataArithmatic(pFable, pOptions, pServiceHash) {
+          var _this4;
+          _classCallCheck(this, FableServiceDataArithmatic);
+          _this4 = _super3.call(this, pFable, pOptions, pServiceHash);
+          _this4.serviceType = 'DataArithmatic';
+          _this4._DataArithmaticLibrary = new libDataArithmatic();
+          return _this4;
+        }
+        return _createClass(FableServiceDataArithmatic);
+      }(libFableServiceBase);
+      module.exports = FableServiceDataArithmatic;
+    }, {
+      "./Fable-ServiceProviderBase.js": 41,
+      "data-arithmatic": 17
+    }],
+    38: [function (require, module, exports) {
+      var libFableServiceBase = require('./Fable-ServiceProviderBase.js');
+      var FableServiceTemplate = /*#__PURE__*/function (_libFableServiceBase2) {
+        _inherits(FableServiceTemplate, _libFableServiceBase2);
+        var _super4 = _createSuper(FableServiceTemplate);
         // Underscore and lodash have a behavior, _.template, which compiles a
         // string-based template with code snippets into simple executable pieces,
         // with the added twist of returning a precompiled function ready to go.
@@ -2364,14 +2841,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         // This is an implementation of that.
         // TODO: Make this use precedent, add configuration, add debugging.
         function FableServiceTemplate(pFable, pOptions, pServiceHash) {
-          var _this4;
+          var _this5;
           _classCallCheck(this, FableServiceTemplate);
-          _this4 = _super3.call(this, pFable, pOptions, pServiceHash);
-          _this4.serviceType = 'Template';
+          _this5 = _super4.call(this, pFable, pOptions, pServiceHash);
+          _this5.serviceType = 'Template';
 
           // These are the exact regex's used in lodash/underscore
           // TODO: Switch this to precedent
-          _this4.Matchers = {
+          _this5.Matchers = {
             Evaluate: /<%([\s\S]+?)%>/g,
             Interpolate: /<%=([\s\S]+?)%>/g,
             Escaper: /\\|'|\r|\n|\t|\u2028|\u2029/g,
@@ -2382,7 +2859,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
           // This is a helper for the escaper and unescaper functions.
           // Right now we are going to keep what underscore is doing, but, not forever.
-          _this4.templateEscapes = {
+          _this5.templateEscapes = {
             '\\': '\\',
             "'": "'",
             'r': '\r',
@@ -2399,9 +2876,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
           // This is defined as such to underscore that it is a dynamic programming
           // function on this class.
-          _this4.renderFunction = false;
-          _this4.templateString = false;
-          return _this4;
+          _this5.renderFunction = false;
+          _this5.templateString = false;
+          return _this5;
         }
         _createClass(FableServiceTemplate, [{
           key: "renderTemplate",
@@ -2417,11 +2894,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         }, {
           key: "buildTemplateFunction",
           value: function buildTemplateFunction(pTemplateText, pData) {
-            var _this5 = this;
+            var _this6 = this;
             // For now this is being kept in a weird form ... this is to mimic the old
             // underscore code until this is rewritten using precedent.
             this.TemplateSource = "__p+='" + pTemplateText.replace(this.Matchers.Escaper, function (pMatch) {
-              return "\\".concat(_this5.templateEscapes[pMatch]);
+              return "\\".concat(_this6.templateEscapes[pMatch]);
             }).replace(this.Matchers.Interpolate || this.Matchers.GuaranteedNonMatch, function (pMatch, pCode) {
               return "'+\n(".concat(decodeURIComponent(pCode), ")+\n'");
             }).replace(this.Matchers.Evaluate || this.Matchers.GuaranteedNonMatch, function (pMatch, pCode) {
@@ -2444,9 +2921,98 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       }(libFableServiceBase);
       module.exports = FableServiceTemplate;
     }, {
-      "./Fable-ServiceProviderBase.js": 38
+      "./Fable-ServiceProviderBase.js": 41
     }],
-    37: [function (require, module, exports) {
+    39: [function (require, module, exports) {
+      var libFableServiceBase = require('./Fable-ServiceProviderBase.js');
+
+      // TODO: These are still pretty big -- consider the smaller polyfills
+      var libAsyncWaterfall = require('async.waterfall');
+      var libAsyncEachLimit = require('async.eachlimit');
+      var FableServiceUtility = /*#__PURE__*/function (_libFableServiceBase3) {
+        _inherits(FableServiceUtility, _libFableServiceBase3);
+        var _super5 = _createSuper(FableServiceUtility);
+        // Underscore and lodash have a behavior, _.template, which compiles a
+        // string-based template with code snippets into simple executable pieces,
+        // with the added twist of returning a precompiled function ready to go.
+        //
+        // NOTE: This does not implement underscore escape expressions
+        // NOTE: This does not implement underscore magic browser variable assignment
+        //
+        // This is an implementation of that.
+        // TODO: Make this use precedent, add configuration, add debugging.
+        function FableServiceUtility(pFable, pOptions, pServiceHash) {
+          var _this7;
+          _classCallCheck(this, FableServiceUtility);
+          _this7 = _super5.call(this, pFable, pOptions, pServiceHash);
+          _this7.templates = {};
+
+          // These two functions are used extensively throughout
+          _this7.waterfall = libAsyncWaterfall;
+          _this7.eachLimit = libAsyncEachLimit;
+          return _this7;
+        }
+
+        // Underscore and lodash have a behavior, _.extend, which merges objects.
+        // Now that es6 gives us this, use the native thingy.
+        _createClass(FableServiceUtility, [{
+          key: "extend",
+          value: function extend(pDestinationObject) {
+            for (var _len = arguments.length, pSourceObjects = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+              pSourceObjects[_key - 1] = arguments[_key];
+            }
+            return Object.assign.apply(Object, [pDestinationObject].concat(pSourceObjects));
+          }
+
+          // Underscore and lodash have a behavior, _.template, which compiles a
+          // string-based template with code snippets into simple executable pieces,
+          // with the added twist of returning a precompiled function ready to go.
+        }, {
+          key: "template",
+          value: function template(pTemplateText, pData) {
+            var tmpTemplate = this.fable.serviceManager.instantiateServiceProviderWithoutRegistration('Template');
+            return tmpTemplate.buildTemplateFunction(pTemplateText, pData);
+          }
+
+          // Build a template function from a template hash, and, register it with the service provider
+        }, {
+          key: "buildHashedTemplate",
+          value: function buildHashedTemplate(pTemplateHash, pTemplateText, pData) {
+            var tmpTemplate = this.fable.serviceManager.instantiateServiceProvider('Template', {}, pTemplateHash);
+            this.templates[pTemplateHash] = tmpTemplate.buildTemplateFunction(pTemplateText, pData);
+            return this.templates[pTemplateHash];
+          }
+
+          // This is a safe, modern version of chunk from underscore
+          // Algorithm pulled from a mix of these two polyfills:
+          // https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_chunk
+          // https://youmightnotneed.com/lodash
+          // This implementation was most tolerant in browsers.  Uglify can fix the rest.
+        }, {
+          key: "chunk",
+          value: function chunk(pInput, pChunkSize, pChunkCache) {
+            var tmpInputArray = _toConsumableArray(pInput);
+            // Note lodash defaults to 1, underscore defaults to 0
+            var tmpChunkSize = typeof pChunkSize == 'number' ? pChunkSize : 0;
+            var tmpChunkCache = typeof pChunkCache != 'undefined' ? pChunkCache : [];
+            if (tmpChunkSize <= 0) {
+              return tmpChunkCache;
+            }
+            while (tmpInputArray.length) {
+              tmpChunkCache.push(tmpInputArray.splice(0, tmpChunkSize));
+            }
+            return tmpChunkCache;
+          }
+        }]);
+        return FableServiceUtility;
+      }(libFableServiceBase);
+      module.exports = FableServiceUtility;
+    }, {
+      "./Fable-ServiceProviderBase.js": 41,
+      "async.eachlimit": 1,
+      "async.waterfall": 15
+    }],
+    40: [function (require, module, exports) {
       /**
       * Fable Application Services Management
       * @license MIT
@@ -2524,9 +3090,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       module.exports = FableService;
       module.exports.ServiceProviderBase = libFableServiceBase;
     }, {
-      "./Fable-ServiceProviderBase.js": 38
+      "./Fable-ServiceProviderBase.js": 41
     }],
-    38: [function (require, module, exports) {
+    41: [function (require, module, exports) {
       /**
       * Fable Service Base
       * @license MIT
@@ -2542,80 +3108,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       });
       module.exports = FableServiceProviderBase;
     }, {}],
-    39: [function (require, module, exports) {
-      // TODO: These are still pretty big -- consider the smaller polyfills
-      var libAsyncWaterfall = require('async.waterfall');
-      var libAsyncEachLimit = require('async.eachlimit');
-      var FableUtility = /*#__PURE__*/function () {
-        function FableUtility(pFable) {
-          _classCallCheck(this, FableUtility);
-          this.fable = pFable;
-          this.templates = {};
-
-          // These two functions are used extensively throughout
-          this.waterfall = libAsyncWaterfall;
-          this.eachLimit = libAsyncEachLimit;
-        }
-
-        // Underscore and lodash have a behavior, _.extend, which merges objects.
-        // Now that es6 gives us this, use the native thingy.
-        _createClass(FableUtility, [{
-          key: "extend",
-          value: function extend(pDestinationObject) {
-            for (var _len = arguments.length, pSourceObjects = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-              pSourceObjects[_key - 1] = arguments[_key];
-            }
-            return Object.assign.apply(Object, [pDestinationObject].concat(pSourceObjects));
-          }
-
-          // Underscore and lodash have a behavior, _.template, which compiles a
-          // string-based template with code snippets into simple executable pieces,
-          // with the added twist of returning a precompiled function ready to go.
-        }, {
-          key: "template",
-          value: function template(pTemplateText, pData) {
-            var tmpTemplate = this.fable.serviceManager.instantiateServiceProviderWithoutRegistration('Template');
-            return tmpTemplate.buildTemplateFunction(pTemplateText, pData);
-          }
-
-          // Build a template function from a template hash, and, register it with the service provider
-        }, {
-          key: "buildHashedTemplate",
-          value: function buildHashedTemplate(pTemplateHash, pTemplateText, pData) {
-            var tmpTemplate = this.fable.serviceManager.instantiateServiceProvider('Template', {}, pTemplateHash);
-            this.templates[pTemplateHash] = tmpTemplate.buildTemplateFunction(pTemplateText, pData);
-            return this.templates[pTemplateHash];
-          }
-
-          // This is a safe, modern version of chunk from underscore
-          // Algorithm pulled from a mix of these two polyfills:
-          // https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_chunk
-          // https://youmightnotneed.com/lodash
-          // This implementation was most tolerant in browsers.  Uglify can fix the rest.
-        }, {
-          key: "chunk",
-          value: function chunk(pInput, pChunkSize, pChunkCache) {
-            var tmpInputArray = _toConsumableArray(pInput);
-            // Note lodash defaults to 1, underscore defaults to 0
-            var tmpChunkSize = typeof pChunkSize == 'number' ? pChunkSize : 0;
-            var tmpChunkCache = typeof pChunkCache != 'undefined' ? pChunkCache : [];
-            if (tmpChunkSize <= 0) {
-              return tmpChunkCache;
-            }
-            while (tmpInputArray.length) {
-              tmpChunkCache.push(tmpInputArray.splice(0, tmpChunkSize));
-            }
-            return tmpChunkCache;
-          }
-        }]);
-        return FableUtility;
-      }();
-      module.exports = FableUtility;
-    }, {
-      "async.eachlimit": 1,
-      "async.waterfall": 15
-    }],
-    40: [function (require, module, exports) {
+    42: [function (require, module, exports) {
       /**
       * Fable Application Services Support Library
       * @license MIT
@@ -2624,9 +3117,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       var libFableSettings = require('fable-settings');
       var libFableUUID = require('fable-uuid');
       var libFableLog = require('fable-log');
-      var libFableUtility = require('./Fable-Utility.js');
       var libFableServiceManager = require('./Fable-ServiceManager.js');
+      var libFableServiceDataArithmatic = require('./Fable-Service-DataArithmatic.js');
       var libFableServiceTemplate = require('./Fable-Service-Template.js');
+      var libFableServiceUtility = require('./Fable-Service-Utility.js');
       var libFableOperation = require('./Fable-Operation.js');
       var Fable = /*#__PURE__*/function () {
         function Fable(pSettings) {
@@ -2639,9 +3133,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
           this.log = new libFableLog(this.settingsManager.settings);
           this.log.initialize();
 
-          // Built-in utility belt functions
-          this.Utility = new libFableUtility(this);
-
           // Built-in dependencies
           this.Dependencies = {
             precedent: libFableSettings.precedent
@@ -2650,7 +3141,20 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
           // Location for Operation state
           this.Operations = {};
           this.serviceManager = new libFableServiceManager(this);
+
+          // Initialize and instantiate the default baked-in Data Arithmatic service
+          this.serviceManager.addServiceType('DataArithmatic', libFableServiceDataArithmatic);
+          this.fable.serviceManager.instantiateServiceProvider('DataArithmatic', {}, 'Default-Service-DataArithmatic');
+          // This service is passing through the data arithmatic library
+          this.DataArithmatic = this.serviceManager.defaultServices.DataArithmatic._DataArithmaticLibrary;
+
+          // Initialize the template service
           this.serviceManager.addServiceType('Template', libFableServiceTemplate);
+
+          // Initialize and instantiate the default baked-in Utility service
+          this.serviceManager.addServiceType('Utility', libFableServiceUtility);
+          this.fable.serviceManager.instantiateServiceProvider('Utility', {}, 'Default-Service-Utility');
+          this.Utility = this.serviceManager.defaultServices.Utility;
           this.services = this.serviceManager.services;
           this.defaultServices = this.serviceManager.defaultServices;
         }
@@ -2702,13 +3206,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       module.exports.ServiceProviderBase = libFableServiceManager.ServiceProviderBase;
       module.exports.precedent = libFableSettings.precedent;
     }, {
-      "./Fable-Operation.js": 35,
-      "./Fable-Service-Template.js": 36,
-      "./Fable-ServiceManager.js": 37,
-      "./Fable-Utility.js": 39,
-      "fable-log": 22,
-      "fable-settings": 25,
-      "fable-uuid": 27
+      "./Fable-Operation.js": 36,
+      "./Fable-Service-DataArithmatic.js": 37,
+      "./Fable-Service-Template.js": 38,
+      "./Fable-Service-Utility.js": 39,
+      "./Fable-ServiceManager.js": 40,
+      "fable-log": 23,
+      "fable-settings": 26,
+      "fable-uuid": 28
     }]
-  }, {}, [34])(34);
+  }, {}, [35])(35);
 });

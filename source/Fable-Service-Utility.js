@@ -1,12 +1,24 @@
+const libFableServiceBase = require('./Fable-ServiceProviderBase.js');
+
+
 // TODO: These are still pretty big -- consider the smaller polyfills
 const libAsyncWaterfall = require('async.waterfall');
 const libAsyncEachLimit = require('async.eachlimit');
 
-class FableUtility
+class FableServiceUtility extends libFableServiceBase
 {
-	constructor(pFable)
+	// Underscore and lodash have a behavior, _.template, which compiles a
+	// string-based template with code snippets into simple executable pieces,
+	// with the added twist of returning a precompiled function ready to go.
+	//
+	// NOTE: This does not implement underscore escape expressions
+	// NOTE: This does not implement underscore magic browser variable assignment
+	//
+	// This is an implementation of that.
+	// TODO: Make this use precedent, add configuration, add debugging.
+	constructor(pFable, pOptions, pServiceHash)
 	{
-		this.fable = pFable;
+        super(pFable, pOptions, pServiceHash);
 
 		this.templates = {};
 
@@ -68,4 +80,4 @@ class FableUtility
 	}
 }
 
-module.exports = FableUtility;
+module.exports = FableServiceUtility;
