@@ -2488,7 +2488,7 @@
       }
       module.exports = libNPMModuleWrapper;
     }, {
-      "./Fable.js": 42
+      "./Fable.js": 43
     }],
     36: [function (require, module, exports) {
       const _OperationStatePrototype = JSON.stringify({
@@ -2584,10 +2584,47 @@
       }
       module.exports = FableServiceDataArithmatic;
     }, {
-      "./Fable-ServiceProviderBase.js": 41,
+      "./Fable-ServiceProviderBase.js": 42,
       "data-arithmatic": 17
     }],
     38: [function (require, module, exports) {
+      const libFableServiceBase = require('./Fable-ServiceProviderBase.js');
+      const libPrecedent = require('precedent');
+      class FableServiceMetaTemplate extends libFableServiceBase {
+        constructor(pFable, pOptions, pServiceHash) {
+          super(pFable, pOptions, pServiceHash);
+          this.serviceType = 'MetaTemplate';
+          this._MetaTemplateLibrary = new libPrecedent(this.options);
+        }
+
+        /**
+         * Add a Pattern to the Parse Tree
+         * @method addPattern
+         * @param {Object} pTree - A node on the parse tree to push the characters into
+         * @param {string} pPattern - The string to add to the tree
+         * @param {number} pIndex - callback function
+         * @return {bool} True if adding the pattern was successful
+         */
+        addPattern(pPatternStart, pPatternEnd, pParser) {
+          return this._MetaTemplateLibrary.addPattern(pPatternStart, pPatternEnd, pParser);
+        }
+
+        /**
+         * Parse a string with the existing parse tree
+         * @method parseString
+         * @param {string} pString - The string to parse
+         * @return {string} The result from the parser
+         */
+        parseString(pString) {
+          return this._MetaTemplateLibrary.parseString(pString, this.ParseTree);
+        }
+      }
+      module.exports = FableServiceMetaTemplate;
+    }, {
+      "./Fable-ServiceProviderBase.js": 42,
+      "precedent": 30
+    }],
+    39: [function (require, module, exports) {
       const libFableServiceBase = require('./Fable-ServiceProviderBase.js');
       class FableServiceTemplate extends libFableServiceBase {
         // Underscore and lodash have a behavior, _.template, which compiles a
@@ -2668,9 +2705,9 @@
       }
       module.exports = FableServiceTemplate;
     }, {
-      "./Fable-ServiceProviderBase.js": 41
+      "./Fable-ServiceProviderBase.js": 42
     }],
-    39: [function (require, module, exports) {
+    40: [function (require, module, exports) {
       const libFableServiceBase = require('./Fable-ServiceProviderBase.js');
 
       // TODO: These are still pretty big -- consider the smaller polyfills
@@ -2740,11 +2777,11 @@
       }
       module.exports = FableServiceUtility;
     }, {
-      "./Fable-ServiceProviderBase.js": 41,
+      "./Fable-ServiceProviderBase.js": 42,
       "async.eachlimit": 1,
       "async.waterfall": 15
     }],
-    40: [function (require, module, exports) {
+    41: [function (require, module, exports) {
       /**
       * Fable Application Services Management
       * @license MIT
@@ -2811,9 +2848,9 @@
       module.exports = FableService;
       module.exports.ServiceProviderBase = libFableServiceBase;
     }, {
-      "./Fable-ServiceProviderBase.js": 41
+      "./Fable-ServiceProviderBase.js": 42
     }],
-    41: [function (require, module, exports) {
+    42: [function (require, module, exports) {
       /**
       * Fable Service Base
       * @license MIT
@@ -2831,7 +2868,7 @@
       }
       module.exports = FableServiceProviderBase;
     }, {}],
-    42: [function (require, module, exports) {
+    43: [function (require, module, exports) {
       /**
       * Fable Application Services Support Library
       * @license MIT
@@ -2843,6 +2880,7 @@
       const libFableServiceManager = require('./Fable-ServiceManager.js');
       const libFableServiceDataArithmatic = require('./Fable-Service-DataArithmatic.js');
       const libFableServiceTemplate = require('./Fable-Service-Template.js');
+      const libFableServiceMetaTemplate = require('./Fable-Service-MetaTemplate.js');
       const libFableServiceUtility = require('./Fable-Service-Utility.js');
       const libFableOperation = require('./Fable-Operation.js');
       class Fable {
@@ -2872,6 +2910,9 @@
 
           // Initialize the template service
           this.serviceManager.addServiceType('Template', libFableServiceTemplate);
+
+          // Initialize the metatemplate service
+          this.serviceManager.addServiceType('MetaTemplate', libFableServiceMetaTemplate);
 
           // Initialize and instantiate the default baked-in Utility service
           this.serviceManager.addServiceType('Utility', libFableServiceUtility);
@@ -2920,9 +2961,10 @@
     }, {
       "./Fable-Operation.js": 36,
       "./Fable-Service-DataArithmatic.js": 37,
-      "./Fable-Service-Template.js": 38,
-      "./Fable-Service-Utility.js": 39,
-      "./Fable-ServiceManager.js": 40,
+      "./Fable-Service-MetaTemplate.js": 38,
+      "./Fable-Service-Template.js": 39,
+      "./Fable-Service-Utility.js": 40,
+      "./Fable-ServiceManager.js": 41,
       "fable-log": 23,
       "fable-settings": 26,
       "fable-uuid": 28

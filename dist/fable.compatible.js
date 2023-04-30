@@ -2696,7 +2696,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       }
       module.exports = libNPMModuleWrapper;
     }, {
-      "./Fable.js": 42
+      "./Fable.js": 43
     }],
     36: [function (require, module, exports) {
       var _OperationStatePrototype = JSON.stringify({
@@ -2823,14 +2823,62 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       }(libFableServiceBase);
       module.exports = FableServiceDataArithmatic;
     }, {
-      "./Fable-ServiceProviderBase.js": 41,
+      "./Fable-ServiceProviderBase.js": 42,
       "data-arithmatic": 17
     }],
     38: [function (require, module, exports) {
       var libFableServiceBase = require('./Fable-ServiceProviderBase.js');
-      var FableServiceTemplate = /*#__PURE__*/function (_libFableServiceBase2) {
-        _inherits(FableServiceTemplate, _libFableServiceBase2);
-        var _super4 = _createSuper(FableServiceTemplate);
+      var libPrecedent = require('precedent');
+      var FableServiceMetaTemplate = /*#__PURE__*/function (_libFableServiceBase2) {
+        _inherits(FableServiceMetaTemplate, _libFableServiceBase2);
+        var _super4 = _createSuper(FableServiceMetaTemplate);
+        function FableServiceMetaTemplate(pFable, pOptions, pServiceHash) {
+          var _this5;
+          _classCallCheck(this, FableServiceMetaTemplate);
+          _this5 = _super4.call(this, pFable, pOptions, pServiceHash);
+          _this5.serviceType = 'MetaTemplate';
+          _this5._MetaTemplateLibrary = new libPrecedent(_this5.options);
+          return _this5;
+        }
+
+        /**
+         * Add a Pattern to the Parse Tree
+         * @method addPattern
+         * @param {Object} pTree - A node on the parse tree to push the characters into
+         * @param {string} pPattern - The string to add to the tree
+         * @param {number} pIndex - callback function
+         * @return {bool} True if adding the pattern was successful
+         */
+        _createClass(FableServiceMetaTemplate, [{
+          key: "addPattern",
+          value: function addPattern(pPatternStart, pPatternEnd, pParser) {
+            return this._MetaTemplateLibrary.addPattern(pPatternStart, pPatternEnd, pParser);
+          }
+
+          /**
+           * Parse a string with the existing parse tree
+           * @method parseString
+           * @param {string} pString - The string to parse
+           * @return {string} The result from the parser
+           */
+        }, {
+          key: "parseString",
+          value: function parseString(pString) {
+            return this._MetaTemplateLibrary.parseString(pString, this.ParseTree);
+          }
+        }]);
+        return FableServiceMetaTemplate;
+      }(libFableServiceBase);
+      module.exports = FableServiceMetaTemplate;
+    }, {
+      "./Fable-ServiceProviderBase.js": 42,
+      "precedent": 30
+    }],
+    39: [function (require, module, exports) {
+      var libFableServiceBase = require('./Fable-ServiceProviderBase.js');
+      var FableServiceTemplate = /*#__PURE__*/function (_libFableServiceBase3) {
+        _inherits(FableServiceTemplate, _libFableServiceBase3);
+        var _super5 = _createSuper(FableServiceTemplate);
         // Underscore and lodash have a behavior, _.template, which compiles a
         // string-based template with code snippets into simple executable pieces,
         // with the added twist of returning a precompiled function ready to go.
@@ -2841,14 +2889,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         // This is an implementation of that.
         // TODO: Make this use precedent, add configuration, add debugging.
         function FableServiceTemplate(pFable, pOptions, pServiceHash) {
-          var _this5;
+          var _this6;
           _classCallCheck(this, FableServiceTemplate);
-          _this5 = _super4.call(this, pFable, pOptions, pServiceHash);
-          _this5.serviceType = 'Template';
+          _this6 = _super5.call(this, pFable, pOptions, pServiceHash);
+          _this6.serviceType = 'Template';
 
           // These are the exact regex's used in lodash/underscore
           // TODO: Switch this to precedent
-          _this5.Matchers = {
+          _this6.Matchers = {
             Evaluate: /<%([\s\S]+?)%>/g,
             Interpolate: /<%=([\s\S]+?)%>/g,
             Escaper: /\\|'|\r|\n|\t|\u2028|\u2029/g,
@@ -2859,7 +2907,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
           // This is a helper for the escaper and unescaper functions.
           // Right now we are going to keep what underscore is doing, but, not forever.
-          _this5.templateEscapes = {
+          _this6.templateEscapes = {
             '\\': '\\',
             "'": "'",
             'r': '\r',
@@ -2876,9 +2924,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
           // This is defined as such to underscore that it is a dynamic programming
           // function on this class.
-          _this5.renderFunction = false;
-          _this5.templateString = false;
-          return _this5;
+          _this6.renderFunction = false;
+          _this6.templateString = false;
+          return _this6;
         }
         _createClass(FableServiceTemplate, [{
           key: "renderTemplate",
@@ -2894,11 +2942,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         }, {
           key: "buildTemplateFunction",
           value: function buildTemplateFunction(pTemplateText, pData) {
-            var _this6 = this;
+            var _this7 = this;
             // For now this is being kept in a weird form ... this is to mimic the old
             // underscore code until this is rewritten using precedent.
             this.TemplateSource = "__p+='" + pTemplateText.replace(this.Matchers.Escaper, function (pMatch) {
-              return "\\".concat(_this6.templateEscapes[pMatch]);
+              return "\\".concat(_this7.templateEscapes[pMatch]);
             }).replace(this.Matchers.Interpolate || this.Matchers.GuaranteedNonMatch, function (pMatch, pCode) {
               return "'+\n(".concat(decodeURIComponent(pCode), ")+\n'");
             }).replace(this.Matchers.Evaluate || this.Matchers.GuaranteedNonMatch, function (pMatch, pCode) {
@@ -2921,17 +2969,17 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       }(libFableServiceBase);
       module.exports = FableServiceTemplate;
     }, {
-      "./Fable-ServiceProviderBase.js": 41
+      "./Fable-ServiceProviderBase.js": 42
     }],
-    39: [function (require, module, exports) {
+    40: [function (require, module, exports) {
       var libFableServiceBase = require('./Fable-ServiceProviderBase.js');
 
       // TODO: These are still pretty big -- consider the smaller polyfills
       var libAsyncWaterfall = require('async.waterfall');
       var libAsyncEachLimit = require('async.eachlimit');
-      var FableServiceUtility = /*#__PURE__*/function (_libFableServiceBase3) {
-        _inherits(FableServiceUtility, _libFableServiceBase3);
-        var _super5 = _createSuper(FableServiceUtility);
+      var FableServiceUtility = /*#__PURE__*/function (_libFableServiceBase4) {
+        _inherits(FableServiceUtility, _libFableServiceBase4);
+        var _super6 = _createSuper(FableServiceUtility);
         // Underscore and lodash have a behavior, _.template, which compiles a
         // string-based template with code snippets into simple executable pieces,
         // with the added twist of returning a precompiled function ready to go.
@@ -2942,15 +2990,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         // This is an implementation of that.
         // TODO: Make this use precedent, add configuration, add debugging.
         function FableServiceUtility(pFable, pOptions, pServiceHash) {
-          var _this7;
+          var _this8;
           _classCallCheck(this, FableServiceUtility);
-          _this7 = _super5.call(this, pFable, pOptions, pServiceHash);
-          _this7.templates = {};
+          _this8 = _super6.call(this, pFable, pOptions, pServiceHash);
+          _this8.templates = {};
 
           // These two functions are used extensively throughout
-          _this7.waterfall = libAsyncWaterfall;
-          _this7.eachLimit = libAsyncEachLimit;
-          return _this7;
+          _this8.waterfall = libAsyncWaterfall;
+          _this8.eachLimit = libAsyncEachLimit;
+          return _this8;
         }
 
         // Underscore and lodash have a behavior, _.extend, which merges objects.
@@ -3008,11 +3056,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       }(libFableServiceBase);
       module.exports = FableServiceUtility;
     }, {
-      "./Fable-ServiceProviderBase.js": 41,
+      "./Fable-ServiceProviderBase.js": 42,
       "async.eachlimit": 1,
       "async.waterfall": 15
     }],
-    40: [function (require, module, exports) {
+    41: [function (require, module, exports) {
       /**
       * Fable Application Services Management
       * @license MIT
@@ -3090,9 +3138,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       module.exports = FableService;
       module.exports.ServiceProviderBase = libFableServiceBase;
     }, {
-      "./Fable-ServiceProviderBase.js": 41
+      "./Fable-ServiceProviderBase.js": 42
     }],
-    41: [function (require, module, exports) {
+    42: [function (require, module, exports) {
       /**
       * Fable Service Base
       * @license MIT
@@ -3108,7 +3156,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       });
       module.exports = FableServiceProviderBase;
     }, {}],
-    42: [function (require, module, exports) {
+    43: [function (require, module, exports) {
       /**
       * Fable Application Services Support Library
       * @license MIT
@@ -3120,6 +3168,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       var libFableServiceManager = require('./Fable-ServiceManager.js');
       var libFableServiceDataArithmatic = require('./Fable-Service-DataArithmatic.js');
       var libFableServiceTemplate = require('./Fable-Service-Template.js');
+      var libFableServiceMetaTemplate = require('./Fable-Service-MetaTemplate.js');
       var libFableServiceUtility = require('./Fable-Service-Utility.js');
       var libFableOperation = require('./Fable-Operation.js');
       var Fable = /*#__PURE__*/function () {
@@ -3150,6 +3199,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
           // Initialize the template service
           this.serviceManager.addServiceType('Template', libFableServiceTemplate);
+
+          // Initialize the metatemplate service
+          this.serviceManager.addServiceType('MetaTemplate', libFableServiceMetaTemplate);
 
           // Initialize and instantiate the default baked-in Utility service
           this.serviceManager.addServiceType('Utility', libFableServiceUtility);
@@ -3208,9 +3260,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     }, {
       "./Fable-Operation.js": 36,
       "./Fable-Service-DataArithmatic.js": 37,
-      "./Fable-Service-Template.js": 38,
-      "./Fable-Service-Utility.js": 39,
-      "./Fable-ServiceManager.js": 40,
+      "./Fable-Service-MetaTemplate.js": 38,
+      "./Fable-Service-Template.js": 39,
+      "./Fable-Service-Utility.js": 40,
+      "./Fable-ServiceManager.js": 41,
       "fable-log": 23,
       "fable-settings": 26,
       "fable-uuid": 28

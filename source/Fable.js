@@ -11,6 +11,7 @@ const libFableServiceManager = require('./Fable-ServiceManager.js');
 
 const libFableServiceDataArithmatic = require('./Fable-Service-DataArithmatic.js');
 const libFableServiceTemplate = require('./Fable-Service-Template.js');
+const libFableServiceMetaTemplate = require('./Fable-Service-MetaTemplate.js');
 const libFableServiceUtility = require('./Fable-Service-Utility.js');
 
 const libFableOperation = require('./Fable-Operation.js');
@@ -48,6 +49,9 @@ class Fable
 
 		// Initialize the template service
 		this.serviceManager.addServiceType('Template', libFableServiceTemplate);
+
+		// Initialize the metatemplate service
+		this.serviceManager.addServiceType('MetaTemplate', libFableServiceMetaTemplate);
 
 		// Initialize and instantiate the default baked-in Utility service
 		this.serviceManager.addServiceType('Utility', libFableServiceUtility)

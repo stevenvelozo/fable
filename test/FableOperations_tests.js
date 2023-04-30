@@ -10,7 +10,6 @@ var libFable = require('../source/Fable.js');
 
 var Chai = require("chai");
 var Expect = Chai.expect;
-var Assert = Chai.assert;
 
 suite
 (
