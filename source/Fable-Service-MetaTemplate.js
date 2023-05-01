@@ -32,9 +32,9 @@ class FableServiceMetaTemplate extends libFableServiceBase
 	 * @param {string} pString - The string to parse
 	 * @return {string} The result from the parser
 	 */
-	parseString(pString)
+	parseString(pString, pData)
 	{
-		return this._MetaTemplateLibrary.parseString(pString, this.ParseTree);
+		return this._MetaTemplateLibrary.parseString(pString, pData);
 	}
 }
 
