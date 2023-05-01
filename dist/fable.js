@@ -560,7 +560,7 @@
          */
         formatterRoundNumber(pValue, pDigits) {
           let tmpDigits = typeof pDigits == 'undefined' ? 2 : pDigits;
-          let tmpValue = Number.parseFloat(pValue).toFixed(tmpDigits);
+          let tmpValue = parseFloat(pValue).toFixed(tmpDigits);
           if (isNaN(tmpValue)) {
             let tmpZed = 0;
             return tmpZed.toFixed(tmpDigits);

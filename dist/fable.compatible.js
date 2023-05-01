@@ -607,7 +607,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
           key: "formatterRoundNumber",
           value: function formatterRoundNumber(pValue, pDigits) {
             var tmpDigits = typeof pDigits == 'undefined' ? 2 : pDigits;
-            var tmpValue = Number.parseFloat(pValue).toFixed(tmpDigits);
+            var tmpValue = parseFloat(pValue).toFixed(tmpDigits);
             if (isNaN(tmpValue)) {
               var tmpZed = 0;
               return tmpZed.toFixed(tmpDigits);
