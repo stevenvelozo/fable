@@ -897,7 +897,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       */
 
       // Return the providers that are available without extensions loaded
-      getDefaultProviders = function getDefaultProviders() {
+      var getDefaultProviders = function getDefaultProviders() {
         var tmpDefaultProviders = {};
         tmpDefaultProviders.console = require('./Fable-Log-Logger-Console.js');
         tmpDefaultProviders["default"] = tmpDefaultProviders.console;
@@ -2865,8 +2865,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
            */
         }, {
           key: "parseString",
-          value: function parseString(pString) {
-            return this._MetaTemplateLibrary.parseString(pString, this.ParseTree);
+          value: function parseString(pString, pData) {
+            return this._MetaTemplateLibrary.parseString(pString, pData);
           }
         }]);
         return FableServiceMetaTemplate;

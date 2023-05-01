@@ -818,7 +818,7 @@
       */
 
       // Return the providers that are available without extensions loaded
-      getDefaultProviders = () => {
+      var getDefaultProviders = () => {
         let tmpDefaultProviders = {};
         tmpDefaultProviders.console = require('./Fable-Log-Logger-Console.js');
         tmpDefaultProviders.default = tmpDefaultProviders.console;
@@ -2617,8 +2617,8 @@
          * @param {string} pString - The string to parse
          * @return {string} The result from the parser
          */
-        parseString(pString) {
-          return this._MetaTemplateLibrary.parseString(pString, this.ParseTree);
+        parseString(pString, pData) {
+          return this._MetaTemplateLibrary.parseString(pString, pData);
         }
       }
       module.exports = FableServiceMetaTemplate;
