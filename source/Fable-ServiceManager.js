@@ -32,7 +32,8 @@ class FableService
 		// Add the container for instantiated services to go in
 		this.services[pServiceType] = {};
 
-		if ((typeof(pServiceClass) == 'function') && (pServiceClass.prototype instanceof libFableServiceBase))
+		// Using the static member of the class is a much more reliable way to check if it is a service class than instanceof
+		if ((typeof(pServiceClass) == 'function') && (pServiceClass.isFableService))
 		{
 			// Add the class to the list of classes
 			this.serviceClasses[pServiceType] = pServiceClass;
