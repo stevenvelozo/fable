@@ -67,6 +67,7 @@
     "fable-log": "^3.0.7",
     "fable-settings": "^3.0.3",
     "fable-uuid": "^3.0.2",
-    "precedent": "^1.0.10"
+    "precedent": "^1.0.10",
+    "simple-get": "^4.0.1"
   }
 }

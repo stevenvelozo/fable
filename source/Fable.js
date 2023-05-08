@@ -3,16 +3,20 @@
 * @license MIT
 * @author <steven@velozo.com>
 */
+// Pre-init services
 const libFableSettings = require('fable-settings');
 const libFableUUID = require('fable-uuid');
 const libFableLog = require('fable-log');
 
+const libFablePreinitServiceProviderBase = require('./Fable-PreinitServiceProviderBase.js');
 const libFableServiceManager = require('./Fable-ServiceManager.js');
 
-const libFableServiceDataArithmatic = require('./Fable-Service-DataArithmatic.js');
-const libFableServiceTemplate = require('./Fable-Service-Template.js');
-const libFableServiceMetaTemplate = require('./Fable-Service-MetaTemplate.js');
-const libFableServiceUtility = require('./Fable-Service-Utility.js');
+// Services
+const libFableServiceDataArithmatic = require('./services/Fable-Service-DataArithmatic.js');
+const libFableServiceMetaTemplate = require('./services/Fable-Service-MetaTemplate.js');
+const libFableServiceRestClient = require('./services/Fable-Service-RestClient.js');
+const libFableServiceTemplate = require('./services/Fable-Service-Template.js');
+const libFableServiceUtility = require('./services/Fable-Service-Utility.js');
 
 const libFableOperation = require('./Fable-Operation.js');
 
@@ -57,6 +61,9 @@ class Fable
 		this.serviceManager.addServiceType('Utility', libFableServiceUtility)
 		this.fable.serviceManager.instantiateServiceProvider('Utility', {}, 'Default-Service-Utility');
 		this.Utility = this.serviceManager.defaultServices.Utility;
+
+		// Add the REST Client service type
+		this.serviceManager.addServiceType('RestClient', libFableServiceRestClient);
 
 		this.services = this.serviceManager.services;
 		this.defaultServices = this.serviceManager.defaultServices;
@@ -118,5 +125,6 @@ module.exports.new = autoConstruct;
 
 module.exports.LogProviderBase = libFableLog.LogProviderBase;
 module.exports.ServiceProviderBase = libFableServiceManager.ServiceProviderBase;
+module.exports.PreinitServiceProviderBase = libFablePreinitServiceProviderBase;
 
 module.exports.precedent = libFableSettings.precedent;

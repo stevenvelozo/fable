@@ -69,6 +69,33 @@ class FableService
 		return tmpService;
 	}
 
+	// Connect an initialized service provider that came before Fable was initialized
+	connectPreinitServiceProviderInstance(pServiceInstance)
+	{
+		let tmpServiceType = pServiceInstance.serviceType;
+		let tmpServiceHash = pServiceInstance.Hash;
+
+		// The service should already be instantiated, so just connect it to fable
+		pServiceInstance.connectFable(this.fable);
+
+		if (!this.services.hasOwnProperty(tmpServiceType))
+		{
+			// If the core service hasn't registered itself yet, create the service container for it.
+			// This means you couldn't register another with this type unless it was later registered with a constructor class.
+			this.services[tmpServiceType] = {};
+		}
+		// Add the service to the service map
+		this.services[tmpServiceType][tmpServiceHash] = pServiceInstance;
+
+		// If this is the first service of this type, make it the default
+		if (!this.defaultServices.hasOwnProperty(tmpServiceType))
+		{
+			this.defaultServices[tmpServiceType] = pServiceInstance;
+		}
+
+		return pServiceInstance;
+	}
+
 	setDefaultServiceInstantiation(pServiceType, pServiceHash)
 	{
 		if (this.services[pServiceType].hasOwnProperty(pServiceHash))

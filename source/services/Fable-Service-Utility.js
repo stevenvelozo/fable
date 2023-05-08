@@ -1,4 +1,4 @@
-const libFableServiceBase = require('./Fable-ServiceProviderBase.js');
+const libFableServiceBase = require('../Fable-ServiceProviderBase.js');
 
 
 // TODO: These are still pretty big -- consider the smaller polyfills

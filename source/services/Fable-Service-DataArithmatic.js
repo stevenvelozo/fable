@@ -1,4 +1,5 @@
-const libFableServiceBase = require('./Fable-ServiceProviderBase.js');
+const libFableServiceBase = require('../Fable-ServiceProviderBase.js');
+
 const libDataArithmatic = require('data-arithmatic');
 
 class FableServiceDataArithmatic extends libFableServiceBase

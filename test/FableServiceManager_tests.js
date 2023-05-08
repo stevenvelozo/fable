@@ -46,6 +46,22 @@ class MockDatabaseService extends libFable.ServiceProviderBase
     }
 }
 
+class MockCoreService extends libFable.PreinitServiceProviderBase
+{
+    constructor(pOptions, pServiceHash)
+    {
+        super(pOptions, pServiceHash);
+
+        this.serviceType = 'MockCoreService';
+    }
+
+    // Core services should be able to provide their behaviors before the Fable object is fully initialized.
+    magicBehavior(pData)
+    {
+        console.log(`MockCoreService ${this.UUID}::${this.Hash} is doing something magical with ${pData}.`);
+    }
+}
+
 suite
 (
 	'Fable Service Manager',
@@ -161,6 +177,54 @@ suite
                         Expect(testFable.serviceManager.defaultServices.DatabaseService.Hash).to.equal('SecondaryConnection');
                     }
                 );
+
+                test
+                (
+                    'Construct a core service before Fable is initialized',
+                    function()
+                    {
+                        let tmpCoreService = new MockCoreService({SomeOption: true});
+
+                        Expect(tmpCoreService).to.be.an('object');
+
+                        tmpCoreService.magicBehavior('MAGICTESTDATA');
+                    }
+                )
+                test
+                (
+                    'Construct a core service with a hash before Fable is initialized',
+                    function()
+                    {
+                        let tmpCoreService = new MockCoreService({SomeOption: true}, 'MockCoreService-1');
+
+                        Expect(tmpCoreService).to.be.an('object');
+                        Expect(tmpCoreService.Hash).to.equal('MockCoreService-1');
+
+                        tmpCoreService.magicBehavior('MAGICTESTDATA');
+                    }
+                )
+
+                test
+                (
+                    'Construct a core service and attach it to Fable after Fable is initialized',
+                    function()
+                    {
+
+                        let tmpCoreService = new MockCoreService({SomeOption: true}, 'MockCoreService-2');
+
+                        Expect(tmpCoreService).to.be.an('object');
+                        Expect(tmpCoreService.Hash).to.equal('MockCoreService-2');
+
+                        let testFable = new libFable({});
+
+                        testFable.serviceManager.connectPreinitServiceProviderInstance(tmpCoreService);
+
+                        Expect(testFable.services.MockCoreService['MockCoreService-2']).to.be.an('object');
+                        Expect(testFable.defaultServices.MockCoreService).to.be.an('object');
+
+                        Expect(testFable.defaultServices.MockCoreService.fable.log).to.be.an('object');
+                    }
+                )
 
                 test
                 (

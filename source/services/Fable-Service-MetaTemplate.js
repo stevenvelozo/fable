@@ -1,4 +1,4 @@
-const libFableServiceBase = require('./Fable-ServiceProviderBase.js');
+const libFableServiceBase = require('../Fable-ServiceProviderBase.js');
 
 const libPrecedent = require('precedent');
 
