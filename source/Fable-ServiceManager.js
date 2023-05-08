@@ -4,7 +4,7 @@
 * @author <steven@velozo.com>
 */
 
-const libFableServiceBase = require('./Fable-ServiceProviderBase.js');
+const libFableServiceBase = require('fable-serviceproviderbase');
 
 class FableService
 {
@@ -40,6 +40,7 @@ class FableService
 		else
 		{
 			// Add the base class to the list of classes
+			this.fable.log.error(`Attempted to add service type [${pServiceType}] with an invalid class.  Using base service class, which will not crash but won't provide meaningful services.`);
 			this.serviceClasses[pServiceType] = libFableServiceBase;
 		}
 	}
@@ -111,3 +112,4 @@ class FableService
 module.exports = FableService;
 
 module.exports.ServiceProviderBase = libFableServiceBase;
+module.exports.CoreServiceProviderBase = libFableServiceBase.CoreServiceProviderBase;

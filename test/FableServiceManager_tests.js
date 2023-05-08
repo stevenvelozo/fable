@@ -46,7 +46,7 @@ class MockDatabaseService extends libFable.ServiceProviderBase
     }
 }
 
-class MockCoreService extends libFable.PreinitServiceProviderBase
+class MockCoreService extends libFable.CoreServiceProviderBase
 {
     constructor(pOptions, pServiceHash)
     {

@@ -8,7 +8,6 @@ const libFableSettings = require('fable-settings');
 const libFableUUID = require('fable-uuid');
 const libFableLog = require('fable-log');
 
-const libFablePreinitServiceProviderBase = require('./Fable-PreinitServiceProviderBase.js');
 const libFableServiceManager = require('./Fable-ServiceManager.js');
 
 // Services
@@ -125,6 +124,6 @@ module.exports.new = autoConstruct;
 
 module.exports.LogProviderBase = libFableLog.LogProviderBase;
 module.exports.ServiceProviderBase = libFableServiceManager.ServiceProviderBase;
-module.exports.PreinitServiceProviderBase = libFablePreinitServiceProviderBase;
+module.exports.CoreServiceProviderBase = libFableServiceManager.CoreServiceProviderBase;
 
 module.exports.precedent = libFableSettings.precedent;

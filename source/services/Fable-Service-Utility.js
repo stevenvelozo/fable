@@ -1,5 +1,4 @@
-const libFableServiceBase = require('../Fable-ServiceProviderBase.js');
-
+const libFableServiceBase = require('../Fable-ServiceManager.js').ServiceProviderBase;
 
 // TODO: These are still pretty big -- consider the smaller polyfills
 const libAsyncWaterfall = require('async.waterfall');
