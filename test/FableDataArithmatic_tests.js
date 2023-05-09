@@ -29,7 +29,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataArithmatic = testFable.DataArithmatic;
+						let _DataArithmatic = testFable.defaultServices.DataArithmatic;
 						Expect(_DataArithmatic
 							.stringReverse('Dogs'))
 							.to.equal('sgoD');
@@ -45,7 +45,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataArithmatic = testFable.DataArithmatic;
+						let _DataArithmatic = testFable.defaultServices.DataArithmatic;
 						Expect(_DataArithmatic
 							.insecureStringHash('Dogs'))
 							.to.equal('HSH2135767');
@@ -68,7 +68,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataArithmatic = testFable.DataArithmatic;
+						let _DataArithmatic = testFable.defaultServices.DataArithmatic;
 						// Test the enclosure cleaning function
 						Expect(_DataArithmatic
 							.cleanEnclosureWrapCharacters('`', '`Dogs`'))
@@ -102,7 +102,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataArithmatic = testFable.DataArithmatic;
+						let _DataArithmatic = testFable.defaultServices.DataArithmatic;
 						Expect(_DataArithmatic
 							.stringStartsWith('Dogs', 'Do'))
 							.to.equal(true);
@@ -124,7 +124,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataArithmatic = testFable.DataArithmatic;
+						let _DataArithmatic = testFable.defaultServices.DataArithmatic;
 						_DataArithmatic._UseEngineStringStartsWith = false;
 						Expect(_DataArithmatic
 							.stringStartsWith('Dogs', 'Do'))
@@ -147,7 +147,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataArithmatic = testFable.DataArithmatic;
+						let _DataArithmatic = testFable.defaultServices.DataArithmatic;
 						Expect(_DataArithmatic
 							.stringEndsWith('Dogs', 'gs'))
 							.to.equal(true);
@@ -169,7 +169,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataArithmatic = testFable.DataArithmatic;
+						let _DataArithmatic = testFable.defaultServices.DataArithmatic;
 						_DataArithmatic._UseEngineStringEndsWith = false;
 						Expect(_DataArithmatic
 							.stringEndsWith('Dogs', 'gs'))
@@ -199,7 +199,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataArithmatic = testFable.DataArithmatic;
+						let _DataArithmatic = testFable.defaultServices.DataArithmatic;
 						Expect(_DataArithmatic
 							.cleanNonAlphaCharacters('Dogs'))
 							.to.equal('Dogs');

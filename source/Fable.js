@@ -10,106 +10,86 @@ const libFableLog = require('fable-log');
 
 const libFableServiceManager = require('./Fable-ServiceManager.js');
 
-// Services
-const libFableServiceDataArithmatic = require('./services/Fable-Service-DataArithmatic.js');
+// Default Services
+const libFableServiceDataArithmatic = require('data-arithmatic');
 const libFableServiceMetaTemplate = require('./services/Fable-Service-MetaTemplate.js');
+const libFableServiceOperation = require('./services/Fable-Service-Operation.js');
 const libFableServiceRestClient = require('./services/Fable-Service-RestClient.js');
 const libFableServiceTemplate = require('./services/Fable-Service-Template.js');
 const libFableServiceUtility = require('./services/Fable-Service-Utility.js');
-
-const libFableOperation = require('./Fable-Operation.js');
 
 class Fable
 {
 	constructor(pSettings)
 	{
-		let tmpSettings = new libFableSettings(pSettings);
+		// Initialization Phase 0: Set up the lowest level state (core services)
+		// Container for the core services prototypes.
+		// This is here so if an API consumer changes the default for a core service,
+		// fable still runs with what was initialized.
+		this._coreServices = {};
 
-		this.settingsManager = tmpSettings;
-
+		// Instantiate the default Settings Manager
+		this._coreServices.SettingsManager = new libFableSettings(pSettings);
 		// Instantiate the UUID generator
-		this.libUUID = new libFableUUID(this.settingsManager.settings);
+		this._coreServices.UUID = new libFableUUID(this._coreServices.SettingsManager.settings);
+		// Instantiate the logging system
+		this._coreServices.Logging = new libFableLog(this._coreServices.SettingsManager.settings);
+		this._coreServices.Logging.initialize();
 
-		this.log = new libFableLog(this.settingsManager.settings);
-		this.log.initialize();
+		// Initialization Phase 1: Instantiate the service manager
+		// This is the start actual bootstrapping point for fable
+		this._coreServices.ServiceManager = new libFableServiceManager(this);
+		this.serviceManager = this._coreServices.ServiceManager;
+		this.serviceManager.connectFable(this);
+		// Bootstrapping of fable into the Service Manager is complete
 
-		// Built-in dependencies
-		this.Dependencies = (
-			{
-				precedent: libFableSettings.precedent
-			});
-
-		// Location for Operation state
-		this.Operations = {};
-
-		this.serviceManager = new libFableServiceManager(this);
+		// Initialization Phase 2: Map in the default services.
+		// They will then be available in the Default service provider set as well.
+		this.serviceManager.connectPreinitServiceProviderInstance(this._coreServices.ServiceManager);
+		this.serviceManager.connectPreinitServiceProviderInstance(this._coreServices.UUID);
+		this.serviceManager.connectPreinitServiceProviderInstance(this._coreServices.Logging);
+		this.serviceManager.connectPreinitServiceProviderInstance(this._coreServices.SettingsManager);
 
 		// Initialize and instantiate the default baked-in Data Arithmatic service
-		this.serviceManager.addServiceType('DataArithmatic', libFableServiceDataArithmatic);
-		this.fable.serviceManager.instantiateServiceProvider('DataArithmatic', {}, 'Default-Service-DataArithmatic');
-		// This service is passing through the data arithmatic library
-		this.DataArithmatic = this.serviceManager.defaultServices.DataArithmatic._DataArithmaticLibrary;
-
-		// Initialize the template service
 		this.serviceManager.addServiceType('Template', libFableServiceTemplate);
-
-		// Initialize the metatemplate service
 		this.serviceManager.addServiceType('MetaTemplate', libFableServiceMetaTemplate);
-
-		// Initialize and instantiate the default baked-in Utility service
-		this.serviceManager.addServiceType('Utility', libFableServiceUtility)
-		this.fable.serviceManager.instantiateServiceProvider('Utility', {}, 'Default-Service-Utility');
-		this.Utility = this.serviceManager.defaultServices.Utility;
-
-		// Add the REST Client service type
+		this.serviceManager.addServiceType('DataArithmatic', libFableServiceDataArithmatic);
+		this.fable.serviceManager.instantiateServiceProvider('DataArithmatic');
+		this.serviceManager.addServiceType('Utility', libFableServiceUtility);
+		this.fable.serviceManager.instantiateServiceProvider('Utility');
+		this.serviceManager.addServiceType('Operation', libFableServiceOperation);
 		this.serviceManager.addServiceType('RestClient', libFableServiceRestClient);
 
-		this.services = this.serviceManager.services;
-		this.defaultServices = this.serviceManager.defaultServices;
 	}
 
 	get settings()
 	{
-		return this.settingsManager.settings;
+		return this._coreServices.SettingsManager.settings;
+	}
+
+	get log()
+	{
+		return this._coreServices.Logging;
+	}
+
+	get services()
+	{
+		return this._coreServices.ServiceManager.services;
+	}
+
+	get defaultServices()
+	{
+		return this._coreServices.ServiceManager.defaultServices;
+	}
+
+	getUUID()
+	{
+		return this._coreServices.UUID.getUUID();
 	}
 
 	get fable()
 	{
 		return this;
-	}
-
-	getUUID()
-	{
-		return this.libUUID.getUUID();
-	}
-
-	createOperation(pOperationName, pOperationHash)
-	{
-		let tmpOperation = new libFableOperation(this, pOperationName, pOperationHash);
-
-		if (this.Operations.hasOwnProperty(tmpOperation.Hash))
-		{
-			// Uh Oh ...... Operation Hash Collision!
-			// TODO: What to do?!
-		}
-		else
-		{
-			this.Operations[tmpOperation.Hash] = tmpOperation;
-		}
-
-		return tmpOperation;
-	}
-
-	getOperation(pOperationHash)
-	{
-		if (!this.Operations.hasOwnProperty(pOperationHash))
-		{
-			return false;
-		}
-		else
-		{
-			return this.Operations[pOperationHash];
-		}
 	}
 }
 

@@ -27,11 +27,11 @@ suite
 					function()
 					{
 						let testFable = new libFable();
-						let tmpOperation = testFable.createOperation('Big Complex Integration Operation', 'INTEGRATION-123');
+						let tmpOperation = testFable.serviceManager.instantiateServiceProvider('Operation', {Name: 'Big Complex Integration Operation'}, 'INTEGRATION-123');
 						Expect(tmpOperation).to.be.an('object');
-						Expect(testFable.getOperation('INTEGRATION-123')).to.equal(tmpOperation);
-						Expect(testFable.getOperation('BADHASH')).to.be.false;
-						Expect(testFable.Operations.hasOwnProperty('INTEGRATION-123')).to.equal(true);
+						Expect(testFable.services.Operation['INTEGRATION-123']).to.equal(tmpOperation);
+						Expect(testFable.services.Operation['BADHASH']).to.be.undefined;
+						Expect(testFable.services.Operation.hasOwnProperty('INTEGRATION-123')).to.equal(true);
 						tmpOperation.log.info(`Operation GUID ${tmpOperation.GUID} ---- Test 123`);
 						Expect(tmpOperation.state.Log.length).to.equal(1);
 						Expect(tmpOperation.state.Log[0]).to.contain('Test 123');
@@ -43,15 +43,15 @@ suite
 					function()
 					{
 						let testFable = new libFable();
-						let tmpOperation = testFable.createOperation('Big Complex Integration Operation', 'INTEGRATION-123');
+						let tmpOperation = testFable.serviceManager.instantiateServiceProvider('Operation', {Name: 'Big Complex Integration Operation'}, 'INTEGRATION-123');;
 						Expect(tmpOperation).to.be.an('object');
 						Expect(tmpOperation.name).to.equal('Big Complex Integration Operation');
 
-						let tmpCollisionOperation = testFable.createOperation('Another Big Complex Integration Operation with Colliding Name', 'INTEGRATION-123');
+						let tmpCollisionOperation = testFable.serviceManager.instantiateServiceProvider('Operation', {Name: 'Another Big Complex Integration Operation with Colliding Name'}, 'INTEGRATION-123');;
 						Expect(tmpCollisionOperation).to.be.an('object');
 						Expect(tmpCollisionOperation.name).to.equal('Another Big Complex Integration Operation with Colliding Name');
 
-						Expect(testFable.getOperation('INTEGRATION-123')).to.equal(tmpOperation);
+						Expect(testFable.services.Operation['INTEGRATION-123']).to.equal(tmpCollisionOperation);
 
 					}
 				);
@@ -61,9 +61,9 @@ suite
 					function()
 					{
 						let testFable = new libFable();
-						let tmpOperation = testFable.createOperation('Another Big Complex Integration Operation');
+						let tmpOperation = testFable.serviceManager.instantiateServiceProvider('Operation', {Name:'Another Big Complex Integration Operation'});
 						Expect(tmpOperation).to.be.an('object');
-						Expect(testFable.Operations.hasOwnProperty(tmpOperation.Hash)).to.equal(true);
+						Expect(testFable.services.Operation.hasOwnProperty(tmpOperation.Hash)).to.equal(true);
 						Expect(tmpOperation.state.Log.length).to.equal(0);
 						let tmpText = `Operation ${tmpOperation.Hash} starting up...`;
 						tmpOperation.log.info(tmpText);

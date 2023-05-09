@@ -6,11 +6,13 @@
 
 const libFableServiceBase = require('fable-serviceproviderbase');
 
-class FableService
+class FableService extends libFableServiceBase.CoreServiceProviderBase
 {
-	constructor(pFable)
+	constructor(pSettings, pServiceHash)
 	{
-		this.fable = pFable;
+		super(pSettings, pServiceHash);
+
+		this.serviceType = 'ServiceManager';
 
 		this.serviceTypes = [];
 

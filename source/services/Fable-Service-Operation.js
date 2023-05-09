@@ -1,57 +1,27 @@
-const _OperationStatePrototype = JSON.stringify(
+const libFableServiceBase = require('../Fable-ServiceManager.js').ServiceProviderBase;
+
+const _OperationStatePrototypeString = JSON.stringify(require('./Fable-Service-Operation-DefaultSettings.js'));
+
+class FableOperation extends libFableServiceBase
 {
-	"Metadata": {
-		"GUID": false,
-		"Hash": false,
 
-		"Title": "",
-		"Summary": "",
-
-		"Version": 0
-	},
-	"Status": {
-        "Completed": false,
-
-        "CompletionProgress": 0,
-        "CompletionTimeElapsed": 0,
-
-        "Steps": 1,
-        "StepsCompleted": 0,
-
-        "StartTime": 0,
-        "EndTime": 0
-	},
-	"Errors": [],
-	"Log": []
-});
-
-class FableOperation
-{
-	constructor(pFable, pOperationName, pOperationHash)
+	constructor(pFable, pOptions, pServiceHash)
 	{
-		this.fable = pFable;
+        super(pFable, pOptions, pServiceHash);
 
-		this.name = pOperationName;
+        this.serviceType = 'PhasedOperation';
 
-		this.state = JSON.parse(_OperationStatePrototype);
+		this.state = JSON.parse(_OperationStatePrototypeString);
 
 		this.state.Metadata.GUID = this.fable.getUUID();
-		this.state.Metadata.Hash = this.state.GUID;
+		this.state.Metadata.Hash = this.Hash;
 
-		if (typeof(pOperationHash) == 'string')
-		{
-			this.state.Metadata.Hash = pOperationHash;
-		}
+		this.name = (typeof(this.options.Name) == 'string') ? this.options.Name : `Unnamed Operation ${this.state.Metadata.GUID}`;
 	}
 
 	get GUID()
 	{
 		return this.state.Metadata.GUID;
-	}
-
-	get Hash()
-	{
-		return this.state.Metadata.Hash;
 	}
 
 	get log()

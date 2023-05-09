@@ -16,8 +16,6 @@ suite
 	'Fable',
 	function()
 	{
-		var testFable = false;
-
 		setup
 		(
 			function()
@@ -35,7 +33,7 @@ suite
 					'The class should initialize itself into a happy little object.',
 					function()
 					{
-						testFable = new libFable({LogStreams: false});
+						let testFable = new libFable({LogStreams: false});
 						// Instantiate the logger
 						Expect(testFable).to.be.an('object', 'Fable should initialize as an object directly from the require statement.');
 						Expect(testFable).to.have.a.property('log')
@@ -50,10 +48,10 @@ suite
 				);
 				test
 				(
-					'The class should initialize itself into a happy little object.',
+					'The class should initialize itself into a happy little object with more config.',
 					function()
 					{
-						testFable = libFable.new({Product:'LegacyApplicationNameHere', LogStreams: false});
+						let testFable = libFable.new({Product:'LegacyApplicationNameHere', LogStreams: false});
 						// Instantiate the logger
 						Expect(testFable).to.be.an('object', 'Fable should initialize as an object directly from the require statement.');
 						Expect(testFable).to.have.a.property('log')
@@ -71,7 +69,7 @@ suite
 					'Logging should happen...',
 					function(fDone)
 					{
-						testFable = new libFable({Product:'LogTest', LogStreams:[{streamtype:'process.stdout'}]});
+						let testFable = new libFable({Product:'LogTest', LogStreams:[{streamtype:'process.stdout'}]});
 						Expect(testFable).to.have.a.property('log')
 						.that.is.a('object');
 						testFable.log.info('There should be a visible log entry here...');
@@ -83,7 +81,7 @@ suite
 					'Generate a uuid...',
 					function(fDone)
 					{
-						testFable = new libFable({Product:'LogTest', LogStreams:[{streamtype:'process.stdout'}]});
+						let testFable = new libFable({Product:'LogTest', LogStreams:[{streamtype:'process.stdout'}]});
 						Expect(testFable).to.have.a.property('log')
 							.that.is.a('object');
 						var tmpUUID = testFable.getUUID();
@@ -99,14 +97,14 @@ suite
 					'Change some settings later...',
 					function(fDone)
 					{
-						testFable = new libFable();
+						let testFable = new libFable();
 						Expect(testFable).to.have.a.property('settings')
 						.that.is.a('object');
 						Expect(testFable.settings.Product)
 							.to.equal('ApplicationNameHere');
 						Expect(testFable.settings.ProductVersion)
 							.to.equal('0.0.0');
-						testFable.settingsManager.merge({Product:'TestProduct'});
+						testFable.defaultServices.SettingsManager.merge({Product:'TestProduct'});
 						Expect(testFable.settings.Product)
 							.to.equal('TestProduct');
 						Expect(testFable.settings.ProductVersion)
