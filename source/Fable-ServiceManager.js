@@ -48,6 +48,13 @@ class FableService extends libFableServiceBase.CoreServiceProviderBase
 		}
 	}
 
+	// This is for the services that are meant to run mostly single-instance so need a default at initialization
+	addAndInstantiateServiceType(pServiceType, pServiceClass)
+	{
+		this.addServiceType(pServiceType, pServiceClass);
+		this.instantiateServiceProvider(pServiceType, {}, `${pServiceType}-Default`);
+	}
+
 	instantiateServiceProvider(pServiceType, pOptions, pCustomServiceHash)
 	{
 		// Instantiate the service

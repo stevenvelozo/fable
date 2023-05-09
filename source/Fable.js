@@ -53,10 +53,8 @@ class Fable
 		// Initialize and instantiate the default baked-in Data Arithmatic service
 		this.serviceManager.addServiceType('Template', libFableServiceTemplate);
 		this.serviceManager.addServiceType('MetaTemplate', libFableServiceMetaTemplate);
-		this.serviceManager.addServiceType('DataArithmatic', libFableServiceDataArithmatic);
-		this.fable.serviceManager.instantiateServiceProvider('DataArithmatic');
-		this.serviceManager.addServiceType('Utility', libFableServiceUtility);
-		this.fable.serviceManager.instantiateServiceProvider('Utility');
+		this.serviceManager.addAndInstantiateServiceType('DataArithmatic', libFableServiceDataArithmatic);
+		this.serviceManager.addAndInstantiateServiceType('Utility', libFableServiceUtility);
 		this.serviceManager.addServiceType('Operation', libFableServiceOperation);
 		this.serviceManager.addServiceType('RestClient', libFableServiceRestClient);
 
