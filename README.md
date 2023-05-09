@@ -1,7 +1,7 @@
 Fable Overview
 =====
 
-It is tiring to setup logging and settings management in every application you write. Fable provides a single line solution to have simple logging to the console via [bunyan](https://github.com/trentm/node-bunyan). Add a simple configuration object and it can also write the log to a file. Or even mongodb!
+It is tiring to setup logging and settings management in every application you write. Fable provides a single line solution to have simple logging to the console and file, with the options for plugins to things like bunyan and graylog. Add a simple configuration object and it can also write the log to a file. Or even mongodb!
 
 ## Install
 
@@ -14,88 +14,62 @@ $ npm install fable
 You can have basic low-level application services in a single line of code.
 
 ```js
-var fable = require('fable').new();
+const libFable = require('fable');
 
-fable.log.info('What are you doing, Dave?', {SomeColor: 'Red', CurrentFolder: __dirname });
+var fable = new libFable();
+
+fable.log.info('What are you doing, Dave?', {SomeColorSetting: 'Red', CurrentFolder: __dirname });
 ```
 
 Which will output the following to the terminal:
 ```
 $ node index.js
-{"name":"Fable","hostname":"MathBookAir","pid":38807,"level":30,"Source":"0x53e0793606800000","ver":"0.0.0","datum":{"SomeColor":"Red","CurrentFolder":"/Users/steven/FableDemo1"},"msg":"What are you doing, Dave?","time":"2015-08-31T03:55:02.555Z","v":0}
+2023-05-09T23:04:34.041Z [info] (ApplicationNameHere): What are you doing, Dave?
+{
+  "SomeColorSetting": "Red",
+  "CurrentFolder": "/Users/steven/Code/retold/modules/fable/fable/debug"
+}
 ```
-
-From this example, you can learn the following:
-
-* It is pretty simple to start using the library
-* The logging output looks really wierd on a standard terminal.
 
 ## Logging
 
-Fable uses the [bunyan](https://github.com/trentm/node-bunyan) logging library.  By default, the log messages all get sent to stdout.
+If you want logging to go to a file, you can do that too.  Just configure the `LogStreams` array in the settings object like so (everything but the `loggertype` and `path` are optional):
 
-To make the console log messages prettier, you can install the global bunyan library:
-
-```sh
-nim install -g bunyan
-```
-
-After which you can send logging output through bunyan, turning this from the quickstart above:
-
-```
-$ node index.js
-{"name":"Fable","hostname":"MathBookAir","pid":38807,"level":30,"Source":"0x53e0793606800000","ver":"0.0.0","datum":{"SomeColor":"Red","CurrentFolder":"/Users/steven/FableDemo1"},"msg":"What are you doing, Dave?","time":"2015-08-31T03:55:02.555Z","v":0}
-```
-
-Into something more readable:
-
-```
-$ node index.js |bunyan
-[2015-08-31T04:06:10.230Z]  INFO: Fable/38992 on MathBookAir: What are you doing, Dave? (Source=0x53e07bc20d400000, ver=0.0.0)
-    datum: {
-      "SomeColor": "Red",
-      "CurrentFolder": "/Users/steven/FableDemo1"
-    }
-```
-
-If you want logging to go to a file, you can do that too.  Just configure the `LogStreams` array in the settings object like so:
-
-```
+```js
 {
-	"Product": "MyApplicationNameHere",
-	"ProductVersion": "2.1.8",
-
-	"UUID":
-		{
-			"DataCenter": 0,
-			"Worker": 0
-		},
-	"LogStreams":
+	Product:'SimpleFlatFileTest',
+	LogStreams:
 		[
 			{
-				"level": "trace",
-				"path": "./Logs/MyFavoriteLogFile.log"
+				// The loggertype is what tells fable-log to write to files
+				loggertype:'simpleflatfile',
+				outputloglinestoconsole: false,
+				showtimestamps: true,
+				formattedtimestamps: true,
+				level:'trace',
+				// The path is where it writes the files
+				path: '/tmp/Fable-Log-Test.log'
 			}
 		]
 }
 ```
 
-As long as the `./Logs` folder exists, Bunyan will write to this log file instead.
+As long as the `/tmp` folder exists and is writable, fable will write to that log file.
 
-We can stream log entries from a certain level or higher (e.g. in the previous example we are writing `trace` and higher log lines to the file).  You can then have a text log on rotation per application server, and a centralized mongodb log for the whole farm.
+### Log Streams are Plugins for Fable-Log
 
-There are three log stream types supported:
+If you want to create your own adapter for log streams, it is easily extensible.  You can write your own plugin for fable-log, and include it during initialization.  (examples to come)
 
- - console
- - text file
- - mongodb
+### Log Streams are Multiplexed
 
-Below is a JSON configuration example containing all of the three log stream types supported:
+You can decide to use multiple log streams simultaneously.  If fable-log doesn't recognize the stream type in the configuration it falls back to terminal.  *note this means it can lead to multiple copies of the same log entry*.  You broke it, you bought it.
+
+Below is a JSON configuration example containing two log streams:
 
 ```
 {
 	"Product": "MyApplicationNameHere",
-	"ProductVersion": "2.1.8",
+	"ProductVersion": "3.1.9",
 
 	"UUID":
 		{
@@ -106,22 +80,19 @@ Below is a JSON configuration example containing all of the three log stream typ
 		[
 			{
 				"level": "trace",
+				"loggertype":"simpleflatfile",
 				"path": "./Logs/Application.log"
 			},
 			{
 				"level": "trace",
 				"streamtype": "process.stdout"
-			},
-			{
-				"level": "info",
-				"streamtype": "mongodb"
 			}
 		]
 }
 ```
 
 
-### _Fable.log.info(message, rawObject)
+### Log Levels _Fable.log.info(message, rawObject)
 
 Writes a log message to the `info` log level.  All [bunyan](https://github.com/trentm/node-bunyan) log levels are supported, as the log object here is just a reference to bunyan.
 
@@ -322,4 +293,3 @@ var uuid = fable.getUUID();
 
 // The uuid variable now contains a unique string.
 ```
-

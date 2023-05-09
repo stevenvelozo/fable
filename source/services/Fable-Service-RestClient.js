@@ -8,10 +8,37 @@ class FableServiceRestClient extends libFableServiceBase
 	{
 		super(pFable, pOptions, pServiceHash);
 
+		this.TraceLog = false;
+		if (this.options.TraceLog || this.fable.TraceLog)
+		{
+			this.TraceLog = true;
+		}
+
+		this.dataFormat = this.fable.defaultServices.DataFormat;
+
 		this.serviceType = 'RestClient';
 	}
 
 	getJSON(pOptionsOrURL, fCallback)
+	{
+		return this.getRaw(pOptionsOrURL, 
+			(pError, pResponse, pResult) =>
+			{
+				if (pError)
+				{
+					return fCallback(pError, pResponse, pResult);
+				}
+
+				if (pResponse.statusCode != 200)
+				{
+					return fCallback(new Error(`Invalid status code ${pResponse.statusCode}`), pResponse, pResult);
+				}
+
+				return fCallback(pError, pResponse, JSON.parse(pResult));
+			});
+	}
+
+	getRaw(pOptionsOrURL, fCallback)
 	{
 		let tmpRequestOptions = (typeof(pOptions) == 'object') ? pOptions : {};
 		if (typeof(pOptionsOrURL) == 'string')
@@ -20,6 +47,11 @@ class FableServiceRestClient extends libFableServiceBase
 		}
 
 		let tmpRequestStartTime = this.fable.log.getTimeStamp();
+		if (this.TraceLog)
+		{
+			let tmpConnectTime = this.fable.log.getTimeStamp();
+			this.fable.log.debug(`Beginning GET request to ${tmpRequestOptions.url} at ${tmpRequestStartTime}`);
+		}
 
 		libSimpleGet.get(tmpRequestOptions,
 			(pError, pResponse)=>
@@ -29,36 +61,32 @@ class FableServiceRestClient extends libFableServiceBase
 					return fCallback(pError, pResponse, tmpRequestOptions);
 				}
 
-				if (this.options.DebugLog)
+				if (this.TraceLog)
 				{
-					this.fable.log.debug(`--> GET connected in ${this._Log.getTimeDelta(tmpRequestTime)}ms code ${pResponse.statusCode}`);
+					let tmpConnectTime = this.fable.log.getTimeStamp();
+					this.fable.log.debug(`--> GET connected in ${this.dataFormat.formatTimeDelta(tmpRequestStartTime, tmpConnectTime)}ms code ${pResponse.statusCode}`);
 				}
 
 				let tmpData = '';
 
 				pResponse.on('data', (pChunk)=>
 					{
-						if (this.options.DebugLog)
+						if (this.TraceLog)
 						{
-							this.fable.log.debug(`--> GET data chunk size ${pChunk.length}b received in ${this._Log.getTimeDelta(tmpRequestTime)}ms`);
+							let tmpChunkTime = this.fable.log.getTimeStamp();
+							this.fable.log.debug(`--> GET data chunk size ${pChunk.length}b received in ${this.dataFormat.formatTimeDelta(tmpRequestStartTime, tmpChunkTime)}ms`);
 						}
 						tmpData += pChunk;
 					});
 
 				pResponse.on('end', ()=>
 					{
-						let tmpResult = false;
-
-						if (tmpData)
+						if (this.TraceLog)
 						{
-							tmpResult = JSON.parse(tmpData);
+							let tmpCompletionTime = this.fable.log.getTimeStamp();
+							this.fable.log.debug(`==> GET completed data size ${tmpData.length}b received in ${this.dataFormat.formatTimeDelta(tmpRequestStartTime, tmpCompletionTime)}ms`);
 						}
-
-						if (this.options.DebugLog)
-						{
-							this.fable.log.debug(`==> GET completed data size ${tmpData.length}b received in ${this._Log.getTimeDelta(tmpRequestTime)}ms`,tmpResult);
-						}
-						return fCallback(pError, pResponse, tmpResult);
+						return fCallback(pError, pResponse, tmpData);
 					});
 			});
 	}

@@ -15,7 +15,7 @@ class SimpleService extends libFable.ServiceProviderBase
     }
 }
 
-let testFable = new libFable({});
+let testFable = new libFable({"Product": "FableDebugHarness"});
 
 testFable.serviceManager.addServiceType('SimpleService', SimpleService);
 
@@ -29,3 +29,17 @@ testFable.serviceManager.services['SimpleService']['SimpleService-123'].doSometh
 console.log(`Initialized Service ${testFable.serviceManager.services['SimpleService']['SimpleService-123'].serviceType} as UUID ${testFable.serviceManager.services['SimpleService']['SimpleService-123'].UUID} with hash ${testFable.serviceManager.services['SimpleService']['SimpleService-123'].Hash}`);
 
 testFable.serviceManager.services['SimpleService']['SimpleService-123'].doSomething();
+
+// Instantiate the RestClient Service Provider
+let tmpRestClient = testFable.serviceManager.instantiateServiceProvider('RestClient', {TraceLog: true}, 'RestClient-99');
+
+// Download the wiktionary entry for dog!
+tmpRestClient.getJSON('https://en.wiktionary.org/w/api.php?action=parse&prop=wikitext&format=json&page=dog',
+    (pError, pResponse, pBody)=>
+    {
+        testFable.log.info('Response received!');
+    });
+
+var fable = new libFable();
+
+fable.log.info('What are you doing, Dave?', {SomeColorSetting: 'Red', CurrentFolder: __dirname });

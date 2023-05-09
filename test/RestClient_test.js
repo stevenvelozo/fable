@@ -35,7 +35,7 @@ suite
 					{
 						let testFable = new libFable();
 						// Instantiate the RestClient Service Provider
-                        let tmpRestClient = testFable.serviceManager.instantiateServiceProvider('RestClient', {SomeOption: true}, 'RestClient-99');
+                        let tmpRestClient = testFable.serviceManager.instantiateServiceProvider('RestClient', {TraceLog: true}, 'RestClient-99');
 
 						// Download the wiktionary entry for dog!
 						tmpRestClient.getJSON('https://en.wiktionary.org/w/api.php?action=parse&prop=wikitext&format=json&page=dog',
