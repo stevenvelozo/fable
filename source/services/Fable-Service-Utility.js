@@ -77,6 +77,76 @@ class FableServiceUtility extends libFableServiceBase
 
 		return tmpChunkCache;
 	}
+
+	// Convert an ISO string to a javascript date object
+	// Adapted from https://stackoverflow.com/a/54751179
+	//
+	// Takes strings like: 2022-11-04T11:34:45.000Z
+	//                and: 1986-06-11T09:34:46.012Z+0200
+	// ... and converts them into javascript timestamps, following the directions of the timezone stuff.
+	//
+	// This is not meant to replace the more complex libraries.
+	// This *is* meant to be a simple, small, and fast way to convert ISO strings to dates in engines with limited JS capabilities.
+	isoStringToDate (pISOString)
+	{
+
+		// Split the string into an array based on the digit groups.
+		var tmpDateParts = pISOString.split( /\D+/ );
+
+		// Set up a date object with the current time.
+		var tmpReturnDate = new Date();
+
+		// Manually parse the parts of the string and set each part for the
+		// date. Note: Using the UTC versions of these functions is necessary
+		// because we're manually adjusting for time zones stored in the
+		// string.
+		tmpReturnDate.setUTCFullYear( parseInt( tmpDateParts[ 0 ] ) );
+
+		// The month numbers are one "off" from what normal humans would expect
+		// because January == 0.
+		tmpReturnDate.setUTCMonth( parseInt( tmpDateParts[ 1 ] - 1 ) );
+		tmpReturnDate.setUTCDate( parseInt( tmpDateParts[ 2 ] ) );
+
+		// Set the time parts of the date object.
+		tmpReturnDate.setUTCHours( parseInt( tmpDateParts[ 3 ] ) );
+		tmpReturnDate.setUTCMinutes( parseInt( tmpDateParts[ 4 ] ) );
+		tmpReturnDate.setUTCSeconds( parseInt( tmpDateParts[ 5 ] ) );
+		tmpReturnDate.setUTCMilliseconds( parseInt( tmpDateParts[ 6 ] ) );
+
+		// Track the number of hours we need to adjust the date by based on the timezone.
+		var tmpTimeZoneOffsetInHours = 0;
+
+		// If there's a value for either the hours or minutes offset.
+		if (tmpDateParts[ 7 ] || tmpDateParts[ 8 ])
+		{
+
+			// Track the number of minutes we need to adjust the date by based on the timezone.
+			var tmpTimeZoneOffsetInMinutes = 0;
+
+			// If there's a value for the minutes offset.
+			if (tmpDateParts[8])
+			{
+				// Convert the minutes value into an hours value.
+				tmpTimeZoneOffsetInMinutes = parseInt(tmpDateParts[8]) / 60;
+			}
+
+			// Add the hours and minutes values to get the total offset in hours.
+			tmpTimeZoneOffsetInHours = parseInt(tmpDateParts[7]) + tmpTimeZoneOffsetInMinutes;
+
+			// If the sign for the timezone is a plus to indicate the timezone is ahead of UTC time.
+			if (pISOString.substr( -6, 1 ) == "+")
+			{
+				// Make the offset negative since the hours will need to be subtracted from the date.
+				tmpTimeZoneOffsetInHours *= -1;
+			}
+		}
+
+		// Get the current hours for the date and add the offset to get the correct time adjusted for timezone.
+		tmpReturnDate.setHours( tmpReturnDate.getHours() + tmpTimeZoneOffsetInHours );
+
+		// Return the Date object calculated from the string.
+		return tmpReturnDate;
+	}
 }
 
 module.exports = FableServiceUtility;
