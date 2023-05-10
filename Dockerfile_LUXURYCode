@@ -8,6 +8,7 @@ VOLUME /home/coder/.vscode
 RUN echo "...installing debian dependencies..."
 RUN sudo apt update
 RUN sudo apt install vim curl tmux -y
+RUN sudo apt install default-mysql-server default-mysql-client -y
 
 RUN echo "Building development image..."
 
@@ -26,6 +27,10 @@ RUN code-server --install-extension dbaeumer.vscode-eslint
 RUN code-server --install-extension eamodio.gitlens
 
 # Other extensions (uncomment them to have them automagic, or run this from a terminal to install in the container):
+
+# SQL Tools
+RUN code-server --install-extension mtxr.sqltools
+RUN code-server --install-extension mtxr.sqltools-driver-mysql
 
 # Microsoft's AI code completion
 # RUN code-server --install-extension  VisualStudioExptTeam.vscodeintellicode
@@ -49,6 +54,17 @@ RUN code-server --install-extension eamodio.gitlens
 # An easy on the eyes color theme
 # RUN code-server --install-extension daylerees.rainglow
 
+RUN echo "...configuring mariadb (mysql) server..."
+RUN sudo sed -i "s|bind-address|#bind-address|g" /etc/mysql/mariadb.conf.d/50-server.cnf
+ADD ./.config/retold-harness/MySQL-Security.sql /home/coder/MySQL-Configure-Security.sql
+ADD ./.config/retold-harness/MySQL-Laden-Entry.sh /usr/bin/MySQL-Laden-Entry.sh
+RUN ( sudo mysqld_safe --skip-grant-tables --skip-networking & ) && sleep 5 &&  mysql -u root < /home/coder/MySQL-Configure-Security.sql
+
+# Import the initial database
+COPY ./.config/retold-harness//model/sql_create/BookStore-CreateDatabase.mysql.sql /home/coder/MySQL-Create-Databases.sql
+RUN sudo service mariadb restart && sleep 5 && mysql -u root -p"123456789" -e "CREATE DATABASE bookstore;"
+RUN sudo service mariadb restart && sleep 5 && mysql -u root -p"123456789" bookstore < /home/coder/MySQL-Create-Databases.sql
+
 RUN echo "...mapping library specific volumes..."
 
 # Volume mapping for code
@@ -67,3 +83,5 @@ RUN . ~/.nvm/nvm.sh && source ~/.bashrc && nvm install 14
 RUN . ~/.nvm/nvm.sh && source ~/.bashrc && nvm alias default 14
 
 WORKDIR /home/coder/fable
+
+ENTRYPOINT ["/usr/bin/MySQL-Laden-Entry.sh"]
