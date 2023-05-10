@@ -18,7 +18,7 @@ const libMySQL = require('mysql2');
 // Meadow is the DAL
 const libMeadow = require('meadow');
 // Meadow-endpoints maps the DAL to restify endpoints automagically
-const libMeadowEndpoints = require('../source/Meadow-Endpoints.js');
+const libMeadowEndpoints = require('meadow-endpoints');
 
 let _Fable = new libFable(_Settings);
 let _Orator = new libOrator(_Fable, libOratorServiceServerRestify);

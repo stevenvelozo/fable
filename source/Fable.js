@@ -64,6 +64,11 @@ class Fable
 		return this._coreServices.SettingsManager.settings;
 	}
 
+	get settingsManager()
+	{
+		return this._coreServices.SettingsManager;
+	}
+
 	get log()
 	{
 		return this._coreServices.Logging;
