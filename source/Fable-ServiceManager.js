@@ -65,7 +65,7 @@ class FableService extends libFableServiceBase.CoreServiceProviderBase
 		// If this is the first service of this type, make it the default
 		if (!this.defaultServices.hasOwnProperty(pServiceType))
 		{
-			this.defaultServices[pServiceType] = tmpService;
+			this.setDefaultServiceInstantiation(pServiceType, tmpService.Hash)
 		}
 
 		return tmpService;
@@ -100,7 +100,7 @@ class FableService extends libFableServiceBase.CoreServiceProviderBase
 		// If this is the first service of this type, make it the default
 		if (!this.defaultServices.hasOwnProperty(tmpServiceType))
 		{
-			this.defaultServices[tmpServiceType] = pServiceInstance;
+			this.setDefaultServiceInstantiation(tmpServiceType, tmpServiceHash)
 		}
 
 		return pServiceInstance;
@@ -110,6 +110,7 @@ class FableService extends libFableServiceBase.CoreServiceProviderBase
 	{
 		if (this.services[pServiceType].hasOwnProperty(pServiceHash))
 		{
+			this.fable[pServiceType] = this.services[pServiceType][pServiceHash];
 			this.defaultServices[pServiceType] = this.services[pServiceType][pServiceHash];
 			return true;
 		}
