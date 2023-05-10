@@ -10,10 +10,11 @@
   "license": "MIT",
   "dependencies": {
     "async": "^3.2.4",
-    "fable": "^3.0.33",
+    "fable": "^3.0.35",
     "meadow": "^2.0.4",
     "meadow-endpoints": "^3.0.7",
     "mysql2": "^3.3.0",
-    "orator": "^3.0.11"
+    "orator": "^3.0.11",
+    "papaparse": "^5.4.1"
   }
 }

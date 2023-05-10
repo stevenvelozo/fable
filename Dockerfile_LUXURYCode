@@ -54,7 +54,7 @@ RUN code-server --install-extension mtxr.sqltools-driver-mysql
 # An easy on the eyes color theme
 # RUN code-server --install-extension daylerees.rainglow
 
-RUN echo "...configuring mariadb (mysql) server..."
+RUN echo "...configuring mariadb (mysql) server...."
 RUN sudo sed -i "s|bind-address|#bind-address|g" /etc/mysql/mariadb.conf.d/50-server.cnf
 ADD ./.config/retold-harness/MySQL-Security.sql /home/coder/MySQL-Configure-Security.sql
 ADD ./.config/retold-harness/MySQL-Laden-Entry.sh /usr/bin/MySQL-Laden-Entry.sh
@@ -81,6 +81,11 @@ RUN curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | ba
 RUN echo "...installing node version 14 as the default..."
 RUN . ~/.nvm/nvm.sh && source ~/.bashrc && nvm install 14
 RUN . ~/.nvm/nvm.sh && source ~/.bashrc && nvm alias default 14
+
+WORKDIR /home/coder/fable/.config/retold-harness
+
+RUN . ~/.nvm/nvm.sh && source ~/.bashrc && npm install
+# RUN ./Bookstore-Import-Books.sh
 
 WORKDIR /home/coder/fable
 
