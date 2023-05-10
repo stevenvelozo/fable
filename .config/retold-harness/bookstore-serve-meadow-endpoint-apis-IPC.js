@@ -3,7 +3,6 @@
 */
 const libWhyMe = require('why-is-node-running');
 /**
-* @license MIT
 * @author <steven@velozo.com>
 */
 

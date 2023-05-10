@@ -1,6 +1,5 @@
 /**
 * Fable Application Services Management
-* @license MIT
 * @author <steven@velozo.com>
 */
 

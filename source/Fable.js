@@ -1,6 +1,5 @@
 /**
 * Fable Application Services Support Library
-* @license MIT
 * @author <steven@velozo.com>
 */
 // Pre-init services

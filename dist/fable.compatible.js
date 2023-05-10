@@ -205,7 +205,6 @@ emitter.addEventListener(name,function wrapListener(arg){// IE does not have bui
 if(flags.once){emitter.removeEventListener(name,wrapListener);}listener(arg);});}else{throw new TypeError('The "emitter" argument must be of type EventEmitter. Received type '+_typeof(emitter));}}},{}],22:[function(require,module,exports){/**
 * Base Logger Class
 *
-* @license MIT
 *
 * @author Steven Velozo <steven@velozo.com>
 */var BaseLogger=/*#__PURE__*/function(){function BaseLogger(pLogStreamSettings,pFableLog){_classCallCheck2(this,BaseLogger);// This should not possibly be able to be instantiated without a settings object
@@ -222,7 +221,6 @@ var tmpRandomData=(tmpDate+Math.random()*16)%16|0;tmpDate=Math.floor(tmpDate/16)
 return true;}}]);return BaseLogger;}();module.exports=BaseLogger;},{}],23:[function(require,module,exports){/**
 * Default Logger Provider Function
 *
-* @license MIT
 *
 * @author Steven Velozo <steven@velozo.com>
 */ // Return the providers that are available without extensions loaded
@@ -259,20 +257,17 @@ function autoConstruct(pSettings){return new FableLog(pSettings);}module.exports
 * For a couple services, we need to be able to instantiate them before the Fable object is fully initialized.
 * This is a base class for those services.
 *
-* @license MIT
 * @author <steven@velozo.com>
 */var FableCoreServiceProviderBase=/*#__PURE__*/function(){function FableCoreServiceProviderBase(pOptions,pServiceHash){_classCallCheck2(this,FableCoreServiceProviderBase);this.fable=false;this.options=_typeof(pOptions)==='object'?pOptions:{};this.serviceType='Unknown';// The hash will be a non-standard UUID ... the UUID service uses this base class!
 this.UUID="CORESVC-".concat(Math.floor(Math.random()*(99999-10000)+10000));this.Hash=typeof pServiceHash==='string'?pServiceHash:"".concat(this.UUID);}_createClass2(FableCoreServiceProviderBase,[{key:"connectFable",value:// After fable is initialized, it would be expected to be wired in as a normal service.
 function connectFable(pFable){this.fable=pFable;return true;}}]);return FableCoreServiceProviderBase;}();_defineProperty2(FableCoreServiceProviderBase,"isFableService",true);module.exports=FableCoreServiceProviderBase;},{}],29:[function(require,module,exports){/**
 * Fable Service Base
-* @license MIT
 * @author <steven@velozo.com>
 */var FableServiceProviderBase=/*#__PURE__*/_createClass2(function FableServiceProviderBase(pFable,pOptions,pServiceHash){_classCallCheck2(this,FableServiceProviderBase);this.fable=pFable;this.options=_typeof(pOptions)==='object'?pOptions:{};this.serviceType='Unknown';this.UUID=pFable.getUUID();this.Hash=typeof pServiceHash==='string'?pServiceHash:"".concat(this.UUID);});_defineProperty2(FableServiceProviderBase,"isFableService",true);module.exports=FableServiceProviderBase;module.exports.CoreServiceProviderBase=require('./Fable-ServiceProviderBase-Preinit.js');},{"./Fable-ServiceProviderBase-Preinit.js":28}],30:[function(require,module,exports){module.exports={"Product":"ApplicationNameHere","ProductVersion":"0.0.0","ConfigFile":false,"LogStreams":[{"level":"trace"}]};},{}],31:[function(require,module,exports){(function(process){(function(){/**
 * Fable Settings Template Processor
 *
 * This class allows environment variables to come in via templated expressions, and defaults to be set.
 *
-* @license MIT
 *
 * @author Steven Velozo <steven@velozo.com>
 * @module Fable Settings
@@ -282,7 +277,6 @@ this.templateProcessor.addPattern('${','}',function(pTemplateValue){var tmpTempl
 var tmpDefaultValue=tmpTemplateValue.substring(tmpSeparatorIndex+1);var tmpEnvironmentVariableName=tmpSeparatorIndex>-1?tmpTemplateValue.substring(0,tmpSeparatorIndex):tmpTemplateValue;if(process.env.hasOwnProperty(tmpEnvironmentVariableName)){return process.env[tmpEnvironmentVariableName];}else{return tmpDefaultValue;}});}_createClass2(FableSettingsTemplateProcessor,[{key:"parseSetting",value:function parseSetting(pString){return this.templateProcessor.parseString(pString);}}]);return FableSettingsTemplateProcessor;}();module.exports=FableSettingsTemplateProcessor;}).call(this);}).call(this,require('_process'));},{"_process":43,"precedent":40}],32:[function(require,module,exports){/**
 * Fable Settings Add-on
 *
-* @license MIT
 *
 * @author Steven Velozo <steven@velozo.com>
 * @module Fable Settings
@@ -317,7 +311,6 @@ var tmpSettingsFromCopy=JSON.parse(JSON.stringify(tmpSettingsFrom));this.setting
 function autoConstruct(pSettings){return new FableSettings(pSettings);}module.exports=FableSettings;module.exports["new"]=autoConstruct;},{"./Fable-Settings-Default":30,"./Fable-Settings-TemplateProcessor.js":31,"fable-serviceproviderbase":29}],33:[function(require,module,exports){/**
 * Random Byte Generator - Browser version
 *
-* @license MIT
 *
 * @author Steven Velozo <steven@velozo.com>
 */ // Adapted from node-uuid (https://github.com/kelektiv/node-uuid)
@@ -1658,7 +1651,6 @@ try{if(!global.localStorage)return false;}catch(_){return false;}var val=global.
 // decorations and such are not lost along the way.
 module.exports=wrappy;function wrappy(fn,cb){if(fn&&cb)return wrappy(fn)(cb);if(typeof fn!=='function')throw new TypeError('need wrapper function');Object.keys(fn).forEach(function(k){wrapper[k]=fn[k];});return wrapper;function wrapper(){var args=new Array(arguments.length);for(var i=0;i<args.length;i++){args[i]=arguments[i];}var ret=fn.apply(this,args);var cb=args[args.length-1];if(typeof ret==='function'&&ret!==cb){Object.keys(cb).forEach(function(k){ret[k]=cb[k];});}return ret;}}},{}],76:[function(require,module,exports){module.exports=extend;var hasOwnProperty=Object.prototype.hasOwnProperty;function extend(){var target={};for(var i=0;i<arguments.length;i++){var source=arguments[i];for(var key in source){if(hasOwnProperty.call(source,key)){target[key]=source[key];}}}return target;}},{}],77:[function(require,module,exports){var libNPMModuleWrapper=require('./Fable.js');if((typeof window==="undefined"?"undefined":_typeof(window))==='object'&&!window.hasOwnProperty('Fable')){window.Fable=libNPMModuleWrapper;}module.exports=libNPMModuleWrapper;},{"./Fable.js":79}],78:[function(require,module,exports){/**
 * Fable Application Services Management
-* @license MIT
 * @author <steven@velozo.com>
 */var libFableServiceBase=require('fable-serviceproviderbase');var FableService=/*#__PURE__*/function(_libFableServiceBase$){_inherits(FableService,_libFableServiceBase$);var _super6=_createSuper(FableService);function FableService(pSettings,pServiceHash){var _this9;_classCallCheck2(this,FableService);_this9=_super6.call(this,pSettings,pServiceHash);_this9.serviceType='ServiceManager';_this9.serviceTypes=[];// A map of instantiated services
 _this9.services={};// A map of the default instantiated service by type
@@ -1682,7 +1674,6 @@ this.services[tmpServiceType]={};}// Add the service to the service map
 this.services[tmpServiceType][tmpServiceHash]=pServiceInstance;// If this is the first service of this type, make it the default
 if(!this.defaultServices.hasOwnProperty(tmpServiceType)){this.defaultServices[tmpServiceType]=pServiceInstance;}return pServiceInstance;}},{key:"setDefaultServiceInstantiation",value:function setDefaultServiceInstantiation(pServiceType,pServiceHash){if(this.services[pServiceType].hasOwnProperty(pServiceHash)){this.defaultServices[pServiceType]=this.services[pServiceType][pServiceHash];return true;}return false;}}]);return FableService;}(libFableServiceBase.CoreServiceProviderBase);module.exports=FableService;module.exports.ServiceProviderBase=libFableServiceBase;module.exports.CoreServiceProviderBase=libFableServiceBase.CoreServiceProviderBase;},{"fable-serviceproviderbase":29}],79:[function(require,module,exports){/**
 * Fable Application Services Support Library
-* @license MIT
 * @author <steven@velozo.com>
 */ // Pre-init services
 var libFableSettings=require('fable-settings');var libFableUUID=require('fable-uuid');var libFableLog=require('fable-log');var libFableServiceManager=require('./Fable-ServiceManager.js');// Default Services
@@ -1701,7 +1692,6 @@ this._coreServices.ServiceManager=new libFableServiceManager(this);this.serviceM
 this.serviceManager.connectPreinitServiceProviderInstance(this._coreServices.ServiceManager);this.serviceManager.connectPreinitServiceProviderInstance(this._coreServices.UUID);this.serviceManager.connectPreinitServiceProviderInstance(this._coreServices.Logging);this.serviceManager.connectPreinitServiceProviderInstance(this._coreServices.SettingsManager);// Initialize and instantiate the default baked-in Data Arithmatic service
 this.serviceManager.addServiceType('Template',libFableServiceTemplate);this.serviceManager.addServiceType('MetaTemplate',libFableServiceMetaTemplate);this.serviceManager.addAndInstantiateServiceType('DataFormat',libFableServiceDataFormat);this.serviceManager.addAndInstantiateServiceType('Utility',libFableServiceUtility);this.serviceManager.addServiceType('Operation',libFableServiceOperation);this.serviceManager.addServiceType('RestClient',libFableServiceRestClient);}_createClass2(Fable,[{key:"settings",get:function get(){return this._coreServices.SettingsManager.settings;}},{key:"log",get:function get(){return this._coreServices.Logging;}},{key:"services",get:function get(){return this._coreServices.ServiceManager.services;}},{key:"defaultServices",get:function get(){return this._coreServices.ServiceManager.defaultServices;}},{key:"getUUID",value:function getUUID(){return this._coreServices.UUID.getUUID();}},{key:"fable",get:function get(){return this;}}]);return Fable;}();// This is for backwards compatibility
 function autoConstruct(pSettings){return new Fable(pSettings);}module.exports=Fable;module.exports["new"]=autoConstruct;module.exports.LogProviderBase=libFableLog.LogProviderBase;module.exports.ServiceProviderBase=libFableServiceManager.ServiceProviderBase;module.exports.CoreServiceProviderBase=libFableServiceManager.CoreServiceProviderBase;module.exports.precedent=libFableSettings.precedent;},{"./Fable-ServiceManager.js":78,"./services/Fable-Service-DataFormat.js":80,"./services/Fable-Service-MetaTemplate.js":81,"./services/Fable-Service-Operation.js":83,"./services/Fable-Service-RestClient.js":84,"./services/Fable-Service-Template.js":85,"./services/Fable-Service-Utility.js":86,"fable-log":27,"fable-settings":32,"fable-uuid":34}],80:[function(require,module,exports){/**
-* @license MIT
 */var libFableServiceProviderBase=require('fable-serviceproviderbase');/**
 * Data Formatting and Translation Functions
 *

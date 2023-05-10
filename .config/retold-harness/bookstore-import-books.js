@@ -4,7 +4,6 @@
     An example of how to use the Meadow DALs directly.
 */
 /**
-* @license MIT
 * @author <steven@velozo.com>
 */
 

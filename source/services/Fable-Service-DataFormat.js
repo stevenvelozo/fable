@@ -1,5 +1,4 @@
 /**
-* @license MIT
 */
 
 const libFableServiceProviderBase = require('fable-serviceproviderbase');
