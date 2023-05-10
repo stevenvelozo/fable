@@ -62,6 +62,8 @@ suite
 						.that.is.a('object');
 						Expect(testFable.settings.Product)
 							.to.equal('LegacyApplicationNameHere')
+						Expect(testFable.EnvironmentData.Environment)
+							.to.equal('node.js');
 					}
 				);
 				test

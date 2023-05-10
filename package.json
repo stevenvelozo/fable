@@ -1,6 +1,6 @@
 {
   "name": "fable",
-  "version": "3.0.35",
+  "version": "3.0.36",
   "description": "An entity behavior management and API bundling library.",
   "main": "source/Fable.js",
   "scripts": {
@@ -29,6 +29,9 @@
     "watch-ignore": [
       "lib/vendor"
     ]
+  },
+  "browser": {
+    "./source/service/Fable-Service-EnvironmentData.js": "./source/service/Fable-Service-EnvironmentData-Web.js"
   },
   "repository": {
     "type": "git",

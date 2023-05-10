@@ -10,6 +10,7 @@ const libFableLog = require('fable-log');
 const libFableServiceManager = require('./Fable-ServiceManager.js');
 
 // Default Services
+const libFableServiceEnvironmentData = require('./services/Fable-Service-EnvironmentData.js');
 const libFableServiceDataFormat = require('./services/Fable-Service-DataFormat.js');
 const libFableServiceMetaTemplate = require('./services/Fable-Service-MetaTemplate.js');
 const libFableServiceOperation = require('./services/Fable-Service-Operation.js');
@@ -50,6 +51,7 @@ class Fable
 		this.serviceManager.connectPreinitServiceProviderInstance(this._coreServices.SettingsManager);
 
 		// Initialize and instantiate the default baked-in Data Arithmatic service
+		this.serviceManager.addAndInstantiateServiceType('EnvironmentData', libFableServiceEnvironmentData);
 		this.serviceManager.addServiceType('Template', libFableServiceTemplate);
 		this.serviceManager.addServiceType('MetaTemplate', libFableServiceMetaTemplate);
 		this.serviceManager.addAndInstantiateServiceType('DataFormat', libFableServiceDataFormat);
