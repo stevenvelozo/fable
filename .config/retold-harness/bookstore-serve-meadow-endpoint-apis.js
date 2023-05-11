@@ -74,12 +74,18 @@ let fStartServiceServer = (fInitializeCallback) =>
 				_MeadowEndpoints[tmpDALEntityName].connectRoutes(_Orator.webServer);
 			}
 
+			let tmpNames = Object.keys(_MeadowEndpoints.Book);
+			console.log(JSON.stringify(tmpNames));
+
 			// 100. Add a post processing hook to the Book DAL on single reads
 			/*
 				This post processing step will look for all book author joins then 
 				load all appropriate authors and stuff them in the book record before 
 				returning it.
 			*/
+			console.log(typeof(_MeadowEndpoints.Book))
+			console.log(_MeadowEndpoints.Book.EndpointName)
+			console.log(typeof(_MeadowEndpoints.Book.controller))
 			_MeadowEndpoints.Book.controller.BehaviorInjection.setBehavior('Read-PostOperation',
 				(pRequest, pRequestState, fComplete) =>
 				{

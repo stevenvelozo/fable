@@ -39,7 +39,3 @@ tmpRestClient.getJSON('https://en.wiktionary.org/w/api.php?action=parse&prop=wik
     {
         testFable.log.info('Response received!');
     });
-
-var fable = new libFable();
-
-fable.log.info('What are you doing, Dave?', {SomeColorSetting: 'Red', CurrentFolder: __dirname });
