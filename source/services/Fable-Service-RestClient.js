@@ -131,10 +131,22 @@ class FableServiceRestClient extends libFableServiceBase
 	{
 		if (typeof(pOptions.body) != 'object')
 		{
-			return fCallback(new Error(`POST JSON Error Invalid options object`));
+			return fCallback(new Error(`PUT JSON Error Invalid options object`));
 		}
 
 		pOptions.method = 'PUT';
+
+		return this.executeJSONRequest(pOptions, fCallback);
+	}
+
+	postJSON(pOptions, fCallback)
+	{
+		if (typeof(pOptions.body) != 'object')
+		{
+			return fCallback(new Error(`POST JSON Error Invalid options object`));
+		}
+
+		pOptions.method = 'POST';
 
 		return this.executeJSONRequest(pOptions, fCallback);
 	}
@@ -165,12 +177,7 @@ class FableServiceRestClient extends libFableServiceBase
 	
 	delJSON(pOptions, fCallback)
 	{
-		if (typeof(pOptions.body) != 'object')
-		{
-			return fCallback(new Error(`POST JSON Error Invalid options object`));
-		}
-
-		pOptions.method = 'PUT';
+		pOptions.method = 'DELETE';
 
 		return this.executeJSONRequest(pOptions, fCallback);
 	}

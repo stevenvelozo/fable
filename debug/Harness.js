@@ -1,4 +1,4 @@
-let libBookstore = require('../test/retold-harness/bookstore-serve-meadow-endpoint-apis-run.js');
+let libBookstore = require('../retold-harness/bookstore-serve-meadow-endpoint-apis-run.js');
 /*
 const libFable = require('../source/Fable.js');
 
