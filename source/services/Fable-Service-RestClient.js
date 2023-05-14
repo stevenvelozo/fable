@@ -19,62 +19,38 @@ class FableServiceRestClient extends libFableServiceBase
 		this.serviceType = 'RestClient';
 	}
 
-	getJSON(pOptionsOrURL, fCallback)
+	executeChunkedRequest(pOptions, fCallback)
 	{
-		return this.getRaw(pOptionsOrURL, 
-			(pError, pResponse, pResult) =>
-			{
-				if (pError)
-				{
-					return fCallback(pError, pResponse, pResult);
-				}
+		pOptions.RequestStartTime = this.fable.log.getTimeStamp();
 
-				if (pResponse.statusCode != 200)
-				{
-					return fCallback(new Error(`Invalid status code ${pResponse.statusCode}`), pResponse, pResult);
-				}
-
-				return fCallback(pError, pResponse, JSON.parse(pResult));
-			});
-	}
-
-	getRaw(pOptionsOrURL, fCallback)
-	{
-		let tmpRequestOptions = (typeof(pOptions) == 'object') ? pOptions : {};
-		if (typeof(pOptionsOrURL) == 'string')
-		{
-			tmpRequestOptions.url = pOptionsOrURL;
-		}
-
-		let tmpRequestStartTime = this.fable.log.getTimeStamp();
 		if (this.TraceLog)
 		{
-			let tmpConnectTime = this.fable.log.getTimeStamp();
-			this.fable.log.debug(`Beginning GET request to ${tmpRequestOptions.url} at ${tmpRequestStartTime}`);
+			this.fable.log.debug(`Beginning ${pOptions.method} request to ${pOptions.url} at ${pOptions.RequestStartTime}`);
 		}
 
-		libSimpleGet.get(tmpRequestOptions,
+		return libSimpleGet(pOptions,
 			(pError, pResponse)=>
 			{
 				if (pError)
 				{
-					return fCallback(pError, pResponse, tmpRequestOptions);
+					return fCallback(pError, pResponse);
 				}
 
 				if (this.TraceLog)
 				{
 					let tmpConnectTime = this.fable.log.getTimeStamp();
-					this.fable.log.debug(`--> GET connected in ${this.dataFormat.formatTimeDelta(tmpRequestStartTime, tmpConnectTime)}ms code ${pResponse.statusCode}`);
+					this.fable.log.debug(`--> ${pOptions.method} connected in ${this.dataFormat.formatTimeDelta(pOptions.RequestStartTime, tmpConnectTime)}ms code ${pResponse.statusCode}`);
 				}
 
 				let tmpData = '';
 
-				pResponse.on('data', (pChunk)=>
+				pResponse.on('data', (pChunk) =>
 					{
+						// For JSON, the chunk is the serialized object.
 						if (this.TraceLog)
 						{
 							let tmpChunkTime = this.fable.log.getTimeStamp();
-							this.fable.log.debug(`--> GET data chunk size ${pChunk.length}b received in ${this.dataFormat.formatTimeDelta(tmpRequestStartTime, tmpChunkTime)}ms`);
+							this.fable.log.debug(`--> ${pOptions.method} data chunk size ${pChunk.length}b received in ${this.dataFormat.formatTimeDelta(pOptions.RequestStartTime, tmpChunkTime)}ms`);
 						}
 						tmpData += pChunk;
 					});
@@ -84,11 +60,132 @@ class FableServiceRestClient extends libFableServiceBase
 						if (this.TraceLog)
 						{
 							let tmpCompletionTime = this.fable.log.getTimeStamp();
-							this.fable.log.debug(`==> GET completed data size ${tmpData.length}b received in ${this.dataFormat.formatTimeDelta(tmpRequestStartTime, tmpCompletionTime)}ms`);
+							this.fable.log.debug(`==> ${pOptions.method} completed data size ${tmpData.length}b received in ${this.dataFormat.formatTimeDelta(pOptions.RequestStartTime, tmpCompletionTime)}ms`);
 						}
 						return fCallback(pError, pResponse, tmpData);
 					});
 			});
+	}
+
+	executeJSONRequest(pOptions, fCallback)
+	{
+		pOptions.json = true;
+
+		pOptions.RequestStartTime = this.fable.log.getTimeStamp();
+
+		if (this.TraceLog)
+		{
+			this.fable.log.debug(`Beginning ${pOptions.method} JSON request to ${pOptions.url} at ${pOptions.RequestStartTime}`);
+		}
+
+		return libSimpleGet(pOptions,
+			(pError, pResponse)=>
+			{
+				if (pError)
+				{
+					return fCallback(pError, pResponse);
+				}
+
+				if (this.TraceLog)
+				{
+					let tmpConnectTime = this.fable.log.getTimeStamp();
+					this.fable.log.debug(`--> JSON ${pOptions.method} connected in ${this.dataFormat.formatTimeDelta(pOptions.RequestStartTime, tmpConnectTime)}ms code ${pResponse.statusCode}`);
+				}
+
+				pResponse.on('data', (pChunk) =>
+					{
+						if (this.TraceLog)
+						{
+							let tmpChunkTime = this.fable.log.getTimeStamp();
+							this.fable.log.debug(`--> JSON ${pOptions.method} data chunk size ${pChunk.length}b received in ${this.dataFormat.formatTimeDelta(pOptions.RequestStartTime, tmpChunkTime)}ms`);
+						}
+						// In a JSON request, the chunk is the serialized method.
+						return fCallback(pError, pResponse, JSON.parse(pChunk));
+					});
+
+				pResponse.on('end', ()=>
+					{
+						if (this.TraceLog)
+						{
+							let tmpCompletionTime = this.fable.log.getTimeStamp();
+							this.fable.log.debug(`==> JSON ${pOptions.method} completed - received in ${this.dataFormat.formatTimeDelta(pOptions.RequestStartTime, tmpCompletionTime)}ms`);
+						}
+					});
+			});
+	}
+
+	getJSON(pOptionsOrURL, fCallback)
+	{
+		let tmpRequestOptions = (typeof(pOptions) == 'object') ? pOptions : {};
+		if (typeof(pOptionsOrURL) == 'string')
+		{
+			tmpRequestOptions.url = pOptionsOrURL;
+		}
+
+		tmpRequestOptions.method = 'GET';
+
+		return this.executeJSONRequest(tmpRequestOptions, fCallback);
+	}
+
+	putJSON(pOptions, fCallback)
+	{
+		if (typeof(pOptions.body) != 'object')
+		{
+			return fCallback(new Error(`POST JSON Error Invalid options object`));
+		}
+
+		pOptions.method = 'PUT';
+
+		return this.executeJSONRequest(pOptions, fCallback);
+	}
+
+	patchJSON(pOptions, fCallback)
+	{
+		if (typeof(pOptions.body) != 'object')
+		{
+			return fCallback(new Error(`PATCH JSON Error Invalid options object`));
+		}
+
+		pOptions.method = 'PATCH';
+
+		return this.executeJSONRequest(pOptions, fCallback);
+	}
+
+	headJSON(pOptions, fCallback)
+	{
+		if (typeof(pOptions.body) != 'object')
+		{
+			return fCallback(new Error(`HEAD JSON Error Invalid options object`));
+		}
+
+		pOptions.method = 'HEAD';
+
+		return this.executeJSONRequest(pOptions, fCallback);
+	}
+	
+	delJSON(pOptions, fCallback)
+	{
+		if (typeof(pOptions.body) != 'object')
+		{
+			return fCallback(new Error(`POST JSON Error Invalid options object`));
+		}
+
+		pOptions.method = 'PUT';
+
+		return this.executeJSONRequest(pOptions, fCallback);
+	}
+
+	getRawText(pOptionsOrURL, fCallback)
+	{
+		let tmpRequestOptions = (typeof(pOptions) == 'object') ? pOptions : {};
+		if (typeof(pOptionsOrURL) == 'string')
+		{
+			tmpRequestOptions.url = pOptionsOrURL;
+		}
+
+		tmpRequestOptions.method = 'GET';
+
+		return this.executeChunkedRequest(tmpRequestOptions, fCallback);
 	}
 }
 

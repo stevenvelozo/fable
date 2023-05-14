@@ -38,12 +38,32 @@ suite
                         let tmpRestClient = testFable.serviceManager.instantiateServiceProvider('RestClient', {TraceLog: true}, 'RestClient-99');
 
 						// Download the wiktionary entry for dog!
-						tmpRestClient.getJSON('https://en.wiktionary.org/w/api.php?action=parse&prop=wikitext&format=json&page=dog',
+						tmpRestClient.getJSON('http://localhost:8086/1.0/Author/1',
 							(pError, pResponse, pBody)=>
 							{
 								Expect(pBody).to.be.an('object');
-								Expect(pBody.hasOwnProperty('parse')).to.equal(true);
-								Expect(pBody.parse.title).to.equal('dog');
+								Expect(pBody.hasOwnProperty('Name')).to.equal(true);
+								Expect(pBody.Name).to.equal('J.K. Rowling');
+								fTestComplete();
+							});
+					}
+				);
+				test
+				(
+					'Perform a POST request.',
+					function(fTestComplete)
+					{
+						let testFable = new libFable();
+						// Instantiate the RestClient Service Provider
+                        let tmpRestClient = testFable.serviceManager.instantiateServiceProvider('RestClient', {TraceLog: true}, 'RestClient-99');
+
+						// Download the wiktionary entry for dog!
+						tmpRestClient.postJSON({url: 'http://localhost:8086/1.0/Author', body:{Name:'Test Author'}},
+							(pError, pResponse, pBody)=>
+							{
+								Expect(pBody).to.be.an('object');
+								Expect(pBody.hasOwnProperty('Name')).to.equal(true);
+								Expect(pBody.Name).to.equal('Test Author');
 								fTestComplete();
 							});
 					}

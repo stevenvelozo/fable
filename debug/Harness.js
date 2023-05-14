@@ -1,3 +1,5 @@
+let libBookstore = require('../test/retold-harness/bookstore-serve-meadow-endpoint-apis-run.js');
+/*
 const libFable = require('../source/Fable.js');
 
 class SimpleService extends libFable.ServiceProviderBase
@@ -39,3 +41,4 @@ tmpRestClient.getJSON('https://en.wiktionary.org/w/api.php?action=parse&prop=wik
     {
         testFable.log.info('Response received!');
     });
+*/

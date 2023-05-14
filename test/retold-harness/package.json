@@ -4,6 +4,7 @@
   "description": "Harness data import and server.",
   "main": "bookstore-serve-meadow-endpoints-apis.js",
   "scripts": {
+    "start": "node bookstore-serve-meadow-endpoint-apis-run.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

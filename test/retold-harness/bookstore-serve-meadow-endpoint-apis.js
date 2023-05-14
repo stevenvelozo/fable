@@ -83,10 +83,7 @@ let fStartServiceServer = (fInitializeCallback) =>
 				load all appropriate authors and stuff them in the book record before 
 				returning it.
 			*/
-			console.log(typeof(_MeadowEndpoints.Book))
-			console.log(_MeadowEndpoints.Book.EndpointName)
-			console.log(typeof(_MeadowEndpoints.Book.controller))
-			_MeadowEndpoints.Book.controller.BehaviorInjection.setBehavior('Read-PostOperation',
+			_MeadowEndpoints.Book.behaviorModifications.setBehavior('Read-PostOperation',
 				(pRequest, pRequestState, fComplete) =>
 				{
 					// Get the join records
