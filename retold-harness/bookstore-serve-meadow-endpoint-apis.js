@@ -3,6 +3,7 @@
 */
 
 /**
+* @license MIT
 * @author <steven@velozo.com>
 */
 
@@ -74,16 +75,13 @@ let fStartServiceServer = (fInitializeCallback) =>
 				_MeadowEndpoints[tmpDALEntityName].connectRoutes(_Orator.webServer);
 			}
 
-			let tmpNames = Object.keys(_MeadowEndpoints.Book);
-			console.log(JSON.stringify(tmpNames));
-
 			// 100. Add a post processing hook to the Book DAL on single reads
 			/*
 				This post processing step will look for all book author joins then 
 				load all appropriate authors and stuff them in the book record before 
 				returning it.
 			*/
-			_MeadowEndpoints.Book.behaviorModifications.setBehavior('Read-PostOperation',
+			_MeadowEndpoints.Book.controller.BehaviorInjection.setBehavior('Read-PostOperation',
 				(pRequest, pRequestState, fComplete) =>
 				{
 					// Get the join records
