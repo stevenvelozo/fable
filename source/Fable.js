@@ -9,15 +9,6 @@ const libFableLog = require('fable-log');
 
 const libFableServiceManager = require('./Fable-ServiceManager.js');
 
-// Default Services
-const libFableServiceEnvironmentData = require('./services/Fable-Service-EnvironmentData.js');
-const libFableServiceDataFormat = require('./services/Fable-Service-DataFormat.js');
-const libFableServiceMetaTemplate = require('./services/Fable-Service-MetaTemplate.js');
-const libFableServiceOperation = require('./services/Fable-Service-Operation.js');
-const libFableServiceRestClient = require('./services/Fable-Service-RestClient.js');
-const libFableServiceTemplate = require('./services/Fable-Service-Template.js');
-const libFableServiceUtility = require('./services/Fable-Service-Utility.js');
-
 class Fable
 {
 	constructor(pSettings)
@@ -51,14 +42,14 @@ class Fable
 		this.serviceManager.connectPreinitServiceProviderInstance(this._coreServices.SettingsManager);
 
 		// Initialize and instantiate the default baked-in Data Arithmatic service
-		this.serviceManager.addAndInstantiateServiceType('EnvironmentData', libFableServiceEnvironmentData);
-		this.serviceManager.addServiceType('Template', libFableServiceTemplate);
-		this.serviceManager.addServiceType('MetaTemplate', libFableServiceMetaTemplate);
-		this.serviceManager.addAndInstantiateServiceType('DataFormat', libFableServiceDataFormat);
-		this.serviceManager.addAndInstantiateServiceType('Utility', libFableServiceUtility);
-		this.serviceManager.addServiceType('Operation', libFableServiceOperation);
-		this.serviceManager.addServiceType('RestClient', libFableServiceRestClient);
-
+		this.serviceManager.addAndInstantiateServiceType('EnvironmentData', require('./services/Fable-Service-EnvironmentData.js'));
+		this.serviceManager.addServiceType('Template', require('./services/Fable-Service-Template.js'));
+		this.serviceManager.addServiceType('MetaTemplate', require('./services/Fable-Service-MetaTemplate.js'));
+		this.serviceManager.addAndInstantiateServiceType('DataFormat', require('./services/Fable-Service-DataFormat.js'));
+		this.serviceManager.addAndInstantiateServiceType('Utility', require('./services/Fable-Service-Utility.js'));
+		this.serviceManager.addServiceType('Operation', require('./services/Fable-Service-Operation.js'));
+		this.serviceManager.addServiceType('RestClient', require('./services/Fable-Service-RestClient.js'));
+		this.serviceManager.addServiceType('CSVParser', require('./services/Fable-Service-CSVParser.js'));
 	}
 
 	get settings()

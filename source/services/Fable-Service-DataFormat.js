@@ -1,6 +1,3 @@
-/**
-*/
-
 const libFableServiceProviderBase = require('fable-serviceproviderbase');
 /**
 * Data Formatting and Translation Functions

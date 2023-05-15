@@ -1,6 +1,6 @@
 {
   "name": "fable",
-  "version": "3.0.37",
+  "version": "3.0.38",
   "description": "An entity behavior management and API bundling library.",
   "main": "source/Fable.js",
   "scripts": {
@@ -10,7 +10,8 @@
     "build": "./node_modules/.bin/gulp build",
     "build-compatible": "GULP_CUSTOM_BUILD_TARGET=compatible ./node_modules/.bin/gulp build",
     "docker-dev-build-image": "docker build ./ -f Dockerfile_LUXURYCode -t retold/fable:local",
-    "docker-dev-run": "docker run -it -d --name retold-fable-dev -p 30001:8080 -p 8086:8086 -v \"$PWD/.config:/home/coder/.config\"  -v \"$PWD:/home/coder/fable\" -u \"$(id -u):$(id -g)\" -e \"DOCKER_USER=$USER\" retold/fable:local"
+    "docker-dev-run": "docker run -it -d --name retold-fable-dev -p 30001:8080 -p 8086:8086 -v \"$PWD/.config:/home/coder/.config\"  -v \"$PWD:/home/coder/fable\" -u \"$(id -u):$(id -g)\" -e \"DOCKER_USER=$USER\" retold/fable:local",
+    "docker-dev-shell": "docker exec -it retold-fable-dev /bin/bash"
   },
   "mocha": {
     "diff": true,
