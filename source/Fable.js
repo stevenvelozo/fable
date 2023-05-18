@@ -50,6 +50,12 @@ class Fable
 		this.serviceManager.addServiceType('Operation', require('./services/Fable-Service-Operation.js'));
 		this.serviceManager.addServiceType('RestClient', require('./services/Fable-Service-RestClient.js'));
 		this.serviceManager.addServiceType('CSVParser', require('./services/Fable-Service-CSVParser.js'));
+		this.serviceManager.addServiceType('Manifest', require('manyfest'));
+	}
+
+	get isFable()
+	{
+		return true;
 	}
 
 	get settings()
@@ -85,7 +91,7 @@ class Fable
 	get fable()
 	{
 		return this;
-	}
+	};
 }
 
 // This is for backwards compatibility

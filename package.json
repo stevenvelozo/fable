@@ -1,6 +1,6 @@
 {
   "name": "fable",
-  "version": "3.0.38",
+  "version": "3.0.39",
   "description": "An entity behavior management and API bundling library.",
   "main": "source/Fable.js",
   "scripts": {
@@ -32,7 +32,8 @@
     ]
   },
   "browser": {
-    "./source/service/Fable-Service-EnvironmentData.js": "./source/service/Fable-Service-EnvironmentData-Web.js"
+    "./source/service/Fable-Service-EnvironmentData.js": "./source/service/Fable-Service-EnvironmentData-Web.js",
+    "./source/service/Fable-Service-FilePersistence.js": "./source/service/Fable-Service-FilePersistence-Web.js"
   },
   "repository": {
     "type": "git",
@@ -72,6 +73,7 @@
     "fable-serviceproviderbase": "^3.0.3",
     "fable-settings": "^3.0.5",
     "fable-uuid": "^3.0.5",
+    "manyfest": "^1.0.24",
     "precedent": "^1.0.10",
     "simple-get": "^4.0.1"
   }

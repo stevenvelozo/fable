@@ -85,8 +85,9 @@ class FableServiceUtility extends libFableServiceBase
 	//                and: 1986-06-11T09:34:46.012Z+0200
 	// ... and converts them into javascript timestamps, following the directions of the timezone stuff.
 	//
-	// This is not meant to replace the more complex libraries.
-	// This *is* meant to be a simple, small, and fast way to convert ISO strings to dates in engines with limited JS capabilities.
+	// This is not meant to replace the more complex libraries such as moment or luxon.
+	// This *is* meant to be a simple, small, and fast way to convert ISO strings to dates in engines
+	// with ultra limited JS capabilities where those don't work.
 	isoStringToDate (pISOString)
 	{
 
