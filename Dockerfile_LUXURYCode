@@ -8,7 +8,6 @@ VOLUME /home/coder/.vscode
 RUN echo "...installing debian dependencies..."
 RUN sudo apt update
 RUN sudo apt install vim curl tmux -y
-RUN sudo apt install default-mysql-server default-mysql-client -y
 
 RUN echo "Building development image..."
 
@@ -55,6 +54,7 @@ RUN code-server --install-extension mtxr.sqltools-driver-mysql
 # RUN code-server --install-extension daylerees.rainglow
 
 RUN echo "...configuring mariadb (mysql) server...."
+RUN sudo apt install default-mysql-server default-mysql-client -y
 RUN sudo sed -i "s|bind-address|#bind-address|g" /etc/mysql/mariadb.conf.d/50-server.cnf
 ADD ./retold-harness/MySQL-Security.sql /home/coder/MySQL-Configure-Security.sql
 ADD ./retold-harness/MySQL-Laden-Entry.sh /usr/bin/MySQL-Laden-Entry.sh

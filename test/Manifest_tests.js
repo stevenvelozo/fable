@@ -8,9 +8,6 @@
 
 var libFable = require('../source/Fable.js');
 
-const libFS = require('fs');
-const libReadline = require('readline');
-
 var Chai = require("chai");
 var Expect = Chai.expect;
 

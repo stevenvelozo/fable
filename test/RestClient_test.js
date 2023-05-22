@@ -57,6 +57,12 @@ suite
 						// Instantiate the RestClient Service Provider
                         let tmpRestClient = testFable.serviceManager.instantiateServiceProvider('RestClient', {TraceLog: true}, 'RestClient-99');
 
+						tmpRestClient.prepareRequestOptions = (pOptions) =>
+						{
+							pOptions.headers = {'Content-Type':'application/json'};
+							return pOptions;
+						};
+
 						// Download the wiktionary entry for dog!
 						tmpRestClient.postJSON({url: 'http://localhost:8086/1.0/Author', body:{Name:'Test Author'}},
 							(pError, pResponse, pBody)=>
