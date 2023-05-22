@@ -130,7 +130,7 @@ class FableServiceRestClient extends libFableServiceBase
 
 	getJSON(pOptionsOrURL, fCallback)
 	{
-		let tmpRequestOptions = (typeof(pOptions) == 'object') ? pOptions : {};
+		let tmpRequestOptions = (typeof(pOptionsOrURL) == 'object') ? pOptionsOrURL : {};
 		if (typeof(pOptionsOrURL) == 'string')
 		{
 			tmpRequestOptions.url = pOptionsOrURL;
@@ -188,7 +188,7 @@ class FableServiceRestClient extends libFableServiceBase
 
 		return this.executeJSONRequest(pOptions, fCallback);
 	}
-	
+
 	delJSON(pOptions, fCallback)
 	{
 		pOptions.method = 'DELETE';
@@ -198,7 +198,7 @@ class FableServiceRestClient extends libFableServiceBase
 
 	getRawText(pOptionsOrURL, fCallback)
 	{
-		let tmpRequestOptions = (typeof(pOptions) == 'object') ? pOptions : {};
+		let tmpRequestOptions = (typeof(pOptionsOrURL) == 'object') ? pOptionsOrURL : {};
 		if (typeof(pOptionsOrURL) == 'string')
 		{
 			tmpRequestOptions.url = pOptionsOrURL;
