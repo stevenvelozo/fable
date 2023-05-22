@@ -51,6 +51,7 @@ class Fable
 		this.serviceManager.addServiceType('RestClient', require('./services/Fable-Service-RestClient.js'));
 		this.serviceManager.addServiceType('CSVParser', require('./services/Fable-Service-CSVParser.js'));
 		this.serviceManager.addServiceType('Manifest', require('manyfest'));
+		this.serviceManager.addServiceType('ObjectCache', require('cachetrax'));
 	}
 
 	get isFable()
