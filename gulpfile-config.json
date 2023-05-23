@@ -5,7 +5,7 @@
 
 	"LibraryOutputFolder": "./dist/",
 
-	"LibraryUniminifiedFileName": "fable.compatible.js",
+	"LibraryUniminifiedFileName": "fable.js",
 
-	"LibraryMinifiedFileName": "fable.compatible.min.js"
+	"LibraryMinifiedFileName": "fable.min.js"
 }
