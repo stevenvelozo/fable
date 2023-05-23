@@ -26,15 +26,20 @@ class FableServiceMetaTemplate extends libFableServiceBase
 		return this._MetaTemplateLibrary.addPattern(pPatternStart, pPatternEnd, pParser);
 	}
 
+	addPatternAsync(pPatternStart, pPatternEnd, pParser)
+	{
+		return this._MetaTemplateLibrary.addPatternAsync(pPatternStart, pPatternEnd, pParser);
+	}
+
 	/**
 	 * Parse a string with the existing parse tree
 	 * @method parseString
 	 * @param {string} pString - The string to parse
 	 * @return {string} The result from the parser
 	 */
-	parseString(pString, pData)
+	parseString(pString, pData, fCallback)
 	{
-		return this._MetaTemplateLibrary.parseString(pString, pData);
+		return this._MetaTemplateLibrary.parseString(pString, pData, fCallback);
 	}
 }
 
