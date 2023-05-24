@@ -1,3816 +1,6 @@
 "use strict";function _defineProperty2(obj,key,value){key=_toPropertyKey2(key);if(key in obj){Object.defineProperty(obj,key,{value:value,enumerable:true,configurable:true,writable:true});}else{obj[key]=value;}return obj;}function _toPropertyKey2(arg){var key=_toPrimitive2(arg,"string");return typeof key==="symbol"?key:String(key);}function _toPrimitive2(input,hint){if(typeof input!=="object"||input===null)return input;var prim=input[Symbol.toPrimitive];if(prim!==undefined){var res=prim.call(input,hint||"default");if(typeof res!=="object")return res;throw new TypeError("@@toPrimitive must return a primitive value.");}return(hint==="string"?String:Number)(input);}(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f();}else if(typeof define==="function"&&define.amd){define([],f);}else{var g;if(typeof window!=="undefined"){g=window;}else if(typeof global!=="undefined"){g=global;}else if(typeof self!=="undefined"){g=self;}else{g=this;}g.Fable=f();}})(function(){var define,module,exports;return function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a;}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r);},p,p.exports,r,e,n,t);}return n[i].exports;}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o;}return r;}()({1:[function(require,module,exports){'use strict';var eachOfLimit=require('async.util.eachoflimit');var withoutIndex=require('async.util.withoutindex');module.exports=function eachLimit(arr,limit,iterator,cb){return eachOfLimit(limit)(arr,withoutIndex(iterator),cb);};},{"async.util.eachoflimit":3,"async.util.withoutindex":14}],2:[function(require,module,exports){'use strict';module.exports=function(tasks){function makeCallback(index){function fn(){if(tasks.length){tasks[index].apply(null,arguments);}return fn.next();}fn.next=function(){return index<tasks.length-1?makeCallback(index+1):null;};return fn;}return makeCallback(0);};},{}],3:[function(require,module,exports){var once=require('async.util.once');var noop=require('async.util.noop');var onlyOnce=require('async.util.onlyonce');var keyIterator=require('async.util.keyiterator');module.exports=function eachOfLimit(limit){return function(obj,iterator,cb){cb=once(cb||noop);obj=obj||[];var nextKey=keyIterator(obj);if(limit<=0){return cb(null);}var done=false;var running=0;var errored=false;(function replenish(){if(done&&running<=0){return cb(null);}while(running<limit&&!errored){var key=nextKey();if(key===null){done=true;if(running<=0){cb(null);}return;}running+=1;iterator(obj[key],key,onlyOnce(function(err){running-=1;if(err){cb(err);errored=true;}else{replenish();}}));}})();};};},{"async.util.keyiterator":7,"async.util.noop":9,"async.util.once":10,"async.util.onlyonce":11}],4:[function(require,module,exports){'use strict';var setImmediate=require('async.util.setimmediate');var restParam=require('async.util.restparam');module.exports=function(fn){return restParam(function(args){var callback=args.pop();args.push(function(){var innerArgs=arguments;if(sync){setImmediate(function(){callback.apply(null,innerArgs);});}else{callback.apply(null,innerArgs);}});var sync=true;fn.apply(this,args);sync=false;});};},{"async.util.restparam":12,"async.util.setimmediate":13}],5:[function(require,module,exports){'use strict';module.exports=Array.isArray||function isArray(obj){return Object.prototype.toString.call(obj)==='[object Array]';};},{}],6:[function(require,module,exports){'use strict';var isArray=require('async.util.isarray');module.exports=function isArrayLike(arr){return isArray(arr)||// has a positive integer length property
 typeof arr.length==='number'&&arr.length>=0&&arr.length%1===0;};},{"async.util.isarray":5}],7:[function(require,module,exports){'use strict';var _keys=require('async.util.keys');var isArrayLike=require('async.util.isarraylike');module.exports=function keyIterator(coll){var i=-1;var len;var keys;if(isArrayLike(coll)){len=coll.length;return function next(){i++;return i<len?i:null;};}else{keys=_keys(coll);len=keys.length;return function next(){i++;return i<len?keys[i]:null;};}};},{"async.util.isarraylike":6,"async.util.keys":8}],8:[function(require,module,exports){'use strict';module.exports=Object.keys||function keys(obj){var _keys=[];for(var k in obj){if(obj.hasOwnProperty(k)){_keys.push(k);}}return _keys;};},{}],9:[function(require,module,exports){'use strict';module.exports=function noop(){};},{}],10:[function(require,module,exports){'use strict';module.exports=function once(fn){return function(){if(fn===null)return;fn.apply(this,arguments);fn=null;};};},{}],11:[function(require,module,exports){'use strict';module.exports=function only_once(fn){return function(){if(fn===null)throw new Error('Callback was already called.');fn.apply(this,arguments);fn=null;};};},{}],12:[function(require,module,exports){'use strict';module.exports=function restParam(func,startIndex){startIndex=startIndex==null?func.length-1:+startIndex;return function(){var length=Math.max(arguments.length-startIndex,0);var rest=new Array(length);for(var index=0;index<length;index++){rest[index]=arguments[index+startIndex];}switch(startIndex){case 0:return func.call(this,rest);case 1:return func.call(this,arguments[0],rest);}};};},{}],13:[function(require,module,exports){(function(setImmediate){(function(){'use strict';var _setImmediate=typeof setImmediate==='function'&&setImmediate;var fallback=function fallback(fn){setTimeout(fn,0);};module.exports=function setImmediate(fn){// not a direct alias for IE10 compatibility
-return(_setImmediate||fallback)(fn);};}).call(this);}).call(this,require("timers").setImmediate);},{"timers":86}],14:[function(require,module,exports){'use strict';module.exports=function withoutIndex(iterator){return function(value,index,callback){return iterator(value,callback);};};},{}],15:[function(require,module,exports){'use strict';var once=require('async.util.once');var noop=require('async.util.noop');var isArray=require('async.util.isarray');var restParam=require('async.util.restparam');var ensureAsync=require('async.util.ensureasync');var iterator=require('async.iterator');module.exports=function(tasks,cb){cb=once(cb||noop);if(!isArray(tasks))return cb(new Error('First argument to waterfall must be an array of functions'));if(!tasks.length)return cb();function wrapIterator(iterator){return restParam(function(err,args){if(err){cb.apply(null,[err].concat(args));}else{var next=iterator.next();if(next){args.push(wrapIterator(next));}else{args.push(cb);}ensureAsync(iterator).apply(null,args);}});}wrapIterator(iterator(tasks))();};},{"async.iterator":2,"async.util.ensureasync":4,"async.util.isarray":5,"async.util.noop":9,"async.util.once":10,"async.util.restparam":12}],16:[function(require,module,exports){(function(process,setImmediate){(function(){(function(global,factory){typeof exports==='object'&&typeof module!=='undefined'?factory(exports):typeof define==='function'&&define.amd?define(['exports'],factory):factory(global.async={});})(this,function(exports){'use strict';/**
-     * Creates a continuation function with some arguments already applied.
-     *
-     * Useful as a shorthand when combined with other control flow functions. Any
-     * arguments passed to the returned function are added to the arguments
-     * originally passed to apply.
-     *
-     * @name apply
-     * @static
-     * @memberOf module:Utils
-     * @method
-     * @category Util
-     * @param {Function} fn - The function you want to eventually apply all
-     * arguments to. Invokes with (arguments...).
-     * @param {...*} arguments... - Any number of arguments to automatically apply
-     * when the continuation is called.
-     * @returns {Function} the partially-applied function
-     * @example
-     *
-     * // using apply
-     * async.parallel([
-     *     async.apply(fs.writeFile, 'testfile1', 'test1'),
-     *     async.apply(fs.writeFile, 'testfile2', 'test2')
-     * ]);
-     *
-     *
-     * // the same process without using apply
-     * async.parallel([
-     *     function(callback) {
-     *         fs.writeFile('testfile1', 'test1', callback);
-     *     },
-     *     function(callback) {
-     *         fs.writeFile('testfile2', 'test2', callback);
-     *     }
-     * ]);
-     *
-     * // It's possible to pass any number of additional arguments when calling the
-     * // continuation:
-     *
-     * node> var fn = async.apply(sys.puts, 'one');
-     * node> fn('two', 'three');
-     * one
-     * two
-     * three
-     */function apply(fn){for(var _len2=arguments.length,args=new Array(_len2>1?_len2-1:0),_key2=1;_key2<_len2;_key2++){args[_key2-1]=arguments[_key2];}return function(){for(var _len3=arguments.length,callArgs=new Array(_len3),_key3=0;_key3<_len3;_key3++){callArgs[_key3]=arguments[_key3];}return fn(...args,...callArgs);};}function initialParams(fn){return function(){for(var _len4=arguments.length,args=new Array(_len4),_key4=0;_key4<_len4;_key4++){args[_key4]=arguments[_key4];}var callback=args.pop();return fn.call(this,args,callback);};}/* istanbul ignore file */var hasQueueMicrotask=typeof queueMicrotask==='function'&&queueMicrotask;var hasSetImmediate=typeof setImmediate==='function'&&setImmediate;var hasNextTick=typeof process==='object'&&typeof process.nextTick==='function';function fallback(fn){setTimeout(fn,0);}function wrap(defer){return function(fn){for(var _len5=arguments.length,args=new Array(_len5>1?_len5-1:0),_key5=1;_key5<_len5;_key5++){args[_key5-1]=arguments[_key5];}return defer(()=>fn(...args));};}var _defer;if(hasQueueMicrotask){_defer=queueMicrotask;}else if(hasSetImmediate){_defer=setImmediate;}else if(hasNextTick){_defer=process.nextTick;}else{_defer=fallback;}var setImmediate$1=wrap(_defer);/**
-     * Take a sync function and make it async, passing its return value to a
-     * callback. This is useful for plugging sync functions into a waterfall,
-     * series, or other async functions. Any arguments passed to the generated
-     * function will be passed to the wrapped function (except for the final
-     * callback argument). Errors thrown will be passed to the callback.
-     *
-     * If the function passed to `asyncify` returns a Promise, that promises's
-     * resolved/rejected state will be used to call the callback, rather than simply
-     * the synchronous return value.
-     *
-     * This also means you can asyncify ES2017 `async` functions.
-     *
-     * @name asyncify
-     * @static
-     * @memberOf module:Utils
-     * @method
-     * @alias wrapSync
-     * @category Util
-     * @param {Function} func - The synchronous function, or Promise-returning
-     * function to convert to an {@link AsyncFunction}.
-     * @returns {AsyncFunction} An asynchronous wrapper of the `func`. To be
-     * invoked with `(args..., callback)`.
-     * @example
-     *
-     * // passing a regular synchronous function
-     * async.waterfall([
-     *     async.apply(fs.readFile, filename, "utf8"),
-     *     async.asyncify(JSON.parse),
-     *     function (data, next) {
-     *         // data is the result of parsing the text.
-     *         // If there was a parsing error, it would have been caught.
-     *     }
-     * ], callback);
-     *
-     * // passing a function returning a promise
-     * async.waterfall([
-     *     async.apply(fs.readFile, filename, "utf8"),
-     *     async.asyncify(function (contents) {
-     *         return db.model.create(contents);
-     *     }),
-     *     function (model, next) {
-     *         // `model` is the instantiated model object.
-     *         // If there was an error, this function would be skipped.
-     *     }
-     * ], callback);
-     *
-     * // es2017 example, though `asyncify` is not needed if your JS environment
-     * // supports async functions out of the box
-     * var q = async.queue(async.asyncify(async function(file) {
-     *     var intermediateStep = await processFile(file);
-     *     return await somePromise(intermediateStep)
-     * }));
-     *
-     * q.push(files);
-     */function asyncify(func){if(isAsync(func)){return function(){for(var _len6=arguments.length,args=new Array(_len6),_key6=0;_key6<_len6;_key6++){args[_key6]=arguments[_key6];}const callback=args.pop();const promise=func.apply(this,args);return handlePromise(promise,callback);};}return initialParams(function(args,callback){var result;try{result=func.apply(this,args);}catch(e){return callback(e);}// if result is Promise object
-if(result&&typeof result.then==='function'){return handlePromise(result,callback);}else{callback(null,result);}});}function handlePromise(promise,callback){return promise.then(value=>{invokeCallback(callback,null,value);},err=>{invokeCallback(callback,err&&err.message?err:new Error(err));});}function invokeCallback(callback,error,value){try{callback(error,value);}catch(err){setImmediate$1(e=>{throw e;},err);}}function isAsync(fn){return fn[Symbol.toStringTag]==='AsyncFunction';}function isAsyncGenerator(fn){return fn[Symbol.toStringTag]==='AsyncGenerator';}function isAsyncIterable(obj){return typeof obj[Symbol.asyncIterator]==='function';}function wrapAsync(asyncFn){if(typeof asyncFn!=='function')throw new Error('expected a function');return isAsync(asyncFn)?asyncify(asyncFn):asyncFn;}// conditionally promisify a function.
-// only return a promise if a callback is omitted
-function awaitify(asyncFn){let arity=arguments.length>1&&arguments[1]!==undefined?arguments[1]:asyncFn.length;if(!arity)throw new Error('arity is undefined');function awaitable(){for(var _len7=arguments.length,args=new Array(_len7),_key7=0;_key7<_len7;_key7++){args[_key7]=arguments[_key7];}if(typeof args[arity-1]==='function'){return asyncFn.apply(this,args);}return new Promise((resolve,reject)=>{args[arity-1]=function(err){if(err)return reject(err);for(var _len8=arguments.length,cbArgs=new Array(_len8>1?_len8-1:0),_key8=1;_key8<_len8;_key8++){cbArgs[_key8-1]=arguments[_key8];}resolve(cbArgs.length>1?cbArgs:cbArgs[0]);};asyncFn.apply(this,args);});}return awaitable;}function applyEach(eachfn){return function applyEach(fns){for(var _len9=arguments.length,callArgs=new Array(_len9>1?_len9-1:0),_key9=1;_key9<_len9;_key9++){callArgs[_key9-1]=arguments[_key9];}const go=awaitify(function(callback){var that=this;return eachfn(fns,(fn,cb)=>{wrapAsync(fn).apply(that,callArgs.concat(cb));},callback);});return go;};}function _asyncMap(eachfn,arr,iteratee,callback){arr=arr||[];var results=[];var counter=0;var _iteratee=wrapAsync(iteratee);return eachfn(arr,(value,_,iterCb)=>{var index=counter++;_iteratee(value,(err,v)=>{results[index]=v;iterCb(err);});},err=>{callback(err,results);});}function isArrayLike(value){return value&&typeof value.length==='number'&&value.length>=0&&value.length%1===0;}// A temporary value used to identify if the loop should be broken.
-// See #1064, #1293
-const breakLoop={};function once(fn){function wrapper(){if(fn===null)return;var callFn=fn;fn=null;for(var _len10=arguments.length,args=new Array(_len10),_key10=0;_key10<_len10;_key10++){args[_key10]=arguments[_key10];}callFn.apply(this,args);}Object.assign(wrapper,fn);return wrapper;}function getIterator(coll){return coll[Symbol.iterator]&&coll[Symbol.iterator]();}function createArrayIterator(coll){var i=-1;var len=coll.length;return function next(){return++i<len?{value:coll[i],key:i}:null;};}function createES2015Iterator(iterator){var i=-1;return function next(){var item=iterator.next();if(item.done)return null;i++;return{value:item.value,key:i};};}function createObjectIterator(obj){var okeys=obj?Object.keys(obj):[];var i=-1;var len=okeys.length;return function next(){var key=okeys[++i];if(key==='__proto__'){return next();}return i<len?{value:obj[key],key}:null;};}function createIterator(coll){if(isArrayLike(coll)){return createArrayIterator(coll);}var iterator=getIterator(coll);return iterator?createES2015Iterator(iterator):createObjectIterator(coll);}function onlyOnce(fn){return function(){if(fn===null)throw new Error("Callback was already called.");var callFn=fn;fn=null;for(var _len11=arguments.length,args=new Array(_len11),_key11=0;_key11<_len11;_key11++){args[_key11]=arguments[_key11];}callFn.apply(this,args);};}// for async generators
-function asyncEachOfLimit(generator,limit,iteratee,callback){let done=false;let canceled=false;let awaiting=false;let running=0;let idx=0;function replenish(){//console.log('replenish')
-if(running>=limit||awaiting||done)return;//console.log('replenish awaiting')
-awaiting=true;generator.next().then(_ref=>{let{value,done:iterDone}=_ref;//console.log('got value', value)
-if(canceled||done)return;awaiting=false;if(iterDone){done=true;if(running<=0){//console.log('done nextCb')
-callback(null);}return;}running++;iteratee(value,idx,iterateeCallback);idx++;replenish();}).catch(handleError);}function iterateeCallback(err,result){//console.log('iterateeCallback')
-running-=1;if(canceled)return;if(err)return handleError(err);if(err===false){done=true;canceled=true;return;}if(result===breakLoop||done&&running<=0){done=true;//console.log('done iterCb')
-return callback(null);}replenish();}function handleError(err){if(canceled)return;awaiting=false;done=true;callback(err);}replenish();}var eachOfLimit=limit=>{return(obj,iteratee,callback)=>{callback=once(callback);if(limit<=0){throw new RangeError('concurrency limit cannot be less than 1');}if(!obj){return callback(null);}if(isAsyncGenerator(obj)){return asyncEachOfLimit(obj,limit,iteratee,callback);}if(isAsyncIterable(obj)){return asyncEachOfLimit(obj[Symbol.asyncIterator](),limit,iteratee,callback);}var nextElem=createIterator(obj);var done=false;var canceled=false;var running=0;var looping=false;function iterateeCallback(err,value){if(canceled)return;running-=1;if(err){done=true;callback(err);}else if(err===false){done=true;canceled=true;}else if(value===breakLoop||done&&running<=0){done=true;return callback(null);}else if(!looping){replenish();}}function replenish(){looping=true;while(running<limit&&!done){var elem=nextElem();if(elem===null){done=true;if(running<=0){callback(null);}return;}running+=1;iteratee(elem.value,elem.key,onlyOnce(iterateeCallback));}looping=false;}replenish();};};/**
-     * The same as [`eachOf`]{@link module:Collections.eachOf} but runs a maximum of `limit` async operations at a
-     * time.
-     *
-     * @name eachOfLimit
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.eachOf]{@link module:Collections.eachOf}
-     * @alias forEachOfLimit
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {number} limit - The maximum number of async operations at a time.
-     * @param {AsyncFunction} iteratee - An async function to apply to each
-     * item in `coll`. The `key` is the item's key, or index in the case of an
-     * array.
-     * Invoked with (item, key, callback).
-     * @param {Function} [callback] - A callback which is called when all
-     * `iteratee` functions have finished, or an error occurs. Invoked with (err).
-     * @returns {Promise} a promise, if a callback is omitted
-     */function eachOfLimit$1(coll,limit,iteratee,callback){return eachOfLimit(limit)(coll,wrapAsync(iteratee),callback);}var eachOfLimit$2=awaitify(eachOfLimit$1,4);// eachOf implementation optimized for array-likes
-function eachOfArrayLike(coll,iteratee,callback){callback=once(callback);var index=0,completed=0,{length}=coll,canceled=false;if(length===0){callback(null);}function iteratorCallback(err,value){if(err===false){canceled=true;}if(canceled===true)return;if(err){callback(err);}else if(++completed===length||value===breakLoop){callback(null);}}for(;index<length;index++){iteratee(coll[index],index,onlyOnce(iteratorCallback));}}// a generic version of eachOf which can handle array, object, and iterator cases.
-function eachOfGeneric(coll,iteratee,callback){return eachOfLimit$2(coll,Infinity,iteratee,callback);}/**
-     * Like [`each`]{@link module:Collections.each}, except that it passes the key (or index) as the second argument
-     * to the iteratee.
-     *
-     * @name eachOf
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @alias forEachOf
-     * @category Collection
-     * @see [async.each]{@link module:Collections.each}
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {AsyncFunction} iteratee - A function to apply to each
-     * item in `coll`.
-     * The `key` is the item's key, or index in the case of an array.
-     * Invoked with (item, key, callback).
-     * @param {Function} [callback] - A callback which is called when all
-     * `iteratee` functions have finished, or an error occurs. Invoked with (err).
-     * @returns {Promise} a promise, if a callback is omitted
-     * @example
-     *
-     * // dev.json is a file containing a valid json object config for dev environment
-     * // dev.json is a file containing a valid json object config for test environment
-     * // prod.json is a file containing a valid json object config for prod environment
-     * // invalid.json is a file with a malformed json object
-     *
-     * let configs = {}; //global variable
-     * let validConfigFileMap = {dev: 'dev.json', test: 'test.json', prod: 'prod.json'};
-     * let invalidConfigFileMap = {dev: 'dev.json', test: 'test.json', invalid: 'invalid.json'};
-     *
-     * // asynchronous function that reads a json file and parses the contents as json object
-     * function parseFile(file, key, callback) {
-     *     fs.readFile(file, "utf8", function(err, data) {
-     *         if (err) return calback(err);
-     *         try {
-     *             configs[key] = JSON.parse(data);
-     *         } catch (e) {
-     *             return callback(e);
-     *         }
-     *         callback();
-     *     });
-     * }
-     *
-     * // Using callbacks
-     * async.forEachOf(validConfigFileMap, parseFile, function (err) {
-     *     if (err) {
-     *         console.error(err);
-     *     } else {
-     *         console.log(configs);
-     *         // configs is now a map of JSON data, e.g.
-     *         // { dev: //parsed dev.json, test: //parsed test.json, prod: //parsed prod.json}
-     *     }
-     * });
-     *
-     * //Error handing
-     * async.forEachOf(invalidConfigFileMap, parseFile, function (err) {
-     *     if (err) {
-     *         console.error(err);
-     *         // JSON parse error exception
-     *     } else {
-     *         console.log(configs);
-     *     }
-     * });
-     *
-     * // Using Promises
-     * async.forEachOf(validConfigFileMap, parseFile)
-     * .then( () => {
-     *     console.log(configs);
-     *     // configs is now a map of JSON data, e.g.
-     *     // { dev: //parsed dev.json, test: //parsed test.json, prod: //parsed prod.json}
-     * }).catch( err => {
-     *     console.error(err);
-     * });
-     *
-     * //Error handing
-     * async.forEachOf(invalidConfigFileMap, parseFile)
-     * .then( () => {
-     *     console.log(configs);
-     * }).catch( err => {
-     *     console.error(err);
-     *     // JSON parse error exception
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let result = await async.forEachOf(validConfigFileMap, parseFile);
-     *         console.log(configs);
-     *         // configs is now a map of JSON data, e.g.
-     *         // { dev: //parsed dev.json, test: //parsed test.json, prod: //parsed prod.json}
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     * //Error handing
-     * async () => {
-     *     try {
-     *         let result = await async.forEachOf(invalidConfigFileMap, parseFile);
-     *         console.log(configs);
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *         // JSON parse error exception
-     *     }
-     * }
-     *
-     */function eachOf(coll,iteratee,callback){var eachOfImplementation=isArrayLike(coll)?eachOfArrayLike:eachOfGeneric;return eachOfImplementation(coll,wrapAsync(iteratee),callback);}var eachOf$1=awaitify(eachOf,3);/**
-     * Produces a new collection of values by mapping each value in `coll` through
-     * the `iteratee` function. The `iteratee` is called with an item from `coll`
-     * and a callback for when it has finished processing. Each of these callbacks
-     * takes 2 arguments: an `error`, and the transformed item from `coll`. If
-     * `iteratee` passes an error to its callback, the main `callback` (for the
-     * `map` function) is immediately called with the error.
-     *
-     * Note, that since this function applies the `iteratee` to each item in
-     * parallel, there is no guarantee that the `iteratee` functions will complete
-     * in order. However, the results array will be in the same order as the
-     * original `coll`.
-     *
-     * If `map` is passed an Object, the results will be an Array.  The results
-     * will roughly be in the order of the original Objects' keys (but this can
-     * vary across JavaScript engines).
-     *
-     * @name map
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {AsyncFunction} iteratee - An async function to apply to each item in
-     * `coll`.
-     * The iteratee should complete with the transformed item.
-     * Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called when all `iteratee`
-     * functions have finished, or an error occurs. Results is an Array of the
-     * transformed items from the `coll`. Invoked with (err, results).
-     * @returns {Promise} a promise, if no callback is passed
-     * @example
-     *
-     * // file1.txt is a file that is 1000 bytes in size
-     * // file2.txt is a file that is 2000 bytes in size
-     * // file3.txt is a file that is 3000 bytes in size
-     * // file4.txt does not exist
-     *
-     * const fileList = ['file1.txt','file2.txt','file3.txt'];
-     * const withMissingFileList = ['file1.txt','file2.txt','file4.txt'];
-     *
-     * // asynchronous function that returns the file size in bytes
-     * function getFileSizeInBytes(file, callback) {
-     *     fs.stat(file, function(err, stat) {
-     *         if (err) {
-     *             return callback(err);
-     *         }
-     *         callback(null, stat.size);
-     *     });
-     * }
-     *
-     * // Using callbacks
-     * async.map(fileList, getFileSizeInBytes, function(err, results) {
-     *     if (err) {
-     *         console.log(err);
-     *     } else {
-     *         console.log(results);
-     *         // results is now an array of the file size in bytes for each file, e.g.
-     *         // [ 1000, 2000, 3000]
-     *     }
-     * });
-     *
-     * // Error Handling
-     * async.map(withMissingFileList, getFileSizeInBytes, function(err, results) {
-     *     if (err) {
-     *         console.log(err);
-     *         // [ Error: ENOENT: no such file or directory ]
-     *     } else {
-     *         console.log(results);
-     *     }
-     * });
-     *
-     * // Using Promises
-     * async.map(fileList, getFileSizeInBytes)
-     * .then( results => {
-     *     console.log(results);
-     *     // results is now an array of the file size in bytes for each file, e.g.
-     *     // [ 1000, 2000, 3000]
-     * }).catch( err => {
-     *     console.log(err);
-     * });
-     *
-     * // Error Handling
-     * async.map(withMissingFileList, getFileSizeInBytes)
-     * .then( results => {
-     *     console.log(results);
-     * }).catch( err => {
-     *     console.log(err);
-     *     // [ Error: ENOENT: no such file or directory ]
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let results = await async.map(fileList, getFileSizeInBytes);
-     *         console.log(results);
-     *         // results is now an array of the file size in bytes for each file, e.g.
-     *         // [ 1000, 2000, 3000]
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     * // Error Handling
-     * async () => {
-     *     try {
-     *         let results = await async.map(withMissingFileList, getFileSizeInBytes);
-     *         console.log(results);
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *         // [ Error: ENOENT: no such file or directory ]
-     *     }
-     * }
-     *
-     */function map(coll,iteratee,callback){return _asyncMap(eachOf$1,coll,iteratee,callback);}var map$1=awaitify(map,3);/**
-     * Applies the provided arguments to each function in the array, calling
-     * `callback` after all functions have completed. If you only provide the first
-     * argument, `fns`, then it will return a function which lets you pass in the
-     * arguments as if it were a single function call. If more arguments are
-     * provided, `callback` is required while `args` is still optional. The results
-     * for each of the applied async functions are passed to the final callback
-     * as an array.
-     *
-     * @name applyEach
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @category Control Flow
-     * @param {Array|Iterable|AsyncIterable|Object} fns - A collection of {@link AsyncFunction}s
-     * to all call with the same arguments
-     * @param {...*} [args] - any number of separate arguments to pass to the
-     * function.
-     * @param {Function} [callback] - the final argument should be the callback,
-     * called when all functions have completed processing.
-     * @returns {AsyncFunction} - Returns a function that takes no args other than
-     * an optional callback, that is the result of applying the `args` to each
-     * of the functions.
-     * @example
-     *
-     * const appliedFn = async.applyEach([enableSearch, updateSchema], 'bucket')
-     *
-     * appliedFn((err, results) => {
-     *     // results[0] is the results for `enableSearch`
-     *     // results[1] is the results for `updateSchema`
-     * });
-     *
-     * // partial application example:
-     * async.each(
-     *     buckets,
-     *     async (bucket) => async.applyEach([enableSearch, updateSchema], bucket)(),
-     *     callback
-     * );
-     */var applyEach$1=applyEach(map$1);/**
-     * The same as [`eachOf`]{@link module:Collections.eachOf} but runs only a single async operation at a time.
-     *
-     * @name eachOfSeries
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.eachOf]{@link module:Collections.eachOf}
-     * @alias forEachOfSeries
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {AsyncFunction} iteratee - An async function to apply to each item in
-     * `coll`.
-     * Invoked with (item, key, callback).
-     * @param {Function} [callback] - A callback which is called when all `iteratee`
-     * functions have finished, or an error occurs. Invoked with (err).
-     * @returns {Promise} a promise, if a callback is omitted
-     */function eachOfSeries(coll,iteratee,callback){return eachOfLimit$2(coll,1,iteratee,callback);}var eachOfSeries$1=awaitify(eachOfSeries,3);/**
-     * The same as [`map`]{@link module:Collections.map} but runs only a single async operation at a time.
-     *
-     * @name mapSeries
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.map]{@link module:Collections.map}
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {AsyncFunction} iteratee - An async function to apply to each item in
-     * `coll`.
-     * The iteratee should complete with the transformed item.
-     * Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called when all `iteratee`
-     * functions have finished, or an error occurs. Results is an array of the
-     * transformed items from the `coll`. Invoked with (err, results).
-     * @returns {Promise} a promise, if no callback is passed
-     */function mapSeries(coll,iteratee,callback){return _asyncMap(eachOfSeries$1,coll,iteratee,callback);}var mapSeries$1=awaitify(mapSeries,3);/**
-     * The same as [`applyEach`]{@link module:ControlFlow.applyEach} but runs only a single async operation at a time.
-     *
-     * @name applyEachSeries
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @see [async.applyEach]{@link module:ControlFlow.applyEach}
-     * @category Control Flow
-     * @param {Array|Iterable|AsyncIterable|Object} fns - A collection of {@link AsyncFunction}s to all
-     * call with the same arguments
-     * @param {...*} [args] - any number of separate arguments to pass to the
-     * function.
-     * @param {Function} [callback] - the final argument should be the callback,
-     * called when all functions have completed processing.
-     * @returns {AsyncFunction} - A function, that when called, is the result of
-     * appling the `args` to the list of functions.  It takes no args, other than
-     * a callback.
-     */var applyEachSeries=applyEach(mapSeries$1);const PROMISE_SYMBOL=Symbol('promiseCallback');function promiseCallback(){let resolve,reject;function callback(err){if(err)return reject(err);for(var _len12=arguments.length,args=new Array(_len12>1?_len12-1:0),_key12=1;_key12<_len12;_key12++){args[_key12-1]=arguments[_key12];}resolve(args.length>1?args:args[0]);}callback[PROMISE_SYMBOL]=new Promise((res,rej)=>{resolve=res,reject=rej;});return callback;}/**
-     * Determines the best order for running the {@link AsyncFunction}s in `tasks`, based on
-     * their requirements. Each function can optionally depend on other functions
-     * being completed first, and each function is run as soon as its requirements
-     * are satisfied.
-     *
-     * If any of the {@link AsyncFunction}s pass an error to their callback, the `auto` sequence
-     * will stop. Further tasks will not execute (so any other functions depending
-     * on it will not run), and the main `callback` is immediately called with the
-     * error.
-     *
-     * {@link AsyncFunction}s also receive an object containing the results of functions which
-     * have completed so far as the first argument, if they have dependencies. If a
-     * task function has no dependencies, it will only be passed a callback.
-     *
-     * @name auto
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @category Control Flow
-     * @param {Object} tasks - An object. Each of its properties is either a
-     * function or an array of requirements, with the {@link AsyncFunction} itself the last item
-     * in the array. The object's key of a property serves as the name of the task
-     * defined by that property, i.e. can be used when specifying requirements for
-     * other tasks. The function receives one or two arguments:
-     * * a `results` object, containing the results of the previously executed
-     *   functions, only passed if the task has any dependencies,
-     * * a `callback(err, result)` function, which must be called when finished,
-     *   passing an `error` (which can be `null`) and the result of the function's
-     *   execution.
-     * @param {number} [concurrency=Infinity] - An optional `integer` for
-     * determining the maximum number of tasks that can be run in parallel. By
-     * default, as many as possible.
-     * @param {Function} [callback] - An optional callback which is called when all
-     * the tasks have been completed. It receives the `err` argument if any `tasks`
-     * pass an error to their callback. Results are always returned; however, if an
-     * error occurs, no further `tasks` will be performed, and the results object
-     * will only contain partial results. Invoked with (err, results).
-     * @returns {Promise} a promise, if a callback is not passed
-     * @example
-     *
-     * //Using Callbacks
-     * async.auto({
-     *     get_data: function(callback) {
-     *         // async code to get some data
-     *         callback(null, 'data', 'converted to array');
-     *     },
-     *     make_folder: function(callback) {
-     *         // async code to create a directory to store a file in
-     *         // this is run at the same time as getting the data
-     *         callback(null, 'folder');
-     *     },
-     *     write_file: ['get_data', 'make_folder', function(results, callback) {
-     *         // once there is some data and the directory exists,
-     *         // write the data to a file in the directory
-     *         callback(null, 'filename');
-     *     }],
-     *     email_link: ['write_file', function(results, callback) {
-     *         // once the file is written let's email a link to it...
-     *         callback(null, {'file':results.write_file, 'email':'user@example.com'});
-     *     }]
-     * }, function(err, results) {
-     *     if (err) {
-     *         console.log('err = ', err);
-     *     }
-     *     console.log('results = ', results);
-     *     // results = {
-     *     //     get_data: ['data', 'converted to array']
-     *     //     make_folder; 'folder',
-     *     //     write_file: 'filename'
-     *     //     email_link: { file: 'filename', email: 'user@example.com' }
-     *     // }
-     * });
-     *
-     * //Using Promises
-     * async.auto({
-     *     get_data: function(callback) {
-     *         console.log('in get_data');
-     *         // async code to get some data
-     *         callback(null, 'data', 'converted to array');
-     *     },
-     *     make_folder: function(callback) {
-     *         console.log('in make_folder');
-     *         // async code to create a directory to store a file in
-     *         // this is run at the same time as getting the data
-     *         callback(null, 'folder');
-     *     },
-     *     write_file: ['get_data', 'make_folder', function(results, callback) {
-     *         // once there is some data and the directory exists,
-     *         // write the data to a file in the directory
-     *         callback(null, 'filename');
-     *     }],
-     *     email_link: ['write_file', function(results, callback) {
-     *         // once the file is written let's email a link to it...
-     *         callback(null, {'file':results.write_file, 'email':'user@example.com'});
-     *     }]
-     * }).then(results => {
-     *     console.log('results = ', results);
-     *     // results = {
-     *     //     get_data: ['data', 'converted to array']
-     *     //     make_folder; 'folder',
-     *     //     write_file: 'filename'
-     *     //     email_link: { file: 'filename', email: 'user@example.com' }
-     *     // }
-     * }).catch(err => {
-     *     console.log('err = ', err);
-     * });
-     *
-     * //Using async/await
-     * async () => {
-     *     try {
-     *         let results = await async.auto({
-     *             get_data: function(callback) {
-     *                 // async code to get some data
-     *                 callback(null, 'data', 'converted to array');
-     *             },
-     *             make_folder: function(callback) {
-     *                 // async code to create a directory to store a file in
-     *                 // this is run at the same time as getting the data
-     *                 callback(null, 'folder');
-     *             },
-     *             write_file: ['get_data', 'make_folder', function(results, callback) {
-     *                 // once there is some data and the directory exists,
-     *                 // write the data to a file in the directory
-     *                 callback(null, 'filename');
-     *             }],
-     *             email_link: ['write_file', function(results, callback) {
-     *                 // once the file is written let's email a link to it...
-     *                 callback(null, {'file':results.write_file, 'email':'user@example.com'});
-     *             }]
-     *         });
-     *         console.log('results = ', results);
-     *         // results = {
-     *         //     get_data: ['data', 'converted to array']
-     *         //     make_folder; 'folder',
-     *         //     write_file: 'filename'
-     *         //     email_link: { file: 'filename', email: 'user@example.com' }
-     *         // }
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     */function auto(tasks,concurrency,callback){if(typeof concurrency!=='number'){// concurrency is optional, shift the args.
-callback=concurrency;concurrency=null;}callback=once(callback||promiseCallback());var numTasks=Object.keys(tasks).length;if(!numTasks){return callback(null);}if(!concurrency){concurrency=numTasks;}var results={};var runningTasks=0;var canceled=false;var hasError=false;var listeners=Object.create(null);var readyTasks=[];// for cycle detection:
-var readyToCheck=[];// tasks that have been identified as reachable
-// without the possibility of returning to an ancestor task
-var uncheckedDependencies={};Object.keys(tasks).forEach(key=>{var task=tasks[key];if(!Array.isArray(task)){// no dependencies
-enqueueTask(key,[task]);readyToCheck.push(key);return;}var dependencies=task.slice(0,task.length-1);var remainingDependencies=dependencies.length;if(remainingDependencies===0){enqueueTask(key,task);readyToCheck.push(key);return;}uncheckedDependencies[key]=remainingDependencies;dependencies.forEach(dependencyName=>{if(!tasks[dependencyName]){throw new Error('async.auto task `'+key+'` has a non-existent dependency `'+dependencyName+'` in '+dependencies.join(', '));}addListener(dependencyName,()=>{remainingDependencies--;if(remainingDependencies===0){enqueueTask(key,task);}});});});checkForDeadlocks();processQueue();function enqueueTask(key,task){readyTasks.push(()=>runTask(key,task));}function processQueue(){if(canceled)return;if(readyTasks.length===0&&runningTasks===0){return callback(null,results);}while(readyTasks.length&&runningTasks<concurrency){var run=readyTasks.shift();run();}}function addListener(taskName,fn){var taskListeners=listeners[taskName];if(!taskListeners){taskListeners=listeners[taskName]=[];}taskListeners.push(fn);}function taskComplete(taskName){var taskListeners=listeners[taskName]||[];taskListeners.forEach(fn=>fn());processQueue();}function runTask(key,task){if(hasError)return;var taskCallback=onlyOnce(function(err){for(var _len13=arguments.length,result=new Array(_len13>1?_len13-1:0),_key13=1;_key13<_len13;_key13++){result[_key13-1]=arguments[_key13];}runningTasks--;if(err===false){canceled=true;return;}if(result.length<2){[result]=result;}if(err){var safeResults={};Object.keys(results).forEach(rkey=>{safeResults[rkey]=results[rkey];});safeResults[key]=result;hasError=true;listeners=Object.create(null);if(canceled)return;callback(err,safeResults);}else{results[key]=result;taskComplete(key);}});runningTasks++;var taskFn=wrapAsync(task[task.length-1]);if(task.length>1){taskFn(results,taskCallback);}else{taskFn(taskCallback);}}function checkForDeadlocks(){// Kahn's algorithm
-// https://en.wikipedia.org/wiki/Topological_sorting#Kahn.27s_algorithm
-// http://connalle.blogspot.com/2013/10/topological-sortingkahn-algorithm.html
-var currentTask;var counter=0;while(readyToCheck.length){currentTask=readyToCheck.pop();counter++;getDependents(currentTask).forEach(dependent=>{if(--uncheckedDependencies[dependent]===0){readyToCheck.push(dependent);}});}if(counter!==numTasks){throw new Error('async.auto cannot execute tasks due to a recursive dependency');}}function getDependents(taskName){var result=[];Object.keys(tasks).forEach(key=>{const task=tasks[key];if(Array.isArray(task)&&task.indexOf(taskName)>=0){result.push(key);}});return result;}return callback[PROMISE_SYMBOL];}var FN_ARGS=/^(?:async\s+)?(?:function)?\s*\w*\s*\(\s*([^)]+)\s*\)(?:\s*{)/;var ARROW_FN_ARGS=/^(?:async\s+)?\(?\s*([^)=]+)\s*\)?(?:\s*=>)/;var FN_ARG_SPLIT=/,/;var FN_ARG=/(=.+)?(\s*)$/;function stripComments(string){let stripped='';let index=0;let endBlockComment=string.indexOf('*/');while(index<string.length){if(string[index]==='/'&&string[index+1]==='/'){// inline comment
-let endIndex=string.indexOf('\n',index);index=endIndex===-1?string.length:endIndex;}else if(endBlockComment!==-1&&string[index]==='/'&&string[index+1]==='*'){// block comment
-let endIndex=string.indexOf('*/',index);if(endIndex!==-1){index=endIndex+2;endBlockComment=string.indexOf('*/',index);}else{stripped+=string[index];index++;}}else{stripped+=string[index];index++;}}return stripped;}function parseParams(func){const src=stripComments(func.toString());let match=src.match(FN_ARGS);if(!match){match=src.match(ARROW_FN_ARGS);}if(!match)throw new Error('could not parse args in autoInject\nSource:\n'+src);let[,args]=match;return args.replace(/\s/g,'').split(FN_ARG_SPLIT).map(arg=>arg.replace(FN_ARG,'').trim());}/**
-     * A dependency-injected version of the [async.auto]{@link module:ControlFlow.auto} function. Dependent
-     * tasks are specified as parameters to the function, after the usual callback
-     * parameter, with the parameter names matching the names of the tasks it
-     * depends on. This can provide even more readable task graphs which can be
-     * easier to maintain.
-     *
-     * If a final callback is specified, the task results are similarly injected,
-     * specified as named parameters after the initial error parameter.
-     *
-     * The autoInject function is purely syntactic sugar and its semantics are
-     * otherwise equivalent to [async.auto]{@link module:ControlFlow.auto}.
-     *
-     * @name autoInject
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @see [async.auto]{@link module:ControlFlow.auto}
-     * @category Control Flow
-     * @param {Object} tasks - An object, each of whose properties is an {@link AsyncFunction} of
-     * the form 'func([dependencies...], callback). The object's key of a property
-     * serves as the name of the task defined by that property, i.e. can be used
-     * when specifying requirements for other tasks.
-     * * The `callback` parameter is a `callback(err, result)` which must be called
-     *   when finished, passing an `error` (which can be `null`) and the result of
-     *   the function's execution. The remaining parameters name other tasks on
-     *   which the task is dependent, and the results from those tasks are the
-     *   arguments of those parameters.
-     * @param {Function} [callback] - An optional callback which is called when all
-     * the tasks have been completed. It receives the `err` argument if any `tasks`
-     * pass an error to their callback, and a `results` object with any completed
-     * task results, similar to `auto`.
-     * @returns {Promise} a promise, if no callback is passed
-     * @example
-     *
-     * //  The example from `auto` can be rewritten as follows:
-     * async.autoInject({
-     *     get_data: function(callback) {
-     *         // async code to get some data
-     *         callback(null, 'data', 'converted to array');
-     *     },
-     *     make_folder: function(callback) {
-     *         // async code to create a directory to store a file in
-     *         // this is run at the same time as getting the data
-     *         callback(null, 'folder');
-     *     },
-     *     write_file: function(get_data, make_folder, callback) {
-     *         // once there is some data and the directory exists,
-     *         // write the data to a file in the directory
-     *         callback(null, 'filename');
-     *     },
-     *     email_link: function(write_file, callback) {
-     *         // once the file is written let's email a link to it...
-     *         // write_file contains the filename returned by write_file.
-     *         callback(null, {'file':write_file, 'email':'user@example.com'});
-     *     }
-     * }, function(err, results) {
-     *     console.log('err = ', err);
-     *     console.log('email_link = ', results.email_link);
-     * });
-     *
-     * // If you are using a JS minifier that mangles parameter names, `autoInject`
-     * // will not work with plain functions, since the parameter names will be
-     * // collapsed to a single letter identifier.  To work around this, you can
-     * // explicitly specify the names of the parameters your task function needs
-     * // in an array, similar to Angular.js dependency injection.
-     *
-     * // This still has an advantage over plain `auto`, since the results a task
-     * // depends on are still spread into arguments.
-     * async.autoInject({
-     *     //...
-     *     write_file: ['get_data', 'make_folder', function(get_data, make_folder, callback) {
-     *         callback(null, 'filename');
-     *     }],
-     *     email_link: ['write_file', function(write_file, callback) {
-     *         callback(null, {'file':write_file, 'email':'user@example.com'});
-     *     }]
-     *     //...
-     * }, function(err, results) {
-     *     console.log('err = ', err);
-     *     console.log('email_link = ', results.email_link);
-     * });
-     */function autoInject(tasks,callback){var newTasks={};Object.keys(tasks).forEach(key=>{var taskFn=tasks[key];var params;var fnIsAsync=isAsync(taskFn);var hasNoDeps=!fnIsAsync&&taskFn.length===1||fnIsAsync&&taskFn.length===0;if(Array.isArray(taskFn)){params=[...taskFn];taskFn=params.pop();newTasks[key]=params.concat(params.length>0?newTask:taskFn);}else if(hasNoDeps){// no dependencies, use the function as-is
-newTasks[key]=taskFn;}else{params=parseParams(taskFn);if(taskFn.length===0&&!fnIsAsync&&params.length===0){throw new Error("autoInject task functions require explicit parameters.");}// remove callback param
-if(!fnIsAsync)params.pop();newTasks[key]=params.concat(newTask);}function newTask(results,taskCb){var newArgs=params.map(name=>results[name]);newArgs.push(taskCb);wrapAsync(taskFn)(...newArgs);}});return auto(newTasks,callback);}// Simple doubly linked list (https://en.wikipedia.org/wiki/Doubly_linked_list) implementation
-// used for queues. This implementation assumes that the node provided by the user can be modified
-// to adjust the next and last properties. We implement only the minimal functionality
-// for queue support.
-class DLL{constructor(){this.head=this.tail=null;this.length=0;}removeLink(node){if(node.prev)node.prev.next=node.next;else this.head=node.next;if(node.next)node.next.prev=node.prev;else this.tail=node.prev;node.prev=node.next=null;this.length-=1;return node;}empty(){while(this.head)this.shift();return this;}insertAfter(node,newNode){newNode.prev=node;newNode.next=node.next;if(node.next)node.next.prev=newNode;else this.tail=newNode;node.next=newNode;this.length+=1;}insertBefore(node,newNode){newNode.prev=node.prev;newNode.next=node;if(node.prev)node.prev.next=newNode;else this.head=newNode;node.prev=newNode;this.length+=1;}unshift(node){if(this.head)this.insertBefore(this.head,node);else setInitial(this,node);}push(node){if(this.tail)this.insertAfter(this.tail,node);else setInitial(this,node);}shift(){return this.head&&this.removeLink(this.head);}pop(){return this.tail&&this.removeLink(this.tail);}toArray(){return[...this];}*[Symbol.iterator](){var cur=this.head;while(cur){yield cur.data;cur=cur.next;}}remove(testFn){var curr=this.head;while(curr){var{next}=curr;if(testFn(curr)){this.removeLink(curr);}curr=next;}return this;}}function setInitial(dll,node){dll.length=1;dll.head=dll.tail=node;}function queue(worker,concurrency,payload){if(concurrency==null){concurrency=1;}else if(concurrency===0){throw new RangeError('Concurrency must not be zero');}var _worker=wrapAsync(worker);var numRunning=0;var workersList=[];const events={error:[],drain:[],saturated:[],unsaturated:[],empty:[]};function on(event,handler){events[event].push(handler);}function once(event,handler){const handleAndRemove=function handleAndRemove(){off(event,handleAndRemove);handler(...arguments);};events[event].push(handleAndRemove);}function off(event,handler){if(!event)return Object.keys(events).forEach(ev=>events[ev]=[]);if(!handler)return events[event]=[];events[event]=events[event].filter(ev=>ev!==handler);}function trigger(event){for(var _len14=arguments.length,args=new Array(_len14>1?_len14-1:0),_key14=1;_key14<_len14;_key14++){args[_key14-1]=arguments[_key14];}events[event].forEach(handler=>handler(...args));}var processingScheduled=false;function _insert(data,insertAtFront,rejectOnError,callback){if(callback!=null&&typeof callback!=='function'){throw new Error('task callback must be a function');}q.started=true;var res,rej;function promiseCallback(err){// we don't care about the error, let the global error handler
-// deal with it
-if(err)return rejectOnError?rej(err):res();for(var _len15=arguments.length,args=new Array(_len15>1?_len15-1:0),_key15=1;_key15<_len15;_key15++){args[_key15-1]=arguments[_key15];}if(args.length<=1)return res(args[0]);res(args);}var item=q._createTaskItem(data,rejectOnError?promiseCallback:callback||promiseCallback);if(insertAtFront){q._tasks.unshift(item);}else{q._tasks.push(item);}if(!processingScheduled){processingScheduled=true;setImmediate$1(()=>{processingScheduled=false;q.process();});}if(rejectOnError||!callback){return new Promise((resolve,reject)=>{res=resolve;rej=reject;});}}function _createCB(tasks){return function(err){numRunning-=1;for(var _len16=arguments.length,args=new Array(_len16>1?_len16-1:0),_key16=1;_key16<_len16;_key16++){args[_key16-1]=arguments[_key16];}for(var i=0,l=tasks.length;i<l;i++){var task=tasks[i];var index=workersList.indexOf(task);if(index===0){workersList.shift();}else if(index>0){workersList.splice(index,1);}task.callback(err,...args);if(err!=null){trigger('error',err,task.data);}}if(numRunning<=q.concurrency-q.buffer){trigger('unsaturated');}if(q.idle()){trigger('drain');}q.process();};}function _maybeDrain(data){if(data.length===0&&q.idle()){// call drain immediately if there are no tasks
-setImmediate$1(()=>trigger('drain'));return true;}return false;}const eventMethod=name=>handler=>{if(!handler){return new Promise((resolve,reject)=>{once(name,(err,data)=>{if(err)return reject(err);resolve(data);});});}off(name);on(name,handler);};var isProcessing=false;var q={_tasks:new DLL(),_createTaskItem(data,callback){return{data,callback};},*[Symbol.iterator](){yield*q._tasks[Symbol.iterator]();},concurrency,payload,buffer:concurrency/4,started:false,paused:false,push(data,callback){if(Array.isArray(data)){if(_maybeDrain(data))return;return data.map(datum=>_insert(datum,false,false,callback));}return _insert(data,false,false,callback);},pushAsync(data,callback){if(Array.isArray(data)){if(_maybeDrain(data))return;return data.map(datum=>_insert(datum,false,true,callback));}return _insert(data,false,true,callback);},kill(){off();q._tasks.empty();},unshift(data,callback){if(Array.isArray(data)){if(_maybeDrain(data))return;return data.map(datum=>_insert(datum,true,false,callback));}return _insert(data,true,false,callback);},unshiftAsync(data,callback){if(Array.isArray(data)){if(_maybeDrain(data))return;return data.map(datum=>_insert(datum,true,true,callback));}return _insert(data,true,true,callback);},remove(testFn){q._tasks.remove(testFn);},process(){// Avoid trying to start too many processing operations. This can occur
-// when callbacks resolve synchronously (#1267).
-if(isProcessing){return;}isProcessing=true;while(!q.paused&&numRunning<q.concurrency&&q._tasks.length){var tasks=[],data=[];var l=q._tasks.length;if(q.payload)l=Math.min(l,q.payload);for(var i=0;i<l;i++){var node=q._tasks.shift();tasks.push(node);workersList.push(node);data.push(node.data);}numRunning+=1;if(q._tasks.length===0){trigger('empty');}if(numRunning===q.concurrency){trigger('saturated');}var cb=onlyOnce(_createCB(tasks));_worker(data,cb);}isProcessing=false;},length(){return q._tasks.length;},running(){return numRunning;},workersList(){return workersList;},idle(){return q._tasks.length+numRunning===0;},pause(){q.paused=true;},resume(){if(q.paused===false){return;}q.paused=false;setImmediate$1(q.process);}};// define these as fixed properties, so people get useful errors when updating
-Object.defineProperties(q,{saturated:{writable:false,value:eventMethod('saturated')},unsaturated:{writable:false,value:eventMethod('unsaturated')},empty:{writable:false,value:eventMethod('empty')},drain:{writable:false,value:eventMethod('drain')},error:{writable:false,value:eventMethod('error')}});return q;}/**
-     * Creates a `cargo` object with the specified payload. Tasks added to the
-     * cargo will be processed altogether (up to the `payload` limit). If the
-     * `worker` is in progress, the task is queued until it becomes available. Once
-     * the `worker` has completed some tasks, each callback of those tasks is
-     * called. Check out [these](https://camo.githubusercontent.com/6bbd36f4cf5b35a0f11a96dcd2e97711ffc2fb37/68747470733a2f2f662e636c6f75642e6769746875622e636f6d2f6173736574732f313637363837312f36383130382f62626330636662302d356632392d313165322d393734662d3333393763363464633835382e676966) [animations](https://camo.githubusercontent.com/f4810e00e1c5f5f8addbe3e9f49064fd5d102699/68747470733a2f2f662e636c6f75642e6769746875622e636f6d2f6173736574732f313637363837312f36383130312f38346339323036362d356632392d313165322d383134662d3964336430323431336266642e676966)
-     * for how `cargo` and `queue` work.
-     *
-     * While [`queue`]{@link module:ControlFlow.queue} passes only one task to one of a group of workers
-     * at a time, cargo passes an array of tasks to a single worker, repeating
-     * when the worker is finished.
-     *
-     * @name cargo
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @see [async.queue]{@link module:ControlFlow.queue}
-     * @category Control Flow
-     * @param {AsyncFunction} worker - An asynchronous function for processing an array
-     * of queued tasks. Invoked with `(tasks, callback)`.
-     * @param {number} [payload=Infinity] - An optional `integer` for determining
-     * how many tasks should be processed per round; if omitted, the default is
-     * unlimited.
-     * @returns {module:ControlFlow.QueueObject} A cargo object to manage the tasks. Callbacks can
-     * attached as certain properties to listen for specific events during the
-     * lifecycle of the cargo and inner queue.
-     * @example
-     *
-     * // create a cargo object with payload 2
-     * var cargo = async.cargo(function(tasks, callback) {
-     *     for (var i=0; i<tasks.length; i++) {
-     *         console.log('hello ' + tasks[i].name);
-     *     }
-     *     callback();
-     * }, 2);
-     *
-     * // add some items
-     * cargo.push({name: 'foo'}, function(err) {
-     *     console.log('finished processing foo');
-     * });
-     * cargo.push({name: 'bar'}, function(err) {
-     *     console.log('finished processing bar');
-     * });
-     * await cargo.push({name: 'baz'});
-     * console.log('finished processing baz');
-     */function cargo(worker,payload){return queue(worker,1,payload);}/**
-     * Creates a `cargoQueue` object with the specified payload. Tasks added to the
-     * cargoQueue will be processed together (up to the `payload` limit) in `concurrency` parallel workers.
-     * If the all `workers` are in progress, the task is queued until one becomes available. Once
-     * a `worker` has completed some tasks, each callback of those tasks is
-     * called. Check out [these](https://camo.githubusercontent.com/6bbd36f4cf5b35a0f11a96dcd2e97711ffc2fb37/68747470733a2f2f662e636c6f75642e6769746875622e636f6d2f6173736574732f313637363837312f36383130382f62626330636662302d356632392d313165322d393734662d3333393763363464633835382e676966) [animations](https://camo.githubusercontent.com/f4810e00e1c5f5f8addbe3e9f49064fd5d102699/68747470733a2f2f662e636c6f75642e6769746875622e636f6d2f6173736574732f313637363837312f36383130312f38346339323036362d356632392d313165322d383134662d3964336430323431336266642e676966)
-     * for how `cargo` and `queue` work.
-     *
-     * While [`queue`]{@link module:ControlFlow.queue} passes only one task to one of a group of workers
-     * at a time, and [`cargo`]{@link module:ControlFlow.cargo} passes an array of tasks to a single worker,
-     * the cargoQueue passes an array of tasks to multiple parallel workers.
-     *
-     * @name cargoQueue
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @see [async.queue]{@link module:ControlFlow.queue}
-     * @see [async.cargo]{@link module:ControlFLow.cargo}
-     * @category Control Flow
-     * @param {AsyncFunction} worker - An asynchronous function for processing an array
-     * of queued tasks. Invoked with `(tasks, callback)`.
-     * @param {number} [concurrency=1] - An `integer` for determining how many
-     * `worker` functions should be run in parallel.  If omitted, the concurrency
-     * defaults to `1`.  If the concurrency is `0`, an error is thrown.
-     * @param {number} [payload=Infinity] - An optional `integer` for determining
-     * how many tasks should be processed per round; if omitted, the default is
-     * unlimited.
-     * @returns {module:ControlFlow.QueueObject} A cargoQueue object to manage the tasks. Callbacks can
-     * attached as certain properties to listen for specific events during the
-     * lifecycle of the cargoQueue and inner queue.
-     * @example
-     *
-     * // create a cargoQueue object with payload 2 and concurrency 2
-     * var cargoQueue = async.cargoQueue(function(tasks, callback) {
-     *     for (var i=0; i<tasks.length; i++) {
-     *         console.log('hello ' + tasks[i].name);
-     *     }
-     *     callback();
-     * }, 2, 2);
-     *
-     * // add some items
-     * cargoQueue.push({name: 'foo'}, function(err) {
-     *     console.log('finished processing foo');
-     * });
-     * cargoQueue.push({name: 'bar'}, function(err) {
-     *     console.log('finished processing bar');
-     * });
-     * cargoQueue.push({name: 'baz'}, function(err) {
-     *     console.log('finished processing baz');
-     * });
-     * cargoQueue.push({name: 'boo'}, function(err) {
-     *     console.log('finished processing boo');
-     * });
-     */function cargo$1(worker,concurrency,payload){return queue(worker,concurrency,payload);}/**
-     * Reduces `coll` into a single value using an async `iteratee` to return each
-     * successive step. `memo` is the initial state of the reduction. This function
-     * only operates in series.
-     *
-     * For performance reasons, it may make sense to split a call to this function
-     * into a parallel map, and then use the normal `Array.prototype.reduce` on the
-     * results. This function is for situations where each step in the reduction
-     * needs to be async; if you can get the data before reducing it, then it's
-     * probably a good idea to do so.
-     *
-     * @name reduce
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @alias inject
-     * @alias foldl
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {*} memo - The initial state of the reduction.
-     * @param {AsyncFunction} iteratee - A function applied to each item in the
-     * array to produce the next step in the reduction.
-     * The `iteratee` should complete with the next state of the reduction.
-     * If the iteratee completes with an error, the reduction is stopped and the
-     * main `callback` is immediately called with the error.
-     * Invoked with (memo, item, callback).
-     * @param {Function} [callback] - A callback which is called after all the
-     * `iteratee` functions have finished. Result is the reduced value. Invoked with
-     * (err, result).
-     * @returns {Promise} a promise, if no callback is passed
-     * @example
-     *
-     * // file1.txt is a file that is 1000 bytes in size
-     * // file2.txt is a file that is 2000 bytes in size
-     * // file3.txt is a file that is 3000 bytes in size
-     * // file4.txt does not exist
-     *
-     * const fileList = ['file1.txt','file2.txt','file3.txt'];
-     * const withMissingFileList = ['file1.txt','file2.txt','file3.txt', 'file4.txt'];
-     *
-     * // asynchronous function that computes the file size in bytes
-     * // file size is added to the memoized value, then returned
-     * function getFileSizeInBytes(memo, file, callback) {
-     *     fs.stat(file, function(err, stat) {
-     *         if (err) {
-     *             return callback(err);
-     *         }
-     *         callback(null, memo + stat.size);
-     *     });
-     * }
-     *
-     * // Using callbacks
-     * async.reduce(fileList, 0, getFileSizeInBytes, function(err, result) {
-     *     if (err) {
-     *         console.log(err);
-     *     } else {
-     *         console.log(result);
-     *         // 6000
-     *         // which is the sum of the file sizes of the three files
-     *     }
-     * });
-     *
-     * // Error Handling
-     * async.reduce(withMissingFileList, 0, getFileSizeInBytes, function(err, result) {
-     *     if (err) {
-     *         console.log(err);
-     *         // [ Error: ENOENT: no such file or directory ]
-     *     } else {
-     *         console.log(result);
-     *     }
-     * });
-     *
-     * // Using Promises
-     * async.reduce(fileList, 0, getFileSizeInBytes)
-     * .then( result => {
-     *     console.log(result);
-     *     // 6000
-     *     // which is the sum of the file sizes of the three files
-     * }).catch( err => {
-     *     console.log(err);
-     * });
-     *
-     * // Error Handling
-     * async.reduce(withMissingFileList, 0, getFileSizeInBytes)
-     * .then( result => {
-     *     console.log(result);
-     * }).catch( err => {
-     *     console.log(err);
-     *     // [ Error: ENOENT: no such file or directory ]
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let result = await async.reduce(fileList, 0, getFileSizeInBytes);
-     *         console.log(result);
-     *         // 6000
-     *         // which is the sum of the file sizes of the three files
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     * // Error Handling
-     * async () => {
-     *     try {
-     *         let result = await async.reduce(withMissingFileList, 0, getFileSizeInBytes);
-     *         console.log(result);
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *         // [ Error: ENOENT: no such file or directory ]
-     *     }
-     * }
-     *
-     */function reduce(coll,memo,iteratee,callback){callback=once(callback);var _iteratee=wrapAsync(iteratee);return eachOfSeries$1(coll,(x,i,iterCb)=>{_iteratee(memo,x,(err,v)=>{memo=v;iterCb(err);});},err=>callback(err,memo));}var reduce$1=awaitify(reduce,4);/**
-     * Version of the compose function that is more natural to read. Each function
-     * consumes the return value of the previous function. It is the equivalent of
-     * [compose]{@link module:ControlFlow.compose} with the arguments reversed.
-     *
-     * Each function is executed with the `this` binding of the composed function.
-     *
-     * @name seq
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @see [async.compose]{@link module:ControlFlow.compose}
-     * @category Control Flow
-     * @param {...AsyncFunction} functions - the asynchronous functions to compose
-     * @returns {Function} a function that composes the `functions` in order
-     * @example
-     *
-     * // Requires lodash (or underscore), express3 and dresende's orm2.
-     * // Part of an app, that fetches cats of the logged user.
-     * // This example uses `seq` function to avoid overnesting and error
-     * // handling clutter.
-     * app.get('/cats', function(request, response) {
-     *     var User = request.models.User;
-     *     async.seq(
-     *         User.get.bind(User),  // 'User.get' has signature (id, callback(err, data))
-     *         function(user, fn) {
-     *             user.getCats(fn);      // 'getCats' has signature (callback(err, data))
-     *         }
-     *     )(req.session.user_id, function (err, cats) {
-     *         if (err) {
-     *             console.error(err);
-     *             response.json({ status: 'error', message: err.message });
-     *         } else {
-     *             response.json({ status: 'ok', message: 'Cats found', data: cats });
-     *         }
-     *     });
-     * });
-     */function seq(){for(var _len17=arguments.length,functions=new Array(_len17),_key17=0;_key17<_len17;_key17++){functions[_key17]=arguments[_key17];}var _functions=functions.map(wrapAsync);return function(){var that=this;for(var _len18=arguments.length,args=new Array(_len18),_key18=0;_key18<_len18;_key18++){args[_key18]=arguments[_key18];}var cb=args[args.length-1];if(typeof cb=='function'){args.pop();}else{cb=promiseCallback();}reduce$1(_functions,args,(newargs,fn,iterCb)=>{fn.apply(that,newargs.concat(function(err){for(var _len19=arguments.length,nextargs=new Array(_len19>1?_len19-1:0),_key19=1;_key19<_len19;_key19++){nextargs[_key19-1]=arguments[_key19];}iterCb(err,nextargs);}));},(err,results)=>cb(err,...results));return cb[PROMISE_SYMBOL];};}/**
-     * Creates a function which is a composition of the passed asynchronous
-     * functions. Each function consumes the return value of the function that
-     * follows. Composing functions `f()`, `g()`, and `h()` would produce the result
-     * of `f(g(h()))`, only this version uses callbacks to obtain the return values.
-     *
-     * If the last argument to the composed function is not a function, a promise
-     * is returned when you call it.
-     *
-     * Each function is executed with the `this` binding of the composed function.
-     *
-     * @name compose
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @category Control Flow
-     * @param {...AsyncFunction} functions - the asynchronous functions to compose
-     * @returns {Function} an asynchronous function that is the composed
-     * asynchronous `functions`
-     * @example
-     *
-     * function add1(n, callback) {
-     *     setTimeout(function () {
-     *         callback(null, n + 1);
-     *     }, 10);
-     * }
-     *
-     * function mul3(n, callback) {
-     *     setTimeout(function () {
-     *         callback(null, n * 3);
-     *     }, 10);
-     * }
-     *
-     * var add1mul3 = async.compose(mul3, add1);
-     * add1mul3(4, function (err, result) {
-     *     // result now equals 15
-     * });
-     */function compose(){for(var _len20=arguments.length,args=new Array(_len20),_key20=0;_key20<_len20;_key20++){args[_key20]=arguments[_key20];}return seq(...args.reverse());}/**
-     * The same as [`map`]{@link module:Collections.map} but runs a maximum of `limit` async operations at a time.
-     *
-     * @name mapLimit
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.map]{@link module:Collections.map}
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {number} limit - The maximum number of async operations at a time.
-     * @param {AsyncFunction} iteratee - An async function to apply to each item in
-     * `coll`.
-     * The iteratee should complete with the transformed item.
-     * Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called when all `iteratee`
-     * functions have finished, or an error occurs. Results is an array of the
-     * transformed items from the `coll`. Invoked with (err, results).
-     * @returns {Promise} a promise, if no callback is passed
-     */function mapLimit(coll,limit,iteratee,callback){return _asyncMap(eachOfLimit(limit),coll,iteratee,callback);}var mapLimit$1=awaitify(mapLimit,4);/**
-     * The same as [`concat`]{@link module:Collections.concat} but runs a maximum of `limit` async operations at a time.
-     *
-     * @name concatLimit
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.concat]{@link module:Collections.concat}
-     * @category Collection
-     * @alias flatMapLimit
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {number} limit - The maximum number of async operations at a time.
-     * @param {AsyncFunction} iteratee - A function to apply to each item in `coll`,
-     * which should use an array as its result. Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called after all the
-     * `iteratee` functions have finished, or an error occurs. Results is an array
-     * containing the concatenated results of the `iteratee` function. Invoked with
-     * (err, results).
-     * @returns A Promise, if no callback is passed
-     */function concatLimit(coll,limit,iteratee,callback){var _iteratee=wrapAsync(iteratee);return mapLimit$1(coll,limit,(val,iterCb)=>{_iteratee(val,function(err){if(err)return iterCb(err);for(var _len21=arguments.length,args=new Array(_len21>1?_len21-1:0),_key21=1;_key21<_len21;_key21++){args[_key21-1]=arguments[_key21];}return iterCb(err,args);});},(err,mapResults)=>{var result=[];for(var i=0;i<mapResults.length;i++){if(mapResults[i]){result=result.concat(...mapResults[i]);}}return callback(err,result);});}var concatLimit$1=awaitify(concatLimit,4);/**
-     * Applies `iteratee` to each item in `coll`, concatenating the results. Returns
-     * the concatenated list. The `iteratee`s are called in parallel, and the
-     * results are concatenated as they return. The results array will be returned in
-     * the original order of `coll` passed to the `iteratee` function.
-     *
-     * @name concat
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @category Collection
-     * @alias flatMap
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {AsyncFunction} iteratee - A function to apply to each item in `coll`,
-     * which should use an array as its result. Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called after all the
-     * `iteratee` functions have finished, or an error occurs. Results is an array
-     * containing the concatenated results of the `iteratee` function. Invoked with
-     * (err, results).
-     * @returns A Promise, if no callback is passed
-     * @example
-     *
-     * // dir1 is a directory that contains file1.txt, file2.txt
-     * // dir2 is a directory that contains file3.txt, file4.txt
-     * // dir3 is a directory that contains file5.txt
-     * // dir4 does not exist
-     *
-     * let directoryList = ['dir1','dir2','dir3'];
-     * let withMissingDirectoryList = ['dir1','dir2','dir3', 'dir4'];
-     *
-     * // Using callbacks
-     * async.concat(directoryList, fs.readdir, function(err, results) {
-     *    if (err) {
-     *        console.log(err);
-     *    } else {
-     *        console.log(results);
-     *        // [ 'file1.txt', 'file2.txt', 'file3.txt', 'file4.txt', file5.txt ]
-     *    }
-     * });
-     *
-     * // Error Handling
-     * async.concat(withMissingDirectoryList, fs.readdir, function(err, results) {
-     *    if (err) {
-     *        console.log(err);
-     *        // [ Error: ENOENT: no such file or directory ]
-     *        // since dir4 does not exist
-     *    } else {
-     *        console.log(results);
-     *    }
-     * });
-     *
-     * // Using Promises
-     * async.concat(directoryList, fs.readdir)
-     * .then(results => {
-     *     console.log(results);
-     *     // [ 'file1.txt', 'file2.txt', 'file3.txt', 'file4.txt', file5.txt ]
-     * }).catch(err => {
-     *      console.log(err);
-     * });
-     *
-     * // Error Handling
-     * async.concat(withMissingDirectoryList, fs.readdir)
-     * .then(results => {
-     *     console.log(results);
-     * }).catch(err => {
-     *     console.log(err);
-     *     // [ Error: ENOENT: no such file or directory ]
-     *     // since dir4 does not exist
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let results = await async.concat(directoryList, fs.readdir);
-     *         console.log(results);
-     *         // [ 'file1.txt', 'file2.txt', 'file3.txt', 'file4.txt', file5.txt ]
-     *     } catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     * // Error Handling
-     * async () => {
-     *     try {
-     *         let results = await async.concat(withMissingDirectoryList, fs.readdir);
-     *         console.log(results);
-     *     } catch (err) {
-     *         console.log(err);
-     *         // [ Error: ENOENT: no such file or directory ]
-     *         // since dir4 does not exist
-     *     }
-     * }
-     *
-     */function concat(coll,iteratee,callback){return concatLimit$1(coll,Infinity,iteratee,callback);}var concat$1=awaitify(concat,3);/**
-     * The same as [`concat`]{@link module:Collections.concat} but runs only a single async operation at a time.
-     *
-     * @name concatSeries
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.concat]{@link module:Collections.concat}
-     * @category Collection
-     * @alias flatMapSeries
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {AsyncFunction} iteratee - A function to apply to each item in `coll`.
-     * The iteratee should complete with an array an array of results.
-     * Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called after all the
-     * `iteratee` functions have finished, or an error occurs. Results is an array
-     * containing the concatenated results of the `iteratee` function. Invoked with
-     * (err, results).
-     * @returns A Promise, if no callback is passed
-     */function concatSeries(coll,iteratee,callback){return concatLimit$1(coll,1,iteratee,callback);}var concatSeries$1=awaitify(concatSeries,3);/**
-     * Returns a function that when called, calls-back with the values provided.
-     * Useful as the first function in a [`waterfall`]{@link module:ControlFlow.waterfall}, or for plugging values in to
-     * [`auto`]{@link module:ControlFlow.auto}.
-     *
-     * @name constant
-     * @static
-     * @memberOf module:Utils
-     * @method
-     * @category Util
-     * @param {...*} arguments... - Any number of arguments to automatically invoke
-     * callback with.
-     * @returns {AsyncFunction} Returns a function that when invoked, automatically
-     * invokes the callback with the previous given arguments.
-     * @example
-     *
-     * async.waterfall([
-     *     async.constant(42),
-     *     function (value, next) {
-     *         // value === 42
-     *     },
-     *     //...
-     * ], callback);
-     *
-     * async.waterfall([
-     *     async.constant(filename, "utf8"),
-     *     fs.readFile,
-     *     function (fileData, next) {
-     *         //...
-     *     }
-     *     //...
-     * ], callback);
-     *
-     * async.auto({
-     *     hostname: async.constant("https://server.net/"),
-     *     port: findFreePort,
-     *     launchServer: ["hostname", "port", function (options, cb) {
-     *         startServer(options, cb);
-     *     }],
-     *     //...
-     * }, callback);
-     */function constant(){for(var _len22=arguments.length,args=new Array(_len22),_key22=0;_key22<_len22;_key22++){args[_key22]=arguments[_key22];}return function(){for(var _len23=arguments.length,ignoredArgs=new Array(_len23),_key23=0;_key23<_len23;_key23++){ignoredArgs[_key23]=arguments[_key23];}var callback=ignoredArgs.pop();return callback(null,...args);};}function _createTester(check,getResult){return(eachfn,arr,_iteratee,cb)=>{var testPassed=false;var testResult;const iteratee=wrapAsync(_iteratee);eachfn(arr,(value,_,callback)=>{iteratee(value,(err,result)=>{if(err||err===false)return callback(err);if(check(result)&&!testResult){testPassed=true;testResult=getResult(true,value);return callback(null,breakLoop);}callback();});},err=>{if(err)return cb(err);cb(null,testPassed?testResult:getResult(false));});};}/**
-     * Returns the first value in `coll` that passes an async truth test. The
-     * `iteratee` is applied in parallel, meaning the first iteratee to return
-     * `true` will fire the detect `callback` with that result. That means the
-     * result might not be the first item in the original `coll` (in terms of order)
-     * that passes the test.
-
-     * If order within the original `coll` is important, then look at
-     * [`detectSeries`]{@link module:Collections.detectSeries}.
-     *
-     * @name detect
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @alias find
-     * @category Collections
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {AsyncFunction} iteratee - A truth test to apply to each item in `coll`.
-     * The iteratee must complete with a boolean value as its result.
-     * Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called as soon as any
-     * iteratee returns `true`, or after all the `iteratee` functions have finished.
-     * Result will be the first item in the array that passes the truth test
-     * (iteratee) or the value `undefined` if none passed. Invoked with
-     * (err, result).
-     * @returns {Promise} a promise, if a callback is omitted
-     * @example
-     *
-     * // dir1 is a directory that contains file1.txt, file2.txt
-     * // dir2 is a directory that contains file3.txt, file4.txt
-     * // dir3 is a directory that contains file5.txt
-     *
-     * // asynchronous function that checks if a file exists
-     * function fileExists(file, callback) {
-     *    fs.access(file, fs.constants.F_OK, (err) => {
-     *        callback(null, !err);
-     *    });
-     * }
-     *
-     * async.detect(['file3.txt','file2.txt','dir1/file1.txt'], fileExists,
-     *    function(err, result) {
-     *        console.log(result);
-     *        // dir1/file1.txt
-     *        // result now equals the first file in the list that exists
-     *    }
-     *);
-     *
-     * // Using Promises
-     * async.detect(['file3.txt','file2.txt','dir1/file1.txt'], fileExists)
-     * .then(result => {
-     *     console.log(result);
-     *     // dir1/file1.txt
-     *     // result now equals the first file in the list that exists
-     * }).catch(err => {
-     *     console.log(err);
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let result = await async.detect(['file3.txt','file2.txt','dir1/file1.txt'], fileExists);
-     *         console.log(result);
-     *         // dir1/file1.txt
-     *         // result now equals the file in the list that exists
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     */function detect(coll,iteratee,callback){return _createTester(bool=>bool,(res,item)=>item)(eachOf$1,coll,iteratee,callback);}var detect$1=awaitify(detect,3);/**
-     * The same as [`detect`]{@link module:Collections.detect} but runs a maximum of `limit` async operations at a
-     * time.
-     *
-     * @name detectLimit
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.detect]{@link module:Collections.detect}
-     * @alias findLimit
-     * @category Collections
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {number} limit - The maximum number of async operations at a time.
-     * @param {AsyncFunction} iteratee - A truth test to apply to each item in `coll`.
-     * The iteratee must complete with a boolean value as its result.
-     * Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called as soon as any
-     * iteratee returns `true`, or after all the `iteratee` functions have finished.
-     * Result will be the first item in the array that passes the truth test
-     * (iteratee) or the value `undefined` if none passed. Invoked with
-     * (err, result).
-     * @returns {Promise} a promise, if a callback is omitted
-     */function detectLimit(coll,limit,iteratee,callback){return _createTester(bool=>bool,(res,item)=>item)(eachOfLimit(limit),coll,iteratee,callback);}var detectLimit$1=awaitify(detectLimit,4);/**
-     * The same as [`detect`]{@link module:Collections.detect} but runs only a single async operation at a time.
-     *
-     * @name detectSeries
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.detect]{@link module:Collections.detect}
-     * @alias findSeries
-     * @category Collections
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {AsyncFunction} iteratee - A truth test to apply to each item in `coll`.
-     * The iteratee must complete with a boolean value as its result.
-     * Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called as soon as any
-     * iteratee returns `true`, or after all the `iteratee` functions have finished.
-     * Result will be the first item in the array that passes the truth test
-     * (iteratee) or the value `undefined` if none passed. Invoked with
-     * (err, result).
-     * @returns {Promise} a promise, if a callback is omitted
-     */function detectSeries(coll,iteratee,callback){return _createTester(bool=>bool,(res,item)=>item)(eachOfLimit(1),coll,iteratee,callback);}var detectSeries$1=awaitify(detectSeries,3);function consoleFunc(name){return function(fn){for(var _len24=arguments.length,args=new Array(_len24>1?_len24-1:0),_key24=1;_key24<_len24;_key24++){args[_key24-1]=arguments[_key24];}return wrapAsync(fn)(...args,function(err){/* istanbul ignore else */if(typeof console==='object'){/* istanbul ignore else */if(err){/* istanbul ignore else */if(console.error){console.error(err);}}else if(console[name]){for(var _len25=arguments.length,resultArgs=new Array(_len25>1?_len25-1:0),_key25=1;_key25<_len25;_key25++){resultArgs[_key25-1]=arguments[_key25];}/* istanbul ignore else */resultArgs.forEach(x=>console[name](x));}}});};}/**
-     * Logs the result of an [`async` function]{@link AsyncFunction} to the
-     * `console` using `console.dir` to display the properties of the resulting object.
-     * Only works in Node.js or in browsers that support `console.dir` and
-     * `console.error` (such as FF and Chrome).
-     * If multiple arguments are returned from the async function,
-     * `console.dir` is called on each argument in order.
-     *
-     * @name dir
-     * @static
-     * @memberOf module:Utils
-     * @method
-     * @category Util
-     * @param {AsyncFunction} function - The function you want to eventually apply
-     * all arguments to.
-     * @param {...*} arguments... - Any number of arguments to apply to the function.
-     * @example
-     *
-     * // in a module
-     * var hello = function(name, callback) {
-     *     setTimeout(function() {
-     *         callback(null, {hello: name});
-     *     }, 1000);
-     * };
-     *
-     * // in the node repl
-     * node> async.dir(hello, 'world');
-     * {hello: 'world'}
-     */var dir=consoleFunc('dir');/**
-     * The post-check version of [`whilst`]{@link module:ControlFlow.whilst}. To reflect the difference in
-     * the order of operations, the arguments `test` and `iteratee` are switched.
-     *
-     * `doWhilst` is to `whilst` as `do while` is to `while` in plain JavaScript.
-     *
-     * @name doWhilst
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @see [async.whilst]{@link module:ControlFlow.whilst}
-     * @category Control Flow
-     * @param {AsyncFunction} iteratee - A function which is called each time `test`
-     * passes. Invoked with (callback).
-     * @param {AsyncFunction} test - asynchronous truth test to perform after each
-     * execution of `iteratee`. Invoked with (...args, callback), where `...args` are the
-     * non-error args from the previous callback of `iteratee`.
-     * @param {Function} [callback] - A callback which is called after the test
-     * function has failed and repeated execution of `iteratee` has stopped.
-     * `callback` will be passed an error and any arguments passed to the final
-     * `iteratee`'s callback. Invoked with (err, [results]);
-     * @returns {Promise} a promise, if no callback is passed
-     */function doWhilst(iteratee,test,callback){callback=onlyOnce(callback);var _fn=wrapAsync(iteratee);var _test=wrapAsync(test);var results;function next(err){if(err)return callback(err);if(err===false)return;for(var _len26=arguments.length,args=new Array(_len26>1?_len26-1:0),_key26=1;_key26<_len26;_key26++){args[_key26-1]=arguments[_key26];}results=args;_test(...args,check);}function check(err,truth){if(err)return callback(err);if(err===false)return;if(!truth)return callback(null,...results);_fn(next);}return check(null,true);}var doWhilst$1=awaitify(doWhilst,3);/**
-     * Like ['doWhilst']{@link module:ControlFlow.doWhilst}, except the `test` is inverted. Note the
-     * argument ordering differs from `until`.
-     *
-     * @name doUntil
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @see [async.doWhilst]{@link module:ControlFlow.doWhilst}
-     * @category Control Flow
-     * @param {AsyncFunction} iteratee - An async function which is called each time
-     * `test` fails. Invoked with (callback).
-     * @param {AsyncFunction} test - asynchronous truth test to perform after each
-     * execution of `iteratee`. Invoked with (...args, callback), where `...args` are the
-     * non-error args from the previous callback of `iteratee`
-     * @param {Function} [callback] - A callback which is called after the test
-     * function has passed and repeated execution of `iteratee` has stopped. `callback`
-     * will be passed an error and any arguments passed to the final `iteratee`'s
-     * callback. Invoked with (err, [results]);
-     * @returns {Promise} a promise, if no callback is passed
-     */function doUntil(iteratee,test,callback){const _test=wrapAsync(test);return doWhilst$1(iteratee,function(){for(var _len27=arguments.length,args=new Array(_len27),_key27=0;_key27<_len27;_key27++){args[_key27]=arguments[_key27];}const cb=args.pop();_test(...args,(err,truth)=>cb(err,!truth));},callback);}function _withoutIndex(iteratee){return(value,index,callback)=>iteratee(value,callback);}/**
-     * Applies the function `iteratee` to each item in `coll`, in parallel.
-     * The `iteratee` is called with an item from the list, and a callback for when
-     * it has finished. If the `iteratee` passes an error to its `callback`, the
-     * main `callback` (for the `each` function) is immediately called with the
-     * error.
-     *
-     * Note, that since this function applies `iteratee` to each item in parallel,
-     * there is no guarantee that the iteratee functions will complete in order.
-     *
-     * @name each
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @alias forEach
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {AsyncFunction} iteratee - An async function to apply to
-     * each item in `coll`. Invoked with (item, callback).
-     * The array index is not passed to the iteratee.
-     * If you need the index, use `eachOf`.
-     * @param {Function} [callback] - A callback which is called when all
-     * `iteratee` functions have finished, or an error occurs. Invoked with (err).
-     * @returns {Promise} a promise, if a callback is omitted
-     * @example
-     *
-     * // dir1 is a directory that contains file1.txt, file2.txt
-     * // dir2 is a directory that contains file3.txt, file4.txt
-     * // dir3 is a directory that contains file5.txt
-     * // dir4 does not exist
-     *
-     * const fileList = [ 'dir1/file2.txt', 'dir2/file3.txt', 'dir/file5.txt'];
-     * const withMissingFileList = ['dir1/file1.txt', 'dir4/file2.txt'];
-     *
-     * // asynchronous function that deletes a file
-     * const deleteFile = function(file, callback) {
-     *     fs.unlink(file, callback);
-     * };
-     *
-     * // Using callbacks
-     * async.each(fileList, deleteFile, function(err) {
-     *     if( err ) {
-     *         console.log(err);
-     *     } else {
-     *         console.log('All files have been deleted successfully');
-     *     }
-     * });
-     *
-     * // Error Handling
-     * async.each(withMissingFileList, deleteFile, function(err){
-     *     console.log(err);
-     *     // [ Error: ENOENT: no such file or directory ]
-     *     // since dir4/file2.txt does not exist
-     *     // dir1/file1.txt could have been deleted
-     * });
-     *
-     * // Using Promises
-     * async.each(fileList, deleteFile)
-     * .then( () => {
-     *     console.log('All files have been deleted successfully');
-     * }).catch( err => {
-     *     console.log(err);
-     * });
-     *
-     * // Error Handling
-     * async.each(fileList, deleteFile)
-     * .then( () => {
-     *     console.log('All files have been deleted successfully');
-     * }).catch( err => {
-     *     console.log(err);
-     *     // [ Error: ENOENT: no such file or directory ]
-     *     // since dir4/file2.txt does not exist
-     *     // dir1/file1.txt could have been deleted
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         await async.each(files, deleteFile);
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     * // Error Handling
-     * async () => {
-     *     try {
-     *         await async.each(withMissingFileList, deleteFile);
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *         // [ Error: ENOENT: no such file or directory ]
-     *         // since dir4/file2.txt does not exist
-     *         // dir1/file1.txt could have been deleted
-     *     }
-     * }
-     *
-     */function eachLimit(coll,iteratee,callback){return eachOf$1(coll,_withoutIndex(wrapAsync(iteratee)),callback);}var each=awaitify(eachLimit,3);/**
-     * The same as [`each`]{@link module:Collections.each} but runs a maximum of `limit` async operations at a time.
-     *
-     * @name eachLimit
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.each]{@link module:Collections.each}
-     * @alias forEachLimit
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {number} limit - The maximum number of async operations at a time.
-     * @param {AsyncFunction} iteratee - An async function to apply to each item in
-     * `coll`.
-     * The array index is not passed to the iteratee.
-     * If you need the index, use `eachOfLimit`.
-     * Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called when all
-     * `iteratee` functions have finished, or an error occurs. Invoked with (err).
-     * @returns {Promise} a promise, if a callback is omitted
-     */function eachLimit$1(coll,limit,iteratee,callback){return eachOfLimit(limit)(coll,_withoutIndex(wrapAsync(iteratee)),callback);}var eachLimit$2=awaitify(eachLimit$1,4);/**
-     * The same as [`each`]{@link module:Collections.each} but runs only a single async operation at a time.
-     *
-     * Note, that unlike [`each`]{@link module:Collections.each}, this function applies iteratee to each item
-     * in series and therefore the iteratee functions will complete in order.
-
-     * @name eachSeries
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.each]{@link module:Collections.each}
-     * @alias forEachSeries
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {AsyncFunction} iteratee - An async function to apply to each
-     * item in `coll`.
-     * The array index is not passed to the iteratee.
-     * If you need the index, use `eachOfSeries`.
-     * Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called when all
-     * `iteratee` functions have finished, or an error occurs. Invoked with (err).
-     * @returns {Promise} a promise, if a callback is omitted
-     */function eachSeries(coll,iteratee,callback){return eachLimit$2(coll,1,iteratee,callback);}var eachSeries$1=awaitify(eachSeries,3);/**
-     * Wrap an async function and ensure it calls its callback on a later tick of
-     * the event loop.  If the function already calls its callback on a next tick,
-     * no extra deferral is added. This is useful for preventing stack overflows
-     * (`RangeError: Maximum call stack size exceeded`) and generally keeping
-     * [Zalgo](http://blog.izs.me/post/59142742143/designing-apis-for-asynchrony)
-     * contained. ES2017 `async` functions are returned as-is -- they are immune
-     * to Zalgo's corrupting influences, as they always resolve on a later tick.
-     *
-     * @name ensureAsync
-     * @static
-     * @memberOf module:Utils
-     * @method
-     * @category Util
-     * @param {AsyncFunction} fn - an async function, one that expects a node-style
-     * callback as its last argument.
-     * @returns {AsyncFunction} Returns a wrapped function with the exact same call
-     * signature as the function passed in.
-     * @example
-     *
-     * function sometimesAsync(arg, callback) {
-     *     if (cache[arg]) {
-     *         return callback(null, cache[arg]); // this would be synchronous!!
-     *     } else {
-     *         doSomeIO(arg, callback); // this IO would be asynchronous
-     *     }
-     * }
-     *
-     * // this has a risk of stack overflows if many results are cached in a row
-     * async.mapSeries(args, sometimesAsync, done);
-     *
-     * // this will defer sometimesAsync's callback if necessary,
-     * // preventing stack overflows
-     * async.mapSeries(args, async.ensureAsync(sometimesAsync), done);
-     */function ensureAsync(fn){if(isAsync(fn))return fn;return function(){for(var _len28=arguments.length,args=new Array(_len28),_key28=0;_key28<_len28;_key28++){args[_key28]=arguments[_key28];}var callback=args.pop();var sync=true;args.push(function(){for(var _len29=arguments.length,innerArgs=new Array(_len29),_key29=0;_key29<_len29;_key29++){innerArgs[_key29]=arguments[_key29];}if(sync){setImmediate$1(()=>callback(...innerArgs));}else{callback(...innerArgs);}});fn.apply(this,args);sync=false;};}/**
-     * Returns `true` if every element in `coll` satisfies an async test. If any
-     * iteratee call returns `false`, the main `callback` is immediately called.
-     *
-     * @name every
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @alias all
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {AsyncFunction} iteratee - An async truth test to apply to each item
-     * in the collection in parallel.
-     * The iteratee must complete with a boolean result value.
-     * Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called after all the
-     * `iteratee` functions have finished. Result will be either `true` or `false`
-     * depending on the values of the async tests. Invoked with (err, result).
-     * @returns {Promise} a promise, if no callback provided
-     * @example
-     *
-     * // dir1 is a directory that contains file1.txt, file2.txt
-     * // dir2 is a directory that contains file3.txt, file4.txt
-     * // dir3 is a directory that contains file5.txt
-     * // dir4 does not exist
-     *
-     * const fileList = ['dir1/file1.txt','dir2/file3.txt','dir3/file5.txt'];
-     * const withMissingFileList = ['file1.txt','file2.txt','file4.txt'];
-     *
-     * // asynchronous function that checks if a file exists
-     * function fileExists(file, callback) {
-     *    fs.access(file, fs.constants.F_OK, (err) => {
-     *        callback(null, !err);
-     *    });
-     * }
-     *
-     * // Using callbacks
-     * async.every(fileList, fileExists, function(err, result) {
-     *     console.log(result);
-     *     // true
-     *     // result is true since every file exists
-     * });
-     *
-     * async.every(withMissingFileList, fileExists, function(err, result) {
-     *     console.log(result);
-     *     // false
-     *     // result is false since NOT every file exists
-     * });
-     *
-     * // Using Promises
-     * async.every(fileList, fileExists)
-     * .then( result => {
-     *     console.log(result);
-     *     // true
-     *     // result is true since every file exists
-     * }).catch( err => {
-     *     console.log(err);
-     * });
-     *
-     * async.every(withMissingFileList, fileExists)
-     * .then( result => {
-     *     console.log(result);
-     *     // false
-     *     // result is false since NOT every file exists
-     * }).catch( err => {
-     *     console.log(err);
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let result = await async.every(fileList, fileExists);
-     *         console.log(result);
-     *         // true
-     *         // result is true since every file exists
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     * async () => {
-     *     try {
-     *         let result = await async.every(withMissingFileList, fileExists);
-     *         console.log(result);
-     *         // false
-     *         // result is false since NOT every file exists
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     */function every(coll,iteratee,callback){return _createTester(bool=>!bool,res=>!res)(eachOf$1,coll,iteratee,callback);}var every$1=awaitify(every,3);/**
-     * The same as [`every`]{@link module:Collections.every} but runs a maximum of `limit` async operations at a time.
-     *
-     * @name everyLimit
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.every]{@link module:Collections.every}
-     * @alias allLimit
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {number} limit - The maximum number of async operations at a time.
-     * @param {AsyncFunction} iteratee - An async truth test to apply to each item
-     * in the collection in parallel.
-     * The iteratee must complete with a boolean result value.
-     * Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called after all the
-     * `iteratee` functions have finished. Result will be either `true` or `false`
-     * depending on the values of the async tests. Invoked with (err, result).
-     * @returns {Promise} a promise, if no callback provided
-     */function everyLimit(coll,limit,iteratee,callback){return _createTester(bool=>!bool,res=>!res)(eachOfLimit(limit),coll,iteratee,callback);}var everyLimit$1=awaitify(everyLimit,4);/**
-     * The same as [`every`]{@link module:Collections.every} but runs only a single async operation at a time.
-     *
-     * @name everySeries
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.every]{@link module:Collections.every}
-     * @alias allSeries
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {AsyncFunction} iteratee - An async truth test to apply to each item
-     * in the collection in series.
-     * The iteratee must complete with a boolean result value.
-     * Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called after all the
-     * `iteratee` functions have finished. Result will be either `true` or `false`
-     * depending on the values of the async tests. Invoked with (err, result).
-     * @returns {Promise} a promise, if no callback provided
-     */function everySeries(coll,iteratee,callback){return _createTester(bool=>!bool,res=>!res)(eachOfSeries$1,coll,iteratee,callback);}var everySeries$1=awaitify(everySeries,3);function filterArray(eachfn,arr,iteratee,callback){var truthValues=new Array(arr.length);eachfn(arr,(x,index,iterCb)=>{iteratee(x,(err,v)=>{truthValues[index]=!!v;iterCb(err);});},err=>{if(err)return callback(err);var results=[];for(var i=0;i<arr.length;i++){if(truthValues[i])results.push(arr[i]);}callback(null,results);});}function filterGeneric(eachfn,coll,iteratee,callback){var results=[];eachfn(coll,(x,index,iterCb)=>{iteratee(x,(err,v)=>{if(err)return iterCb(err);if(v){results.push({index,value:x});}iterCb(err);});},err=>{if(err)return callback(err);callback(null,results.sort((a,b)=>a.index-b.index).map(v=>v.value));});}function _filter(eachfn,coll,iteratee,callback){var filter=isArrayLike(coll)?filterArray:filterGeneric;return filter(eachfn,coll,wrapAsync(iteratee),callback);}/**
-     * Returns a new array of all the values in `coll` which pass an async truth
-     * test. This operation is performed in parallel, but the results array will be
-     * in the same order as the original.
-     *
-     * @name filter
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @alias select
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {Function} iteratee - A truth test to apply to each item in `coll`.
-     * The `iteratee` is passed a `callback(err, truthValue)`, which must be called
-     * with a boolean argument once it has completed. Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called after all the
-     * `iteratee` functions have finished. Invoked with (err, results).
-     * @returns {Promise} a promise, if no callback provided
-     * @example
-     *
-     * // dir1 is a directory that contains file1.txt, file2.txt
-     * // dir2 is a directory that contains file3.txt, file4.txt
-     * // dir3 is a directory that contains file5.txt
-     *
-     * const files = ['dir1/file1.txt','dir2/file3.txt','dir3/file6.txt'];
-     *
-     * // asynchronous function that checks if a file exists
-     * function fileExists(file, callback) {
-     *    fs.access(file, fs.constants.F_OK, (err) => {
-     *        callback(null, !err);
-     *    });
-     * }
-     *
-     * // Using callbacks
-     * async.filter(files, fileExists, function(err, results) {
-     *    if(err) {
-     *        console.log(err);
-     *    } else {
-     *        console.log(results);
-     *        // [ 'dir1/file1.txt', 'dir2/file3.txt' ]
-     *        // results is now an array of the existing files
-     *    }
-     * });
-     *
-     * // Using Promises
-     * async.filter(files, fileExists)
-     * .then(results => {
-     *     console.log(results);
-     *     // [ 'dir1/file1.txt', 'dir2/file3.txt' ]
-     *     // results is now an array of the existing files
-     * }).catch(err => {
-     *     console.log(err);
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let results = await async.filter(files, fileExists);
-     *         console.log(results);
-     *         // [ 'dir1/file1.txt', 'dir2/file3.txt' ]
-     *         // results is now an array of the existing files
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     */function filter(coll,iteratee,callback){return _filter(eachOf$1,coll,iteratee,callback);}var filter$1=awaitify(filter,3);/**
-     * The same as [`filter`]{@link module:Collections.filter} but runs a maximum of `limit` async operations at a
-     * time.
-     *
-     * @name filterLimit
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.filter]{@link module:Collections.filter}
-     * @alias selectLimit
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {number} limit - The maximum number of async operations at a time.
-     * @param {Function} iteratee - A truth test to apply to each item in `coll`.
-     * The `iteratee` is passed a `callback(err, truthValue)`, which must be called
-     * with a boolean argument once it has completed. Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called after all the
-     * `iteratee` functions have finished. Invoked with (err, results).
-     * @returns {Promise} a promise, if no callback provided
-     */function filterLimit(coll,limit,iteratee,callback){return _filter(eachOfLimit(limit),coll,iteratee,callback);}var filterLimit$1=awaitify(filterLimit,4);/**
-     * The same as [`filter`]{@link module:Collections.filter} but runs only a single async operation at a time.
-     *
-     * @name filterSeries
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.filter]{@link module:Collections.filter}
-     * @alias selectSeries
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {Function} iteratee - A truth test to apply to each item in `coll`.
-     * The `iteratee` is passed a `callback(err, truthValue)`, which must be called
-     * with a boolean argument once it has completed. Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called after all the
-     * `iteratee` functions have finished. Invoked with (err, results)
-     * @returns {Promise} a promise, if no callback provided
-     */function filterSeries(coll,iteratee,callback){return _filter(eachOfSeries$1,coll,iteratee,callback);}var filterSeries$1=awaitify(filterSeries,3);/**
-     * Calls the asynchronous function `fn` with a callback parameter that allows it
-     * to call itself again, in series, indefinitely.
-
-     * If an error is passed to the callback then `errback` is called with the
-     * error, and execution stops, otherwise it will never be called.
-     *
-     * @name forever
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @category Control Flow
-     * @param {AsyncFunction} fn - an async function to call repeatedly.
-     * Invoked with (next).
-     * @param {Function} [errback] - when `fn` passes an error to it's callback,
-     * this function will be called, and execution stops. Invoked with (err).
-     * @returns {Promise} a promise that rejects if an error occurs and an errback
-     * is not passed
-     * @example
-     *
-     * async.forever(
-     *     function(next) {
-     *         // next is suitable for passing to things that need a callback(err [, whatever]);
-     *         // it will result in this function being called again.
-     *     },
-     *     function(err) {
-     *         // if next is called with a value in its first parameter, it will appear
-     *         // in here as 'err', and execution will stop.
-     *     }
-     * );
-     */function forever(fn,errback){var done=onlyOnce(errback);var task=wrapAsync(ensureAsync(fn));function next(err){if(err)return done(err);if(err===false)return;task(next);}return next();}var forever$1=awaitify(forever,2);/**
-     * The same as [`groupBy`]{@link module:Collections.groupBy} but runs a maximum of `limit` async operations at a time.
-     *
-     * @name groupByLimit
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.groupBy]{@link module:Collections.groupBy}
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {number} limit - The maximum number of async operations at a time.
-     * @param {AsyncFunction} iteratee - An async function to apply to each item in
-     * `coll`.
-     * The iteratee should complete with a `key` to group the value under.
-     * Invoked with (value, callback).
-     * @param {Function} [callback] - A callback which is called when all `iteratee`
-     * functions have finished, or an error occurs. Result is an `Object` whoses
-     * properties are arrays of values which returned the corresponding key.
-     * @returns {Promise} a promise, if no callback is passed
-     */function groupByLimit(coll,limit,iteratee,callback){var _iteratee=wrapAsync(iteratee);return mapLimit$1(coll,limit,(val,iterCb)=>{_iteratee(val,(err,key)=>{if(err)return iterCb(err);return iterCb(err,{key,val});});},(err,mapResults)=>{var result={};// from MDN, handle object having an `hasOwnProperty` prop
-var{hasOwnProperty}=Object.prototype;for(var i=0;i<mapResults.length;i++){if(mapResults[i]){var{key}=mapResults[i];var{val}=mapResults[i];if(hasOwnProperty.call(result,key)){result[key].push(val);}else{result[key]=[val];}}}return callback(err,result);});}var groupByLimit$1=awaitify(groupByLimit,4);/**
-     * Returns a new object, where each value corresponds to an array of items, from
-     * `coll`, that returned the corresponding key. That is, the keys of the object
-     * correspond to the values passed to the `iteratee` callback.
-     *
-     * Note: Since this function applies the `iteratee` to each item in parallel,
-     * there is no guarantee that the `iteratee` functions will complete in order.
-     * However, the values for each key in the `result` will be in the same order as
-     * the original `coll`. For Objects, the values will roughly be in the order of
-     * the original Objects' keys (but this can vary across JavaScript engines).
-     *
-     * @name groupBy
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {AsyncFunction} iteratee - An async function to apply to each item in
-     * `coll`.
-     * The iteratee should complete with a `key` to group the value under.
-     * Invoked with (value, callback).
-     * @param {Function} [callback] - A callback which is called when all `iteratee`
-     * functions have finished, or an error occurs. Result is an `Object` whoses
-     * properties are arrays of values which returned the corresponding key.
-     * @returns {Promise} a promise, if no callback is passed
-     * @example
-     *
-     * // dir1 is a directory that contains file1.txt, file2.txt
-     * // dir2 is a directory that contains file3.txt, file4.txt
-     * // dir3 is a directory that contains file5.txt
-     * // dir4 does not exist
-     *
-     * const files = ['dir1/file1.txt','dir2','dir4']
-     *
-     * // asynchronous function that detects file type as none, file, or directory
-     * function detectFile(file, callback) {
-     *     fs.stat(file, function(err, stat) {
-     *         if (err) {
-     *             return callback(null, 'none');
-     *         }
-     *         callback(null, stat.isDirectory() ? 'directory' : 'file');
-     *     });
-     * }
-     *
-     * //Using callbacks
-     * async.groupBy(files, detectFile, function(err, result) {
-     *     if(err) {
-     *         console.log(err);
-     *     } else {
-     *	       console.log(result);
-     *         // {
-     *         //     file: [ 'dir1/file1.txt' ],
-     *         //     none: [ 'dir4' ],
-     *         //     directory: [ 'dir2']
-     *         // }
-     *         // result is object containing the files grouped by type
-     *     }
-     * });
-     *
-     * // Using Promises
-     * async.groupBy(files, detectFile)
-     * .then( result => {
-     *     console.log(result);
-     *     // {
-     *     //     file: [ 'dir1/file1.txt' ],
-     *     //     none: [ 'dir4' ],
-     *     //     directory: [ 'dir2']
-     *     // }
-     *     // result is object containing the files grouped by type
-     * }).catch( err => {
-     *     console.log(err);
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let result = await async.groupBy(files, detectFile);
-     *         console.log(result);
-     *         // {
-     *         //     file: [ 'dir1/file1.txt' ],
-     *         //     none: [ 'dir4' ],
-     *         //     directory: [ 'dir2']
-     *         // }
-     *         // result is object containing the files grouped by type
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     */function groupBy(coll,iteratee,callback){return groupByLimit$1(coll,Infinity,iteratee,callback);}/**
-     * The same as [`groupBy`]{@link module:Collections.groupBy} but runs only a single async operation at a time.
-     *
-     * @name groupBySeries
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.groupBy]{@link module:Collections.groupBy}
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {AsyncFunction} iteratee - An async function to apply to each item in
-     * `coll`.
-     * The iteratee should complete with a `key` to group the value under.
-     * Invoked with (value, callback).
-     * @param {Function} [callback] - A callback which is called when all `iteratee`
-     * functions have finished, or an error occurs. Result is an `Object` whose
-     * properties are arrays of values which returned the corresponding key.
-     * @returns {Promise} a promise, if no callback is passed
-     */function groupBySeries(coll,iteratee,callback){return groupByLimit$1(coll,1,iteratee,callback);}/**
-     * Logs the result of an `async` function to the `console`. Only works in
-     * Node.js or in browsers that support `console.log` and `console.error` (such
-     * as FF and Chrome). If multiple arguments are returned from the async
-     * function, `console.log` is called on each argument in order.
-     *
-     * @name log
-     * @static
-     * @memberOf module:Utils
-     * @method
-     * @category Util
-     * @param {AsyncFunction} function - The function you want to eventually apply
-     * all arguments to.
-     * @param {...*} arguments... - Any number of arguments to apply to the function.
-     * @example
-     *
-     * // in a module
-     * var hello = function(name, callback) {
-     *     setTimeout(function() {
-     *         callback(null, 'hello ' + name);
-     *     }, 1000);
-     * };
-     *
-     * // in the node repl
-     * node> async.log(hello, 'world');
-     * 'hello world'
-     */var log=consoleFunc('log');/**
-     * The same as [`mapValues`]{@link module:Collections.mapValues} but runs a maximum of `limit` async operations at a
-     * time.
-     *
-     * @name mapValuesLimit
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.mapValues]{@link module:Collections.mapValues}
-     * @category Collection
-     * @param {Object} obj - A collection to iterate over.
-     * @param {number} limit - The maximum number of async operations at a time.
-     * @param {AsyncFunction} iteratee - A function to apply to each value and key
-     * in `coll`.
-     * The iteratee should complete with the transformed value as its result.
-     * Invoked with (value, key, callback).
-     * @param {Function} [callback] - A callback which is called when all `iteratee`
-     * functions have finished, or an error occurs. `result` is a new object consisting
-     * of each key from `obj`, with each transformed value on the right-hand side.
-     * Invoked with (err, result).
-     * @returns {Promise} a promise, if no callback is passed
-     */function mapValuesLimit(obj,limit,iteratee,callback){callback=once(callback);var newObj={};var _iteratee=wrapAsync(iteratee);return eachOfLimit(limit)(obj,(val,key,next)=>{_iteratee(val,key,(err,result)=>{if(err)return next(err);newObj[key]=result;next(err);});},err=>callback(err,newObj));}var mapValuesLimit$1=awaitify(mapValuesLimit,4);/**
-     * A relative of [`map`]{@link module:Collections.map}, designed for use with objects.
-     *
-     * Produces a new Object by mapping each value of `obj` through the `iteratee`
-     * function. The `iteratee` is called each `value` and `key` from `obj` and a
-     * callback for when it has finished processing. Each of these callbacks takes
-     * two arguments: an `error`, and the transformed item from `obj`. If `iteratee`
-     * passes an error to its callback, the main `callback` (for the `mapValues`
-     * function) is immediately called with the error.
-     *
-     * Note, the order of the keys in the result is not guaranteed.  The keys will
-     * be roughly in the order they complete, (but this is very engine-specific)
-     *
-     * @name mapValues
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @category Collection
-     * @param {Object} obj - A collection to iterate over.
-     * @param {AsyncFunction} iteratee - A function to apply to each value and key
-     * in `coll`.
-     * The iteratee should complete with the transformed value as its result.
-     * Invoked with (value, key, callback).
-     * @param {Function} [callback] - A callback which is called when all `iteratee`
-     * functions have finished, or an error occurs. `result` is a new object consisting
-     * of each key from `obj`, with each transformed value on the right-hand side.
-     * Invoked with (err, result).
-     * @returns {Promise} a promise, if no callback is passed
-     * @example
-     *
-     * // file1.txt is a file that is 1000 bytes in size
-     * // file2.txt is a file that is 2000 bytes in size
-     * // file3.txt is a file that is 3000 bytes in size
-     * // file4.txt does not exist
-     *
-     * const fileMap = {
-     *     f1: 'file1.txt',
-     *     f2: 'file2.txt',
-     *     f3: 'file3.txt'
-     * };
-     *
-     * const withMissingFileMap = {
-     *     f1: 'file1.txt',
-     *     f2: 'file2.txt',
-     *     f3: 'file4.txt'
-     * };
-     *
-     * // asynchronous function that returns the file size in bytes
-     * function getFileSizeInBytes(file, key, callback) {
-     *     fs.stat(file, function(err, stat) {
-     *         if (err) {
-     *             return callback(err);
-     *         }
-     *         callback(null, stat.size);
-     *     });
-     * }
-     *
-     * // Using callbacks
-     * async.mapValues(fileMap, getFileSizeInBytes, function(err, result) {
-     *     if (err) {
-     *         console.log(err);
-     *     } else {
-     *         console.log(result);
-     *         // result is now a map of file size in bytes for each file, e.g.
-     *         // {
-     *         //     f1: 1000,
-     *         //     f2: 2000,
-     *         //     f3: 3000
-     *         // }
-     *     }
-     * });
-     *
-     * // Error handling
-     * async.mapValues(withMissingFileMap, getFileSizeInBytes, function(err, result) {
-     *     if (err) {
-     *         console.log(err);
-     *         // [ Error: ENOENT: no such file or directory ]
-     *     } else {
-     *         console.log(result);
-     *     }
-     * });
-     *
-     * // Using Promises
-     * async.mapValues(fileMap, getFileSizeInBytes)
-     * .then( result => {
-     *     console.log(result);
-     *     // result is now a map of file size in bytes for each file, e.g.
-     *     // {
-     *     //     f1: 1000,
-     *     //     f2: 2000,
-     *     //     f3: 3000
-     *     // }
-     * }).catch (err => {
-     *     console.log(err);
-     * });
-     *
-     * // Error Handling
-     * async.mapValues(withMissingFileMap, getFileSizeInBytes)
-     * .then( result => {
-     *     console.log(result);
-     * }).catch (err => {
-     *     console.log(err);
-     *     // [ Error: ENOENT: no such file or directory ]
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let result = await async.mapValues(fileMap, getFileSizeInBytes);
-     *         console.log(result);
-     *         // result is now a map of file size in bytes for each file, e.g.
-     *         // {
-     *         //     f1: 1000,
-     *         //     f2: 2000,
-     *         //     f3: 3000
-     *         // }
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     * // Error Handling
-     * async () => {
-     *     try {
-     *         let result = await async.mapValues(withMissingFileMap, getFileSizeInBytes);
-     *         console.log(result);
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *         // [ Error: ENOENT: no such file or directory ]
-     *     }
-     * }
-     *
-     */function mapValues(obj,iteratee,callback){return mapValuesLimit$1(obj,Infinity,iteratee,callback);}/**
-     * The same as [`mapValues`]{@link module:Collections.mapValues} but runs only a single async operation at a time.
-     *
-     * @name mapValuesSeries
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.mapValues]{@link module:Collections.mapValues}
-     * @category Collection
-     * @param {Object} obj - A collection to iterate over.
-     * @param {AsyncFunction} iteratee - A function to apply to each value and key
-     * in `coll`.
-     * The iteratee should complete with the transformed value as its result.
-     * Invoked with (value, key, callback).
-     * @param {Function} [callback] - A callback which is called when all `iteratee`
-     * functions have finished, or an error occurs. `result` is a new object consisting
-     * of each key from `obj`, with each transformed value on the right-hand side.
-     * Invoked with (err, result).
-     * @returns {Promise} a promise, if no callback is passed
-     */function mapValuesSeries(obj,iteratee,callback){return mapValuesLimit$1(obj,1,iteratee,callback);}/**
-     * Caches the results of an async function. When creating a hash to store
-     * function results against, the callback is omitted from the hash and an
-     * optional hash function can be used.
-     *
-     * **Note: if the async function errs, the result will not be cached and
-     * subsequent calls will call the wrapped function.**
-     *
-     * If no hash function is specified, the first argument is used as a hash key,
-     * which may work reasonably if it is a string or a data type that converts to a
-     * distinct string. Note that objects and arrays will not behave reasonably.
-     * Neither will cases where the other arguments are significant. In such cases,
-     * specify your own hash function.
-     *
-     * The cache of results is exposed as the `memo` property of the function
-     * returned by `memoize`.
-     *
-     * @name memoize
-     * @static
-     * @memberOf module:Utils
-     * @method
-     * @category Util
-     * @param {AsyncFunction} fn - The async function to proxy and cache results from.
-     * @param {Function} hasher - An optional function for generating a custom hash
-     * for storing results. It has all the arguments applied to it apart from the
-     * callback, and must be synchronous.
-     * @returns {AsyncFunction} a memoized version of `fn`
-     * @example
-     *
-     * var slow_fn = function(name, callback) {
-     *     // do something
-     *     callback(null, result);
-     * };
-     * var fn = async.memoize(slow_fn);
-     *
-     * // fn can now be used as if it were slow_fn
-     * fn('some name', function() {
-     *     // callback
-     * });
-     */function memoize(fn){let hasher=arguments.length>1&&arguments[1]!==undefined?arguments[1]:v=>v;var memo=Object.create(null);var queues=Object.create(null);var _fn=wrapAsync(fn);var memoized=initialParams((args,callback)=>{var key=hasher(...args);if(key in memo){setImmediate$1(()=>callback(null,...memo[key]));}else if(key in queues){queues[key].push(callback);}else{queues[key]=[callback];_fn(...args,function(err){for(var _len30=arguments.length,resultArgs=new Array(_len30>1?_len30-1:0),_key30=1;_key30<_len30;_key30++){resultArgs[_key30-1]=arguments[_key30];}// #1465 don't memoize if an error occurred
-if(!err){memo[key]=resultArgs;}var q=queues[key];delete queues[key];for(var i=0,l=q.length;i<l;i++){q[i](err,...resultArgs);}});}});memoized.memo=memo;memoized.unmemoized=fn;return memoized;}/* istanbul ignore file */ /**
-     * Calls `callback` on a later loop around the event loop. In Node.js this just
-     * calls `process.nextTick`.  In the browser it will use `setImmediate` if
-     * available, otherwise `setTimeout(callback, 0)`, which means other higher
-     * priority events may precede the execution of `callback`.
-     *
-     * This is used internally for browser-compatibility purposes.
-     *
-     * @name nextTick
-     * @static
-     * @memberOf module:Utils
-     * @method
-     * @see [async.setImmediate]{@link module:Utils.setImmediate}
-     * @category Util
-     * @param {Function} callback - The function to call on a later loop around
-     * the event loop. Invoked with (args...).
-     * @param {...*} args... - any number of additional arguments to pass to the
-     * callback on the next tick.
-     * @example
-     *
-     * var call_order = [];
-     * async.nextTick(function() {
-     *     call_order.push('two');
-     *     // call_order now equals ['one','two']
-     * });
-     * call_order.push('one');
-     *
-     * async.setImmediate(function (a, b, c) {
-     *     // a, b, and c equal 1, 2, and 3
-     * }, 1, 2, 3);
-     */var _defer$1;if(hasNextTick){_defer$1=process.nextTick;}else if(hasSetImmediate){_defer$1=setImmediate;}else{_defer$1=fallback;}var nextTick=wrap(_defer$1);var parallel=awaitify((eachfn,tasks,callback)=>{var results=isArrayLike(tasks)?[]:{};eachfn(tasks,(task,key,taskCb)=>{wrapAsync(task)(function(err){for(var _len31=arguments.length,result=new Array(_len31>1?_len31-1:0),_key31=1;_key31<_len31;_key31++){result[_key31-1]=arguments[_key31];}if(result.length<2){[result]=result;}results[key]=result;taskCb(err);});},err=>callback(err,results));},3);/**
-     * Run the `tasks` collection of functions in parallel, without waiting until
-     * the previous function has completed. If any of the functions pass an error to
-     * its callback, the main `callback` is immediately called with the value of the
-     * error. Once the `tasks` have completed, the results are passed to the final
-     * `callback` as an array.
-     *
-     * **Note:** `parallel` is about kicking-off I/O tasks in parallel, not about
-     * parallel execution of code.  If your tasks do not use any timers or perform
-     * any I/O, they will actually be executed in series.  Any synchronous setup
-     * sections for each task will happen one after the other.  JavaScript remains
-     * single-threaded.
-     *
-     * **Hint:** Use [`reflect`]{@link module:Utils.reflect} to continue the
-     * execution of other tasks when a task fails.
-     *
-     * It is also possible to use an object instead of an array. Each property will
-     * be run as a function and the results will be passed to the final `callback`
-     * as an object instead of an array. This can be a more readable way of handling
-     * results from {@link async.parallel}.
-     *
-     * @name parallel
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @category Control Flow
-     * @param {Array|Iterable|AsyncIterable|Object} tasks - A collection of
-     * [async functions]{@link AsyncFunction} to run.
-     * Each async function can complete with any number of optional `result` values.
-     * @param {Function} [callback] - An optional callback to run once all the
-     * functions have completed successfully. This function gets a results array
-     * (or object) containing all the result arguments passed to the task callbacks.
-     * Invoked with (err, results).
-     * @returns {Promise} a promise, if a callback is not passed
-     *
-     * @example
-     *
-     * //Using Callbacks
-     * async.parallel([
-     *     function(callback) {
-     *         setTimeout(function() {
-     *             callback(null, 'one');
-     *         }, 200);
-     *     },
-     *     function(callback) {
-     *         setTimeout(function() {
-     *             callback(null, 'two');
-     *         }, 100);
-     *     }
-     * ], function(err, results) {
-     *     console.log(results);
-     *     // results is equal to ['one','two'] even though
-     *     // the second function had a shorter timeout.
-     * });
-     *
-     * // an example using an object instead of an array
-     * async.parallel({
-     *     one: function(callback) {
-     *         setTimeout(function() {
-     *             callback(null, 1);
-     *         }, 200);
-     *     },
-     *     two: function(callback) {
-     *         setTimeout(function() {
-     *             callback(null, 2);
-     *         }, 100);
-     *     }
-     * }, function(err, results) {
-     *     console.log(results);
-     *     // results is equal to: { one: 1, two: 2 }
-     * });
-     *
-     * //Using Promises
-     * async.parallel([
-     *     function(callback) {
-     *         setTimeout(function() {
-     *             callback(null, 'one');
-     *         }, 200);
-     *     },
-     *     function(callback) {
-     *         setTimeout(function() {
-     *             callback(null, 'two');
-     *         }, 100);
-     *     }
-     * ]).then(results => {
-     *     console.log(results);
-     *     // results is equal to ['one','two'] even though
-     *     // the second function had a shorter timeout.
-     * }).catch(err => {
-     *     console.log(err);
-     * });
-     *
-     * // an example using an object instead of an array
-     * async.parallel({
-     *     one: function(callback) {
-     *         setTimeout(function() {
-     *             callback(null, 1);
-     *         }, 200);
-     *     },
-     *     two: function(callback) {
-     *         setTimeout(function() {
-     *             callback(null, 2);
-     *         }, 100);
-     *     }
-     * }).then(results => {
-     *     console.log(results);
-     *     // results is equal to: { one: 1, two: 2 }
-     * }).catch(err => {
-     *     console.log(err);
-     * });
-     *
-     * //Using async/await
-     * async () => {
-     *     try {
-     *         let results = await async.parallel([
-     *             function(callback) {
-     *                 setTimeout(function() {
-     *                     callback(null, 'one');
-     *                 }, 200);
-     *             },
-     *             function(callback) {
-     *                 setTimeout(function() {
-     *                     callback(null, 'two');
-     *                 }, 100);
-     *             }
-     *         ]);
-     *         console.log(results);
-     *         // results is equal to ['one','two'] even though
-     *         // the second function had a shorter timeout.
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     * // an example using an object instead of an array
-     * async () => {
-     *     try {
-     *         let results = await async.parallel({
-     *             one: function(callback) {
-     *                 setTimeout(function() {
-     *                     callback(null, 1);
-     *                 }, 200);
-     *             },
-     *            two: function(callback) {
-     *                 setTimeout(function() {
-     *                     callback(null, 2);
-     *                 }, 100);
-     *            }
-     *         });
-     *         console.log(results);
-     *         // results is equal to: { one: 1, two: 2 }
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     */function parallel$1(tasks,callback){return parallel(eachOf$1,tasks,callback);}/**
-     * The same as [`parallel`]{@link module:ControlFlow.parallel} but runs a maximum of `limit` async operations at a
-     * time.
-     *
-     * @name parallelLimit
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @see [async.parallel]{@link module:ControlFlow.parallel}
-     * @category Control Flow
-     * @param {Array|Iterable|AsyncIterable|Object} tasks - A collection of
-     * [async functions]{@link AsyncFunction} to run.
-     * Each async function can complete with any number of optional `result` values.
-     * @param {number} limit - The maximum number of async operations at a time.
-     * @param {Function} [callback] - An optional callback to run once all the
-     * functions have completed successfully. This function gets a results array
-     * (or object) containing all the result arguments passed to the task callbacks.
-     * Invoked with (err, results).
-     * @returns {Promise} a promise, if a callback is not passed
-     */function parallelLimit(tasks,limit,callback){return parallel(eachOfLimit(limit),tasks,callback);}/**
-     * A queue of tasks for the worker function to complete.
-     * @typedef {Iterable} QueueObject
-     * @memberOf module:ControlFlow
-     * @property {Function} length - a function returning the number of items
-     * waiting to be processed. Invoke with `queue.length()`.
-     * @property {boolean} started - a boolean indicating whether or not any
-     * items have been pushed and processed by the queue.
-     * @property {Function} running - a function returning the number of items
-     * currently being processed. Invoke with `queue.running()`.
-     * @property {Function} workersList - a function returning the array of items
-     * currently being processed. Invoke with `queue.workersList()`.
-     * @property {Function} idle - a function returning false if there are items
-     * waiting or being processed, or true if not. Invoke with `queue.idle()`.
-     * @property {number} concurrency - an integer for determining how many `worker`
-     * functions should be run in parallel. This property can be changed after a
-     * `queue` is created to alter the concurrency on-the-fly.
-     * @property {number} payload - an integer that specifies how many items are
-     * passed to the worker function at a time. only applies if this is a
-     * [cargo]{@link module:ControlFlow.cargo} object
-     * @property {AsyncFunction} push - add a new task to the `queue`. Calls `callback`
-     * once the `worker` has finished processing the task. Instead of a single task,
-     * a `tasks` array can be submitted. The respective callback is used for every
-     * task in the list. Invoke with `queue.push(task, [callback])`,
-     * @property {AsyncFunction} unshift - add a new task to the front of the `queue`.
-     * Invoke with `queue.unshift(task, [callback])`.
-     * @property {AsyncFunction} pushAsync - the same as `q.push`, except this returns
-     * a promise that rejects if an error occurs.
-     * @property {AsyncFunction} unshiftAsync - the same as `q.unshift`, except this returns
-     * a promise that rejects if an error occurs.
-     * @property {Function} remove - remove items from the queue that match a test
-     * function.  The test function will be passed an object with a `data` property,
-     * and a `priority` property, if this is a
-     * [priorityQueue]{@link module:ControlFlow.priorityQueue} object.
-     * Invoked with `queue.remove(testFn)`, where `testFn` is of the form
-     * `function ({data, priority}) {}` and returns a Boolean.
-     * @property {Function} saturated - a function that sets a callback that is
-     * called when the number of running workers hits the `concurrency` limit, and
-     * further tasks will be queued.  If the callback is omitted, `q.saturated()`
-     * returns a promise for the next occurrence.
-     * @property {Function} unsaturated - a function that sets a callback that is
-     * called when the number of running workers is less than the `concurrency` &
-     * `buffer` limits, and further tasks will not be queued. If the callback is
-     * omitted, `q.unsaturated()` returns a promise for the next occurrence.
-     * @property {number} buffer - A minimum threshold buffer in order to say that
-     * the `queue` is `unsaturated`.
-     * @property {Function} empty - a function that sets a callback that is called
-     * when the last item from the `queue` is given to a `worker`. If the callback
-     * is omitted, `q.empty()` returns a promise for the next occurrence.
-     * @property {Function} drain - a function that sets a callback that is called
-     * when the last item from the `queue` has returned from the `worker`. If the
-     * callback is omitted, `q.drain()` returns a promise for the next occurrence.
-     * @property {Function} error - a function that sets a callback that is called
-     * when a task errors. Has the signature `function(error, task)`. If the
-     * callback is omitted, `error()` returns a promise that rejects on the next
-     * error.
-     * @property {boolean} paused - a boolean for determining whether the queue is
-     * in a paused state.
-     * @property {Function} pause - a function that pauses the processing of tasks
-     * until `resume()` is called. Invoke with `queue.pause()`.
-     * @property {Function} resume - a function that resumes the processing of
-     * queued tasks when the queue is paused. Invoke with `queue.resume()`.
-     * @property {Function} kill - a function that removes the `drain` callback and
-     * empties remaining tasks from the queue forcing it to go idle. No more tasks
-     * should be pushed to the queue after calling this function. Invoke with `queue.kill()`.
-     *
-     * @example
-     * const q = async.queue(worker, 2)
-     * q.push(item1)
-     * q.push(item2)
-     * q.push(item3)
-     * // queues are iterable, spread into an array to inspect
-     * const items = [...q] // [item1, item2, item3]
-     * // or use for of
-     * for (let item of q) {
-     *     console.log(item)
-     * }
-     *
-     * q.drain(() => {
-     *     console.log('all done')
-     * })
-     * // or
-     * await q.drain()
-     */ /**
-     * Creates a `queue` object with the specified `concurrency`. Tasks added to the
-     * `queue` are processed in parallel (up to the `concurrency` limit). If all
-     * `worker`s are in progress, the task is queued until one becomes available.
-     * Once a `worker` completes a `task`, that `task`'s callback is called.
-     *
-     * @name queue
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @category Control Flow
-     * @param {AsyncFunction} worker - An async function for processing a queued task.
-     * If you want to handle errors from an individual task, pass a callback to
-     * `q.push()`. Invoked with (task, callback).
-     * @param {number} [concurrency=1] - An `integer` for determining how many
-     * `worker` functions should be run in parallel.  If omitted, the concurrency
-     * defaults to `1`.  If the concurrency is `0`, an error is thrown.
-     * @returns {module:ControlFlow.QueueObject} A queue object to manage the tasks. Callbacks can be
-     * attached as certain properties to listen for specific events during the
-     * lifecycle of the queue.
-     * @example
-     *
-     * // create a queue object with concurrency 2
-     * var q = async.queue(function(task, callback) {
-     *     console.log('hello ' + task.name);
-     *     callback();
-     * }, 2);
-     *
-     * // assign a callback
-     * q.drain(function() {
-     *     console.log('all items have been processed');
-     * });
-     * // or await the end
-     * await q.drain()
-     *
-     * // assign an error callback
-     * q.error(function(err, task) {
-     *     console.error('task experienced an error');
-     * });
-     *
-     * // add some items to the queue
-     * q.push({name: 'foo'}, function(err) {
-     *     console.log('finished processing foo');
-     * });
-     * // callback is optional
-     * q.push({name: 'bar'});
-     *
-     * // add some items to the queue (batch-wise)
-     * q.push([{name: 'baz'},{name: 'bay'},{name: 'bax'}], function(err) {
-     *     console.log('finished processing item');
-     * });
-     *
-     * // add some items to the front of the queue
-     * q.unshift({name: 'bar'}, function (err) {
-     *     console.log('finished processing bar');
-     * });
-     */function queue$1(worker,concurrency){var _worker=wrapAsync(worker);return queue((items,cb)=>{_worker(items[0],cb);},concurrency,1);}// Binary min-heap implementation used for priority queue.
-// Implementation is stable, i.e. push time is considered for equal priorities
-class Heap{constructor(){this.heap=[];this.pushCount=Number.MIN_SAFE_INTEGER;}get length(){return this.heap.length;}empty(){this.heap=[];return this;}percUp(index){let p;while(index>0&&smaller(this.heap[index],this.heap[p=parent(index)])){let t=this.heap[index];this.heap[index]=this.heap[p];this.heap[p]=t;index=p;}}percDown(index){let l;while((l=leftChi(index))<this.heap.length){if(l+1<this.heap.length&&smaller(this.heap[l+1],this.heap[l])){l=l+1;}if(smaller(this.heap[index],this.heap[l])){break;}let t=this.heap[index];this.heap[index]=this.heap[l];this.heap[l]=t;index=l;}}push(node){node.pushCount=++this.pushCount;this.heap.push(node);this.percUp(this.heap.length-1);}unshift(node){return this.heap.push(node);}shift(){let[top]=this.heap;this.heap[0]=this.heap[this.heap.length-1];this.heap.pop();this.percDown(0);return top;}toArray(){return[...this];}*[Symbol.iterator](){for(let i=0;i<this.heap.length;i++){yield this.heap[i].data;}}remove(testFn){let j=0;for(let i=0;i<this.heap.length;i++){if(!testFn(this.heap[i])){this.heap[j]=this.heap[i];j++;}}this.heap.splice(j);for(let i=parent(this.heap.length-1);i>=0;i--){this.percDown(i);}return this;}}function leftChi(i){return(i<<1)+1;}function parent(i){return(i+1>>1)-1;}function smaller(x,y){if(x.priority!==y.priority){return x.priority<y.priority;}else{return x.pushCount<y.pushCount;}}/**
-     * The same as [async.queue]{@link module:ControlFlow.queue} only tasks are assigned a priority and
-     * completed in ascending priority order.
-     *
-     * @name priorityQueue
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @see [async.queue]{@link module:ControlFlow.queue}
-     * @category Control Flow
-     * @param {AsyncFunction} worker - An async function for processing a queued task.
-     * If you want to handle errors from an individual task, pass a callback to
-     * `q.push()`.
-     * Invoked with (task, callback).
-     * @param {number} concurrency - An `integer` for determining how many `worker`
-     * functions should be run in parallel.  If omitted, the concurrency defaults to
-     * `1`.  If the concurrency is `0`, an error is thrown.
-     * @returns {module:ControlFlow.QueueObject} A priorityQueue object to manage the tasks. There are three
-     * differences between `queue` and `priorityQueue` objects:
-     * * `push(task, priority, [callback])` - `priority` should be a number. If an
-     *   array of `tasks` is given, all tasks will be assigned the same priority.
-     * * `pushAsync(task, priority, [callback])` - the same as `priorityQueue.push`,
-     *   except this returns a promise that rejects if an error occurs.
-     * * The `unshift` and `unshiftAsync` methods were removed.
-     */function priorityQueue(worker,concurrency){// Start with a normal queue
-var q=queue$1(worker,concurrency);var{push,pushAsync}=q;q._tasks=new Heap();q._createTaskItem=(_ref2,callback)=>{let{data,priority}=_ref2;return{data,priority,callback};};function createDataItems(tasks,priority){if(!Array.isArray(tasks)){return{data:tasks,priority};}return tasks.map(data=>{return{data,priority};});}// Override push to accept second parameter representing priority
-q.push=function(data){let priority=arguments.length>1&&arguments[1]!==undefined?arguments[1]:0;let callback=arguments.length>2?arguments[2]:undefined;return push(createDataItems(data,priority),callback);};q.pushAsync=function(data){let priority=arguments.length>1&&arguments[1]!==undefined?arguments[1]:0;let callback=arguments.length>2?arguments[2]:undefined;return pushAsync(createDataItems(data,priority),callback);};// Remove unshift functions
-delete q.unshift;delete q.unshiftAsync;return q;}/**
-     * Runs the `tasks` array of functions in parallel, without waiting until the
-     * previous function has completed. Once any of the `tasks` complete or pass an
-     * error to its callback, the main `callback` is immediately called. It's
-     * equivalent to `Promise.race()`.
-     *
-     * @name race
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @category Control Flow
-     * @param {Array} tasks - An array containing [async functions]{@link AsyncFunction}
-     * to run. Each function can complete with an optional `result` value.
-     * @param {Function} callback - A callback to run once any of the functions have
-     * completed. This function gets an error or result from the first function that
-     * completed. Invoked with (err, result).
-     * @returns {Promise} a promise, if a callback is omitted
-     * @example
-     *
-     * async.race([
-     *     function(callback) {
-     *         setTimeout(function() {
-     *             callback(null, 'one');
-     *         }, 200);
-     *     },
-     *     function(callback) {
-     *         setTimeout(function() {
-     *             callback(null, 'two');
-     *         }, 100);
-     *     }
-     * ],
-     * // main callback
-     * function(err, result) {
-     *     // the result will be equal to 'two' as it finishes earlier
-     * });
-     */function race(tasks,callback){callback=once(callback);if(!Array.isArray(tasks))return callback(new TypeError('First argument to race must be an array of functions'));if(!tasks.length)return callback();for(var i=0,l=tasks.length;i<l;i++){wrapAsync(tasks[i])(callback);}}var race$1=awaitify(race,2);/**
-     * Same as [`reduce`]{@link module:Collections.reduce}, only operates on `array` in reverse order.
-     *
-     * @name reduceRight
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.reduce]{@link module:Collections.reduce}
-     * @alias foldr
-     * @category Collection
-     * @param {Array} array - A collection to iterate over.
-     * @param {*} memo - The initial state of the reduction.
-     * @param {AsyncFunction} iteratee - A function applied to each item in the
-     * array to produce the next step in the reduction.
-     * The `iteratee` should complete with the next state of the reduction.
-     * If the iteratee completes with an error, the reduction is stopped and the
-     * main `callback` is immediately called with the error.
-     * Invoked with (memo, item, callback).
-     * @param {Function} [callback] - A callback which is called after all the
-     * `iteratee` functions have finished. Result is the reduced value. Invoked with
-     * (err, result).
-     * @returns {Promise} a promise, if no callback is passed
-     */function reduceRight(array,memo,iteratee,callback){var reversed=[...array].reverse();return reduce$1(reversed,memo,iteratee,callback);}/**
-     * Wraps the async function in another function that always completes with a
-     * result object, even when it errors.
-     *
-     * The result object has either the property `error` or `value`.
-     *
-     * @name reflect
-     * @static
-     * @memberOf module:Utils
-     * @method
-     * @category Util
-     * @param {AsyncFunction} fn - The async function you want to wrap
-     * @returns {Function} - A function that always passes null to it's callback as
-     * the error. The second argument to the callback will be an `object` with
-     * either an `error` or a `value` property.
-     * @example
-     *
-     * async.parallel([
-     *     async.reflect(function(callback) {
-     *         // do some stuff ...
-     *         callback(null, 'one');
-     *     }),
-     *     async.reflect(function(callback) {
-     *         // do some more stuff but error ...
-     *         callback('bad stuff happened');
-     *     }),
-     *     async.reflect(function(callback) {
-     *         // do some more stuff ...
-     *         callback(null, 'two');
-     *     })
-     * ],
-     * // optional callback
-     * function(err, results) {
-     *     // values
-     *     // results[0].value = 'one'
-     *     // results[1].error = 'bad stuff happened'
-     *     // results[2].value = 'two'
-     * });
-     */function reflect(fn){var _fn=wrapAsync(fn);return initialParams(function reflectOn(args,reflectCallback){args.push(function(error){let retVal={};if(error){retVal.error=error;}for(var _len32=arguments.length,cbArgs=new Array(_len32>1?_len32-1:0),_key32=1;_key32<_len32;_key32++){cbArgs[_key32-1]=arguments[_key32];}if(cbArgs.length>0){var value=cbArgs;if(cbArgs.length<=1){[value]=cbArgs;}retVal.value=value;}reflectCallback(null,retVal);});return _fn.apply(this,args);});}/**
-     * A helper function that wraps an array or an object of functions with `reflect`.
-     *
-     * @name reflectAll
-     * @static
-     * @memberOf module:Utils
-     * @method
-     * @see [async.reflect]{@link module:Utils.reflect}
-     * @category Util
-     * @param {Array|Object|Iterable} tasks - The collection of
-     * [async functions]{@link AsyncFunction} to wrap in `async.reflect`.
-     * @returns {Array} Returns an array of async functions, each wrapped in
-     * `async.reflect`
-     * @example
-     *
-     * let tasks = [
-     *     function(callback) {
-     *         setTimeout(function() {
-     *             callback(null, 'one');
-     *         }, 200);
-     *     },
-     *     function(callback) {
-     *         // do some more stuff but error ...
-     *         callback(new Error('bad stuff happened'));
-     *     },
-     *     function(callback) {
-     *         setTimeout(function() {
-     *             callback(null, 'two');
-     *         }, 100);
-     *     }
-     * ];
-     *
-     * async.parallel(async.reflectAll(tasks),
-     * // optional callback
-     * function(err, results) {
-     *     // values
-     *     // results[0].value = 'one'
-     *     // results[1].error = Error('bad stuff happened')
-     *     // results[2].value = 'two'
-     * });
-     *
-     * // an example using an object instead of an array
-     * let tasks = {
-     *     one: function(callback) {
-     *         setTimeout(function() {
-     *             callback(null, 'one');
-     *         }, 200);
-     *     },
-     *     two: function(callback) {
-     *         callback('two');
-     *     },
-     *     three: function(callback) {
-     *         setTimeout(function() {
-     *             callback(null, 'three');
-     *         }, 100);
-     *     }
-     * };
-     *
-     * async.parallel(async.reflectAll(tasks),
-     * // optional callback
-     * function(err, results) {
-     *     // values
-     *     // results.one.value = 'one'
-     *     // results.two.error = 'two'
-     *     // results.three.value = 'three'
-     * });
-     */function reflectAll(tasks){var results;if(Array.isArray(tasks)){results=tasks.map(reflect);}else{results={};Object.keys(tasks).forEach(key=>{results[key]=reflect.call(this,tasks[key]);});}return results;}function reject(eachfn,arr,_iteratee,callback){const iteratee=wrapAsync(_iteratee);return _filter(eachfn,arr,(value,cb)=>{iteratee(value,(err,v)=>{cb(err,!v);});},callback);}/**
-     * The opposite of [`filter`]{@link module:Collections.filter}. Removes values that pass an `async` truth test.
-     *
-     * @name reject
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.filter]{@link module:Collections.filter}
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {Function} iteratee - An async truth test to apply to each item in
-     * `coll`.
-     * The should complete with a boolean value as its `result`.
-     * Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called after all the
-     * `iteratee` functions have finished. Invoked with (err, results).
-     * @returns {Promise} a promise, if no callback is passed
-     * @example
-     *
-     * // dir1 is a directory that contains file1.txt, file2.txt
-     * // dir2 is a directory that contains file3.txt, file4.txt
-     * // dir3 is a directory that contains file5.txt
-     *
-     * const fileList = ['dir1/file1.txt','dir2/file3.txt','dir3/file6.txt'];
-     *
-     * // asynchronous function that checks if a file exists
-     * function fileExists(file, callback) {
-     *    fs.access(file, fs.constants.F_OK, (err) => {
-     *        callback(null, !err);
-     *    });
-     * }
-     *
-     * // Using callbacks
-     * async.reject(fileList, fileExists, function(err, results) {
-     *    // [ 'dir3/file6.txt' ]
-     *    // results now equals an array of the non-existing files
-     * });
-     *
-     * // Using Promises
-     * async.reject(fileList, fileExists)
-     * .then( results => {
-     *     console.log(results);
-     *     // [ 'dir3/file6.txt' ]
-     *     // results now equals an array of the non-existing files
-     * }).catch( err => {
-     *     console.log(err);
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let results = await async.reject(fileList, fileExists);
-     *         console.log(results);
-     *         // [ 'dir3/file6.txt' ]
-     *         // results now equals an array of the non-existing files
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     */function reject$1(coll,iteratee,callback){return reject(eachOf$1,coll,iteratee,callback);}var reject$2=awaitify(reject$1,3);/**
-     * The same as [`reject`]{@link module:Collections.reject} but runs a maximum of `limit` async operations at a
-     * time.
-     *
-     * @name rejectLimit
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.reject]{@link module:Collections.reject}
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {number} limit - The maximum number of async operations at a time.
-     * @param {Function} iteratee - An async truth test to apply to each item in
-     * `coll`.
-     * The should complete with a boolean value as its `result`.
-     * Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called after all the
-     * `iteratee` functions have finished. Invoked with (err, results).
-     * @returns {Promise} a promise, if no callback is passed
-     */function rejectLimit(coll,limit,iteratee,callback){return reject(eachOfLimit(limit),coll,iteratee,callback);}var rejectLimit$1=awaitify(rejectLimit,4);/**
-     * The same as [`reject`]{@link module:Collections.reject} but runs only a single async operation at a time.
-     *
-     * @name rejectSeries
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.reject]{@link module:Collections.reject}
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {Function} iteratee - An async truth test to apply to each item in
-     * `coll`.
-     * The should complete with a boolean value as its `result`.
-     * Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called after all the
-     * `iteratee` functions have finished. Invoked with (err, results).
-     * @returns {Promise} a promise, if no callback is passed
-     */function rejectSeries(coll,iteratee,callback){return reject(eachOfSeries$1,coll,iteratee,callback);}var rejectSeries$1=awaitify(rejectSeries,3);function constant$1(value){return function(){return value;};}/**
-     * Attempts to get a successful response from `task` no more than `times` times
-     * before returning an error. If the task is successful, the `callback` will be
-     * passed the result of the successful task. If all attempts fail, the callback
-     * will be passed the error and result (if any) of the final attempt.
-     *
-     * @name retry
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @category Control Flow
-     * @see [async.retryable]{@link module:ControlFlow.retryable}
-     * @param {Object|number} [opts = {times: 5, interval: 0}| 5] - Can be either an
-     * object with `times` and `interval` or a number.
-     * * `times` - The number of attempts to make before giving up.  The default
-     *   is `5`.
-     * * `interval` - The time to wait between retries, in milliseconds.  The
-     *   default is `0`. The interval may also be specified as a function of the
-     *   retry count (see example).
-     * * `errorFilter` - An optional synchronous function that is invoked on
-     *   erroneous result. If it returns `true` the retry attempts will continue;
-     *   if the function returns `false` the retry flow is aborted with the current
-     *   attempt's error and result being returned to the final callback.
-     *   Invoked with (err).
-     * * If `opts` is a number, the number specifies the number of times to retry,
-     *   with the default interval of `0`.
-     * @param {AsyncFunction} task - An async function to retry.
-     * Invoked with (callback).
-     * @param {Function} [callback] - An optional callback which is called when the
-     * task has succeeded, or after the final failed attempt. It receives the `err`
-     * and `result` arguments of the last attempt at completing the `task`. Invoked
-     * with (err, results).
-     * @returns {Promise} a promise if no callback provided
-     *
-     * @example
-     *
-     * // The `retry` function can be used as a stand-alone control flow by passing
-     * // a callback, as shown below:
-     *
-     * // try calling apiMethod 3 times
-     * async.retry(3, apiMethod, function(err, result) {
-     *     // do something with the result
-     * });
-     *
-     * // try calling apiMethod 3 times, waiting 200 ms between each retry
-     * async.retry({times: 3, interval: 200}, apiMethod, function(err, result) {
-     *     // do something with the result
-     * });
-     *
-     * // try calling apiMethod 10 times with exponential backoff
-     * // (i.e. intervals of 100, 200, 400, 800, 1600, ... milliseconds)
-     * async.retry({
-     *   times: 10,
-     *   interval: function(retryCount) {
-     *     return 50 * Math.pow(2, retryCount);
-     *   }
-     * }, apiMethod, function(err, result) {
-     *     // do something with the result
-     * });
-     *
-     * // try calling apiMethod the default 5 times no delay between each retry
-     * async.retry(apiMethod, function(err, result) {
-     *     // do something with the result
-     * });
-     *
-     * // try calling apiMethod only when error condition satisfies, all other
-     * // errors will abort the retry control flow and return to final callback
-     * async.retry({
-     *   errorFilter: function(err) {
-     *     return err.message === 'Temporary error'; // only retry on a specific error
-     *   }
-     * }, apiMethod, function(err, result) {
-     *     // do something with the result
-     * });
-     *
-     * // to retry individual methods that are not as reliable within other
-     * // control flow functions, use the `retryable` wrapper:
-     * async.auto({
-     *     users: api.getUsers.bind(api),
-     *     payments: async.retryable(3, api.getPayments.bind(api))
-     * }, function(err, results) {
-     *     // do something with the results
-     * });
-     *
-     */const DEFAULT_TIMES=5;const DEFAULT_INTERVAL=0;function retry(opts,task,callback){var options={times:DEFAULT_TIMES,intervalFunc:constant$1(DEFAULT_INTERVAL)};if(arguments.length<3&&typeof opts==='function'){callback=task||promiseCallback();task=opts;}else{parseTimes(options,opts);callback=callback||promiseCallback();}if(typeof task!=='function'){throw new Error("Invalid arguments for async.retry");}var _task=wrapAsync(task);var attempt=1;function retryAttempt(){_task(function(err){if(err===false)return;if(err&&attempt++<options.times&&(typeof options.errorFilter!='function'||options.errorFilter(err))){setTimeout(retryAttempt,options.intervalFunc(attempt-1));}else{for(var _len33=arguments.length,args=new Array(_len33>1?_len33-1:0),_key33=1;_key33<_len33;_key33++){args[_key33-1]=arguments[_key33];}callback(err,...args);}});}retryAttempt();return callback[PROMISE_SYMBOL];}function parseTimes(acc,t){if(typeof t==='object'){acc.times=+t.times||DEFAULT_TIMES;acc.intervalFunc=typeof t.interval==='function'?t.interval:constant$1(+t.interval||DEFAULT_INTERVAL);acc.errorFilter=t.errorFilter;}else if(typeof t==='number'||typeof t==='string'){acc.times=+t||DEFAULT_TIMES;}else{throw new Error("Invalid arguments for async.retry");}}/**
-     * A close relative of [`retry`]{@link module:ControlFlow.retry}.  This method
-     * wraps a task and makes it retryable, rather than immediately calling it
-     * with retries.
-     *
-     * @name retryable
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @see [async.retry]{@link module:ControlFlow.retry}
-     * @category Control Flow
-     * @param {Object|number} [opts = {times: 5, interval: 0}| 5] - optional
-     * options, exactly the same as from `retry`, except for a `opts.arity` that
-     * is the arity of the `task` function, defaulting to `task.length`
-     * @param {AsyncFunction} task - the asynchronous function to wrap.
-     * This function will be passed any arguments passed to the returned wrapper.
-     * Invoked with (...args, callback).
-     * @returns {AsyncFunction} The wrapped function, which when invoked, will
-     * retry on an error, based on the parameters specified in `opts`.
-     * This function will accept the same parameters as `task`.
-     * @example
-     *
-     * async.auto({
-     *     dep1: async.retryable(3, getFromFlakyService),
-     *     process: ["dep1", async.retryable(3, function (results, cb) {
-     *         maybeProcessData(results.dep1, cb);
-     *     })]
-     * }, callback);
-     */function retryable(opts,task){if(!task){task=opts;opts=null;}let arity=opts&&opts.arity||task.length;if(isAsync(task)){arity+=1;}var _task=wrapAsync(task);return initialParams((args,callback)=>{if(args.length<arity-1||callback==null){args.push(callback);callback=promiseCallback();}function taskFn(cb){_task(...args,cb);}if(opts)retry(opts,taskFn,callback);else retry(taskFn,callback);return callback[PROMISE_SYMBOL];});}/**
-     * Run the functions in the `tasks` collection in series, each one running once
-     * the previous function has completed. If any functions in the series pass an
-     * error to its callback, no more functions are run, and `callback` is
-     * immediately called with the value of the error. Otherwise, `callback`
-     * receives an array of results when `tasks` have completed.
-     *
-     * It is also possible to use an object instead of an array. Each property will
-     * be run as a function, and the results will be passed to the final `callback`
-     * as an object instead of an array. This can be a more readable way of handling
-     *  results from {@link async.series}.
-     *
-     * **Note** that while many implementations preserve the order of object
-     * properties, the [ECMAScript Language Specification](http://www.ecma-international.org/ecma-262/5.1/#sec-8.6)
-     * explicitly states that
-     *
-     * > The mechanics and order of enumerating the properties is not specified.
-     *
-     * So if you rely on the order in which your series of functions are executed,
-     * and want this to work on all platforms, consider using an array.
-     *
-     * @name series
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @category Control Flow
-     * @param {Array|Iterable|AsyncIterable|Object} tasks - A collection containing
-     * [async functions]{@link AsyncFunction} to run in series.
-     * Each function can complete with any number of optional `result` values.
-     * @param {Function} [callback] - An optional callback to run once all the
-     * functions have completed. This function gets a results array (or object)
-     * containing all the result arguments passed to the `task` callbacks. Invoked
-     * with (err, result).
-     * @return {Promise} a promise, if no callback is passed
-     * @example
-     *
-     * //Using Callbacks
-     * async.series([
-     *     function(callback) {
-     *         setTimeout(function() {
-     *             // do some async task
-     *             callback(null, 'one');
-     *         }, 200);
-     *     },
-     *     function(callback) {
-     *         setTimeout(function() {
-     *             // then do another async task
-     *             callback(null, 'two');
-     *         }, 100);
-     *     }
-     * ], function(err, results) {
-     *     console.log(results);
-     *     // results is equal to ['one','two']
-     * });
-     *
-     * // an example using objects instead of arrays
-     * async.series({
-     *     one: function(callback) {
-     *         setTimeout(function() {
-     *             // do some async task
-     *             callback(null, 1);
-     *         }, 200);
-     *     },
-     *     two: function(callback) {
-     *         setTimeout(function() {
-     *             // then do another async task
-     *             callback(null, 2);
-     *         }, 100);
-     *     }
-     * }, function(err, results) {
-     *     console.log(results);
-     *     // results is equal to: { one: 1, two: 2 }
-     * });
-     *
-     * //Using Promises
-     * async.series([
-     *     function(callback) {
-     *         setTimeout(function() {
-     *             callback(null, 'one');
-     *         }, 200);
-     *     },
-     *     function(callback) {
-     *         setTimeout(function() {
-     *             callback(null, 'two');
-     *         }, 100);
-     *     }
-     * ]).then(results => {
-     *     console.log(results);
-     *     // results is equal to ['one','two']
-     * }).catch(err => {
-     *     console.log(err);
-     * });
-     *
-     * // an example using an object instead of an array
-     * async.series({
-     *     one: function(callback) {
-     *         setTimeout(function() {
-     *             // do some async task
-     *             callback(null, 1);
-     *         }, 200);
-     *     },
-     *     two: function(callback) {
-     *         setTimeout(function() {
-     *             // then do another async task
-     *             callback(null, 2);
-     *         }, 100);
-     *     }
-     * }).then(results => {
-     *     console.log(results);
-     *     // results is equal to: { one: 1, two: 2 }
-     * }).catch(err => {
-     *     console.log(err);
-     * });
-     *
-     * //Using async/await
-     * async () => {
-     *     try {
-     *         let results = await async.series([
-     *             function(callback) {
-     *                 setTimeout(function() {
-     *                     // do some async task
-     *                     callback(null, 'one');
-     *                 }, 200);
-     *             },
-     *             function(callback) {
-     *                 setTimeout(function() {
-     *                     // then do another async task
-     *                     callback(null, 'two');
-     *                 }, 100);
-     *             }
-     *         ]);
-     *         console.log(results);
-     *         // results is equal to ['one','two']
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     * // an example using an object instead of an array
-     * async () => {
-     *     try {
-     *         let results = await async.parallel({
-     *             one: function(callback) {
-     *                 setTimeout(function() {
-     *                     // do some async task
-     *                     callback(null, 1);
-     *                 }, 200);
-     *             },
-     *            two: function(callback) {
-     *                 setTimeout(function() {
-     *                     // then do another async task
-     *                     callback(null, 2);
-     *                 }, 100);
-     *            }
-     *         });
-     *         console.log(results);
-     *         // results is equal to: { one: 1, two: 2 }
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     */function series(tasks,callback){return parallel(eachOfSeries$1,tasks,callback);}/**
-     * Returns `true` if at least one element in the `coll` satisfies an async test.
-     * If any iteratee call returns `true`, the main `callback` is immediately
-     * called.
-     *
-     * @name some
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @alias any
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {AsyncFunction} iteratee - An async truth test to apply to each item
-     * in the collections in parallel.
-     * The iteratee should complete with a boolean `result` value.
-     * Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called as soon as any
-     * iteratee returns `true`, or after all the iteratee functions have finished.
-     * Result will be either `true` or `false` depending on the values of the async
-     * tests. Invoked with (err, result).
-     * @returns {Promise} a promise, if no callback provided
-     * @example
-     *
-     * // dir1 is a directory that contains file1.txt, file2.txt
-     * // dir2 is a directory that contains file3.txt, file4.txt
-     * // dir3 is a directory that contains file5.txt
-     * // dir4 does not exist
-     *
-     * // asynchronous function that checks if a file exists
-     * function fileExists(file, callback) {
-     *    fs.access(file, fs.constants.F_OK, (err) => {
-     *        callback(null, !err);
-     *    });
-     * }
-     *
-     * // Using callbacks
-     * async.some(['dir1/missing.txt','dir2/missing.txt','dir3/file5.txt'], fileExists,
-     *    function(err, result) {
-     *        console.log(result);
-     *        // true
-     *        // result is true since some file in the list exists
-     *    }
-     *);
-     *
-     * async.some(['dir1/missing.txt','dir2/missing.txt','dir4/missing.txt'], fileExists,
-     *    function(err, result) {
-     *        console.log(result);
-     *        // false
-     *        // result is false since none of the files exists
-     *    }
-     *);
-     *
-     * // Using Promises
-     * async.some(['dir1/missing.txt','dir2/missing.txt','dir3/file5.txt'], fileExists)
-     * .then( result => {
-     *     console.log(result);
-     *     // true
-     *     // result is true since some file in the list exists
-     * }).catch( err => {
-     *     console.log(err);
-     * });
-     *
-     * async.some(['dir1/missing.txt','dir2/missing.txt','dir4/missing.txt'], fileExists)
-     * .then( result => {
-     *     console.log(result);
-     *     // false
-     *     // result is false since none of the files exists
-     * }).catch( err => {
-     *     console.log(err);
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let result = await async.some(['dir1/missing.txt','dir2/missing.txt','dir3/file5.txt'], fileExists);
-     *         console.log(result);
-     *         // true
-     *         // result is true since some file in the list exists
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     * async () => {
-     *     try {
-     *         let result = await async.some(['dir1/missing.txt','dir2/missing.txt','dir4/missing.txt'], fileExists);
-     *         console.log(result);
-     *         // false
-     *         // result is false since none of the files exists
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     */function some(coll,iteratee,callback){return _createTester(Boolean,res=>res)(eachOf$1,coll,iteratee,callback);}var some$1=awaitify(some,3);/**
-     * The same as [`some`]{@link module:Collections.some} but runs a maximum of `limit` async operations at a time.
-     *
-     * @name someLimit
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.some]{@link module:Collections.some}
-     * @alias anyLimit
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {number} limit - The maximum number of async operations at a time.
-     * @param {AsyncFunction} iteratee - An async truth test to apply to each item
-     * in the collections in parallel.
-     * The iteratee should complete with a boolean `result` value.
-     * Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called as soon as any
-     * iteratee returns `true`, or after all the iteratee functions have finished.
-     * Result will be either `true` or `false` depending on the values of the async
-     * tests. Invoked with (err, result).
-     * @returns {Promise} a promise, if no callback provided
-     */function someLimit(coll,limit,iteratee,callback){return _createTester(Boolean,res=>res)(eachOfLimit(limit),coll,iteratee,callback);}var someLimit$1=awaitify(someLimit,4);/**
-     * The same as [`some`]{@link module:Collections.some} but runs only a single async operation at a time.
-     *
-     * @name someSeries
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @see [async.some]{@link module:Collections.some}
-     * @alias anySeries
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {AsyncFunction} iteratee - An async truth test to apply to each item
-     * in the collections in series.
-     * The iteratee should complete with a boolean `result` value.
-     * Invoked with (item, callback).
-     * @param {Function} [callback] - A callback which is called as soon as any
-     * iteratee returns `true`, or after all the iteratee functions have finished.
-     * Result will be either `true` or `false` depending on the values of the async
-     * tests. Invoked with (err, result).
-     * @returns {Promise} a promise, if no callback provided
-     */function someSeries(coll,iteratee,callback){return _createTester(Boolean,res=>res)(eachOfSeries$1,coll,iteratee,callback);}var someSeries$1=awaitify(someSeries,3);/**
-     * Sorts a list by the results of running each `coll` value through an async
-     * `iteratee`.
-     *
-     * @name sortBy
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {AsyncFunction} iteratee - An async function to apply to each item in
-     * `coll`.
-     * The iteratee should complete with a value to use as the sort criteria as
-     * its `result`.
-     * Invoked with (item, callback).
-     * @param {Function} callback - A callback which is called after all the
-     * `iteratee` functions have finished, or an error occurs. Results is the items
-     * from the original `coll` sorted by the values returned by the `iteratee`
-     * calls. Invoked with (err, results).
-     * @returns {Promise} a promise, if no callback passed
-     * @example
-     *
-     * // bigfile.txt is a file that is 251100 bytes in size
-     * // mediumfile.txt is a file that is 11000 bytes in size
-     * // smallfile.txt is a file that is 121 bytes in size
-     *
-     * // asynchronous function that returns the file size in bytes
-     * function getFileSizeInBytes(file, callback) {
-     *     fs.stat(file, function(err, stat) {
-     *         if (err) {
-     *             return callback(err);
-     *         }
-     *         callback(null, stat.size);
-     *     });
-     * }
-     *
-     * // Using callbacks
-     * async.sortBy(['mediumfile.txt','smallfile.txt','bigfile.txt'], getFileSizeInBytes,
-     *     function(err, results) {
-     *         if (err) {
-     *             console.log(err);
-     *         } else {
-     *             console.log(results);
-     *             // results is now the original array of files sorted by
-     *             // file size (ascending by default), e.g.
-     *             // [ 'smallfile.txt', 'mediumfile.txt', 'bigfile.txt']
-     *         }
-     *     }
-     * );
-     *
-     * // By modifying the callback parameter the
-     * // sorting order can be influenced:
-     *
-     * // ascending order
-     * async.sortBy(['mediumfile.txt','smallfile.txt','bigfile.txt'], function(file, callback) {
-     *     getFileSizeInBytes(file, function(getFileSizeErr, fileSize) {
-     *         if (getFileSizeErr) return callback(getFileSizeErr);
-     *         callback(null, fileSize);
-     *     });
-     * }, function(err, results) {
-     *         if (err) {
-     *             console.log(err);
-     *         } else {
-     *             console.log(results);
-     *             // results is now the original array of files sorted by
-     *             // file size (ascending by default), e.g.
-     *             // [ 'smallfile.txt', 'mediumfile.txt', 'bigfile.txt']
-     *         }
-     *     }
-     * );
-     *
-     * // descending order
-     * async.sortBy(['bigfile.txt','mediumfile.txt','smallfile.txt'], function(file, callback) {
-     *     getFileSizeInBytes(file, function(getFileSizeErr, fileSize) {
-     *         if (getFileSizeErr) {
-     *             return callback(getFileSizeErr);
-     *         }
-     *         callback(null, fileSize * -1);
-     *     });
-     * }, function(err, results) {
-     *         if (err) {
-     *             console.log(err);
-     *         } else {
-     *             console.log(results);
-     *             // results is now the original array of files sorted by
-     *             // file size (ascending by default), e.g.
-     *             // [ 'bigfile.txt', 'mediumfile.txt', 'smallfile.txt']
-     *         }
-     *     }
-     * );
-     *
-     * // Error handling
-     * async.sortBy(['mediumfile.txt','smallfile.txt','missingfile.txt'], getFileSizeInBytes,
-     *     function(err, results) {
-     *         if (err) {
-     *             console.log(err);
-     *             // [ Error: ENOENT: no such file or directory ]
-     *         } else {
-     *             console.log(results);
-     *         }
-     *     }
-     * );
-     *
-     * // Using Promises
-     * async.sortBy(['mediumfile.txt','smallfile.txt','bigfile.txt'], getFileSizeInBytes)
-     * .then( results => {
-     *     console.log(results);
-     *     // results is now the original array of files sorted by
-     *     // file size (ascending by default), e.g.
-     *     // [ 'smallfile.txt', 'mediumfile.txt', 'bigfile.txt']
-     * }).catch( err => {
-     *     console.log(err);
-     * });
-     *
-     * // Error handling
-     * async.sortBy(['mediumfile.txt','smallfile.txt','missingfile.txt'], getFileSizeInBytes)
-     * .then( results => {
-     *     console.log(results);
-     * }).catch( err => {
-     *     console.log(err);
-     *     // [ Error: ENOENT: no such file or directory ]
-     * });
-     *
-     * // Using async/await
-     * (async () => {
-     *     try {
-     *         let results = await async.sortBy(['bigfile.txt','mediumfile.txt','smallfile.txt'], getFileSizeInBytes);
-     *         console.log(results);
-     *         // results is now the original array of files sorted by
-     *         // file size (ascending by default), e.g.
-     *         // [ 'smallfile.txt', 'mediumfile.txt', 'bigfile.txt']
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * })();
-     *
-     * // Error handling
-     * async () => {
-     *     try {
-     *         let results = await async.sortBy(['missingfile.txt','mediumfile.txt','smallfile.txt'], getFileSizeInBytes);
-     *         console.log(results);
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *         // [ Error: ENOENT: no such file or directory ]
-     *     }
-     * }
-     *
-     */function sortBy(coll,iteratee,callback){var _iteratee=wrapAsync(iteratee);return map$1(coll,(x,iterCb)=>{_iteratee(x,(err,criteria)=>{if(err)return iterCb(err);iterCb(err,{value:x,criteria});});},(err,results)=>{if(err)return callback(err);callback(null,results.sort(comparator).map(v=>v.value));});function comparator(left,right){var a=left.criteria,b=right.criteria;return a<b?-1:a>b?1:0;}}var sortBy$1=awaitify(sortBy,3);/**
-     * Sets a time limit on an asynchronous function. If the function does not call
-     * its callback within the specified milliseconds, it will be called with a
-     * timeout error. The code property for the error object will be `'ETIMEDOUT'`.
-     *
-     * @name timeout
-     * @static
-     * @memberOf module:Utils
-     * @method
-     * @category Util
-     * @param {AsyncFunction} asyncFn - The async function to limit in time.
-     * @param {number} milliseconds - The specified time limit.
-     * @param {*} [info] - Any variable you want attached (`string`, `object`, etc)
-     * to timeout Error for more information..
-     * @returns {AsyncFunction} Returns a wrapped function that can be used with any
-     * of the control flow functions.
-     * Invoke this function with the same parameters as you would `asyncFunc`.
-     * @example
-     *
-     * function myFunction(foo, callback) {
-     *     doAsyncTask(foo, function(err, data) {
-     *         // handle errors
-     *         if (err) return callback(err);
-     *
-     *         // do some stuff ...
-     *
-     *         // return processed data
-     *         return callback(null, data);
-     *     });
-     * }
-     *
-     * var wrapped = async.timeout(myFunction, 1000);
-     *
-     * // call `wrapped` as you would `myFunction`
-     * wrapped({ bar: 'bar' }, function(err, data) {
-     *     // if `myFunction` takes < 1000 ms to execute, `err`
-     *     // and `data` will have their expected values
-     *
-     *     // else `err` will be an Error with the code 'ETIMEDOUT'
-     * });
-     */function timeout(asyncFn,milliseconds,info){var fn=wrapAsync(asyncFn);return initialParams((args,callback)=>{var timedOut=false;var timer;function timeoutCallback(){var name=asyncFn.name||'anonymous';var error=new Error('Callback function "'+name+'" timed out.');error.code='ETIMEDOUT';if(info){error.info=info;}timedOut=true;callback(error);}args.push(function(){if(!timedOut){callback(...arguments);clearTimeout(timer);}});// setup timer and call original function
-timer=setTimeout(timeoutCallback,milliseconds);fn(...args);});}function range(size){var result=Array(size);while(size--){result[size]=size;}return result;}/**
-     * The same as [times]{@link module:ControlFlow.times} but runs a maximum of `limit` async operations at a
-     * time.
-     *
-     * @name timesLimit
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @see [async.times]{@link module:ControlFlow.times}
-     * @category Control Flow
-     * @param {number} count - The number of times to run the function.
-     * @param {number} limit - The maximum number of async operations at a time.
-     * @param {AsyncFunction} iteratee - The async function to call `n` times.
-     * Invoked with the iteration index and a callback: (n, next).
-     * @param {Function} callback - see [async.map]{@link module:Collections.map}.
-     * @returns {Promise} a promise, if no callback is provided
-     */function timesLimit(count,limit,iteratee,callback){var _iteratee=wrapAsync(iteratee);return mapLimit$1(range(count),limit,_iteratee,callback);}/**
-     * Calls the `iteratee` function `n` times, and accumulates results in the same
-     * manner you would use with [map]{@link module:Collections.map}.
-     *
-     * @name times
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @see [async.map]{@link module:Collections.map}
-     * @category Control Flow
-     * @param {number} n - The number of times to run the function.
-     * @param {AsyncFunction} iteratee - The async function to call `n` times.
-     * Invoked with the iteration index and a callback: (n, next).
-     * @param {Function} callback - see {@link module:Collections.map}.
-     * @returns {Promise} a promise, if no callback is provided
-     * @example
-     *
-     * // Pretend this is some complicated async factory
-     * var createUser = function(id, callback) {
-     *     callback(null, {
-     *         id: 'user' + id
-     *     });
-     * };
-     *
-     * // generate 5 users
-     * async.times(5, function(n, next) {
-     *     createUser(n, function(err, user) {
-     *         next(err, user);
-     *     });
-     * }, function(err, users) {
-     *     // we should now have 5 users
-     * });
-     */function times(n,iteratee,callback){return timesLimit(n,Infinity,iteratee,callback);}/**
-     * The same as [times]{@link module:ControlFlow.times} but runs only a single async operation at a time.
-     *
-     * @name timesSeries
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @see [async.times]{@link module:ControlFlow.times}
-     * @category Control Flow
-     * @param {number} n - The number of times to run the function.
-     * @param {AsyncFunction} iteratee - The async function to call `n` times.
-     * Invoked with the iteration index and a callback: (n, next).
-     * @param {Function} callback - see {@link module:Collections.map}.
-     * @returns {Promise} a promise, if no callback is provided
-     */function timesSeries(n,iteratee,callback){return timesLimit(n,1,iteratee,callback);}/**
-     * A relative of `reduce`.  Takes an Object or Array, and iterates over each
-     * element in parallel, each step potentially mutating an `accumulator` value.
-     * The type of the accumulator defaults to the type of collection passed in.
-     *
-     * @name transform
-     * @static
-     * @memberOf module:Collections
-     * @method
-     * @category Collection
-     * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
-     * @param {*} [accumulator] - The initial state of the transform.  If omitted,
-     * it will default to an empty Object or Array, depending on the type of `coll`
-     * @param {AsyncFunction} iteratee - A function applied to each item in the
-     * collection that potentially modifies the accumulator.
-     * Invoked with (accumulator, item, key, callback).
-     * @param {Function} [callback] - A callback which is called after all the
-     * `iteratee` functions have finished. Result is the transformed accumulator.
-     * Invoked with (err, result).
-     * @returns {Promise} a promise, if no callback provided
-     * @example
-     *
-     * // file1.txt is a file that is 1000 bytes in size
-     * // file2.txt is a file that is 2000 bytes in size
-     * // file3.txt is a file that is 3000 bytes in size
-     *
-     * // helper function that returns human-readable size format from bytes
-     * function formatBytes(bytes, decimals = 2) {
-     *   // implementation not included for brevity
-     *   return humanReadbleFilesize;
-     * }
-     *
-     * const fileList = ['file1.txt','file2.txt','file3.txt'];
-     *
-     * // asynchronous function that returns the file size, transformed to human-readable format
-     * // e.g. 1024 bytes = 1KB, 1234 bytes = 1.21 KB, 1048576 bytes = 1MB, etc.
-     * function transformFileSize(acc, value, key, callback) {
-     *     fs.stat(value, function(err, stat) {
-     *         if (err) {
-     *             return callback(err);
-     *         }
-     *         acc[key] = formatBytes(stat.size);
-     *         callback(null);
-     *     });
-     * }
-     *
-     * // Using callbacks
-     * async.transform(fileList, transformFileSize, function(err, result) {
-     *     if(err) {
-     *         console.log(err);
-     *     } else {
-     *         console.log(result);
-     *         // [ '1000 Bytes', '1.95 KB', '2.93 KB' ]
-     *     }
-     * });
-     *
-     * // Using Promises
-     * async.transform(fileList, transformFileSize)
-     * .then(result => {
-     *     console.log(result);
-     *     // [ '1000 Bytes', '1.95 KB', '2.93 KB' ]
-     * }).catch(err => {
-     *     console.log(err);
-     * });
-     *
-     * // Using async/await
-     * (async () => {
-     *     try {
-     *         let result = await async.transform(fileList, transformFileSize);
-     *         console.log(result);
-     *         // [ '1000 Bytes', '1.95 KB', '2.93 KB' ]
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * })();
-     *
-     * @example
-     *
-     * // file1.txt is a file that is 1000 bytes in size
-     * // file2.txt is a file that is 2000 bytes in size
-     * // file3.txt is a file that is 3000 bytes in size
-     *
-     * // helper function that returns human-readable size format from bytes
-     * function formatBytes(bytes, decimals = 2) {
-     *   // implementation not included for brevity
-     *   return humanReadbleFilesize;
-     * }
-     *
-     * const fileMap = { f1: 'file1.txt', f2: 'file2.txt', f3: 'file3.txt' };
-     *
-     * // asynchronous function that returns the file size, transformed to human-readable format
-     * // e.g. 1024 bytes = 1KB, 1234 bytes = 1.21 KB, 1048576 bytes = 1MB, etc.
-     * function transformFileSize(acc, value, key, callback) {
-     *     fs.stat(value, function(err, stat) {
-     *         if (err) {
-     *             return callback(err);
-     *         }
-     *         acc[key] = formatBytes(stat.size);
-     *         callback(null);
-     *     });
-     * }
-     *
-     * // Using callbacks
-     * async.transform(fileMap, transformFileSize, function(err, result) {
-     *     if(err) {
-     *         console.log(err);
-     *     } else {
-     *         console.log(result);
-     *         // { f1: '1000 Bytes', f2: '1.95 KB', f3: '2.93 KB' }
-     *     }
-     * });
-     *
-     * // Using Promises
-     * async.transform(fileMap, transformFileSize)
-     * .then(result => {
-     *     console.log(result);
-     *     // { f1: '1000 Bytes', f2: '1.95 KB', f3: '2.93 KB' }
-     * }).catch(err => {
-     *     console.log(err);
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let result = await async.transform(fileMap, transformFileSize);
-     *         console.log(result);
-     *         // { f1: '1000 Bytes', f2: '1.95 KB', f3: '2.93 KB' }
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     */function transform(coll,accumulator,iteratee,callback){if(arguments.length<=3&&typeof accumulator==='function'){callback=iteratee;iteratee=accumulator;accumulator=Array.isArray(coll)?[]:{};}callback=once(callback||promiseCallback());var _iteratee=wrapAsync(iteratee);eachOf$1(coll,(v,k,cb)=>{_iteratee(accumulator,v,k,cb);},err=>callback(err,accumulator));return callback[PROMISE_SYMBOL];}/**
-     * It runs each task in series but stops whenever any of the functions were
-     * successful. If one of the tasks were successful, the `callback` will be
-     * passed the result of the successful task. If all tasks fail, the callback
-     * will be passed the error and result (if any) of the final attempt.
-     *
-     * @name tryEach
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @category Control Flow
-     * @param {Array|Iterable|AsyncIterable|Object} tasks - A collection containing functions to
-     * run, each function is passed a `callback(err, result)` it must call on
-     * completion with an error `err` (which can be `null`) and an optional `result`
-     * value.
-     * @param {Function} [callback] - An optional callback which is called when one
-     * of the tasks has succeeded, or all have failed. It receives the `err` and
-     * `result` arguments of the last attempt at completing the `task`. Invoked with
-     * (err, results).
-     * @returns {Promise} a promise, if no callback is passed
-     * @example
-     * async.tryEach([
-     *     function getDataFromFirstWebsite(callback) {
-     *         // Try getting the data from the first website
-     *         callback(err, data);
-     *     },
-     *     function getDataFromSecondWebsite(callback) {
-     *         // First website failed,
-     *         // Try getting the data from the backup website
-     *         callback(err, data);
-     *     }
-     * ],
-     * // optional callback
-     * function(err, results) {
-     *     Now do something with the data.
-     * });
-     *
-     */function tryEach(tasks,callback){var error=null;var result;return eachSeries$1(tasks,(task,taskCb)=>{wrapAsync(task)(function(err){if(err===false)return taskCb(err);for(var _len34=arguments.length,args=new Array(_len34>1?_len34-1:0),_key34=1;_key34<_len34;_key34++){args[_key34-1]=arguments[_key34];}if(args.length<2){[result]=args;}else{result=args;}error=err;taskCb(err?null:{});});},()=>callback(error,result));}var tryEach$1=awaitify(tryEach);/**
-     * Undoes a [memoize]{@link module:Utils.memoize}d function, reverting it to the original,
-     * unmemoized form. Handy for testing.
-     *
-     * @name unmemoize
-     * @static
-     * @memberOf module:Utils
-     * @method
-     * @see [async.memoize]{@link module:Utils.memoize}
-     * @category Util
-     * @param {AsyncFunction} fn - the memoized function
-     * @returns {AsyncFunction} a function that calls the original unmemoized function
-     */function unmemoize(fn){return function(){return(fn.unmemoized||fn)(...arguments);};}/**
-     * Repeatedly call `iteratee`, while `test` returns `true`. Calls `callback` when
-     * stopped, or an error occurs.
-     *
-     * @name whilst
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @category Control Flow
-     * @param {AsyncFunction} test - asynchronous truth test to perform before each
-     * execution of `iteratee`. Invoked with ().
-     * @param {AsyncFunction} iteratee - An async function which is called each time
-     * `test` passes. Invoked with (callback).
-     * @param {Function} [callback] - A callback which is called after the test
-     * function has failed and repeated execution of `iteratee` has stopped. `callback`
-     * will be passed an error and any arguments passed to the final `iteratee`'s
-     * callback. Invoked with (err, [results]);
-     * @returns {Promise} a promise, if no callback is passed
-     * @example
-     *
-     * var count = 0;
-     * async.whilst(
-     *     function test(cb) { cb(null, count < 5); },
-     *     function iter(callback) {
-     *         count++;
-     *         setTimeout(function() {
-     *             callback(null, count);
-     *         }, 1000);
-     *     },
-     *     function (err, n) {
-     *         // 5 seconds have passed, n = 5
-     *     }
-     * );
-     */function whilst(test,iteratee,callback){callback=onlyOnce(callback);var _fn=wrapAsync(iteratee);var _test=wrapAsync(test);var results=[];function next(err){if(err)return callback(err);for(var _len35=arguments.length,rest=new Array(_len35>1?_len35-1:0),_key35=1;_key35<_len35;_key35++){rest[_key35-1]=arguments[_key35];}results=rest;if(err===false)return;_test(check);}function check(err,truth){if(err)return callback(err);if(err===false)return;if(!truth)return callback(null,...results);_fn(next);}return _test(check);}var whilst$1=awaitify(whilst,3);/**
-     * Repeatedly call `iteratee` until `test` returns `true`. Calls `callback` when
-     * stopped, or an error occurs. `callback` will be passed an error and any
-     * arguments passed to the final `iteratee`'s callback.
-     *
-     * The inverse of [whilst]{@link module:ControlFlow.whilst}.
-     *
-     * @name until
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @see [async.whilst]{@link module:ControlFlow.whilst}
-     * @category Control Flow
-     * @param {AsyncFunction} test - asynchronous truth test to perform before each
-     * execution of `iteratee`. Invoked with (callback).
-     * @param {AsyncFunction} iteratee - An async function which is called each time
-     * `test` fails. Invoked with (callback).
-     * @param {Function} [callback] - A callback which is called after the test
-     * function has passed and repeated execution of `iteratee` has stopped. `callback`
-     * will be passed an error and any arguments passed to the final `iteratee`'s
-     * callback. Invoked with (err, [results]);
-     * @returns {Promise} a promise, if a callback is not passed
-     *
-     * @example
-     * const results = []
-     * let finished = false
-     * async.until(function test(cb) {
-     *     cb(null, finished)
-     * }, function iter(next) {
-     *     fetchPage(url, (err, body) => {
-     *         if (err) return next(err)
-     *         results = results.concat(body.objects)
-     *         finished = !!body.next
-     *         next(err)
-     *     })
-     * }, function done (err) {
-     *     // all pages have been fetched
-     * })
-     */function until(test,iteratee,callback){const _test=wrapAsync(test);return whilst$1(cb=>_test((err,truth)=>cb(err,!truth)),iteratee,callback);}/**
-     * Runs the `tasks` array of functions in series, each passing their results to
-     * the next in the array. However, if any of the `tasks` pass an error to their
-     * own callback, the next function is not executed, and the main `callback` is
-     * immediately called with the error.
-     *
-     * @name waterfall
-     * @static
-     * @memberOf module:ControlFlow
-     * @method
-     * @category Control Flow
-     * @param {Array} tasks - An array of [async functions]{@link AsyncFunction}
-     * to run.
-     * Each function should complete with any number of `result` values.
-     * The `result` values will be passed as arguments, in order, to the next task.
-     * @param {Function} [callback] - An optional callback to run once all the
-     * functions have completed. This will be passed the results of the last task's
-     * callback. Invoked with (err, [results]).
-     * @returns {Promise} a promise, if a callback is omitted
-     * @example
-     *
-     * async.waterfall([
-     *     function(callback) {
-     *         callback(null, 'one', 'two');
-     *     },
-     *     function(arg1, arg2, callback) {
-     *         // arg1 now equals 'one' and arg2 now equals 'two'
-     *         callback(null, 'three');
-     *     },
-     *     function(arg1, callback) {
-     *         // arg1 now equals 'three'
-     *         callback(null, 'done');
-     *     }
-     * ], function (err, result) {
-     *     // result now equals 'done'
-     * });
-     *
-     * // Or, with named functions:
-     * async.waterfall([
-     *     myFirstFunction,
-     *     mySecondFunction,
-     *     myLastFunction,
-     * ], function (err, result) {
-     *     // result now equals 'done'
-     * });
-     * function myFirstFunction(callback) {
-     *     callback(null, 'one', 'two');
-     * }
-     * function mySecondFunction(arg1, arg2, callback) {
-     *     // arg1 now equals 'one' and arg2 now equals 'two'
-     *     callback(null, 'three');
-     * }
-     * function myLastFunction(arg1, callback) {
-     *     // arg1 now equals 'three'
-     *     callback(null, 'done');
-     * }
-     */function waterfall(tasks,callback){callback=once(callback);if(!Array.isArray(tasks))return callback(new Error('First argument to waterfall must be an array of functions'));if(!tasks.length)return callback();var taskIndex=0;function nextTask(args){var task=wrapAsync(tasks[taskIndex++]);task(...args,onlyOnce(next));}function next(err){if(err===false)return;for(var _len36=arguments.length,args=new Array(_len36>1?_len36-1:0),_key36=1;_key36<_len36;_key36++){args[_key36-1]=arguments[_key36];}if(err||taskIndex===tasks.length){return callback(err,...args);}nextTask(args);}nextTask([]);}var waterfall$1=awaitify(waterfall);/**
-     * An "async function" in the context of Async is an asynchronous function with
-     * a variable number of parameters, with the final parameter being a callback.
-     * (`function (arg1, arg2, ..., callback) {}`)
-     * The final callback is of the form `callback(err, results...)`, which must be
-     * called once the function is completed.  The callback should be called with a
-     * Error as its first argument to signal that an error occurred.
-     * Otherwise, if no error occurred, it should be called with `null` as the first
-     * argument, and any additional `result` arguments that may apply, to signal
-     * successful completion.
-     * The callback must be called exactly once, ideally on a later tick of the
-     * JavaScript event loop.
-     *
-     * This type of function is also referred to as a "Node-style async function",
-     * or a "continuation passing-style function" (CPS). Most of the methods of this
-     * library are themselves CPS/Node-style async functions, or functions that
-     * return CPS/Node-style async functions.
-     *
-     * Wherever we accept a Node-style async function, we also directly accept an
-     * [ES2017 `async` function]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function}.
-     * In this case, the `async` function will not be passed a final callback
-     * argument, and any thrown error will be used as the `err` argument of the
-     * implicit callback, and the return value will be used as the `result` value.
-     * (i.e. a `rejected` of the returned Promise becomes the `err` callback
-     * argument, and a `resolved` value becomes the `result`.)
-     *
-     * Note, due to JavaScript limitations, we can only detect native `async`
-     * functions and not transpilied implementations.
-     * Your environment must have `async`/`await` support for this to work.
-     * (e.g. Node > v7.6, or a recent version of a modern browser).
-     * If you are using `async` functions through a transpiler (e.g. Babel), you
-     * must still wrap the function with [asyncify]{@link module:Utils.asyncify},
-     * because the `async function` will be compiled to an ordinary function that
-     * returns a promise.
-     *
-     * @typedef {Function} AsyncFunction
-     * @static
-     */var index={apply,applyEach:applyEach$1,applyEachSeries,asyncify,auto,autoInject,cargo,cargoQueue:cargo$1,compose,concat:concat$1,concatLimit:concatLimit$1,concatSeries:concatSeries$1,constant,detect:detect$1,detectLimit:detectLimit$1,detectSeries:detectSeries$1,dir,doUntil,doWhilst:doWhilst$1,each,eachLimit:eachLimit$2,eachOf:eachOf$1,eachOfLimit:eachOfLimit$2,eachOfSeries:eachOfSeries$1,eachSeries:eachSeries$1,ensureAsync,every:every$1,everyLimit:everyLimit$1,everySeries:everySeries$1,filter:filter$1,filterLimit:filterLimit$1,filterSeries:filterSeries$1,forever:forever$1,groupBy,groupByLimit:groupByLimit$1,groupBySeries,log,map:map$1,mapLimit:mapLimit$1,mapSeries:mapSeries$1,mapValues,mapValuesLimit:mapValuesLimit$1,mapValuesSeries,memoize,nextTick,parallel:parallel$1,parallelLimit,priorityQueue,queue:queue$1,race:race$1,reduce:reduce$1,reduceRight,reflect,reflectAll,reject:reject$2,rejectLimit:rejectLimit$1,rejectSeries:rejectSeries$1,retry,retryable,seq,series,setImmediate:setImmediate$1,some:some$1,someLimit:someLimit$1,someSeries:someSeries$1,sortBy:sortBy$1,timeout,times,timesLimit,timesSeries,transform,tryEach:tryEach$1,unmemoize,until,waterfall:waterfall$1,whilst:whilst$1,// aliases
-all:every$1,allLimit:everyLimit$1,allSeries:everySeries$1,any:some$1,anyLimit:someLimit$1,anySeries:someSeries$1,find:detect$1,findLimit:detectLimit$1,findSeries:detectSeries$1,flatMap:concat$1,flatMapLimit:concatLimit$1,flatMapSeries:concatSeries$1,forEach:each,forEachSeries:eachSeries$1,forEachLimit:eachLimit$2,forEachOf:eachOf$1,forEachOfSeries:eachOfSeries$1,forEachOfLimit:eachOfLimit$2,inject:reduce$1,foldl:reduce$1,foldr:reduceRight,select:filter$1,selectLimit:filterLimit$1,selectSeries:filterSeries$1,wrapSync:asyncify,during:whilst$1,doDuring:doWhilst$1};exports.default=index;exports.apply=apply;exports.applyEach=applyEach$1;exports.applyEachSeries=applyEachSeries;exports.asyncify=asyncify;exports.auto=auto;exports.autoInject=autoInject;exports.cargo=cargo;exports.cargoQueue=cargo$1;exports.compose=compose;exports.concat=concat$1;exports.concatLimit=concatLimit$1;exports.concatSeries=concatSeries$1;exports.constant=constant;exports.detect=detect$1;exports.detectLimit=detectLimit$1;exports.detectSeries=detectSeries$1;exports.dir=dir;exports.doUntil=doUntil;exports.doWhilst=doWhilst$1;exports.each=each;exports.eachLimit=eachLimit$2;exports.eachOf=eachOf$1;exports.eachOfLimit=eachOfLimit$2;exports.eachOfSeries=eachOfSeries$1;exports.eachSeries=eachSeries$1;exports.ensureAsync=ensureAsync;exports.every=every$1;exports.everyLimit=everyLimit$1;exports.everySeries=everySeries$1;exports.filter=filter$1;exports.filterLimit=filterLimit$1;exports.filterSeries=filterSeries$1;exports.forever=forever$1;exports.groupBy=groupBy;exports.groupByLimit=groupByLimit$1;exports.groupBySeries=groupBySeries;exports.log=log;exports.map=map$1;exports.mapLimit=mapLimit$1;exports.mapSeries=mapSeries$1;exports.mapValues=mapValues;exports.mapValuesLimit=mapValuesLimit$1;exports.mapValuesSeries=mapValuesSeries;exports.memoize=memoize;exports.nextTick=nextTick;exports.parallel=parallel$1;exports.parallelLimit=parallelLimit;exports.priorityQueue=priorityQueue;exports.queue=queue$1;exports.race=race$1;exports.reduce=reduce$1;exports.reduceRight=reduceRight;exports.reflect=reflect;exports.reflectAll=reflectAll;exports.reject=reject$2;exports.rejectLimit=rejectLimit$1;exports.rejectSeries=rejectSeries$1;exports.retry=retry;exports.retryable=retryable;exports.seq=seq;exports.series=series;exports.setImmediate=setImmediate$1;exports.some=some$1;exports.someLimit=someLimit$1;exports.someSeries=someSeries$1;exports.sortBy=sortBy$1;exports.timeout=timeout;exports.times=times;exports.timesLimit=timesLimit;exports.timesSeries=timesSeries;exports.transform=transform;exports.tryEach=tryEach$1;exports.unmemoize=unmemoize;exports.until=until;exports.waterfall=waterfall$1;exports.whilst=whilst$1;exports.all=every$1;exports.allLimit=everyLimit$1;exports.allSeries=everySeries$1;exports.any=some$1;exports.anyLimit=someLimit$1;exports.anySeries=someSeries$1;exports.find=detect$1;exports.findLimit=detectLimit$1;exports.findSeries=detectSeries$1;exports.flatMap=concat$1;exports.flatMapLimit=concatLimit$1;exports.flatMapSeries=concatSeries$1;exports.forEach=each;exports.forEachSeries=eachSeries$1;exports.forEachLimit=eachLimit$2;exports.forEachOf=eachOf$1;exports.forEachOfSeries=eachOfSeries$1;exports.forEachOfLimit=eachOfLimit$2;exports.inject=reduce$1;exports.foldl=reduce$1;exports.foldr=reduceRight;exports.select=filter$1;exports.selectLimit=filterLimit$1;exports.selectSeries=filterSeries$1;exports.wrapSync=asyncify;exports.during=whilst$1;exports.doDuring=doWhilst$1;Object.defineProperty(exports,'__esModule',{value:true});});}).call(this);}).call(this,require('_process'),require("timers").setImmediate);},{"_process":58,"timers":86}],17:[function(require,module,exports){'use strict';exports.byteLength=byteLength;exports.toByteArray=toByteArray;exports.fromByteArray=fromByteArray;var lookup=[];var revLookup=[];var Arr=typeof Uint8Array!=='undefined'?Uint8Array:Array;var code='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';for(var i=0,len=code.length;i<len;++i){lookup[i]=code[i];revLookup[code.charCodeAt(i)]=i;}// Support decoding URL-safe base64 strings, as Node.js does.
+return(_setImmediate||fallback)(fn);};}).call(this);}).call(this,require("timers").setImmediate);},{"timers":85}],14:[function(require,module,exports){'use strict';module.exports=function withoutIndex(iterator){return function(value,index,callback){return iterator(value,callback);};};},{}],15:[function(require,module,exports){'use strict';var once=require('async.util.once');var noop=require('async.util.noop');var isArray=require('async.util.isarray');var restParam=require('async.util.restparam');var ensureAsync=require('async.util.ensureasync');var iterator=require('async.iterator');module.exports=function(tasks,cb){cb=once(cb||noop);if(!isArray(tasks))return cb(new Error('First argument to waterfall must be an array of functions'));if(!tasks.length)return cb();function wrapIterator(iterator){return restParam(function(err,args){if(err){cb.apply(null,[err].concat(args));}else{var next=iterator.next();if(next){args.push(wrapIterator(next));}else{args.push(cb);}ensureAsync(iterator).apply(null,args);}});}wrapIterator(iterator(tasks))();};},{"async.iterator":2,"async.util.ensureasync":4,"async.util.isarray":5,"async.util.noop":9,"async.util.once":10,"async.util.restparam":12}],16:[function(require,module,exports){'use strict';exports.byteLength=byteLength;exports.toByteArray=toByteArray;exports.fromByteArray=fromByteArray;var lookup=[];var revLookup=[];var Arr=typeof Uint8Array!=='undefined'?Uint8Array:Array;var code='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';for(var i=0,len=code.length;i<len;++i){lookup[i]=code[i];revLookup[code.charCodeAt(i)]=i;}// Support decoding URL-safe base64 strings, as Node.js does.
 // See: https://en.wikipedia.org/wiki/Base64#URL_applications
 revLookup['-'.charCodeAt(0)]=62;revLookup['_'.charCodeAt(0)]=63;function getLens(b64){var len=b64.length;if(len%4>0){throw new Error('Invalid string. Length must be a multiple of 4');}// Trim off extra bytes after placeholder bytes are found
 // See: https://github.com/beatgammit/base64-js/issues/42
@@ -3820,7 +10,7 @@ var len=placeHoldersLen>0?validLen-4:validLen;var i;for(i=0;i<len;i+=4){tmp=revL
 var parts=[];var maxChunkLength=16383;// must be multiple of 3
 // go through the array every three bytes, we'll deal with trailing stuff later
 for(var i=0,len2=len-extraBytes;i<len2;i+=maxChunkLength){parts.push(encodeChunk(uint8,i,i+maxChunkLength>len2?len2:i+maxChunkLength));}// pad the end with zeros, but make sure to not forget the extra bytes
-if(extraBytes===1){tmp=uint8[len-1];parts.push(lookup[tmp>>2]+lookup[tmp<<4&0x3F]+'==');}else if(extraBytes===2){tmp=(uint8[len-2]<<8)+uint8[len-1];parts.push(lookup[tmp>>10]+lookup[tmp>>4&0x3F]+lookup[tmp<<2&0x3F]+'=');}return parts.join('');}},{}],18:[function(require,module,exports){},{}],19:[function(require,module,exports){arguments[4][18][0].apply(exports,arguments);},{"dup":18}],20:[function(require,module,exports){(function(Buffer){(function(){/*!
+if(extraBytes===1){tmp=uint8[len-1];parts.push(lookup[tmp>>2]+lookup[tmp<<4&0x3F]+'==');}else if(extraBytes===2){tmp=(uint8[len-2]<<8)+uint8[len-1];parts.push(lookup[tmp>>10]+lookup[tmp>>4&0x3F]+lookup[tmp<<2&0x3F]+'=');}return parts.join('');}},{}],17:[function(require,module,exports){},{}],18:[function(require,module,exports){arguments[4][17][0].apply(exports,arguments);},{"dup":17}],19:[function(require,module,exports){(function(Buffer){(function(){/*!
  * The buffer module from node.js, for the browser.
  *
  * @author   Feross Aboukhadijeh <https://feross.org>
@@ -3963,7 +153,7 @@ byteArray.push(str.charCodeAt(i)&0xFF);}return byteArray;}function utf16leToByte
 // See: https://github.com/feross/buffer/issues/166
 function isInstance(obj,type){return obj instanceof type||obj!=null&&obj.constructor!=null&&obj.constructor.name!=null&&obj.constructor.name===type.name;}function numberIsNaN(obj){// For IE11 support
 return obj!==obj;// eslint-disable-line no-self-compare
-}}).call(this);}).call(this,require("buffer").Buffer);},{"base64-js":17,"buffer":20,"ieee754":40}],21:[function(require,module,exports){module.exports={"100":"Continue","101":"Switching Protocols","102":"Processing","200":"OK","201":"Created","202":"Accepted","203":"Non-Authoritative Information","204":"No Content","205":"Reset Content","206":"Partial Content","207":"Multi-Status","208":"Already Reported","226":"IM Used","300":"Multiple Choices","301":"Moved Permanently","302":"Found","303":"See Other","304":"Not Modified","305":"Use Proxy","307":"Temporary Redirect","308":"Permanent Redirect","400":"Bad Request","401":"Unauthorized","402":"Payment Required","403":"Forbidden","404":"Not Found","405":"Method Not Allowed","406":"Not Acceptable","407":"Proxy Authentication Required","408":"Request Timeout","409":"Conflict","410":"Gone","411":"Length Required","412":"Precondition Failed","413":"Payload Too Large","414":"URI Too Long","415":"Unsupported Media Type","416":"Range Not Satisfiable","417":"Expectation Failed","418":"I'm a teapot","421":"Misdirected Request","422":"Unprocessable Entity","423":"Locked","424":"Failed Dependency","425":"Unordered Collection","426":"Upgrade Required","428":"Precondition Required","429":"Too Many Requests","431":"Request Header Fields Too Large","451":"Unavailable For Legal Reasons","500":"Internal Server Error","501":"Not Implemented","502":"Bad Gateway","503":"Service Unavailable","504":"Gateway Timeout","505":"HTTP Version Not Supported","506":"Variant Also Negotiates","507":"Insufficient Storage","508":"Loop Detected","509":"Bandwidth Limit Exceeded","510":"Not Extended","511":"Network Authentication Required"};},{}],22:[function(require,module,exports){/**
+}}).call(this);}).call(this,require("buffer").Buffer);},{"base64-js":16,"buffer":19,"ieee754":39}],20:[function(require,module,exports){module.exports={"100":"Continue","101":"Switching Protocols","102":"Processing","200":"OK","201":"Created","202":"Accepted","203":"Non-Authoritative Information","204":"No Content","205":"Reset Content","206":"Partial Content","207":"Multi-Status","208":"Already Reported","226":"IM Used","300":"Multiple Choices","301":"Moved Permanently","302":"Found","303":"See Other","304":"Not Modified","305":"Use Proxy","307":"Temporary Redirect","308":"Permanent Redirect","400":"Bad Request","401":"Unauthorized","402":"Payment Required","403":"Forbidden","404":"Not Found","405":"Method Not Allowed","406":"Not Acceptable","407":"Proxy Authentication Required","408":"Request Timeout","409":"Conflict","410":"Gone","411":"Length Required","412":"Precondition Failed","413":"Payload Too Large","414":"URI Too Long","415":"Unsupported Media Type","416":"Range Not Satisfiable","417":"Expectation Failed","418":"I'm a teapot","421":"Misdirected Request","422":"Unprocessable Entity","423":"Locked","424":"Failed Dependency","425":"Unordered Collection","426":"Upgrade Required","428":"Precondition Required","429":"Too Many Requests","431":"Request Header Fields Too Large","451":"Unavailable For Legal Reasons","500":"Internal Server Error","501":"Not Implemented","502":"Bad Gateway","503":"Service Unavailable","504":"Gateway Timeout","505":"HTTP Version Not Supported","506":"Variant Also Negotiates","507":"Insufficient Storage","508":"Loop Detected","509":"Bandwidth Limit Exceeded","510":"Not Extended","511":"Network Authentication Required"};},{}],21:[function(require,module,exports){/**
 * Cache data structure with:
 *  - enumerable items
 *  - unique hash item access (if none is passed in, one is generated)
@@ -3979,37 +169,37 @@ return obj!==obj;// eslint-disable-line no-self-compare
 *
 * @author Steven Velozo <steven@velozo.com>
 */const libFableServiceProviderBase=require('fable-serviceproviderbase');const libLinkedList=require("./LinkedList.js");class CashMoney extends libFableServiceProviderBase{constructor(pFable,pManifest,pServiceHash){if(pFable===undefined){super({});}else{super(pFable,pManifest,pServiceHash);}this.serviceType='ObjectCache';// The map of node objects by hash because Reasons.
-this._HashMap={};this._List=new libLinkedList();// If the list gets over maxLength, we will automatically remove nodes on insertion.
+this._HashMap={};this._RecordMap={};this._List=new libLinkedList();// If the list gets over maxLength, we will automatically remove nodes on insertion.
 this.maxLength=0;// If cache entries get over this age, they are removed with prune
-this.maxAge=0;}// Add (or update) a node in the cache
+this.maxAge=0;}get RecordMap(){return this._RecordMap;}// Add (or update) a node in the cache
 put(pData,pHash){// If the hash of the record exists
 if(this._HashMap.hasOwnProperty(pHash)){// Just update the hashed records datum
-this._HashMap[pHash].Datum=pData;return this._HashMap[pHash].Datum;}let tmpNode=this._List.push(pData,pHash);this._HashMap[tmpNode.Hash]=tmpNode;// Automatically prune if over length, but only prune this nodes worth.
+this._HashMap[pHash].Datum=pData;this._RecordMap[pHash]=pData;return this._HashMap[pHash].Datum;}let tmpNode=this._List.push(pData,pHash);this._HashMap[tmpNode.Hash]=tmpNode;this._RecordMap[pHash]=pData;// Automatically prune if over length, but only prune this nodes worth.
 if(this.maxLength>0&&this._List.length>this.maxLength){// Pop it off the head of the list
 tmpNode=this._List.pop();// Also remove it from the hashmap
-delete this._HashMap[tmpNode.Hash];}// Now some expiration properties on the node metadata... namely the birthdate in ms of the node
-tmpNode.Metadata.Created=+new Date();return tmpNode.Datum;}// Reinvigorate a node based on hash, updating the timestamp and moving it to the head of the list (also removes custom metadata)
-touch(pHash){if(!this._HashMap.hasOwnProperty(pHash))return false;// Get the old node out of the list
+delete this._RecordMap[tmpNode.Hash];delete this._HashMap[tmpNode.Hash];}// Now some expiration properties on the node metadata... namely the birthdate in ms of the node
+tmpNode.Metadata.Created=+new Date();return tmpNode.Datum;}// Read a datum by hash from the cache
+read(pHash){if(!this._HashMap.hasOwnProperty(pHash)){return false;}return this._HashMap[pHash].Datum;}// Reinvigorate a node based on hash, updating the timestamp and moving it to the head of the list (also removes custom metadata)
+touch(pHash){if(!this._HashMap.hasOwnProperty(pHash)){return false;}// Get the old node out of the list
 let tmpNode=this._List.remove(this._HashMap[pHash]);// Remove it from the hash map
-delete this._HashMap[pHash];// Now put it back, fresh.
+delete this._RecordMap[pHash];delete this._HashMap[pHash];// Now put it back, fresh.
 return this.put(tmpNode.Datum,tmpNode.Hash);}// Expire a cached record based on hash
-expire(pHash){if(!this._HashMap.hasOwnProperty(pHash))return false;let tmpNode=this._HashMap[pHash];// Remove it from the list of cached records
+expire(pHash){if(!this._HashMap.hasOwnProperty(pHash)){return false;}let tmpNode=this._HashMap[pHash];// Remove it from the list of cached records
 tmpNode=this._List.remove(tmpNode);// Also remove it from the hashmap
-delete this._HashMap[tmpNode.Hash];// Return it in case the consumer wants to do anything with it
+delete this._RecordMap[tmpNode.Hash];delete this._HashMap[tmpNode.Hash];// Return it in case the consumer wants to do anything with it
 return tmpNode;}// Prune records from the cached set based on maxAge
-pruneBasedOnExpiration(fComplete,pRemovedRecords){let tmpRemovedRecords=typeof pRemovedRecords==='undefined'?[]:pRemovedRecords;if(this.maxAge<1)return fComplete(tmpRemovedRecords);// Now enumerate each record and remove any that are expired
+pruneBasedOnExpiration(fComplete,pRemovedRecords){let tmpRemovedRecords=typeof pRemovedRecords==='undefined'?[]:pRemovedRecords;if(this.maxAge<1){return fComplete(tmpRemovedRecords);}// Now enumerate each record and remove any that are expired
 let tmpNow=+new Date();let tmpKeys=Object.keys(this._HashMap);for(let i=0;i<tmpKeys.length;i++){// Expire the node if it is older than max age milliseconds
-if(tmpNow-this._HashMap[tmpKeys[i]].Metadata.Created>=this.maxAge)tmpRemovedRecords.push(this.expire(tmpKeys[i]));}fComplete(tmpRemovedRecords);}// Prune records from the cached set based on maxLength
+if(tmpNow-this._HashMap[tmpKeys[i]].Metadata.Created>=this.maxAge){tmpRemovedRecords.push(this.expire(tmpKeys[i]));}}fComplete(tmpRemovedRecords);}// Prune records from the cached set based on maxLength
 pruneBasedOnLength(fComplete,pRemovedRecords){let tmpRemovedRecords=typeof pRemovedRecords==='undefined'?[]:pRemovedRecords;// Pop records off until we have reached maxLength unless it's 0
-if(this.maxLength>0)while(this._List.length>this.maxLength)tmpRemovedRecords.push(this._List.pop());return fComplete(tmpRemovedRecords);}// Prune records from the cached set based on passed in pPruneFunction(pDatum, pHash, pNode) -- returning true expires it
+if(this.maxLength>0){while(this._List.length>this.maxLength){tmpRemovedRecords.push(this._List.pop());}}return fComplete(tmpRemovedRecords);}// Prune records from the cached set based on passed in pPruneFunction(pDatum, pHash, pNode) -- returning true expires it
 pruneCustom(fComplete,fPruneFunction,pRemovedRecords){let tmpRemovedRecords=typeof pRemovedRecords==='undefined'?[]:pRemovedRecords;let tmpKeys=Object.keys(this._HashMap);for(let i=0;i<tmpKeys.length;i++){let tmpNode=this._HashMap[tmpKeys[i]];// Expire the node if the passed in function returns true
-if(fPruneFunction(tmpNode.Datum,tmpNode.Hash,tmpNode))tmpRemovedRecords.push(this.expire(tmpKeys[i]));}fComplete(tmpRemovedRecords);}// Prune the list down to the asserted rules (max age then max length if still too long)
+if(fPruneFunction(tmpNode.Datum,tmpNode.Hash,tmpNode)){tmpRemovedRecords.push(this.expire(tmpKeys[i]));}}fComplete(tmpRemovedRecords);}// Prune the list down to the asserted rules (max age then max length if still too long)
 prune(fComplete){let tmpRemovedRecords=[];// If there are no cached records, we are done.
-if(this._List.length<1)return fComplete(tmpRemovedRecords);// Now prune based on expiration time
+if(this._List.length<1){return fComplete(tmpRemovedRecords);}// Now prune based on expiration time
 this.pruneBasedOnExpiration(fExpirationPruneComplete=>{// Now prune based on length, then return the removed records in the callback.
-this.pruneBasedOnLength(fComplete,tmpRemovedRecords);},tmpRemovedRecords);}// Read a datum by hash from the cache
-read(pHash){if(!this._HashMap.hasOwnProperty(pHash))return false;return this._HashMap[pHash].Datum;}// Get a low level node (including metadata statistics) by hash from the cache
-getNode(pHash){if(!this._HashMap.hasOwnProperty(pHash))return false;return this._HashMap[pHash];}}module.exports=CashMoney;},{"./LinkedList.js":24,"fable-serviceproviderbase":33}],23:[function(require,module,exports){/**
+this.pruneBasedOnLength(fComplete,tmpRemovedRecords);},tmpRemovedRecords);}// Get a low level node (including metadata statistics) by hash from the cache
+getNode(pHash){if(!this._HashMap.hasOwnProperty(pHash))return false;return this._HashMap[pHash];}}module.exports=CashMoney;},{"./LinkedList.js":23,"fable-serviceproviderbase":32}],22:[function(require,module,exports){/**
 * Double Linked List Node
 *
 * @author Steven Velozo <steven@velozo.com>
@@ -4021,7 +211,7 @@ getNode(pHash){if(!this._HashMap.hasOwnProperty(pHash))return false;return this.
 * @constructor
 */class LinkedListNode{constructor(){this.Hash=false;this.Datum=false;// This is where expiration and other elements are stored;
 this.Metadata={};this.LeftNode=false;this.RightNode=false;// To allow safe specialty operations on nodes
-this.__ISNODE=true;}}module.exports=LinkedListNode;},{}],24:[function(require,module,exports){"use strict";/**
+this.__ISNODE=true;}}module.exports=LinkedListNode;},{}],23:[function(require,module,exports){"use strict";/**
 * Simple double linked list to hold the cache entries in, in order.
 *
 * @author Steven Velozo <steven@velozo.com>
@@ -4060,7 +250,7 @@ else tmpNode=tmpNode.RightNode;// Call the actual action
 // I hate this pattern because long tails eventually cause stack overflows.
 fAction(tmpNode.Datum,tmpNode.Hash,fIterator);};// Now kick off the iterator
 return fIterator();}// Seek a specific node, 0 is the index of the first node.
-seek(pNodeIndex){if(!pNodeIndex)return false;if(this.length<1)return false;if(pNodeIndex>=this.length)return false;let tmpNode=this.head;for(let i=0;i<pNodeIndex;i++){tmpNode=tmpNode.RightNode;}return tmpNode;}}module.exports=LinkedList;},{"./LinkedList-Node.js":23}],25:[function(require,module,exports){// Copyright Joyent, Inc. and other Node contributors.
+seek(pNodeIndex){if(!pNodeIndex)return false;if(this.length<1)return false;if(pNodeIndex>=this.length)return false;let tmpNode=this.head;for(let i=0;i<pNodeIndex;i++){tmpNode=tmpNode.RightNode;}return tmpNode;}}module.exports=LinkedList;},{"./LinkedList-Node.js":22}],24:[function(require,module,exports){// Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the
@@ -4109,7 +299,7 @@ for(i=listeners.length-1;i>=0;i--){this.removeListener(type,listeners[i]);}}retu
 // EventEmitters, we do not listen for `error` events here.
 emitter.addEventListener(name,function wrapListener(arg){// IE does not have builtin `{ once: true }` support so we
 // have to do it manually.
-if(flags.once){emitter.removeEventListener(name,wrapListener);}listener(arg);});}else{throw new TypeError('The "emitter" argument must be of type EventEmitter. Received type '+typeof emitter);}}},{}],26:[function(require,module,exports){/**
+if(flags.once){emitter.removeEventListener(name,wrapListener);}listener(arg);});}else{throw new TypeError('The "emitter" argument must be of type EventEmitter. Received type '+typeof emitter);}}},{}],25:[function(require,module,exports){/**
 * Base Logger Class
 *
 *
@@ -4125,18 +315,18 @@ generateInsecureUUID(){let tmpDate=new Date().getTime();let tmpUUID='LOGSTREAM-x
 // ..but good enough for unique log stream identifiers
 let tmpRandomData=(tmpDate+Math.random()*16)%16|0;tmpDate=Math.floor(tmpDate/16);return(pCharacter=='x'?tmpRandomData:tmpRandomData&0x3|0x8).toString(16);});return tmpUUID;}initialize(){// No operation.
 }trace(pLogText,pLogObject){this.write("trace",pLogText,pLogObject);}debug(pLogText,pLogObject){this.write("debug",pLogText,pLogObject);}info(pLogText,pLogObject){this.write("info",pLogText,pLogObject);}warn(pLogText,pLogObject){this.write("warn",pLogText,pLogObject);}error(pLogText,pLogObject){this.write("error",pLogText,pLogObject);}fatal(pLogText,pLogObject){this.write("fatal",pLogText,pLogObject);}write(pLogLevel,pLogText,pLogObject){// The base logger does nothing.
-return true;}}module.exports=BaseLogger;},{}],27:[function(require,module,exports){/**
+return true;}}module.exports=BaseLogger;},{}],26:[function(require,module,exports){/**
 * Default Logger Provider Function
 *
 *
 * @author Steven Velozo <steven@velozo.com>
 */ // Return the providers that are available without extensions loaded
-var getDefaultProviders=()=>{let tmpDefaultProviders={};tmpDefaultProviders.console=require('./Fable-Log-Logger-Console.js');tmpDefaultProviders.default=tmpDefaultProviders.console;return tmpDefaultProviders;};module.exports=getDefaultProviders();},{"./Fable-Log-Logger-Console.js":29}],28:[function(require,module,exports){module.exports=[{"loggertype":"console","streamtype":"console","level":"trace"}];},{}],29:[function(require,module,exports){let libBaseLogger=require('./Fable-Log-BaseLogger.js');class ConsoleLogger extends libBaseLogger{constructor(pLogStreamSettings,pFableLog){super(pLogStreamSettings);this._ShowTimeStamps=this._Settings.hasOwnProperty('showtimestamps')?this._Settings.showtimestamps==true:true;this._FormattedTimeStamps=this._Settings.hasOwnProperty('formattedtimestamps')?this._Settings.formattedtimestamps==true:true;this._ContextMessage=this._Settings.hasOwnProperty('Context')?"(".concat(this._Settings.Context,")"):pFableLog._Settings.hasOwnProperty('Product')?"(".concat(pFableLog._Settings.Product,")"):'Unnamed_Log_Context';// Allow the user to decide what gets output to the console
+var getDefaultProviders=()=>{let tmpDefaultProviders={};tmpDefaultProviders.console=require('./Fable-Log-Logger-Console.js');tmpDefaultProviders.default=tmpDefaultProviders.console;return tmpDefaultProviders;};module.exports=getDefaultProviders();},{"./Fable-Log-Logger-Console.js":28}],27:[function(require,module,exports){module.exports=[{"loggertype":"console","streamtype":"console","level":"trace"}];},{}],28:[function(require,module,exports){let libBaseLogger=require('./Fable-Log-BaseLogger.js');class ConsoleLogger extends libBaseLogger{constructor(pLogStreamSettings,pFableLog){super(pLogStreamSettings);this._ShowTimeStamps=this._Settings.hasOwnProperty('showtimestamps')?this._Settings.showtimestamps==true:true;this._FormattedTimeStamps=this._Settings.hasOwnProperty('formattedtimestamps')?this._Settings.formattedtimestamps==true:true;this._ContextMessage=this._Settings.hasOwnProperty('Context')?"(".concat(this._Settings.Context,")"):pFableLog._Settings.hasOwnProperty('Product')?"(".concat(pFableLog._Settings.Product,")"):'Unnamed_Log_Context';// Allow the user to decide what gets output to the console
 this._OutputLogLinesToConsole=this._Settings.hasOwnProperty('outputloglinestoconsole')?this._Settings.outputloglinestoconsole:true;this._OutputObjectsToConsole=this._Settings.hasOwnProperty('outputobjectstoconsole')?this._Settings.outputobjectstoconsole:true;// Precompute the prefix for each level
 this.prefixCache={};for(let i=0;i<=this.levels.length;i++){this.prefixCache[this.levels[i]]="[".concat(this.levels[i],"] ").concat(this._ContextMessage,": ");if(this._ShowTimeStamps){// If there is a timestamp we need a to prepend space before the prefixcache string, since the timestamp comes first
 this.prefixCache[this.levels[i]]=' '+this.prefixCache[this.levels[i]];}}}write(pLevel,pLogText,pObject){let tmpTimeStamp='';if(this._ShowTimeStamps&&this._FormattedTimeStamps){tmpTimeStamp=new Date().toISOString();}else if(this._ShowTimeStamps){tmpTimeStamp=+new Date();}let tmpLogLine="".concat(tmpTimeStamp).concat(this.prefixCache[pLevel]).concat(pLogText);if(this._OutputLogLinesToConsole){console.log(tmpLogLine);}// Write out the object on a separate line if it is passed in
 if(this._OutputObjectsToConsole&&typeof pObject!=='undefined'){console.log(JSON.stringify(pObject,null,2));}// Provide an easy way to be overridden and be consistent
-return tmpLogLine;}}module.exports=ConsoleLogger;},{"./Fable-Log-BaseLogger.js":26}],30:[function(require,module,exports){const libConsoleLog=require('./Fable-Log-Logger-Console.js');const libFS=require('fs');const libPath=require('path');class SimpleFlatFileLogger extends libConsoleLog{constructor(pLogStreamSettings,pFableLog){super(pLogStreamSettings,pFableLog);// If a path isn't provided for the logfile, it tries to use the ProductName or Context
+return tmpLogLine;}}module.exports=ConsoleLogger;},{"./Fable-Log-BaseLogger.js":25}],29:[function(require,module,exports){const libConsoleLog=require('./Fable-Log-Logger-Console.js');const libFS=require('fs');const libPath=require('path');class SimpleFlatFileLogger extends libConsoleLog{constructor(pLogStreamSettings,pFableLog){super(pLogStreamSettings,pFableLog);// If a path isn't provided for the logfile, it tries to use the ProductName or Context
 this.logFileRawPath=this._Settings.hasOwnProperty('path')?this._Settings.path:"./".concat(this._ContextMessage,".log");this.logFilePath=libPath.normalize(this.logFileRawPath);this.logFileStreamOptions=this._Settings.hasOwnProperty('fileStreamoptions')?this._Settings.fileStreamOptions:{"flags":"a","encoding":"utf8"};this.fileWriter=libFS.createWriteStream(this.logFilePath,this.logFileStreamOptions);this.activelyWriting=false;this.logLineStrings=[];this.logObjectStrings=[];this.defaultWriteCompleteCallback=()=>{};this.defaultBufferFlushCallback=()=>{};}closeWriter(fCloseComplete){let tmpCloseComplete=typeof fCloseComplete=='function'?fCloseComplete:()=>{};if(this.fileWriter){this.fileWriter.end('\n');return this.fileWriter.once('finish',tmpCloseComplete.bind(this));}}completeBufferFlushToLogFile(fFlushComplete){this.activelyWriting=false;let tmpFlushComplete=typeof fFlushComplete=='function'?fFlushComplete:this.defaultBufferFlushCallback;if(this.logLineStrings.length>0){this.flushBufferToLogFile(tmpFlushComplete);}else{return tmpFlushComplete();}}flushBufferToLogFile(fFlushComplete){if(!this.activelyWriting){// Only want to be writing one thing at a time....
 this.activelyWriting=true;let tmpFlushComplete=typeof fFlushComplete=='function'?fFlushComplete:this.defaultBufferFlushCallback;// Get the current buffer arrays.  These should always have matching number of elements.
 let tmpLineStrings=this.logLineStrings;let tmpObjectStrings=this.logObjectStrings;// Reset these to be filled while we process this queue...
@@ -4145,7 +335,7 @@ let tmpConstructedBufferOutputString='';for(let i=0;i<tmpLineStrings.length;i++)
 tmpConstructedBufferOutputString+="".concat(tmpLineStrings[i],"\n");if(tmpObjectStrings[i]!==false){tmpConstructedBufferOutputString+="".concat(tmpObjectStrings[i],"\n");}}if(!this.fileWriter.write(tmpConstructedBufferOutputString,'utf8')){// If the streamwriter returns false, we need to wait for it to drain.
 this.fileWriter.once('drain',this.completeBufferFlushToLogFile.bind(this,tmpFlushComplete));}else{return this.completeBufferFlushToLogFile(tmpFlushComplete);}}}write(pLevel,pLogText,pObject){let tmpLogLine=super.write(pLevel,pLogText,pObject);// Use a very simple array as the write buffer
 this.logLineStrings.push(tmpLogLine);// Write out the object on a separate line if it is passed in
-if(typeof pObject!=='undefined'){this.logObjectStrings.push(JSON.stringify(pObject,null,4));}else{this.logObjectStrings.push(false);}this.flushBufferToLogFile();}}module.exports=SimpleFlatFileLogger;},{"./Fable-Log-Logger-Console.js":29,"fs":19,"path":54}],31:[function(require,module,exports){/**
+if(typeof pObject!=='undefined'){this.logObjectStrings.push(JSON.stringify(pObject,null,4));}else{this.logObjectStrings.push(false);}this.flushBufferToLogFile();}}module.exports=SimpleFlatFileLogger;},{"./Fable-Log-Logger-Console.js":28,"fs":18,"path":53}],30:[function(require,module,exports){/**
 * Fable Logging Service
 */const libFableServiceProviderBase=require('fable-serviceproviderbase').CoreServiceProviderBase;class FableLog extends libFableServiceProviderBase{constructor(pSettings,pServiceHash){super(pSettings,pServiceHash);this.serviceType='Logging';let tmpSettings=typeof pSettings==='object'?pSettings:{};this._Settings=tmpSettings;this._Providers=require('./Fable-Log-DefaultProviders-Node.js');this._StreamDefinitions=tmpSettings.hasOwnProperty('LogStreams')?tmpSettings.LogStreams:require('./Fable-Log-DefaultStreams.json');this.logStreams=[];// This object gets decorated for one-time instantiated providers that
 //  have multiple outputs, such as bunyan.
@@ -4158,7 +348,7 @@ for(let i=0;i<this._StreamDefinitions.length;i++){let tmpStreamDefinition=Object
 for(let i=0;i<this.logStreams.length;i++){this.logStreams[i].initialize();}}logTime(pMessage,pDatum){let tmpMessage=typeof pMessage!=='undefined'?pMessage:'Time';let tmpTime=new Date();this.info("".concat(tmpMessage," ").concat(tmpTime," (epoch ").concat(+tmpTime,")"),pDatum);}// Get a timestamp
 getTimeStamp(){return+new Date();}getTimeDelta(pTimeStamp){let tmpEndTime=+new Date();return tmpEndTime-pTimeStamp;}// Log the delta between a timestamp, and now with a message
 logTimeDelta(pTimeDelta,pMessage,pDatum){let tmpMessage=typeof pMessage!=='undefined'?pMessage:'Time Measurement';let tmpDatum=typeof pDatum==='object'?pDatum:{};let tmpEndTime=+new Date();this.info("".concat(tmpMessage," logged at (epoch ").concat(+tmpEndTime,") took (").concat(pTimeDelta,"ms)"),pDatum);}logTimeDeltaHuman(pTimeDelta,pMessage,pDatum){let tmpMessage=typeof pMessage!=='undefined'?pMessage:'Time Measurement';let tmpEndTime=+new Date();let tmpMs=parseInt(pTimeDelta%1000);let tmpSeconds=parseInt(pTimeDelta/1000%60);let tmpMinutes=parseInt(pTimeDelta/(1000*60)%60);let tmpHours=parseInt(pTimeDelta/(1000*60*60));tmpMs=tmpMs<10?"00"+tmpMs:tmpMs<100?"0"+tmpMs:tmpMs;tmpSeconds=tmpSeconds<10?"0"+tmpSeconds:tmpSeconds;tmpMinutes=tmpMinutes<10?"0"+tmpMinutes:tmpMinutes;tmpHours=tmpHours<10?"0"+tmpHours:tmpHours;this.info("".concat(tmpMessage," logged at (epoch ").concat(+tmpEndTime,") took (").concat(pTimeDelta,"ms) or (").concat(tmpHours,":").concat(tmpMinutes,":").concat(tmpSeconds,".").concat(tmpMs,")"),pDatum);}logTimeDeltaRelative(pStartTime,pMessage,pDatum){this.logTimeDelta(this.getTimeDelta(pStartTime),pMessage,pDatum);}logTimeDeltaRelativeHuman(pStartTime,pMessage,pDatum){this.logTimeDeltaHuman(this.getTimeDelta(pStartTime),pMessage,pDatum);}}// This is for backwards compatibility
-function autoConstruct(pSettings){return new FableLog(pSettings);}module.exports=FableLog;module.exports.new=autoConstruct;module.exports.LogProviderBase=require('./Fable-Log-BaseLogger.js');module.exports.LogProviderConsole=require('./Fable-Log-Logger-Console.js');module.exports.LogProviderConsole=require('./Fable-Log-Logger-SimpleFlatFile.js');},{"./Fable-Log-BaseLogger.js":26,"./Fable-Log-DefaultProviders-Node.js":27,"./Fable-Log-DefaultStreams.json":28,"./Fable-Log-Logger-Console.js":29,"./Fable-Log-Logger-SimpleFlatFile.js":30,"fable-serviceproviderbase":33}],32:[function(require,module,exports){/**
+function autoConstruct(pSettings){return new FableLog(pSettings);}module.exports=FableLog;module.exports.new=autoConstruct;module.exports.LogProviderBase=require('./Fable-Log-BaseLogger.js');module.exports.LogProviderConsole=require('./Fable-Log-Logger-Console.js');module.exports.LogProviderConsole=require('./Fable-Log-Logger-SimpleFlatFile.js');},{"./Fable-Log-BaseLogger.js":25,"./Fable-Log-DefaultProviders-Node.js":26,"./Fable-Log-DefaultStreams.json":27,"./Fable-Log-Logger-Console.js":28,"./Fable-Log-Logger-SimpleFlatFile.js":29,"fable-serviceproviderbase":32}],31:[function(require,module,exports){/**
 * Fable Core Pre-initialization Service Base
 *
 * For a couple services, we need to be able to instantiate them before the Fable object is fully initialized.
@@ -4167,10 +357,10 @@ function autoConstruct(pSettings){return new FableLog(pSettings);}module.exports
 * @author <steven@velozo.com>
 */class FableCoreServiceProviderBase{constructor(pOptions,pServiceHash){this.fable=false;this.options=typeof pOptions==='object'?pOptions:{};this.serviceType='Unknown';// The hash will be a non-standard UUID ... the UUID service uses this base class!
 this.UUID="CORESVC-".concat(Math.floor(Math.random()*(99999-10000)+10000));this.Hash=typeof pServiceHash==='string'?pServiceHash:"".concat(this.UUID);}// After fable is initialized, it would be expected to be wired in as a normal service.
-connectFable(pFable){this.fable=pFable;return true;}}_defineProperty2(FableCoreServiceProviderBase,"isFableService",true);module.exports=FableCoreServiceProviderBase;},{}],33:[function(require,module,exports){/**
+connectFable(pFable){this.fable=pFable;return true;}}_defineProperty2(FableCoreServiceProviderBase,"isFableService",true);module.exports=FableCoreServiceProviderBase;},{}],32:[function(require,module,exports){/**
 * Fable Service Base
 * @author <steven@velozo.com>
-*/class FableServiceProviderBase{constructor(pFable,pOptions,pServiceHash){this.fable=pFable;this.options=typeof pOptions==='object'?pOptions:typeof pFable==='object'&&!pFable.isFable?pFable:{};this.serviceType='Unknown';if(typeof pFable.getUUID=='function'){this.UUID=pFable.getUUID();}else{this.UUID="NoFABLESVC-".concat(Math.floor(Math.random()*(99999-10000)+10000));}this.Hash=typeof pServiceHash==='string'?pServiceHash:"".concat(this.UUID);}}_defineProperty2(FableServiceProviderBase,"isFableService",true);module.exports=FableServiceProviderBase;module.exports.CoreServiceProviderBase=require('./Fable-ServiceProviderBase-Preinit.js');},{"./Fable-ServiceProviderBase-Preinit.js":32}],34:[function(require,module,exports){module.exports={"Product":"ApplicationNameHere","ProductVersion":"0.0.0","ConfigFile":false,"LogStreams":[{"level":"trace"}]};},{}],35:[function(require,module,exports){(function(process){(function(){/**
+*/class FableServiceProviderBase{constructor(pFable,pOptions,pServiceHash){this.fable=pFable;this.options=typeof pOptions==='object'?pOptions:typeof pFable==='object'&&!pFable.isFable?pFable:{};this.serviceType='Unknown';if(typeof pFable.getUUID=='function'){this.UUID=pFable.getUUID();}else{this.UUID="NoFABLESVC-".concat(Math.floor(Math.random()*(99999-10000)+10000));}this.Hash=typeof pServiceHash==='string'?pServiceHash:"".concat(this.UUID);}}_defineProperty2(FableServiceProviderBase,"isFableService",true);module.exports=FableServiceProviderBase;module.exports.CoreServiceProviderBase=require('./Fable-ServiceProviderBase-Preinit.js');},{"./Fable-ServiceProviderBase-Preinit.js":31}],33:[function(require,module,exports){module.exports={"Product":"ApplicationNameHere","ProductVersion":"0.0.0","ConfigFile":false,"LogStreams":[{"level":"trace"}]};},{}],34:[function(require,module,exports){(function(process){(function(){/**
 * Fable Settings Template Processor
 *
 * This class allows environment variables to come in via templated expressions, and defaults to be set.
@@ -4181,7 +371,7 @@ connectFable(pFable){this.fable=pFable;return true;}}_defineProperty2(FableCoreS
 */const libPrecedent=require('precedent');class FableSettingsTemplateProcessor{constructor(pDependencies){// Use a no-dependencies templating engine to parse out environment variables
 this.templateProcessor=new libPrecedent();// TODO: Make the environment variable wrap expression demarcation characters configurable?
 this.templateProcessor.addPattern('${','}',pTemplateValue=>{let tmpTemplateValue=pTemplateValue.trim();let tmpSeparatorIndex=tmpTemplateValue.indexOf('|');// If there is no pipe, the default value will end up being whatever the variable name is.
-let tmpDefaultValue=tmpTemplateValue.substring(tmpSeparatorIndex+1);let tmpEnvironmentVariableName=tmpSeparatorIndex>-1?tmpTemplateValue.substring(0,tmpSeparatorIndex):tmpTemplateValue;if(process.env.hasOwnProperty(tmpEnvironmentVariableName)){return process.env[tmpEnvironmentVariableName];}else{return tmpDefaultValue;}});}parseSetting(pString){return this.templateProcessor.parseString(pString);}}module.exports=FableSettingsTemplateProcessor;}).call(this);}).call(this,require('_process'));},{"_process":58,"precedent":55}],36:[function(require,module,exports){/**
+let tmpDefaultValue=tmpTemplateValue.substring(tmpSeparatorIndex+1);let tmpEnvironmentVariableName=tmpSeparatorIndex>-1?tmpTemplateValue.substring(0,tmpSeparatorIndex):tmpTemplateValue;if(process.env.hasOwnProperty(tmpEnvironmentVariableName)){return process.env[tmpEnvironmentVariableName];}else{return tmpDefaultValue;}});}parseSetting(pString){return this.templateProcessor.parseString(pString);}}module.exports=FableSettingsTemplateProcessor;}).call(this);}).call(this,require('_process'));},{"_process":57,"precedent":54}],35:[function(require,module,exports){/**
 * Fable Settings Add-on
 *
 *
@@ -4215,7 +405,7 @@ this._configureEnvTemplating(tmpSettingsTo);return tmpSettingsTo;}// Fill in set
 fill(pSettingsFrom){// If an invalid settings from object is passed in (e.g. object constructor without passing in anything) this should still work
 let tmpSettingsFrom=typeof pSettingsFrom==='object'?pSettingsFrom:{};// do not mutate the From object property values
 let tmpSettingsFromCopy=JSON.parse(JSON.stringify(tmpSettingsFrom));this.settings=this._deepMergeObjects(tmpSettingsFromCopy,this.settings);return this.settings;}};// This is for backwards compatibility
-function autoConstruct(pSettings){return new FableSettings(pSettings);}module.exports=FableSettings;module.exports.new=autoConstruct;},{"./Fable-Settings-Default":34,"./Fable-Settings-TemplateProcessor.js":35,"fable-serviceproviderbase":33}],37:[function(require,module,exports){/**
+function autoConstruct(pSettings){return new FableSettings(pSettings);}module.exports=FableSettings;module.exports.new=autoConstruct;},{"./Fable-Settings-Default":33,"./Fable-Settings-TemplateProcessor.js":34,"fable-serviceproviderbase":32}],36:[function(require,module,exports){/**
 * Random Byte Generator - Browser version
 *
 *
@@ -4233,7 +423,7 @@ this.getRandomValues(tmpBuffer);return tmpBuffer;}// Math.random()-based (RNG)
 generateRandomBytes(){// If all else fails, use Math.random().  It's fast, but is of unspecified
 // quality.
 let tmpBuffer=new Uint8Array(16);// eslint-disable-line no-undef
-for(let i=0,tmpValue;i<16;i++){if((i&0x03)===0){tmpValue=Math.random()*0x100000000;}tmpBuffer[i]=tmpValue>>>((i&0x03)<<3)&0xff;}return tmpBuffer;}generate(){if(this.getRandomValues){return this.generateWhatWGBytes();}else{return this.generateRandomBytes();}}}module.exports=RandomBytes;},{}],38:[function(require,module,exports){/**
+for(let i=0,tmpValue;i<16;i++){if((i&0x03)===0){tmpValue=Math.random()*0x100000000;}tmpBuffer[i]=tmpValue>>>((i&0x03)<<3)&0xff;}return tmpBuffer;}generate(){if(this.getRandomValues){return this.generateWhatWGBytes();}else{return this.generateRandomBytes();}}}module.exports=RandomBytes;},{}],37:[function(require,module,exports){/**
 * Fable UUID Generator
 */const libFableServiceProviderBase=require('fable-serviceproviderbase').CoreServiceProviderBase;0;const libRandomByteGenerator=require('./Fable-UUID-Random.js');class FableUUID extends libFableServiceProviderBase{constructor(pSettings,pServiceHash){super(pSettings,pServiceHash);this.serviceType='UUID';// Determine if the module is in "Random UUID Mode" which means just use the random character function rather than the v4 random UUID spec.
 // Note this allows UUIDs of various lengths (including very short ones) although guaranteed uniqueness goes downhill fast.
@@ -4248,9 +438,9 @@ generateUUIDv4(){let tmpBuffer=new Array(16);var tmpRandomBytes=this.randomByteG
 tmpRandomBytes[6]=tmpRandomBytes[6]&0x0f|0x40;tmpRandomBytes[8]=tmpRandomBytes[8]&0x3f|0x80;return this.bytesToUUID(tmpRandomBytes);}// Simple random UUID generation
 generateRandom(){let tmpUUID='';for(let i=0;i<this._UUIDLength;i++){tmpUUID+=this._UUIDRandomDictionary.charAt(Math.floor(Math.random()*(this._UUIDRandomDictionary.length-1)));}return tmpUUID;}// Adapted from node-uuid (https://github.com/kelektiv/node-uuid)
 getUUID(){if(this._UUIDModeRandom){return this.generateRandom();}else{return this.generateUUIDv4();}}}// This is for backwards compatibility
-function autoConstruct(pSettings){return new FableUUID(pSettings);}module.exports=FableUUID;module.exports.new=autoConstruct;},{"./Fable-UUID-Random.js":37,"fable-serviceproviderbase":33}],39:[function(require,module,exports){var http=require('http');var url=require('url');var https=module.exports;for(var key in http){if(http.hasOwnProperty(key))https[key]=http[key];}https.request=function(params,cb){params=validateParams(params);return http.request.call(this,params,cb);};https.get=function(params,cb){params=validateParams(params);return http.get.call(this,params,cb);};function validateParams(params){if(typeof params==='string'){params=url.parse(params);}if(!params.protocol){params.protocol='https:';}if(params.protocol!=='https:'){throw new Error('Protocol "'+params.protocol+'" not supported. Expected "https:"');}return params;}},{"http":66,"url":87}],40:[function(require,module,exports){/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */exports.read=function(buffer,offset,isLE,mLen,nBytes){var e,m;var eLen=nBytes*8-mLen-1;var eMax=(1<<eLen)-1;var eBias=eMax>>1;var nBits=-7;var i=isLE?nBytes-1:0;var d=isLE?-1:1;var s=buffer[offset+i];i+=d;e=s&(1<<-nBits)-1;s>>=-nBits;nBits+=eLen;for(;nBits>0;e=e*256+buffer[offset+i],i+=d,nBits-=8){}m=e&(1<<-nBits)-1;e>>=-nBits;nBits+=mLen;for(;nBits>0;m=m*256+buffer[offset+i],i+=d,nBits-=8){}if(e===0){e=1-eBias;}else if(e===eMax){return m?NaN:(s?-1:1)*Infinity;}else{m=m+Math.pow(2,mLen);e=e-eBias;}return(s?-1:1)*m*Math.pow(2,e-mLen);};exports.write=function(buffer,value,offset,isLE,mLen,nBytes){var e,m,c;var eLen=nBytes*8-mLen-1;var eMax=(1<<eLen)-1;var eBias=eMax>>1;var rt=mLen===23?Math.pow(2,-24)-Math.pow(2,-77):0;var i=isLE?0:nBytes-1;var d=isLE?1:-1;var s=value<0||value===0&&1/value<0?1:0;value=Math.abs(value);if(isNaN(value)||value===Infinity){m=isNaN(value)?1:0;e=eMax;}else{e=Math.floor(Math.log(value)/Math.LN2);if(value*(c=Math.pow(2,-e))<1){e--;c*=2;}if(e+eBias>=1){value+=rt/c;}else{value+=rt*Math.pow(2,1-eBias);}if(value*c>=2){e++;c/=2;}if(e+eBias>=eMax){m=0;e=eMax;}else if(e+eBias>=1){m=(value*c-1)*Math.pow(2,mLen);e=e+eBias;}else{m=value*Math.pow(2,eBias-1)*Math.pow(2,mLen);e=0;}}for(;mLen>=8;buffer[offset+i]=m&0xff,i+=d,m/=256,mLen-=8){}e=e<<mLen|m;eLen+=mLen;for(;eLen>0;buffer[offset+i]=e&0xff,i+=d,e/=256,eLen-=8){}buffer[offset+i-d]|=s*128;};},{}],41:[function(require,module,exports){if(typeof Object.create==='function'){// implementation from standard node.js 'util' module
+function autoConstruct(pSettings){return new FableUUID(pSettings);}module.exports=FableUUID;module.exports.new=autoConstruct;},{"./Fable-UUID-Random.js":36,"fable-serviceproviderbase":32}],38:[function(require,module,exports){var http=require('http');var url=require('url');var https=module.exports;for(var key in http){if(http.hasOwnProperty(key))https[key]=http[key];}https.request=function(params,cb){params=validateParams(params);return http.request.call(this,params,cb);};https.get=function(params,cb){params=validateParams(params);return http.get.call(this,params,cb);};function validateParams(params){if(typeof params==='string'){params=url.parse(params);}if(!params.protocol){params.protocol='https:';}if(params.protocol!=='https:'){throw new Error('Protocol "'+params.protocol+'" not supported. Expected "https:"');}return params;}},{"http":65,"url":86}],39:[function(require,module,exports){/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */exports.read=function(buffer,offset,isLE,mLen,nBytes){var e,m;var eLen=nBytes*8-mLen-1;var eMax=(1<<eLen)-1;var eBias=eMax>>1;var nBits=-7;var i=isLE?nBytes-1:0;var d=isLE?-1:1;var s=buffer[offset+i];i+=d;e=s&(1<<-nBits)-1;s>>=-nBits;nBits+=eLen;for(;nBits>0;e=e*256+buffer[offset+i],i+=d,nBits-=8){}m=e&(1<<-nBits)-1;e>>=-nBits;nBits+=mLen;for(;nBits>0;m=m*256+buffer[offset+i],i+=d,nBits-=8){}if(e===0){e=1-eBias;}else if(e===eMax){return m?NaN:(s?-1:1)*Infinity;}else{m=m+Math.pow(2,mLen);e=e-eBias;}return(s?-1:1)*m*Math.pow(2,e-mLen);};exports.write=function(buffer,value,offset,isLE,mLen,nBytes){var e,m,c;var eLen=nBytes*8-mLen-1;var eMax=(1<<eLen)-1;var eBias=eMax>>1;var rt=mLen===23?Math.pow(2,-24)-Math.pow(2,-77):0;var i=isLE?0:nBytes-1;var d=isLE?1:-1;var s=value<0||value===0&&1/value<0?1:0;value=Math.abs(value);if(isNaN(value)||value===Infinity){m=isNaN(value)?1:0;e=eMax;}else{e=Math.floor(Math.log(value)/Math.LN2);if(value*(c=Math.pow(2,-e))<1){e--;c*=2;}if(e+eBias>=1){value+=rt/c;}else{value+=rt*Math.pow(2,1-eBias);}if(value*c>=2){e++;c/=2;}if(e+eBias>=eMax){m=0;e=eMax;}else if(e+eBias>=1){m=(value*c-1)*Math.pow(2,mLen);e=e+eBias;}else{m=value*Math.pow(2,eBias-1)*Math.pow(2,mLen);e=0;}}for(;mLen>=8;buffer[offset+i]=m&0xff,i+=d,m/=256,mLen-=8){}e=e<<mLen|m;eLen+=mLen;for(;eLen>0;buffer[offset+i]=e&0xff,i+=d,e/=256,eLen-=8){}buffer[offset+i-d]|=s*128;};},{}],40:[function(require,module,exports){if(typeof Object.create==='function'){// implementation from standard node.js 'util' module
 module.exports=function inherits(ctor,superCtor){if(superCtor){ctor.super_=superCtor;ctor.prototype=Object.create(superCtor.prototype,{constructor:{value:ctor,enumerable:false,writable:true,configurable:true}});}};}else{// old school shim for old browsers
-module.exports=function inherits(ctor,superCtor){if(superCtor){ctor.super_=superCtor;var TempCtor=function TempCtor(){};TempCtor.prototype=superCtor.prototype;ctor.prototype=new TempCtor();ctor.prototype.constructor=ctor;}};}},{}],42:[function(require,module,exports){// When a boxed property is passed in, it should have quotes of some
+module.exports=function inherits(ctor,superCtor){if(superCtor){ctor.super_=superCtor;var TempCtor=function TempCtor(){};TempCtor.prototype=superCtor.prototype;ctor.prototype=new TempCtor();ctor.prototype.constructor=ctor;}};}},{}],41:[function(require,module,exports){// When a boxed property is passed in, it should have quotes of some
 // kind around it.
 //
 // For instance:
@@ -4265,7 +455,7 @@ module.exports=function inherits(ctor,superCtor){if(superCtor){ctor.super_=super
 //
 // TODO: Should template literals be processed?  If so what state do they have access to?  That should happen here if so.
 // TODO: Make a simple class include library with these
-const cleanWrapCharacters=(pCharacter,pString)=>{if(pString.startsWith(pCharacter)&&pString.endsWith(pCharacter)){return pString.substring(1,pString.length-1);}else{return pString;}};module.exports=cleanWrapCharacters;},{}],43:[function(require,module,exports){/**
+const cleanWrapCharacters=(pCharacter,pString)=>{if(pString.startsWith(pCharacter)&&pString.endsWith(pCharacter)){return pString.substring(1,pString.length-1);}else{return pString;}};module.exports=cleanWrapCharacters;},{}],42:[function(require,module,exports){/**
 * @author <steven@velozo.com>
 */let libSimpleLog=require('./Manyfest-LogToConsole.js');/**
 * Hash Translation
@@ -4287,11 +477,11 @@ this.logInfo=typeof pInfoLog==='function'?pInfoLog:libSimpleLog;this.logError=ty
 if(typeof pTranslation!='object'){this.logError("Hash translation addTranslation expected a translation be type object but was passed in ".concat(typeof pTranslation));return false;}let tmpTranslationSources=Object.keys(pTranslation);tmpTranslationSources.forEach(pTranslationSource=>{if(typeof pTranslation[pTranslationSource]!='string'){this.logError("Hash translation addTranslation expected a translation destination hash for [".concat(pTranslationSource,"] to be a string but the referrant was a ").concat(typeof pTranslation[pTranslationSource]));}else{this.translationTable[pTranslationSource]=pTranslation[pTranslationSource];}});}removeTranslationHash(pTranslationHash){if(this.translationTable.hasOwnProperty(pTranslationHash)){delete this.translationTable[pTranslationHash];}}// This removes translations.
 // If passed a string, just removes the single one.
 // If passed an object, it does all the source keys.
-removeTranslation(pTranslation){if(typeof pTranslation=='string'){this.removeTranslationHash(pTranslation);return true;}else if(typeof pTranslation=='object'){let tmpTranslationSources=Object.keys(pTranslation);tmpTranslationSources.forEach(pTranslationSource=>{this.removeTranslation(pTranslationSource);});return true;}else{this.logError("Hash translation removeTranslation expected either a string or an object but the passed-in translation was type ".concat(typeof pTranslation));return false;}}clearTranslations(){this.translationTable={};}translate(pTranslation){if(this.translationTable.hasOwnProperty(pTranslation)){return this.translationTable[pTranslation];}else{return pTranslation;}}}module.exports=ManyfestHashTranslation;},{"./Manyfest-LogToConsole.js":44}],44:[function(require,module,exports){/**
+removeTranslation(pTranslation){if(typeof pTranslation=='string'){this.removeTranslationHash(pTranslation);return true;}else if(typeof pTranslation=='object'){let tmpTranslationSources=Object.keys(pTranslation);tmpTranslationSources.forEach(pTranslationSource=>{this.removeTranslation(pTranslationSource);});return true;}else{this.logError("Hash translation removeTranslation expected either a string or an object but the passed-in translation was type ".concat(typeof pTranslation));return false;}}clearTranslations(){this.translationTable={};}translate(pTranslation){if(this.translationTable.hasOwnProperty(pTranslation)){return this.translationTable[pTranslation];}else{return pTranslation;}}}module.exports=ManyfestHashTranslation;},{"./Manyfest-LogToConsole.js":43}],43:[function(require,module,exports){/**
 * @author <steven@velozo.com>
 */ /**
 * Manyfest simple logging shim (for browser and dependency-free running)
-*/const logToConsole=(pLogLine,pLogObject)=>{let tmpLogLine=typeof pLogLine==='string'?pLogLine:'';console.log("[Manyfest] ".concat(tmpLogLine));if(pLogObject)console.log(JSON.stringify(pLogObject));};module.exports=logToConsole;},{}],45:[function(require,module,exports){/**
+*/const logToConsole=(pLogLine,pLogObject)=>{let tmpLogLine=typeof pLogLine==='string'?pLogLine:'';console.log("[Manyfest] ".concat(tmpLogLine));if(pLogObject)console.log(JSON.stringify(pLogObject));};module.exports=logToConsole;},{}],44:[function(require,module,exports){/**
 * @author <steven@velozo.com>
 */let libSimpleLog=require('./Manyfest-LogToConsole.js');/**
 * Object Address Resolver
@@ -4390,7 +580,7 @@ return this.checkAddressExists(pObject[tmpBoxedPropertyName][tmpBoxedPropertyNum
 // then the system can't set the value in there.  Error and abort!
 if(pObject.hasOwnProperty(tmpSubObjectName)&&typeof pObject[tmpSubObjectName]!=='object'){return false;}else if(pObject.hasOwnProperty(tmpSubObjectName)){// If there is already a subobject pass that to the recursive thingy
 return this.checkAddressExists(pObject[tmpSubObjectName],tmpNewAddress);}else{// Create a subobject and then pass that
-pObject[tmpSubObjectName]={};return this.checkAddressExists(pObject[tmpSubObjectName],tmpNewAddress);}}}};module.exports=ManyfestObjectAddressResolverCheckAddressExists;},{"./Manyfest-LogToConsole.js":44}],46:[function(require,module,exports){/**
+pObject[tmpSubObjectName]={};return this.checkAddressExists(pObject[tmpSubObjectName],tmpNewAddress);}}}};module.exports=ManyfestObjectAddressResolverCheckAddressExists;},{"./Manyfest-LogToConsole.js":43}],45:[function(require,module,exports){/**
 * @author <steven@velozo.com>
 */let libSimpleLog=require('./Manyfest-LogToConsole.js');let fCleanWrapCharacters=require('./Manyfest-CleanWrapCharacters.js');let fParseConditionals=require("../source/Manyfest-ParseConditionals.js");/**
 * Object Address Resolver - DeleteValue
@@ -4517,7 +707,7 @@ if(pObject.hasOwnProperty(tmpSubObjectName)&&typeof pObject[tmpSubObjectName]!==
 // Continue to manage the parent address for recursion
 tmpParentAddress="".concat(tmpParentAddress).concat(tmpParentAddress.length>0?'.':'').concat(tmpSubObjectName);return this.deleteValueAtAddress(pObject[tmpSubObjectName],tmpNewAddress,tmpParentAddress);}else{// Create a subobject and then pass that
 // Continue to manage the parent address for recursion
-tmpParentAddress="".concat(tmpParentAddress).concat(tmpParentAddress.length>0?'.':'').concat(tmpSubObjectName);pObject[tmpSubObjectName]={};return this.deleteValueAtAddress(pObject[tmpSubObjectName],tmpNewAddress,tmpParentAddress);}}}};module.exports=ManyfestObjectAddressResolverDeleteValue;},{"../source/Manyfest-ParseConditionals.js":50,"./Manyfest-CleanWrapCharacters.js":42,"./Manyfest-LogToConsole.js":44}],47:[function(require,module,exports){/**
+tmpParentAddress="".concat(tmpParentAddress).concat(tmpParentAddress.length>0?'.':'').concat(tmpSubObjectName);pObject[tmpSubObjectName]={};return this.deleteValueAtAddress(pObject[tmpSubObjectName],tmpNewAddress,tmpParentAddress);}}}};module.exports=ManyfestObjectAddressResolverDeleteValue;},{"../source/Manyfest-ParseConditionals.js":49,"./Manyfest-CleanWrapCharacters.js":41,"./Manyfest-LogToConsole.js":43}],46:[function(require,module,exports){/**
 * @author <steven@velozo.com>
 */let libSimpleLog=require('./Manyfest-LogToConsole.js');let fCleanWrapCharacters=require('./Manyfest-CleanWrapCharacters.js');let fParseConditionals=require("../source/Manyfest-ParseConditionals.js");/**
 * Object Address Resolver - GetValue
@@ -4651,7 +841,7 @@ if(pObject.hasOwnProperty(tmpSubObjectName)&&typeof pObject[tmpSubObjectName]!==
 // Continue to manage the parent address for recursion
 tmpParentAddress="".concat(tmpParentAddress).concat(tmpParentAddress.length>0?'.':'').concat(tmpSubObjectName);return this.getValueAtAddress(pObject[tmpSubObjectName],tmpNewAddress,tmpParentAddress,tmpRootObject);}else{// Create a subobject and then pass that
 // Continue to manage the parent address for recursion
-tmpParentAddress="".concat(tmpParentAddress).concat(tmpParentAddress.length>0?'.':'').concat(tmpSubObjectName);pObject[tmpSubObjectName]={};return this.getValueAtAddress(pObject[tmpSubObjectName],tmpNewAddress,tmpParentAddress,tmpRootObject);}}}};module.exports=ManyfestObjectAddressResolverGetValue;},{"../source/Manyfest-ParseConditionals.js":50,"./Manyfest-CleanWrapCharacters.js":42,"./Manyfest-LogToConsole.js":44}],48:[function(require,module,exports){/**
+tmpParentAddress="".concat(tmpParentAddress).concat(tmpParentAddress.length>0?'.':'').concat(tmpSubObjectName);pObject[tmpSubObjectName]={};return this.getValueAtAddress(pObject[tmpSubObjectName],tmpNewAddress,tmpParentAddress,tmpRootObject);}}}};module.exports=ManyfestObjectAddressResolverGetValue;},{"../source/Manyfest-ParseConditionals.js":49,"./Manyfest-CleanWrapCharacters.js":41,"./Manyfest-LogToConsole.js":43}],47:[function(require,module,exports){/**
 * @author <steven@velozo.com>
 */let libSimpleLog=require('./Manyfest-LogToConsole.js');let fCleanWrapCharacters=require('./Manyfest-CleanWrapCharacters.js');/**
 * Object Address Resolver - SetValue
@@ -4740,7 +930,7 @@ return this.setValueAtAddress(pObject[tmpBoxedPropertyName][tmpBoxedPropertyNumb
 if(pObject.hasOwnProperty(tmpSubObjectName)&&typeof pObject[tmpSubObjectName]!=='object'){if(!pObject.hasOwnProperty('__ERROR'))pObject['__ERROR']={};// Put it in an error object so data isn't lost
 pObject['__ERROR'][pAddress]=pValue;return false;}else if(pObject.hasOwnProperty(tmpSubObjectName)){// If there is already a subobject pass that to the recursive thingy
 return this.setValueAtAddress(pObject[tmpSubObjectName],tmpNewAddress,pValue);}else{// Create a subobject and then pass that
-pObject[tmpSubObjectName]={};return this.setValueAtAddress(pObject[tmpSubObjectName],tmpNewAddress,pValue);}}}};module.exports=ManyfestObjectAddressSetValue;},{"./Manyfest-CleanWrapCharacters.js":42,"./Manyfest-LogToConsole.js":44}],49:[function(require,module,exports){/**
+pObject[tmpSubObjectName]={};return this.setValueAtAddress(pObject[tmpSubObjectName],tmpNewAddress,pValue);}}}};module.exports=ManyfestObjectAddressSetValue;},{"./Manyfest-CleanWrapCharacters.js":41,"./Manyfest-LogToConsole.js":43}],48:[function(require,module,exports){/**
 * @author <steven@velozo.com>
 */let libSimpleLog=require('./Manyfest-LogToConsole.js');/**
 * Object Address Generation
@@ -4775,7 +965,7 @@ this.logInfo=typeof pInfoLog=='function'?pInfoLog:libSimpleLog;this.logError=typ
 // permutations and default values (when not an object) and everything else.
 generateAddressses(pObject,pBaseAddress,pSchema){let tmpBaseAddress=typeof pBaseAddress=='string'?pBaseAddress:'';let tmpSchema=typeof pSchema=='object'?pSchema:{};let tmpObjectType=typeof pObject;let tmpSchemaObjectEntry={Address:tmpBaseAddress,Hash:tmpBaseAddress,Name:tmpBaseAddress,// This is so scripts and UI controls can force a developer to opt-in.
 InSchema:false};if(tmpObjectType=='object'&&pObject==null){tmpObjectType='null';}switch(tmpObjectType){case'string':tmpSchemaObjectEntry.DataType='String';tmpSchemaObjectEntry.Default=pObject;tmpSchema[tmpBaseAddress]=tmpSchemaObjectEntry;break;case'number':case'bigint':tmpSchemaObjectEntry.DataType='Number';tmpSchemaObjectEntry.Default=pObject;tmpSchema[tmpBaseAddress]=tmpSchemaObjectEntry;break;case'undefined':case'null':tmpSchemaObjectEntry.DataType='Any';tmpSchemaObjectEntry.Default=pObject;tmpSchema[tmpBaseAddress]=tmpSchemaObjectEntry;break;case'object':if(Array.isArray(pObject)){tmpSchemaObjectEntry.DataType='Array';if(tmpBaseAddress!=''){tmpSchema[tmpBaseAddress]=tmpSchemaObjectEntry;}for(let i=0;i<pObject.length;i++){this.generateAddressses(pObject[i],"".concat(tmpBaseAddress,"[").concat(i,"]"),tmpSchema);}}else{tmpSchemaObjectEntry.DataType='Object';if(tmpBaseAddress!=''){tmpSchema[tmpBaseAddress]=tmpSchemaObjectEntry;tmpBaseAddress+='.';}let tmpObjectProperties=Object.keys(pObject);for(let i=0;i<tmpObjectProperties.length;i++){this.generateAddressses(pObject[tmpObjectProperties[i]],"".concat(tmpBaseAddress).concat(tmpObjectProperties[i]),tmpSchema);}}break;case'symbol':case'function':// Symbols and functions neither recurse nor get added to the schema
-break;}return tmpSchema;}};module.exports=ManyfestObjectAddressGeneration;},{"./Manyfest-LogToConsole.js":44}],50:[function(require,module,exports){// Given a string, parse out any conditional expressions and set whether or not to keep the record.
+break;}return tmpSchema;}};module.exports=ManyfestObjectAddressGeneration;},{"./Manyfest-LogToConsole.js":43}],49:[function(require,module,exports){// Given a string, parse out any conditional expressions and set whether or not to keep the record.
 //
 // For instance:
 // 		'files[]<<~?format,==,Thumbnail?~>>'
@@ -4796,7 +986,7 @@ const testCondition=(pManyfest,pRecord,pSearchAddress,pSearchComparator,pValue)=
 		2.  Find stop points within each start point
 		3. Check the conditional
 	*/let tmpStartIndex=pAddress.indexOf(_ConditionalStanzaStart);while(tmpStartIndex!=-1){let tmpStopIndex=pAddress.indexOf(_ConditionalStanzaEnd,tmpStartIndex+_ConditionalStanzaStartLength);if(tmpStopIndex!=-1){let tmpMagicComparisonPatternSet=pAddress.substring(tmpStartIndex+_ConditionalStanzaStartLength,tmpStopIndex).split(',');let tmpSearchAddress=tmpMagicComparisonPatternSet[0];let tmpSearchComparator=tmpMagicComparisonPatternSet[1];let tmpSearchValue=tmpMagicComparisonPatternSet[2];// Process the piece
-tmpKeepRecord=tmpKeepRecord&&testCondition(pManyfest,pRecord,tmpSearchAddress,tmpSearchComparator,tmpSearchValue);tmpStartIndex=pAddress.indexOf(_ConditionalStanzaStart,tmpStopIndex+_ConditionalStanzaEndLength);}else{tmpStartIndex=-1;}}return tmpKeepRecord;};module.exports=parseConditionals;},{}],51:[function(require,module,exports){/**
+tmpKeepRecord=tmpKeepRecord&&testCondition(pManyfest,pRecord,tmpSearchAddress,tmpSearchComparator,tmpSearchValue);tmpStartIndex=pAddress.indexOf(_ConditionalStanzaStart,tmpStopIndex+_ConditionalStanzaEndLength);}else{tmpStartIndex=-1;}}return tmpKeepRecord;};module.exports=parseConditionals;},{}],50:[function(require,module,exports){/**
 * @author <steven@velozo.com>
 */let libSimpleLog=require('./Manyfest-LogToConsole.js');/**
 * Schema Manipulation Functions
@@ -4829,7 +1019,7 @@ if(tmpOldDescriptorAddress){tmpDescriptor=pManyfestSchemaDescriptors[tmpOldDescr
 tmpDescriptor={Hash:pInputAddress};}// Now re-add the descriptor to the manyfest schema
 pManyfestSchemaDescriptors[tmpNewDescriptorAddress]=tmpDescriptor;});return true;}safeResolveAddressMappings(pManyfestSchemaDescriptors,pAddressMapping){// This returns the descriptors as a new object, safely remapping without mutating the original schema Descriptors
 let tmpManyfestSchemaDescriptors=JSON.parse(JSON.stringify(pManyfestSchemaDescriptors));this.resolveAddressMappings(tmpManyfestSchemaDescriptors,pAddressMapping);return tmpManyfestSchemaDescriptors;}mergeAddressMappings(pManyfestSchemaDescriptorsDestination,pManyfestSchemaDescriptorsSource){if(typeof pManyfestSchemaDescriptorsSource!='object'||typeof pManyfestSchemaDescriptorsDestination!='object'){this.logError("Attempted to merge two schema descriptors but both were not objects.");return false;}let tmpSource=JSON.parse(JSON.stringify(pManyfestSchemaDescriptorsSource));let tmpNewManyfestSchemaDescriptors=JSON.parse(JSON.stringify(pManyfestSchemaDescriptorsDestination));// The first passed-in set of descriptors takes precedence.
-let tmpDescriptorAddresses=Object.keys(tmpSource);tmpDescriptorAddresses.forEach(pDescriptorAddress=>{if(!tmpNewManyfestSchemaDescriptors.hasOwnProperty(pDescriptorAddress)){tmpNewManyfestSchemaDescriptors[pDescriptorAddress]=tmpSource[pDescriptorAddress];}});return tmpNewManyfestSchemaDescriptors;}}module.exports=ManyfestSchemaManipulation;},{"./Manyfest-LogToConsole.js":44}],52:[function(require,module,exports){/**
+let tmpDescriptorAddresses=Object.keys(tmpSource);tmpDescriptorAddresses.forEach(pDescriptorAddress=>{if(!tmpNewManyfestSchemaDescriptors.hasOwnProperty(pDescriptorAddress)){tmpNewManyfestSchemaDescriptors[pDescriptorAddress]=tmpSource[pDescriptorAddress];}});return tmpNewManyfestSchemaDescriptors;}}module.exports=ManyfestSchemaManipulation;},{"./Manyfest-LogToConsole.js":43}],51:[function(require,module,exports){/**
 * @author <steven@velozo.com>
 */const libFableServiceProviderBase=require('fable-serviceproviderbase');let libSimpleLog=require('./Manyfest-LogToConsole.js');let libHashTranslation=require('./Manyfest-HashTranslation.js');let libObjectAddressCheckAddressExists=require('./Manyfest-ObjectAddress-CheckAddressExists.js');let libObjectAddressGetValue=require('./Manyfest-ObjectAddress-GetValue.js');let libObjectAddressSetValue=require('./Manyfest-ObjectAddress-SetValue.js');let libObjectAddressDeleteValue=require('./Manyfest-ObjectAddress-DeleteValue.js');let libObjectAddressGeneration=require('./Manyfest-ObjectAddressGeneration.js');let libSchemaManipulation=require('./Manyfest-SchemaManipulation.js');const _DefaultConfiguration={Scope:'DEFAULT',Descriptors:{}};/**
 * Manyfest object address-based descriptions and manipulations.
@@ -4896,7 +1086,7 @@ let tmpOverwriteProperties=typeof pOverwriteProperties=='undefined'?false:pOverw
 // The default filter function just returns true, populating everything.
 let tmpFilterFunction=typeof fFilter=='function'?fFilter:pDescriptor=>{return true;};this.elementAddresses.forEach(pAddress=>{let tmpDescriptor=this.getDescriptor(pAddress);// Check the filter function to see if this is an address we want to set the value for.
 if(tmpFilterFunction(tmpDescriptor)){// If we are overwriting properties OR the property does not exist
-if(tmpOverwriteProperties||!this.checkAddressExists(tmpObject,pAddress)){this.setValueAtAddress(tmpObject,pAddress,this.getDefaultValue(tmpDescriptor));}}});return tmpObject;}};module.exports=Manyfest;},{"./Manyfest-HashTranslation.js":43,"./Manyfest-LogToConsole.js":44,"./Manyfest-ObjectAddress-CheckAddressExists.js":45,"./Manyfest-ObjectAddress-DeleteValue.js":46,"./Manyfest-ObjectAddress-GetValue.js":47,"./Manyfest-ObjectAddress-SetValue.js":48,"./Manyfest-ObjectAddressGeneration.js":49,"./Manyfest-SchemaManipulation.js":51,"fable-serviceproviderbase":33}],53:[function(require,module,exports){var wrappy=require('wrappy');module.exports=wrappy(once);module.exports.strict=wrappy(onceStrict);once.proto=once(function(){Object.defineProperty(Function.prototype,'once',{value:function value(){return once(this);},configurable:true});Object.defineProperty(Function.prototype,'onceStrict',{value:function value(){return onceStrict(this);},configurable:true});});function once(fn){var f=function f(){if(f.called)return f.value;f.called=true;return f.value=fn.apply(this,arguments);};f.called=false;return f;}function onceStrict(fn){var f=function f(){if(f.called)throw new Error(f.onceError);f.called=true;return f.value=fn.apply(this,arguments);};var name=fn.name||'Function wrapped with `once`';f.onceError=name+" shouldn't be called more than once";f.called=false;return f;}},{"wrappy":90}],54:[function(require,module,exports){(function(process){(function(){// 'path' module extracted from Node.js v8.11.1 (only the posix part)
+if(tmpOverwriteProperties||!this.checkAddressExists(tmpObject,pAddress)){this.setValueAtAddress(tmpObject,pAddress,this.getDefaultValue(tmpDescriptor));}}});return tmpObject;}};module.exports=Manyfest;},{"./Manyfest-HashTranslation.js":42,"./Manyfest-LogToConsole.js":43,"./Manyfest-ObjectAddress-CheckAddressExists.js":44,"./Manyfest-ObjectAddress-DeleteValue.js":45,"./Manyfest-ObjectAddress-GetValue.js":46,"./Manyfest-ObjectAddress-SetValue.js":47,"./Manyfest-ObjectAddressGeneration.js":48,"./Manyfest-SchemaManipulation.js":50,"fable-serviceproviderbase":32}],52:[function(require,module,exports){var wrappy=require('wrappy');module.exports=wrappy(once);module.exports.strict=wrappy(onceStrict);once.proto=once(function(){Object.defineProperty(Function.prototype,'once',{value:function value(){return once(this);},configurable:true});Object.defineProperty(Function.prototype,'onceStrict',{value:function value(){return onceStrict(this);},configurable:true});});function once(fn){var f=function f(){if(f.called)return f.value;f.called=true;return f.value=fn.apply(this,arguments);};f.called=false;return f;}function onceStrict(fn){var f=function f(){if(f.called)throw new Error(f.onceError);f.called=true;return f.value=fn.apply(this,arguments);};var name=fn.name||'Function wrapped with `once`';f.onceError=name+" shouldn't be called more than once";f.called=false;return f;}},{"wrappy":89}],53:[function(require,module,exports){(function(process){(function(){// 'path' module extracted from Node.js v8.11.1 (only the posix part)
 // transplited with Babel
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -4978,7 +1168,7 @@ if(startDot===-1)startDot=i;else if(preDotState!==1)preDotState=1;}else if(start
 // have a good chance at having a non-empty extension
 preDotState=-1;}}if(startDot===-1||end===-1||// We saw a non-dot character immediately before the dot
 preDotState===0||// The (right-most) trimmed path component is exactly '..'
-preDotState===1&&startDot===end-1&&startDot===startPart+1){if(end!==-1){if(startPart===0&&isAbsolute)ret.base=ret.name=path.slice(1,end);else ret.base=ret.name=path.slice(startPart,end);}}else{if(startPart===0&&isAbsolute){ret.name=path.slice(1,startDot);ret.base=path.slice(1,end);}else{ret.name=path.slice(startPart,startDot);ret.base=path.slice(startPart,end);}ret.ext=path.slice(startDot,end);}if(startPart>0)ret.dir=path.slice(0,startPart-1);else if(isAbsolute)ret.dir='/';return ret;},sep:'/',delimiter:':',win32:null,posix:null};posix.posix=posix;module.exports=posix;}).call(this);}).call(this,require('_process'));},{"_process":58}],55:[function(require,module,exports){/**
+preDotState===1&&startDot===end-1&&startDot===startPart+1){if(end!==-1){if(startPart===0&&isAbsolute)ret.base=ret.name=path.slice(1,end);else ret.base=ret.name=path.slice(startPart,end);}}else{if(startPart===0&&isAbsolute){ret.name=path.slice(1,startDot);ret.base=path.slice(1,end);}else{ret.name=path.slice(startPart,startDot);ret.base=path.slice(startPart,end);}ret.ext=path.slice(startDot,end);}if(startPart>0)ret.dir=path.slice(0,startPart-1);else if(isAbsolute)ret.dir='/';return ret;},sep:'/',delimiter:':',win32:null,posix:null};posix.posix=posix;module.exports=posix;}).call(this);}).call(this,require('_process'));},{"_process":57}],54:[function(require,module,exports){/**
 * Precedent Meta-Templating
 *
 * @license     MIT
@@ -4995,21 +1185,17 @@ preDotState===1&&startDot===end-1&&startDot===startPart+1){if(end!==-1){if(start
 	 * @param {string} pPattern - The string to add to the tree
 	 * @param {number} pIndex - callback function
 	 * @return {bool} True if adding the pattern was successful
-	 */addPattern(pPatternStart,pPatternEnd,pParser){return this.WordTree.addPattern(pPatternStart,pPatternEnd,pParser);}addPatternAsync(pPatternStart,pPatternEnd,pParserPromise){return this.WordTree.addPatternAsync(pPatternStart,pPatternEnd,pParserPromise);}/**
+	 */addPattern(pPatternStart,pPatternEnd,pParser){return this.WordTree.addPattern(pPatternStart,pPatternEnd,pParser);}/**
 	 * Parse a string with the existing parse tree
 	 * @method parseString
 	 * @param {string} pString - The string to parse
 	 * @param {object} pData - Data to pass in as the second argument
 	 * @return {string} The result from the parser
-	 */parseString(pString,pData,fCallback){return this.StringParser.parseString(pString,this.ParseTree,pData,fCallback);}}module.exports=Precedent;},{"./StringParser.js":56,"./WordTree.js":57}],56:[function(require,module,exports){/**
+	 */parseString(pString,pData){return this.StringParser.parseString(pString,this.ParseTree,pData);}}module.exports=Precedent;},{"./StringParser.js":55,"./WordTree.js":56}],55:[function(require,module,exports){/**
 * String Parser
-*
-* @license     MIT
-*
 * @author      Steven Velozo <steven@velozo.com>
-*
 * @description Parse a string, properly processing each matched token in the word tree.
-*/let libAsync=require('async');class StringParser{/**
+*/class StringParser{/**
 	 * StringParser Constructor
 	 */constructor(){}/**
 	 * Create a fresh parsing state object to work with.
@@ -5045,17 +1231,9 @@ pParserState.Pattern=pParserState.PatternMatch;}}/**
 	 * @private
 	 */checkPatternEnd(pParserState,pData){if(pParserState.OutputBuffer.length>=pParserState.Pattern.PatternEnd.length+pParserState.Pattern.PatternStart.length&&pParserState.OutputBuffer.substr(-pParserState.Pattern.PatternEnd.length)===pParserState.Pattern.PatternEnd){// ... this is the end of a pattern, cut off the end tag and parse it.
 // Trim the start and end tags off the output buffer now
-if(pParserState.Pattern.isAsync){console.log("Precedent ERROR: Async template detected for pattern ".concat(pParserState.Pattern.PatternStart," ... ").concat(pParserState.Pattern.PatternEnd," but the template engine is being run in non-async mode."));this.OutputBuffer='';// Flush the output buffer.
+pParserState.OutputBuffer=pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStart.length,pParserState.OutputBuffer.length-(pParserState.Pattern.PatternStart.length+pParserState.Pattern.PatternEnd.length)),pData);// Flush the output buffer.
 this.flushOutputBuffer(pParserState);// End pattern mode
-pParserState.Pattern=false;pParserState.PatternMatch=false;}else{pParserState.OutputBuffer=pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStart.length,pParserState.OutputBuffer.length-(pParserState.Pattern.PatternStart.length+pParserState.Pattern.PatternEnd.length)),pData);// Flush the output buffer.
-this.flushOutputBuffer(pParserState);// End pattern mode
-pParserState.Pattern=false;pParserState.PatternMatch=false;}}}checkPatternEndAsync(pParserState,pData,fCallback){if(pParserState.OutputBuffer.length>=pParserState.Pattern.PatternEnd.length+pParserState.Pattern.PatternStart.length&&pParserState.OutputBuffer.substr(-pParserState.Pattern.PatternEnd.length)===pParserState.Pattern.PatternEnd){// ... this is the end of a pattern, cut off the end tag and parse it.
-// Trim the start and end tags off the output buffer now
-if(pParserState.Pattern.isAsync){return pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStart.length,pParserState.OutputBuffer.length-(pParserState.Pattern.PatternStart.length+pParserState.Pattern.PatternEnd.length)),pData,(pError,pAsyncOutput)=>{if(pError){console.log("Precedent ERROR: Async template error happened parsing ".concat(pParserState.Pattern.PatternStart," ... ").concat(pParserState.Pattern.PatternEnd,": ").concat(pError));}pParserState.OutputBuffer=pAsyncOutput;// Flush the output buffer.
-this.flushOutputBuffer(pParserState);// End pattern mode
-pParserState.Pattern=false;pParserState.PatternMatch=false;return fCallback();});}else{pParserState.OutputBuffer=pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStart.length,pParserState.OutputBuffer.length-(pParserState.Pattern.PatternStart.length+pParserState.Pattern.PatternEnd.length)),pData);// Flush the output buffer.
-this.flushOutputBuffer(pParserState);// End pattern mode
-pParserState.Pattern=false;pParserState.PatternMatch=false;}}return fCallback();}/**
+pParserState.Pattern=false;pParserState.PatternMatch=false;}}/**
 	 * Parse a character in the buffer.
 	 * @method parseCharacter
 	 * @param {string} pCharacter - The character to append
@@ -5068,30 +1246,15 @@ else if(pParserState.PatternMatch){// If the pattern has a subpattern with this 
 if(pParserState.PatternMatch.hasOwnProperty(pCharacter)){// Continue matching patterns.
 this.assignNode(pParserState.PatternMatch[pCharacter],pParserState);}this.appendOutputBuffer(pCharacter,pParserState);if(pParserState.Pattern){// ... Check if this is the end of the pattern (if we are matching a valid pattern)...
 this.checkPatternEnd(pParserState,pData);}}// (3) If we aren't in a pattern match or pattern, and this isn't the start of a new pattern (RAW mode)....
-else{pParserState.Output+=pCharacter;}}parseCharacterAsync(pCharacter,pParserState,pData,fCallback){// (1) If we aren't in a pattern match, and we aren't potentially matching, and this may be the start of a new pattern....
-if(!pParserState.PatternMatch&&pParserState.ParseTree.hasOwnProperty(pCharacter)){// ... assign the node as the matched node.
-this.assignNode(pParserState.ParseTree[pCharacter],pParserState);this.appendOutputBuffer(pCharacter,pParserState);}// (2) If we are in a pattern match (actively seeing if this is part of a new pattern token)
-else if(pParserState.PatternMatch){// If the pattern has a subpattern with this key
-if(pParserState.PatternMatch.hasOwnProperty(pCharacter)){// Continue matching patterns.
-this.assignNode(pParserState.PatternMatch[pCharacter],pParserState);}this.appendOutputBuffer(pCharacter,pParserState);if(pParserState.Pattern){// ... Check if this is the end of the pattern (if we are matching a valid pattern)...
-return this.checkPatternEndAsync(pParserState,pData,fCallback);}}// (3) If we aren't in a pattern match or pattern, and this isn't the start of a new pattern (RAW mode)....
-else{pParserState.Output+=pCharacter;}return fCallback(null);}/**
+else{pParserState.Output+=pCharacter;}}/**
 	 * Parse a string for matches, and process any template segments that occur.
 	 * @method parseString
 	 * @param {string} pString - The string to parse.
 	 * @param {Object} pParseTree - The parse tree to begin parsing from (usually root)
 	 * @param {Object} pData - The data to pass to the function as a second parameter
-	 * @param {function} fCallback - The callback function to call when the parse is complete
-	 */parseString(pString,pParseTree,pData,fCallback){if(typeof fCallback!=='function'){let tmpParserState=this.newParserState(pParseTree);for(var i=0;i<pString.length;i++){// TODO: This is not fast.
-this.parseCharacter(pString[i],tmpParserState,pData,fCallback);}this.flushOutputBuffer(tmpParserState);return tmpParserState.Output;}else{// This is the async mode
-let tmpParserState=this.newParserState(pParseTree);libAsync.eachSeries(pString,(pCharacter,fCharacterCallback)=>{this.parseCharacterAsync(pCharacter,tmpParserState,pData,fCharacterCallback);},pError=>{// Flush the remaining data
-this.flushOutputBuffer(tmpParserState);fCallback(pError,tmpParserState.Output);});}}}module.exports=StringParser;},{"async":16}],57:[function(require,module,exports){/**
+	 */parseString(pString,pParseTree,pData){let tmpParserState=this.newParserState(pParseTree);for(var i=0;i<pString.length;i++){this.parseCharacter(pString[i],tmpParserState,pData);}this.flushOutputBuffer(tmpParserState);return tmpParserState.Output;}}module.exports=StringParser;},{}],56:[function(require,module,exports){/**
 * Word Tree
-*
-* @license     MIT
-*
 * @author      Steven Velozo <steven@velozo.com>
-*
 * @description Create a tree (directed graph) of Javascript objects, one character per object.
 */class WordTree{/**
 	 * WordTree Constructor
@@ -5110,14 +1273,7 @@ this.flushOutputBuffer(tmpParserState);fCallback(pError,tmpParserState.Output);}
 	 * @param {number} pParser - The function to parse if this is the matched pattern, once the Pattern End is met.  If this is a string, a simple replacement occurs.
 	 * @return {bool} True if adding the pattern was successful
 	 */addPattern(pPatternStart,pPatternEnd,pParser){if(pPatternStart.length<1)return false;if(typeof pPatternEnd==='string'&&pPatternEnd.length<1)return false;let tmpLeaf=this.ParseTree;// Add the tree of leaves iteratively
-for(var i=0;i<pPatternStart.length;i++)tmpLeaf=this.addChild(tmpLeaf,pPatternStart,i);tmpLeaf.PatternStart=pPatternStart;tmpLeaf.PatternEnd=typeof pPatternEnd==='string'&&pPatternEnd.length>0?pPatternEnd:pPatternStart;tmpLeaf.Parse=typeof pParser==='function'?pParser:typeof pParser==='string'?()=>{return pParser;}:pData=>{return pData;};tmpLeaf.isPromise=false;return true;}/** Add a Pattern to the Parse Tree (asynchronous)
-	 * @method addPattern
-	 * @param {Object} pPatternStart - The starting string for the pattern (e.g. "${")
-	 * @param {string} pPatternEnd - The ending string for the pattern (e.g. "}")
-	 * @param {number} pParserAsync - The function (with an asynchronous callback) to parse if this is the matched pattern, once the Pattern End is met.  If this is a string, a simple replacement occurs.
-	 * @return {bool} True if adding the pattern was successful
-	 */addPatternAsync(pPatternStart,pPatternEnd,pParserAsync){if(pPatternStart.length<1)return false;if(typeof pPatternEnd==='string'&&pPatternEnd.length<1)return false;let tmpLeaf=this.ParseTree;// Add the tree of leaves iteratively
-for(var i=0;i<pPatternStart.length;i++)tmpLeaf=this.addChild(tmpLeaf,pPatternStart,i);tmpLeaf.PatternStart=pPatternStart;tmpLeaf.PatternEnd=typeof pPatternEnd==='string'&&pPatternEnd.length>0?pPatternEnd:pPatternStart;tmpLeaf.Parse=typeof pParserAsync==='function'?pParserAsync:typeof pParserAsync==='string'?(pHash,pData,fCallback)=>{fCallback(pParserPromise);}:(pHash,pData,fCallback)=>{return fCallback(pHash);};tmpLeaf.isAsync=true;return true;}}module.exports=WordTree;},{}],58:[function(require,module,exports){// shim for using process in browser
+for(var i=0;i<pPatternStart.length;i++)tmpLeaf=this.addChild(tmpLeaf,pPatternStart,i);tmpLeaf.PatternStart=pPatternStart;tmpLeaf.PatternEnd=typeof pPatternEnd==='string'&&pPatternEnd.length>0?pPatternEnd:pPatternStart;tmpLeaf.Parse=typeof pParser==='function'?pParser:typeof pParser==='string'?()=>{return pParser;}:pData=>{return pData;};return true;}}module.exports=WordTree;},{}],57:[function(require,module,exports){// shim for using process in browser
 var process=module.exports={};// cached from whatever global is present so that test runners that stub it
 // don't break things.  But we need to wrap it in a try catch in case it is
 // wrapped in strict mode code which doesn't define any globals.  It's inside a
@@ -5135,7 +1291,7 @@ return cachedClearTimeout.call(null,marker);}catch(e){// same as above but when 
 // Some versions of I.E. have different rules for clearTimeout vs setTimeout
 return cachedClearTimeout.call(this,marker);}}}var queue=[];var draining=false;var currentQueue;var queueIndex=-1;function cleanUpNextTick(){if(!draining||!currentQueue){return;}draining=false;if(currentQueue.length){queue=currentQueue.concat(queue);}else{queueIndex=-1;}if(queue.length){drainQueue();}}function drainQueue(){if(draining){return;}var timeout=runTimeout(cleanUpNextTick);draining=true;var len=queue.length;while(len){currentQueue=queue;queue=[];while(++queueIndex<len){if(currentQueue){currentQueue[queueIndex].run();}}queueIndex=-1;len=queue.length;}currentQueue=null;draining=false;runClearTimeout(timeout);}process.nextTick=function(fun){var args=new Array(arguments.length-1);if(arguments.length>1){for(var i=1;i<arguments.length;i++){args[i-1]=arguments[i];}}queue.push(new Item(fun,args));if(queue.length===1&&!draining){runTimeout(drainQueue);}};// v8 likes predictible objects
 function Item(fun,array){this.fun=fun;this.array=array;}Item.prototype.run=function(){this.fun.apply(null,this.array);};process.title='browser';process.browser=true;process.env={};process.argv=[];process.version='';// empty string to avoid regexp issues
-process.versions={};function noop(){}process.on=noop;process.addListener=noop;process.once=noop;process.off=noop;process.removeListener=noop;process.removeAllListeners=noop;process.emit=noop;process.prependListener=noop;process.prependOnceListener=noop;process.listeners=function(name){return[];};process.binding=function(name){throw new Error('process.binding is not supported');};process.cwd=function(){return'/';};process.chdir=function(dir){throw new Error('process.chdir is not supported');};process.umask=function(){return 0;};},{}],59:[function(require,module,exports){(function(global){(function(){/*! https://mths.be/punycode v1.4.1 by @mathias */;(function(root){/** Detect free variables */var freeExports=typeof exports=='object'&&exports&&!exports.nodeType&&exports;var freeModule=typeof module=='object'&&module&&!module.nodeType&&module;var freeGlobal=typeof global=='object'&&global;if(freeGlobal.global===freeGlobal||freeGlobal.window===freeGlobal||freeGlobal.self===freeGlobal){root=freeGlobal;}/**
+process.versions={};function noop(){}process.on=noop;process.addListener=noop;process.once=noop;process.off=noop;process.removeListener=noop;process.removeAllListeners=noop;process.emit=noop;process.prependListener=noop;process.prependOnceListener=noop;process.listeners=function(name){return[];};process.binding=function(name){throw new Error('process.binding is not supported');};process.cwd=function(){return'/';};process.chdir=function(dir){throw new Error('process.chdir is not supported');};process.umask=function(){return 0;};},{}],58:[function(require,module,exports){(function(global){(function(){/*! https://mths.be/punycode v1.4.1 by @mathias */;(function(root){/** Detect free variables */var freeExports=typeof exports=='object'&&exports&&!exports.nodeType&&exports;var freeModule=typeof module=='object'&&module&&!module.nodeType&&module;var freeGlobal=typeof global=='object'&&global;if(freeGlobal.global===freeGlobal||freeGlobal.window===freeGlobal||freeGlobal.self===freeGlobal){root=freeGlobal;}/**
 	 * The `punycode` object.
 	 * @name punycode
 	 * @type Object
@@ -5290,7 +1446,7 @@ for/* no condition */(q=delta,k=base;;k+=base){t=k<=bias?tMin:k>=bias+tMax?tMax:
 if(typeof define=='function'&&typeof define.amd=='object'&&define.amd){define('punycode',function(){return punycode;});}else if(freeExports&&freeModule){if(module.exports==freeExports){// in Node.js, io.js, or RingoJS v0.8.0+
 freeModule.exports=punycode;}else{// in Narwhal or RingoJS v0.7.0-
 for(key in punycode){punycode.hasOwnProperty(key)&&(freeExports[key]=punycode[key]);}}}else{// in Rhino or a web browser
-root.punycode=punycode;}})(this);}).call(this);}).call(this,typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{}],60:[function(require,module,exports){// Copyright Joyent, Inc. and other Node contributors.
+root.punycode=punycode;}})(this);}).call(this);}).call(this,typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{}],59:[function(require,module,exports){// Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the
@@ -5314,7 +1470,7 @@ root.punycode=punycode;}})(this);}).call(this);}).call(this,typeof global!=="und
 // obj.hasOwnProperty(prop) will break.
 // See: https://github.com/joyent/node/issues/1707
 function hasOwnProperty(obj,prop){return Object.prototype.hasOwnProperty.call(obj,prop);}module.exports=function(qs,sep,eq,options){sep=sep||'&';eq=eq||'=';var obj={};if(typeof qs!=='string'||qs.length===0){return obj;}var regexp=/\+/g;qs=qs.split(sep);var maxKeys=1000;if(options&&typeof options.maxKeys==='number'){maxKeys=options.maxKeys;}var len=qs.length;// maxKeys <= 0 means that we should not limit keys count
-if(maxKeys>0&&len>maxKeys){len=maxKeys;}for(var i=0;i<len;++i){var x=qs[i].replace(regexp,'%20'),idx=x.indexOf(eq),kstr,vstr,k,v;if(idx>=0){kstr=x.substr(0,idx);vstr=x.substr(idx+1);}else{kstr=x;vstr='';}k=decodeURIComponent(kstr);v=decodeURIComponent(vstr);if(!hasOwnProperty(obj,k)){obj[k]=v;}else if(isArray(obj[k])){obj[k].push(v);}else{obj[k]=[obj[k],v];}}return obj;};var isArray=Array.isArray||function(xs){return Object.prototype.toString.call(xs)==='[object Array]';};},{}],61:[function(require,module,exports){// Copyright Joyent, Inc. and other Node contributors.
+if(maxKeys>0&&len>maxKeys){len=maxKeys;}for(var i=0;i<len;++i){var x=qs[i].replace(regexp,'%20'),idx=x.indexOf(eq),kstr,vstr,k,v;if(idx>=0){kstr=x.substr(0,idx);vstr=x.substr(idx+1);}else{kstr=x;vstr='';}k=decodeURIComponent(kstr);v=decodeURIComponent(vstr);if(!hasOwnProperty(obj,k)){obj[k]=v;}else if(isArray(obj[k])){obj[k].push(v);}else{obj[k]=[obj[k],v];}}return obj;};var isArray=Array.isArray||function(xs){return Object.prototype.toString.call(xs)==='[object Array]';};},{}],60:[function(require,module,exports){// Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the
@@ -5334,10 +1490,10 @@ if(maxKeys>0&&len>maxKeys){len=maxKeys;}for(var i=0;i<len;++i){var x=qs[i].repla
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
-'use strict';var stringifyPrimitive=function stringifyPrimitive(v){switch(typeof v){case'string':return v;case'boolean':return v?'true':'false';case'number':return isFinite(v)?v:'';default:return'';}};module.exports=function(obj,sep,eq,name){sep=sep||'&';eq=eq||'=';if(obj===null){obj=undefined;}if(typeof obj==='object'){return map(objectKeys(obj),function(k){var ks=encodeURIComponent(stringifyPrimitive(k))+eq;if(isArray(obj[k])){return map(obj[k],function(v){return ks+encodeURIComponent(stringifyPrimitive(v));}).join(sep);}else{return ks+encodeURIComponent(stringifyPrimitive(obj[k]));}}).join(sep);}if(!name)return'';return encodeURIComponent(stringifyPrimitive(name))+eq+encodeURIComponent(stringifyPrimitive(obj));};var isArray=Array.isArray||function(xs){return Object.prototype.toString.call(xs)==='[object Array]';};function map(xs,f){if(xs.map)return xs.map(f);var res=[];for(var i=0;i<xs.length;i++){res.push(f(xs[i],i));}return res;}var objectKeys=Object.keys||function(obj){var res=[];for(var key in obj){if(Object.prototype.hasOwnProperty.call(obj,key))res.push(key);}return res;};},{}],62:[function(require,module,exports){'use strict';exports.decode=exports.parse=require('./decode');exports.encode=exports.stringify=require('./encode');},{"./decode":60,"./encode":61}],63:[function(require,module,exports){/*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */ /* eslint-disable node/no-deprecated-api */var buffer=require('buffer');var Buffer=buffer.Buffer;// alternative to using Object.keys for old browsers
+'use strict';var stringifyPrimitive=function stringifyPrimitive(v){switch(typeof v){case'string':return v;case'boolean':return v?'true':'false';case'number':return isFinite(v)?v:'';default:return'';}};module.exports=function(obj,sep,eq,name){sep=sep||'&';eq=eq||'=';if(obj===null){obj=undefined;}if(typeof obj==='object'){return map(objectKeys(obj),function(k){var ks=encodeURIComponent(stringifyPrimitive(k))+eq;if(isArray(obj[k])){return map(obj[k],function(v){return ks+encodeURIComponent(stringifyPrimitive(v));}).join(sep);}else{return ks+encodeURIComponent(stringifyPrimitive(obj[k]));}}).join(sep);}if(!name)return'';return encodeURIComponent(stringifyPrimitive(name))+eq+encodeURIComponent(stringifyPrimitive(obj));};var isArray=Array.isArray||function(xs){return Object.prototype.toString.call(xs)==='[object Array]';};function map(xs,f){if(xs.map)return xs.map(f);var res=[];for(var i=0;i<xs.length;i++){res.push(f(xs[i],i));}return res;}var objectKeys=Object.keys||function(obj){var res=[];for(var key in obj){if(Object.prototype.hasOwnProperty.call(obj,key))res.push(key);}return res;};},{}],61:[function(require,module,exports){'use strict';exports.decode=exports.parse=require('./decode');exports.encode=exports.stringify=require('./encode');},{"./decode":59,"./encode":60}],62:[function(require,module,exports){/*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */ /* eslint-disable node/no-deprecated-api */var buffer=require('buffer');var Buffer=buffer.Buffer;// alternative to using Object.keys for old browsers
 function copyProps(src,dst){for(var key in src){dst[key]=src[key];}}if(Buffer.from&&Buffer.alloc&&Buffer.allocUnsafe&&Buffer.allocUnsafeSlow){module.exports=buffer;}else{// Copy properties from require('buffer')
 copyProps(buffer,exports);exports.Buffer=SafeBuffer;}function SafeBuffer(arg,encodingOrOffset,length){return Buffer(arg,encodingOrOffset,length);}SafeBuffer.prototype=Object.create(Buffer.prototype);// Copy static methods from Buffer
-copyProps(Buffer,SafeBuffer);SafeBuffer.from=function(arg,encodingOrOffset,length){if(typeof arg==='number'){throw new TypeError('Argument must not be a number');}return Buffer(arg,encodingOrOffset,length);};SafeBuffer.alloc=function(size,fill,encoding){if(typeof size!=='number'){throw new TypeError('Argument must be a number');}var buf=Buffer(size);if(fill!==undefined){if(typeof encoding==='string'){buf.fill(fill,encoding);}else{buf.fill(fill);}}else{buf.fill(0);}return buf;};SafeBuffer.allocUnsafe=function(size){if(typeof size!=='number'){throw new TypeError('Argument must be a number');}return Buffer(size);};SafeBuffer.allocUnsafeSlow=function(size){if(typeof size!=='number'){throw new TypeError('Argument must be a number');}return buffer.SlowBuffer(size);};},{"buffer":20}],64:[function(require,module,exports){(function(Buffer){(function(){/*! simple-concat. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */module.exports=function(stream,cb){var chunks=[];stream.on('data',function(chunk){chunks.push(chunk);});stream.once('end',function(){if(cb)cb(null,Buffer.concat(chunks));cb=null;});stream.once('error',function(err){if(cb)cb(err);cb=null;});};}).call(this);}).call(this,require("buffer").Buffer);},{"buffer":20}],65:[function(require,module,exports){(function(Buffer){(function(){/*! simple-get. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */module.exports=simpleGet;const concat=require('simple-concat');const decompressResponse=require('decompress-response');// excluded from browser build
+copyProps(Buffer,SafeBuffer);SafeBuffer.from=function(arg,encodingOrOffset,length){if(typeof arg==='number'){throw new TypeError('Argument must not be a number');}return Buffer(arg,encodingOrOffset,length);};SafeBuffer.alloc=function(size,fill,encoding){if(typeof size!=='number'){throw new TypeError('Argument must be a number');}var buf=Buffer(size);if(fill!==undefined){if(typeof encoding==='string'){buf.fill(fill,encoding);}else{buf.fill(fill);}}else{buf.fill(0);}return buf;};SafeBuffer.allocUnsafe=function(size){if(typeof size!=='number'){throw new TypeError('Argument must be a number');}return Buffer(size);};SafeBuffer.allocUnsafeSlow=function(size){if(typeof size!=='number'){throw new TypeError('Argument must be a number');}return buffer.SlowBuffer(size);};},{"buffer":19}],63:[function(require,module,exports){(function(Buffer){(function(){/*! simple-concat. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */module.exports=function(stream,cb){var chunks=[];stream.on('data',function(chunk){chunks.push(chunk);});stream.once('end',function(){if(cb)cb(null,Buffer.concat(chunks));cb=null;});stream.once('error',function(err){if(cb)cb(err);cb=null;});};}).call(this);}).call(this,require("buffer").Buffer);},{"buffer":19}],64:[function(require,module,exports){(function(Buffer){(function(){/*! simple-get. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */module.exports=simpleGet;const concat=require('simple-concat');const decompressResponse=require('decompress-response');// excluded from browser build
 const http=require('http');const https=require('https');const once=require('once');const querystring=require('querystring');const url=require('url');const isStream=o=>o!==null&&typeof o==='object'&&typeof o.pipe==='function';function simpleGet(opts,cb){opts=Object.assign({maxRedirects:10},typeof opts==='string'?{url:opts}:opts);cb=once(cb);if(opts.url){const{hostname,port,protocol,auth,path}=url.parse(opts.url);// eslint-disable-line node/no-deprecated-api
 delete opts.url;if(!hostname&&!port&&!protocol&&!auth)opts.path=path;// Relative redirect
 else Object.assign(opts,{hostname,port,protocol,auth,path});// Absolute redirect
@@ -5349,13 +1505,13 @@ res.resume();// Discard response
 const redirectHost=url.parse(opts.url).hostname;// eslint-disable-line node/no-deprecated-api
 // If redirected host is different than original host, drop headers to prevent cookie leak (#73)
 if(redirectHost!==null&&redirectHost!==originalHost){delete opts.headers.cookie;delete opts.headers.authorization;}if(opts.method==='POST'&&[301,302].includes(res.statusCode)){opts.method='GET';// On 301/302 redirect, change POST to GET (see #35)
-delete opts.headers['content-length'];delete opts.headers['content-type'];}if(opts.maxRedirects--===0)return cb(new Error('too many redirects'));else return simpleGet(opts,cb);}const tryUnzip=typeof decompressResponse==='function'&&opts.method!=='HEAD';cb(null,tryUnzip?decompressResponse(res):res);});req.on('timeout',()=>{req.abort();cb(new Error('Request timed out'));});req.on('error',cb);if(isStream(body))body.on('error',cb).pipe(req);else req.end(body);return req;}simpleGet.concat=(opts,cb)=>{return simpleGet(opts,(err,res)=>{if(err)return cb(err);concat(res,(err,data)=>{if(err)return cb(err);if(opts.json){try{data=JSON.parse(data.toString());}catch(err){return cb(err,res,data);}}cb(null,res,data);});});};['get','post','put','patch','head','delete'].forEach(method=>{simpleGet[method]=(opts,cb)=>{if(typeof opts==='string')opts={url:opts};return simpleGet(Object.assign({method:method.toUpperCase()},opts),cb);};});}).call(this);}).call(this,require("buffer").Buffer);},{"buffer":20,"decompress-response":18,"http":66,"https":39,"once":53,"querystring":62,"simple-concat":64,"url":87}],66:[function(require,module,exports){(function(global){(function(){var ClientRequest=require('./lib/request');var response=require('./lib/response');var extend=require('xtend');var statusCodes=require('builtin-status-codes');var url=require('url');var http=exports;http.request=function(opts,cb){if(typeof opts==='string')opts=url.parse(opts);else opts=extend(opts);// Normally, the page is loaded from http or https, so not specifying a protocol
+delete opts.headers['content-length'];delete opts.headers['content-type'];}if(opts.maxRedirects--===0)return cb(new Error('too many redirects'));else return simpleGet(opts,cb);}const tryUnzip=typeof decompressResponse==='function'&&opts.method!=='HEAD';cb(null,tryUnzip?decompressResponse(res):res);});req.on('timeout',()=>{req.abort();cb(new Error('Request timed out'));});req.on('error',cb);if(isStream(body))body.on('error',cb).pipe(req);else req.end(body);return req;}simpleGet.concat=(opts,cb)=>{return simpleGet(opts,(err,res)=>{if(err)return cb(err);concat(res,(err,data)=>{if(err)return cb(err);if(opts.json){try{data=JSON.parse(data.toString());}catch(err){return cb(err,res,data);}}cb(null,res,data);});});};['get','post','put','patch','head','delete'].forEach(method=>{simpleGet[method]=(opts,cb)=>{if(typeof opts==='string')opts={url:opts};return simpleGet(Object.assign({method:method.toUpperCase()},opts),cb);};});}).call(this);}).call(this,require("buffer").Buffer);},{"buffer":19,"decompress-response":17,"http":65,"https":38,"once":52,"querystring":61,"simple-concat":63,"url":86}],65:[function(require,module,exports){(function(global){(function(){var ClientRequest=require('./lib/request');var response=require('./lib/response');var extend=require('xtend');var statusCodes=require('builtin-status-codes');var url=require('url');var http=exports;http.request=function(opts,cb){if(typeof opts==='string')opts=url.parse(opts);else opts=extend(opts);// Normally, the page is loaded from http or https, so not specifying a protocol
 // will result in a (valid) protocol-relative url. However, this won't work if
 // the protocol is something else, like 'file:'
 var defaultProtocol=global.location.protocol.search(/^https?:$/)===-1?'http:':'';var protocol=opts.protocol||defaultProtocol;var host=opts.hostname||opts.host;var port=opts.port;var path=opts.path||'/';// Necessary for IPv6 addresses
 if(host&&host.indexOf(':')!==-1)host='['+host+']';// This may be a relative url. The browser should always be able to interpret it correctly.
 opts.url=(host?protocol+'//'+host:'')+(port?':'+port:'')+path;opts.method=(opts.method||'GET').toUpperCase();opts.headers=opts.headers||{};// Also valid opts.auth, opts.mode
-var req=new ClientRequest(opts);if(cb)req.on('response',cb);return req;};http.get=function get(opts,cb){var req=http.request(opts,cb);req.end();return req;};http.ClientRequest=ClientRequest;http.IncomingMessage=response.IncomingMessage;http.Agent=function(){};http.Agent.defaultMaxSockets=4;http.globalAgent=new http.Agent();http.STATUS_CODES=statusCodes;http.METHODS=['CHECKOUT','CONNECT','COPY','DELETE','GET','HEAD','LOCK','M-SEARCH','MERGE','MKACTIVITY','MKCOL','MOVE','NOTIFY','OPTIONS','PATCH','POST','PROPFIND','PROPPATCH','PURGE','PUT','REPORT','SEARCH','SUBSCRIBE','TRACE','UNLOCK','UNSUBSCRIBE'];}).call(this);}).call(this,typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{"./lib/request":68,"./lib/response":69,"builtin-status-codes":21,"url":87,"xtend":91}],67:[function(require,module,exports){(function(global){(function(){exports.fetch=isFunction(global.fetch)&&isFunction(global.ReadableStream);exports.writableStream=isFunction(global.WritableStream);exports.abortController=isFunction(global.AbortController);// The xhr request to example.com may violate some restrictive CSP configurations,
+var req=new ClientRequest(opts);if(cb)req.on('response',cb);return req;};http.get=function get(opts,cb){var req=http.request(opts,cb);req.end();return req;};http.ClientRequest=ClientRequest;http.IncomingMessage=response.IncomingMessage;http.Agent=function(){};http.Agent.defaultMaxSockets=4;http.globalAgent=new http.Agent();http.STATUS_CODES=statusCodes;http.METHODS=['CHECKOUT','CONNECT','COPY','DELETE','GET','HEAD','LOCK','M-SEARCH','MERGE','MKACTIVITY','MKCOL','MOVE','NOTIFY','OPTIONS','PATCH','POST','PROPFIND','PROPPATCH','PURGE','PUT','REPORT','SEARCH','SUBSCRIBE','TRACE','UNLOCK','UNSUBSCRIBE'];}).call(this);}).call(this,typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{"./lib/request":67,"./lib/response":68,"builtin-status-codes":20,"url":86,"xtend":90}],66:[function(require,module,exports){(function(global){(function(){exports.fetch=isFunction(global.fetch)&&isFunction(global.ReadableStream);exports.writableStream=isFunction(global.WritableStream);exports.abortController=isFunction(global.AbortController);// The xhr request to example.com may violate some restrictive CSP configurations,
 // so if we're running in a browser that supports `fetch`, avoid calling getXHR()
 // and assume support for certain features below.
 var xhr;function getXHR(){// Cache the xhr value
@@ -5370,7 +1526,7 @@ exports.arraybuffer=exports.fetch||checkTypeSupport('arraybuffer');// These next
 exports.msstream=!exports.fetch&&checkTypeSupport('ms-stream');exports.mozchunkedarraybuffer=!exports.fetch&&checkTypeSupport('moz-chunked-arraybuffer');// If fetch is supported, then overrideMimeType will be supported too. Skip calling
 // getXHR().
 exports.overrideMimeType=exports.fetch||(getXHR()?isFunction(getXHR().overrideMimeType):false);function isFunction(value){return typeof value==='function';}xhr=null;// Help gc
-}).call(this);}).call(this,typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{}],68:[function(require,module,exports){(function(process,global,Buffer){(function(){var capability=require('./capability');var inherits=require('inherits');var response=require('./response');var stream=require('readable-stream');var IncomingMessage=response.IncomingMessage;var rStates=response.readyStates;function decideMode(preferBinary,useFetch){if(capability.fetch&&useFetch){return'fetch';}else if(capability.mozchunkedarraybuffer){return'moz-chunked-arraybuffer';}else if(capability.msstream){return'ms-stream';}else if(capability.arraybuffer&&preferBinary){return'arraybuffer';}else{return'text';}}var ClientRequest=module.exports=function(opts){var self=this;stream.Writable.call(self);self._opts=opts;self._body=[];self._headers={};if(opts.auth)self.setHeader('Authorization','Basic '+Buffer.from(opts.auth).toString('base64'));Object.keys(opts.headers).forEach(function(name){self.setHeader(name,opts.headers[name]);});var preferBinary;var useFetch=true;if(opts.mode==='disable-fetch'||'requestTimeout'in opts&&!capability.abortController){// If the use of XHR should be preferred. Not typically needed.
+}).call(this);}).call(this,typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{}],67:[function(require,module,exports){(function(process,global,Buffer){(function(){var capability=require('./capability');var inherits=require('inherits');var response=require('./response');var stream=require('readable-stream');var IncomingMessage=response.IncomingMessage;var rStates=response.readyStates;function decideMode(preferBinary,useFetch){if(capability.fetch&&useFetch){return'fetch';}else if(capability.mozchunkedarraybuffer){return'moz-chunked-arraybuffer';}else if(capability.msstream){return'ms-stream';}else if(capability.arraybuffer&&preferBinary){return'arraybuffer';}else{return'text';}}var ClientRequest=module.exports=function(opts){var self=this;stream.Writable.call(self);self._opts=opts;self._body=[];self._headers={};if(opts.auth)self.setHeader('Authorization','Basic '+Buffer.from(opts.auth).toString('base64'));Object.keys(opts.headers).forEach(function(name){self.setHeader(name,opts.headers[name]);});var preferBinary;var useFetch=true;if(opts.mode==='disable-fetch'||'requestTimeout'in opts&&!capability.abortController){// If the use of XHR should be preferred. Not typically needed.
 useFetch=false;preferBinary=true;}else if(opts.mode==='prefer-streaming'){// If streaming is a high priority but binary compatibility and
 // the accuracy of the 'content-type' header aren't
 preferBinary=false;}else if(opts.mode==='allow-wrong-content-type'){// If streaming is more important than preserving the 'content-type' header
@@ -5387,7 +1543,7 @@ if(self._mode==='moz-chunked-arraybuffer'){xhr.onprogress=function(){self._onXHR
  * Even though the spec says it should be available in readyState 3,
  * accessing it throws an exception in IE8
  */function statusValid(xhr){try{var status=xhr.status;return status!==null&&status!==0;}catch(e){return false;}}ClientRequest.prototype._onXHRProgress=function(){var self=this;self._resetTimers(false);if(!statusValid(self._xhr)||self._destroyed)return;if(!self._response)self._connect();self._response._onXHRProgress(self._resetTimers.bind(self));};ClientRequest.prototype._connect=function(){var self=this;if(self._destroyed)return;self._response=new IncomingMessage(self._xhr,self._fetchResponse,self._mode,self._resetTimers.bind(self));self._response.on('error',function(err){self.emit('error',err);});self.emit('response',self._response);};ClientRequest.prototype._write=function(chunk,encoding,cb){var self=this;self._body.push(chunk);cb();};ClientRequest.prototype._resetTimers=function(done){var self=this;global.clearTimeout(self._socketTimer);self._socketTimer=null;if(done){global.clearTimeout(self._fetchTimer);self._fetchTimer=null;}else if(self._socketTimeout){self._socketTimer=global.setTimeout(function(){self.emit('timeout');},self._socketTimeout);}};ClientRequest.prototype.abort=ClientRequest.prototype.destroy=function(err){var self=this;self._destroyed=true;self._resetTimers(true);if(self._response)self._response._destroyed=true;if(self._xhr)self._xhr.abort();else if(self._fetchAbortController)self._fetchAbortController.abort();if(err)self.emit('error',err);};ClientRequest.prototype.end=function(data,encoding,cb){var self=this;if(typeof data==='function'){cb=data;data=undefined;}stream.Writable.prototype.end.call(self,data,encoding,cb);};ClientRequest.prototype.setTimeout=function(timeout,cb){var self=this;if(cb)self.once('timeout',cb);self._socketTimeout=timeout;self._resetTimers(false);};ClientRequest.prototype.flushHeaders=function(){};ClientRequest.prototype.setNoDelay=function(){};ClientRequest.prototype.setSocketKeepAlive=function(){};// Taken from http://www.w3.org/TR/XMLHttpRequest/#the-setrequestheader%28%29-method
-var unsafeHeaders=['accept-charset','accept-encoding','access-control-request-headers','access-control-request-method','connection','content-length','cookie','cookie2','date','dnt','expect','host','keep-alive','origin','referer','te','trailer','transfer-encoding','upgrade','via'];}).call(this);}).call(this,require('_process'),typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{},require("buffer").Buffer);},{"./capability":67,"./response":69,"_process":58,"buffer":20,"inherits":41,"readable-stream":84}],69:[function(require,module,exports){(function(process,global,Buffer){(function(){var capability=require('./capability');var inherits=require('inherits');var stream=require('readable-stream');var rStates=exports.readyStates={UNSENT:0,OPENED:1,HEADERS_RECEIVED:2,LOADING:3,DONE:4};var IncomingMessage=exports.IncomingMessage=function(xhr,response,mode,resetTimers){var self=this;stream.Readable.call(self);self._mode=mode;self.headers={};self.rawHeaders=[];self.trailers={};self.rawTrailers=[];// Fake the 'close' event, but only once 'end' fires
+var unsafeHeaders=['accept-charset','accept-encoding','access-control-request-headers','access-control-request-method','connection','content-length','cookie','cookie2','date','dnt','expect','host','keep-alive','origin','referer','te','trailer','transfer-encoding','upgrade','via'];}).call(this);}).call(this,require('_process'),typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{},require("buffer").Buffer);},{"./capability":66,"./response":68,"_process":57,"buffer":19,"inherits":40,"readable-stream":83}],68:[function(require,module,exports){(function(process,global,Buffer){(function(){var capability=require('./capability');var inherits=require('inherits');var stream=require('readable-stream');var rStates=exports.readyStates={UNSENT:0,OPENED:1,HEADERS_RECEIVED:2,LOADING:3,DONE:4};var IncomingMessage=exports.IncomingMessage=function(xhr,response,mode,resetTimers){var self=this;stream.Readable.call(self);self._mode=mode;self.headers={};self.rawHeaders=[];self.trailers={};self.rawTrailers=[];// Fake the 'close' event, but only once 'end' fires
 self.on('end',function(){// The nextTick is necessary to prevent the 'request' module from causing an infinite loop
 process.nextTick(function(){self.emit('close');});});if(mode==='fetch'){self._fetchResponse=response;self.url=response.url;self.statusCode=response.status;self.statusMessage=response.statusText;response.headers.forEach(function(header,key){self.headers[key.toLowerCase()]=header;self.rawHeaders.push(key,header);});if(capability.writableStream){var writable=new WritableStream({write:function write(chunk){resetTimers(false);return new Promise(function(resolve,reject){if(self._destroyed){reject();}else if(self.push(Buffer.from(chunk))){resolve();}else{self._resumeFetch=resolve;}});},close:function close(){resetTimers(true);if(!self._destroyed)self.push(null);},abort:function abort(err){resetTimers(true);if(!self._destroyed)self.emit('error',err);}});try{response.body.pipeTo(writable).catch(function(err){resetTimers(true);if(!self._destroyed)self.emit('error',err);});return;}catch(e){}// pipeTo method isn't defined. Can't find a better way to feature test this
 }// fallback for when writableStream or pipeTo aren't available
@@ -5395,13 +1551,13 @@ var reader=response.body.getReader();function read(){reader.read().then(function
 }}};inherits(IncomingMessage,stream.Readable);IncomingMessage.prototype._read=function(){var self=this;var resolve=self._resumeFetch;if(resolve){self._resumeFetch=null;resolve();}};IncomingMessage.prototype._onXHRProgress=function(resetTimers){var self=this;var xhr=self._xhr;var response=null;switch(self._mode){case'text':response=xhr.responseText;if(response.length>self._pos){var newData=response.substr(self._pos);if(self._charset==='x-user-defined'){var buffer=Buffer.alloc(newData.length);for(var i=0;i<newData.length;i++)buffer[i]=newData.charCodeAt(i)&0xff;self.push(buffer);}else{self.push(newData,self._charset);}self._pos=response.length;}break;case'arraybuffer':if(xhr.readyState!==rStates.DONE||!xhr.response)break;response=xhr.response;self.push(Buffer.from(new Uint8Array(response)));break;case'moz-chunked-arraybuffer':// take whole
 response=xhr.response;if(xhr.readyState!==rStates.LOADING||!response)break;self.push(Buffer.from(new Uint8Array(response)));break;case'ms-stream':response=xhr.response;if(xhr.readyState!==rStates.LOADING)break;var reader=new global.MSStreamReader();reader.onprogress=function(){if(reader.result.byteLength>self._pos){self.push(Buffer.from(new Uint8Array(reader.result.slice(self._pos))));self._pos=reader.result.byteLength;}};reader.onload=function(){resetTimers(true);self.push(null);};// reader.onerror = ??? // TODO: this
 reader.readAsArrayBuffer(response);break;}// The ms-stream case handles end separately in reader.onload()
-if(self._xhr.readyState===rStates.DONE&&self._mode!=='ms-stream'){resetTimers(true);self.push(null);}};}).call(this);}).call(this,require('_process'),typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{},require("buffer").Buffer);},{"./capability":67,"_process":58,"buffer":20,"inherits":41,"readable-stream":84}],70:[function(require,module,exports){'use strict';function _inheritsLoose(subClass,superClass){subClass.prototype=Object.create(superClass.prototype);subClass.prototype.constructor=subClass;subClass.__proto__=superClass;}var codes={};function createErrorType(code,message,Base){if(!Base){Base=Error;}function getMessage(arg1,arg2,arg3){if(typeof message==='string'){return message;}else{return message(arg1,arg2,arg3);}}var NodeError=/*#__PURE__*/function(_Base){_inheritsLoose(NodeError,_Base);function NodeError(arg1,arg2,arg3){return _Base.call(this,getMessage(arg1,arg2,arg3))||this;}return NodeError;}(Base);NodeError.prototype.name=Base.name;NodeError.prototype.code=code;codes[code]=NodeError;}// https://github.com/nodejs/node/blob/v10.8.0/lib/internal/errors.js
+if(self._xhr.readyState===rStates.DONE&&self._mode!=='ms-stream'){resetTimers(true);self.push(null);}};}).call(this);}).call(this,require('_process'),typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{},require("buffer").Buffer);},{"./capability":66,"_process":57,"buffer":19,"inherits":40,"readable-stream":83}],69:[function(require,module,exports){'use strict';function _inheritsLoose(subClass,superClass){subClass.prototype=Object.create(superClass.prototype);subClass.prototype.constructor=subClass;subClass.__proto__=superClass;}var codes={};function createErrorType(code,message,Base){if(!Base){Base=Error;}function getMessage(arg1,arg2,arg3){if(typeof message==='string'){return message;}else{return message(arg1,arg2,arg3);}}var NodeError=/*#__PURE__*/function(_Base){_inheritsLoose(NodeError,_Base);function NodeError(arg1,arg2,arg3){return _Base.call(this,getMessage(arg1,arg2,arg3))||this;}return NodeError;}(Base);NodeError.prototype.name=Base.name;NodeError.prototype.code=code;codes[code]=NodeError;}// https://github.com/nodejs/node/blob/v10.8.0/lib/internal/errors.js
 function oneOf(expected,thing){if(Array.isArray(expected)){var len=expected.length;expected=expected.map(function(i){return String(i);});if(len>2){return"one of ".concat(thing," ").concat(expected.slice(0,len-1).join(', '),", or ")+expected[len-1];}else if(len===2){return"one of ".concat(thing," ").concat(expected[0]," or ").concat(expected[1]);}else{return"of ".concat(thing," ").concat(expected[0]);}}else{return"of ".concat(thing," ").concat(String(expected));}}// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith
 function startsWith(str,search,pos){return str.substr(!pos||pos<0?0:+pos,search.length)===search;}// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith
 function endsWith(str,search,this_len){if(this_len===undefined||this_len>str.length){this_len=str.length;}return str.substring(this_len-search.length,this_len)===search;}// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes
 function includes(str,search,start){if(typeof start!=='number'){start=0;}if(start+search.length>str.length){return false;}else{return str.indexOf(search,start)!==-1;}}createErrorType('ERR_INVALID_OPT_VALUE',function(name,value){return'The value "'+value+'" is invalid for option "'+name+'"';},TypeError);createErrorType('ERR_INVALID_ARG_TYPE',function(name,expected,actual){// determiner: 'must be' or 'must not be'
 var determiner;if(typeof expected==='string'&&startsWith(expected,'not ')){determiner='must not be';expected=expected.replace(/^not /,'');}else{determiner='must be';}var msg;if(endsWith(name,' argument')){// For cases like 'first argument'
-msg="The ".concat(name," ").concat(determiner," ").concat(oneOf(expected,'type'));}else{var type=includes(name,'.')?'property':'argument';msg="The \"".concat(name,"\" ").concat(type," ").concat(determiner," ").concat(oneOf(expected,'type'));}msg+=". Received type ".concat(typeof actual);return msg;},TypeError);createErrorType('ERR_STREAM_PUSH_AFTER_EOF','stream.push() after EOF');createErrorType('ERR_METHOD_NOT_IMPLEMENTED',function(name){return'The '+name+' method is not implemented';});createErrorType('ERR_STREAM_PREMATURE_CLOSE','Premature close');createErrorType('ERR_STREAM_DESTROYED',function(name){return'Cannot call '+name+' after a stream was destroyed';});createErrorType('ERR_MULTIPLE_CALLBACK','Callback called multiple times');createErrorType('ERR_STREAM_CANNOT_PIPE','Cannot pipe, not readable');createErrorType('ERR_STREAM_WRITE_AFTER_END','write after end');createErrorType('ERR_STREAM_NULL_VALUES','May not write null values to stream',TypeError);createErrorType('ERR_UNKNOWN_ENCODING',function(arg){return'Unknown encoding: '+arg;},TypeError);createErrorType('ERR_STREAM_UNSHIFT_AFTER_END_EVENT','stream.unshift() after end event');module.exports.codes=codes;},{}],71:[function(require,module,exports){(function(process){(function(){// Copyright Joyent, Inc. and other Node contributors.
+msg="The ".concat(name," ").concat(determiner," ").concat(oneOf(expected,'type'));}else{var type=includes(name,'.')?'property':'argument';msg="The \"".concat(name,"\" ").concat(type," ").concat(determiner," ").concat(oneOf(expected,'type'));}msg+=". Received type ".concat(typeof actual);return msg;},TypeError);createErrorType('ERR_STREAM_PUSH_AFTER_EOF','stream.push() after EOF');createErrorType('ERR_METHOD_NOT_IMPLEMENTED',function(name){return'The '+name+' method is not implemented';});createErrorType('ERR_STREAM_PREMATURE_CLOSE','Premature close');createErrorType('ERR_STREAM_DESTROYED',function(name){return'Cannot call '+name+' after a stream was destroyed';});createErrorType('ERR_MULTIPLE_CALLBACK','Callback called multiple times');createErrorType('ERR_STREAM_CANNOT_PIPE','Cannot pipe, not readable');createErrorType('ERR_STREAM_WRITE_AFTER_END','write after end');createErrorType('ERR_STREAM_NULL_VALUES','May not write null values to stream',TypeError);createErrorType('ERR_UNKNOWN_ENCODING',function(arg){return'Unknown encoding: '+arg;},TypeError);createErrorType('ERR_STREAM_UNSHIFT_AFTER_END_EVENT','stream.unshift() after end event');module.exports.codes=codes;},{}],70:[function(require,module,exports){(function(process){(function(){// Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the
@@ -5446,7 +1602,7 @@ enumerable:false,get:function get(){if(this._readableState===undefined||this._wr
 // has not been initialized yet
 if(this._readableState===undefined||this._writableState===undefined){return;}// backward compatibility, the user is explicitly
 // managing destroyed
-this._readableState.destroyed=value;this._writableState.destroyed=value;}});}).call(this);}).call(this,require('_process'));},{"./_stream_readable":73,"./_stream_writable":75,"_process":58,"inherits":41}],72:[function(require,module,exports){// Copyright Joyent, Inc. and other Node contributors.
+this._readableState.destroyed=value;this._writableState.destroyed=value;}});}).call(this);}).call(this,require('_process'));},{"./_stream_readable":72,"./_stream_writable":74,"_process":57,"inherits":40}],71:[function(require,module,exports){// Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the
@@ -5469,7 +1625,7 @@ this._readableState.destroyed=value;this._writableState.destroyed=value;}});}).c
 // a passthrough stream.
 // basically just the most minimal sort of Transform stream.
 // Every written chunk gets output as-is.
-'use strict';module.exports=PassThrough;var Transform=require('./_stream_transform');require('inherits')(PassThrough,Transform);function PassThrough(options){if(!(this instanceof PassThrough))return new PassThrough(options);Transform.call(this,options);}PassThrough.prototype._transform=function(chunk,encoding,cb){cb(null,chunk);};},{"./_stream_transform":74,"inherits":41}],73:[function(require,module,exports){(function(process,global){(function(){// Copyright Joyent, Inc. and other Node contributors.
+'use strict';module.exports=PassThrough;var Transform=require('./_stream_transform');require('inherits')(PassThrough,Transform);function PassThrough(options){if(!(this instanceof PassThrough))return new PassThrough(options);Transform.call(this,options);}PassThrough.prototype._transform=function(chunk,encoding,cb){cb(null,chunk);};},{"./_stream_transform":73,"inherits":40}],72:[function(require,module,exports){(function(process,global){(function(){// Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the
@@ -5721,7 +1877,7 @@ if(state.decoder)ret=state.buffer.join('');else if(state.buffer.length===1)ret=s
 ret=state.buffer.consume(n,state.decoder);}return ret;}function endReadable(stream){var state=stream._readableState;debug('endReadable',state.endEmitted);if(!state.endEmitted){state.ended=true;process.nextTick(endReadableNT,state,stream);}}function endReadableNT(state,stream){debug('endReadableNT',state.endEmitted,state.length);// Check that we didn't get one last unshift.
 if(!state.endEmitted&&state.length===0){state.endEmitted=true;stream.readable=false;stream.emit('end');if(state.autoDestroy){// In case of duplex streams we need a way to detect
 // if the writable side is ready for autoDestroy as well
-var wState=stream._writableState;if(!wState||wState.autoDestroy&&wState.finished){stream.destroy();}}}}if(typeof Symbol==='function'){Readable.from=function(iterable,opts){if(from===undefined){from=require('./internal/streams/from');}return from(Readable,iterable,opts);};}function indexOf(xs,x){for(var i=0,l=xs.length;i<l;i++){if(xs[i]===x)return i;}return-1;}}).call(this);}).call(this,require('_process'),typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{"../errors":70,"./_stream_duplex":71,"./internal/streams/async_iterator":76,"./internal/streams/buffer_list":77,"./internal/streams/destroy":78,"./internal/streams/from":80,"./internal/streams/state":82,"./internal/streams/stream":83,"_process":58,"buffer":20,"events":25,"inherits":41,"string_decoder/":85,"util":18}],74:[function(require,module,exports){// Copyright Joyent, Inc. and other Node contributors.
+var wState=stream._writableState;if(!wState||wState.autoDestroy&&wState.finished){stream.destroy();}}}}if(typeof Symbol==='function'){Readable.from=function(iterable,opts){if(from===undefined){from=require('./internal/streams/from');}return from(Readable,iterable,opts);};}function indexOf(xs,x){for(var i=0,l=xs.length;i<l;i++){if(xs[i]===x)return i;}return-1;}}).call(this);}).call(this,require('_process'),typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{"../errors":69,"./_stream_duplex":70,"./internal/streams/async_iterator":75,"./internal/streams/buffer_list":76,"./internal/streams/destroy":77,"./internal/streams/from":79,"./internal/streams/state":81,"./internal/streams/stream":82,"_process":57,"buffer":19,"events":24,"inherits":40,"string_decoder/":84,"util":17}],73:[function(require,module,exports){// Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the
@@ -5807,7 +1963,7 @@ ts.needTransform=true;}};Transform.prototype._destroy=function(err,cb){Duplex.pr
 stream.push(data);// TODO(BridgeAR): Write a test for these two error cases
 // if there's nothing in the write buffer, then that means
 // that nothing more will ever be provided
-if(stream._writableState.length)throw new ERR_TRANSFORM_WITH_LENGTH_0();if(stream._transformState.transforming)throw new ERR_TRANSFORM_ALREADY_TRANSFORMING();return stream.push(null);}},{"../errors":70,"./_stream_duplex":71,"inherits":41}],75:[function(require,module,exports){(function(process,global){(function(){// Copyright Joyent, Inc. and other Node contributors.
+if(stream._writableState.length)throw new ERR_TRANSFORM_WITH_LENGTH_0();if(stream._transformState.transforming)throw new ERR_TRANSFORM_ALREADY_TRANSFORMING();return stream.push(null);}},{"../errors":69,"./_stream_duplex":70,"inherits":40}],74:[function(require,module,exports){(function(process,global){(function(){// Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the
@@ -5942,7 +2098,7 @@ enumerable:false,get:function get(){if(this._writableState===undefined){return f
 // has not been initialized yet
 if(!this._writableState){return;}// backward compatibility, the user is explicitly
 // managing destroyed
-this._writableState.destroyed=value;}});Writable.prototype.destroy=destroyImpl.destroy;Writable.prototype._undestroy=destroyImpl.undestroy;Writable.prototype._destroy=function(err,cb){cb(err);};}).call(this);}).call(this,require('_process'),typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{"../errors":70,"./_stream_duplex":71,"./internal/streams/destroy":78,"./internal/streams/state":82,"./internal/streams/stream":83,"_process":58,"buffer":20,"inherits":41,"util-deprecate":89}],76:[function(require,module,exports){(function(process){(function(){'use strict';var _Object$setPrototypeO;function _defineProperty(obj,key,value){key=_toPropertyKey(key);if(key in obj){Object.defineProperty(obj,key,{value:value,enumerable:true,configurable:true,writable:true});}else{obj[key]=value;}return obj;}function _toPropertyKey(arg){var key=_toPrimitive(arg,"string");return typeof key==="symbol"?key:String(key);}function _toPrimitive(input,hint){if(typeof input!=="object"||input===null)return input;var prim=input[Symbol.toPrimitive];if(prim!==undefined){var res=prim.call(input,hint||"default");if(typeof res!=="object")return res;throw new TypeError("@@toPrimitive must return a primitive value.");}return(hint==="string"?String:Number)(input);}var finished=require('./end-of-stream');var kLastResolve=Symbol('lastResolve');var kLastReject=Symbol('lastReject');var kError=Symbol('error');var kEnded=Symbol('ended');var kLastPromise=Symbol('lastPromise');var kHandlePromise=Symbol('handlePromise');var kStream=Symbol('stream');function createIterResult(value,done){return{value:value,done:done};}function readAndResolve(iter){var resolve=iter[kLastResolve];if(resolve!==null){var data=iter[kStream].read();// we defer if data is null
+this._writableState.destroyed=value;}});Writable.prototype.destroy=destroyImpl.destroy;Writable.prototype._undestroy=destroyImpl.undestroy;Writable.prototype._destroy=function(err,cb){cb(err);};}).call(this);}).call(this,require('_process'),typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{"../errors":69,"./_stream_duplex":70,"./internal/streams/destroy":77,"./internal/streams/state":81,"./internal/streams/stream":82,"_process":57,"buffer":19,"inherits":40,"util-deprecate":88}],75:[function(require,module,exports){(function(process){(function(){'use strict';var _Object$setPrototypeO;function _defineProperty(obj,key,value){key=_toPropertyKey(key);if(key in obj){Object.defineProperty(obj,key,{value:value,enumerable:true,configurable:true,writable:true});}else{obj[key]=value;}return obj;}function _toPropertyKey(arg){var key=_toPrimitive(arg,"string");return typeof key==="symbol"?key:String(key);}function _toPrimitive(input,hint){if(typeof input!=="object"||input===null)return input;var prim=input[Symbol.toPrimitive];if(prim!==undefined){var res=prim.call(input,hint||"default");if(typeof res!=="object")return res;throw new TypeError("@@toPrimitive must return a primitive value.");}return(hint==="string"?String:Number)(input);}var finished=require('./end-of-stream');var kLastResolve=Symbol('lastResolve');var kLastReject=Symbol('lastReject');var kError=Symbol('error');var kEnded=Symbol('ended');var kLastPromise=Symbol('lastPromise');var kHandlePromise=Symbol('handlePromise');var kStream=Symbol('stream');function createIterResult(value,done){return{value:value,done:done};}function readAndResolve(iter){var resolve=iter[kLastResolve];if(resolve!==null){var data=iter[kStream].read();// we defer if data is null
 // we can be expecting either 'end' or
 // 'error'
 if(data!==null){iter[kLastPromise]=null;iter[kLastResolve]=null;iter[kLastReject]=null;resolve(createIterResult(data,false));}}}function onReadable(iter){// we wait for the next tick, because it might
@@ -5964,7 +2120,7 @@ var data=this[kStream].read();if(data!==null){return Promise.resolve(createIterR
 // Readable class this is attached to
 return new Promise(function(resolve,reject){_this2[kStream].destroy(null,function(err){if(err){reject(err);return;}resolve(createIterResult(undefined,true));});});}),_Object$setPrototypeO),AsyncIteratorPrototype);var createReadableStreamAsyncIterator=function createReadableStreamAsyncIterator(stream){var _Object$create;var iterator=Object.create(ReadableStreamAsyncIteratorPrototype,(_Object$create={},_defineProperty(_Object$create,kStream,{value:stream,writable:true}),_defineProperty(_Object$create,kLastResolve,{value:null,writable:true}),_defineProperty(_Object$create,kLastReject,{value:null,writable:true}),_defineProperty(_Object$create,kError,{value:null,writable:true}),_defineProperty(_Object$create,kEnded,{value:stream._readableState.endEmitted,writable:true}),_defineProperty(_Object$create,kHandlePromise,{value:function value(resolve,reject){var data=iterator[kStream].read();if(data){iterator[kLastPromise]=null;iterator[kLastResolve]=null;iterator[kLastReject]=null;resolve(createIterResult(data,false));}else{iterator[kLastResolve]=resolve;iterator[kLastReject]=reject;}},writable:true}),_Object$create));iterator[kLastPromise]=null;finished(stream,function(err){if(err&&err.code!=='ERR_STREAM_PREMATURE_CLOSE'){var reject=iterator[kLastReject];// reject if we are waiting for data in the Promise
 // returned by next() and store the error
-if(reject!==null){iterator[kLastPromise]=null;iterator[kLastResolve]=null;iterator[kLastReject]=null;reject(err);}iterator[kError]=err;return;}var resolve=iterator[kLastResolve];if(resolve!==null){iterator[kLastPromise]=null;iterator[kLastResolve]=null;iterator[kLastReject]=null;resolve(createIterResult(undefined,true));}iterator[kEnded]=true;});stream.on('readable',onReadable.bind(null,iterator));return iterator;};module.exports=createReadableStreamAsyncIterator;}).call(this);}).call(this,require('_process'));},{"./end-of-stream":79,"_process":58}],77:[function(require,module,exports){'use strict';function ownKeys(object,enumerableOnly){var keys=Object.keys(object);if(Object.getOwnPropertySymbols){var symbols=Object.getOwnPropertySymbols(object);enumerableOnly&&(symbols=symbols.filter(function(sym){return Object.getOwnPropertyDescriptor(object,sym).enumerable;})),keys.push.apply(keys,symbols);}return keys;}function _objectSpread(target){for(var i=1;i<arguments.length;i++){var source=null!=arguments[i]?arguments[i]:{};i%2?ownKeys(Object(source),!0).forEach(function(key){_defineProperty(target,key,source[key]);}):Object.getOwnPropertyDescriptors?Object.defineProperties(target,Object.getOwnPropertyDescriptors(source)):ownKeys(Object(source)).forEach(function(key){Object.defineProperty(target,key,Object.getOwnPropertyDescriptor(source,key));});}return target;}function _defineProperty(obj,key,value){key=_toPropertyKey(key);if(key in obj){Object.defineProperty(obj,key,{value:value,enumerable:true,configurable:true,writable:true});}else{obj[key]=value;}return obj;}function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}function _defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value"in descriptor)descriptor.writable=true;Object.defineProperty(target,_toPropertyKey(descriptor.key),descriptor);}}function _createClass(Constructor,protoProps,staticProps){if(protoProps)_defineProperties(Constructor.prototype,protoProps);if(staticProps)_defineProperties(Constructor,staticProps);Object.defineProperty(Constructor,"prototype",{writable:false});return Constructor;}function _toPropertyKey(arg){var key=_toPrimitive(arg,"string");return typeof key==="symbol"?key:String(key);}function _toPrimitive(input,hint){if(typeof input!=="object"||input===null)return input;var prim=input[Symbol.toPrimitive];if(prim!==undefined){var res=prim.call(input,hint||"default");if(typeof res!=="object")return res;throw new TypeError("@@toPrimitive must return a primitive value.");}return(hint==="string"?String:Number)(input);}var _require=require('buffer'),Buffer=_require.Buffer;var _require2=require('util'),inspect=_require2.inspect;var custom=inspect&&inspect.custom||'inspect';function copyBuffer(src,target,offset){Buffer.prototype.copy.call(src,target,offset);}module.exports=/*#__PURE__*/function(){function BufferList(){_classCallCheck(this,BufferList);this.head=null;this.tail=null;this.length=0;}_createClass(BufferList,[{key:"push",value:function push(v){var entry={data:v,next:null};if(this.length>0)this.tail.next=entry;else this.head=entry;this.tail=entry;++this.length;}},{key:"unshift",value:function unshift(v){var entry={data:v,next:this.head};if(this.length===0)this.tail=entry;this.head=entry;++this.length;}},{key:"shift",value:function shift(){if(this.length===0)return;var ret=this.head.data;if(this.length===1)this.head=this.tail=null;else this.head=this.head.next;--this.length;return ret;}},{key:"clear",value:function clear(){this.head=this.tail=null;this.length=0;}},{key:"join",value:function join(s){if(this.length===0)return'';var p=this.head;var ret=''+p.data;while(p=p.next)ret+=s+p.data;return ret;}},{key:"concat",value:function concat(n){if(this.length===0)return Buffer.alloc(0);var ret=Buffer.allocUnsafe(n>>>0);var p=this.head;var i=0;while(p){copyBuffer(p.data,ret,i);i+=p.data.length;p=p.next;}return ret;}// Consumes a specified amount of bytes or characters from the buffered data.
+if(reject!==null){iterator[kLastPromise]=null;iterator[kLastResolve]=null;iterator[kLastReject]=null;reject(err);}iterator[kError]=err;return;}var resolve=iterator[kLastResolve];if(resolve!==null){iterator[kLastPromise]=null;iterator[kLastResolve]=null;iterator[kLastReject]=null;resolve(createIterResult(undefined,true));}iterator[kEnded]=true;});stream.on('readable',onReadable.bind(null,iterator));return iterator;};module.exports=createReadableStreamAsyncIterator;}).call(this);}).call(this,require('_process'));},{"./end-of-stream":78,"_process":57}],76:[function(require,module,exports){'use strict';function ownKeys(object,enumerableOnly){var keys=Object.keys(object);if(Object.getOwnPropertySymbols){var symbols=Object.getOwnPropertySymbols(object);enumerableOnly&&(symbols=symbols.filter(function(sym){return Object.getOwnPropertyDescriptor(object,sym).enumerable;})),keys.push.apply(keys,symbols);}return keys;}function _objectSpread(target){for(var i=1;i<arguments.length;i++){var source=null!=arguments[i]?arguments[i]:{};i%2?ownKeys(Object(source),!0).forEach(function(key){_defineProperty(target,key,source[key]);}):Object.getOwnPropertyDescriptors?Object.defineProperties(target,Object.getOwnPropertyDescriptors(source)):ownKeys(Object(source)).forEach(function(key){Object.defineProperty(target,key,Object.getOwnPropertyDescriptor(source,key));});}return target;}function _defineProperty(obj,key,value){key=_toPropertyKey(key);if(key in obj){Object.defineProperty(obj,key,{value:value,enumerable:true,configurable:true,writable:true});}else{obj[key]=value;}return obj;}function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}function _defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value"in descriptor)descriptor.writable=true;Object.defineProperty(target,_toPropertyKey(descriptor.key),descriptor);}}function _createClass(Constructor,protoProps,staticProps){if(protoProps)_defineProperties(Constructor.prototype,protoProps);if(staticProps)_defineProperties(Constructor,staticProps);Object.defineProperty(Constructor,"prototype",{writable:false});return Constructor;}function _toPropertyKey(arg){var key=_toPrimitive(arg,"string");return typeof key==="symbol"?key:String(key);}function _toPrimitive(input,hint){if(typeof input!=="object"||input===null)return input;var prim=input[Symbol.toPrimitive];if(prim!==undefined){var res=prim.call(input,hint||"default");if(typeof res!=="object")return res;throw new TypeError("@@toPrimitive must return a primitive value.");}return(hint==="string"?String:Number)(input);}var _require=require('buffer'),Buffer=_require.Buffer;var _require2=require('util'),inspect=_require2.inspect;var custom=inspect&&inspect.custom||'inspect';function copyBuffer(src,target,offset){Buffer.prototype.copy.call(src,target,offset);}module.exports=/*#__PURE__*/function(){function BufferList(){_classCallCheck(this,BufferList);this.head=null;this.tail=null;this.length=0;}_createClass(BufferList,[{key:"push",value:function push(v){var entry={data:v,next:null};if(this.length>0)this.tail.next=entry;else this.head=entry;this.tail=entry;++this.length;}},{key:"unshift",value:function unshift(v){var entry={data:v,next:this.head};if(this.length===0)this.tail=entry;this.head=entry;++this.length;}},{key:"shift",value:function shift(){if(this.length===0)return;var ret=this.head.data;if(this.length===1)this.head=this.tail=null;else this.head=this.head.next;--this.length;return ret;}},{key:"clear",value:function clear(){this.head=this.tail=null;this.length=0;}},{key:"join",value:function join(s){if(this.length===0)return'';var p=this.head;var ret=''+p.data;while(p=p.next)ret+=s+p.data;return ret;}},{key:"concat",value:function concat(n){if(this.length===0)return Buffer.alloc(0);var ret=Buffer.allocUnsafe(n>>>0);var p=this.head;var i=0;while(p){copyBuffer(p.data,ret,i);i+=p.data.length;p=p.next;}return ret;}// Consumes a specified amount of bytes or characters from the buffered data.
 },{key:"consume",value:function consume(n,hasStrings){var ret;if(n<this.head.data.length){// `slice` is the same for buffers and strings.
 ret=this.head.data.slice(0,n);this.head.data=this.head.data.slice(n);}else if(n===this.head.data.length){// First chunk is a perfect match.
 ret=this.shift();}else{// Result spans more than one buffer.
@@ -5973,7 +2129,7 @@ ret=hasStrings?this._getString(n):this._getBuffer(n);}return ret;}},{key:"first"
 },{key:"_getBuffer",value:function _getBuffer(n){var ret=Buffer.allocUnsafe(n);var p=this.head;var c=1;p.data.copy(ret);n-=p.data.length;while(p=p.next){var buf=p.data;var nb=n>buf.length?buf.length:n;buf.copy(ret,ret.length-n,0,nb);n-=nb;if(n===0){if(nb===buf.length){++c;if(p.next)this.head=p.next;else this.head=this.tail=null;}else{this.head=p;p.data=buf.slice(nb);}break;}++c;}this.length-=c;return ret;}// Make sure the linked list only shows the minimal necessary information.
 },{key:custom,value:function value(_,options){return inspect(this,_objectSpread(_objectSpread({},options),{},{// Only inspect one level.
 depth:0,// It should not recurse.
-customInspect:false}));}}]);return BufferList;}();},{"buffer":20,"util":18}],78:[function(require,module,exports){(function(process){(function(){'use strict';// undocumented cb() API, needed for core, not for public API
+customInspect:false}));}}]);return BufferList;}();},{"buffer":19,"util":17}],77:[function(require,module,exports){(function(process){(function(){'use strict';// undocumented cb() API, needed for core, not for public API
 function destroy(err,cb){var _this=this;var readableDestroyed=this._readableState&&this._readableState.destroyed;var writableDestroyed=this._writableState&&this._writableState.destroyed;if(readableDestroyed||writableDestroyed){if(cb){cb(err);}else if(err){if(!this._writableState){process.nextTick(emitErrorNT,this,err);}else if(!this._writableState.errorEmitted){this._writableState.errorEmitted=true;process.nextTick(emitErrorNT,this,err);}}return this;}// we set destroyed to true before firing error callbacks in order
 // to make it re-entrance safe in case destroy() is called within callbacks
 if(this._readableState){this._readableState.destroyed=true;}// if this is a duplex stream mark the writable part as destroyed as well
@@ -5982,15 +2138,15 @@ if(this._writableState){this._writableState.destroyed=true;}this._destroy(err||n
 // For now when you opt-in to autoDestroy we allow
 // the error to be emitted nextTick. In a future
 // semver major update we should change the default to this.
-var rState=stream._readableState;var wState=stream._writableState;if(rState&&rState.autoDestroy||wState&&wState.autoDestroy)stream.destroy(err);else stream.emit('error',err);}module.exports={destroy:destroy,undestroy:undestroy,errorOrDestroy:errorOrDestroy};}).call(this);}).call(this,require('_process'));},{"_process":58}],79:[function(require,module,exports){// Ported from https://github.com/mafintosh/end-of-stream with
+var rState=stream._readableState;var wState=stream._writableState;if(rState&&rState.autoDestroy||wState&&wState.autoDestroy)stream.destroy(err);else stream.emit('error',err);}module.exports={destroy:destroy,undestroy:undestroy,errorOrDestroy:errorOrDestroy};}).call(this);}).call(this,require('_process'));},{"_process":57}],78:[function(require,module,exports){// Ported from https://github.com/mafintosh/end-of-stream with
 // permission from the author, Mathias Buus (@mafintosh).
 'use strict';var ERR_STREAM_PREMATURE_CLOSE=require('../../../errors').codes.ERR_STREAM_PREMATURE_CLOSE;function once(callback){var called=false;return function(){if(called)return;called=true;for(var _len=arguments.length,args=new Array(_len),_key=0;_key<_len;_key++){args[_key]=arguments[_key];}callback.apply(this,args);};}function noop(){}function isRequest(stream){return stream.setHeader&&typeof stream.abort==='function';}function eos(stream,opts,callback){if(typeof opts==='function')return eos(stream,null,opts);if(!opts)opts={};callback=once(callback||noop);var readable=opts.readable||opts.readable!==false&&stream.readable;var writable=opts.writable||opts.writable!==false&&stream.writable;var onlegacyfinish=function onlegacyfinish(){if(!stream.writable)onfinish();};var writableEnded=stream._writableState&&stream._writableState.finished;var onfinish=function onfinish(){writable=false;writableEnded=true;if(!readable)callback.call(stream);};var readableEnded=stream._readableState&&stream._readableState.endEmitted;var onend=function onend(){readable=false;readableEnded=true;if(!writable)callback.call(stream);};var onerror=function onerror(err){callback.call(stream,err);};var onclose=function onclose(){var err;if(readable&&!readableEnded){if(!stream._readableState||!stream._readableState.ended)err=new ERR_STREAM_PREMATURE_CLOSE();return callback.call(stream,err);}if(writable&&!writableEnded){if(!stream._writableState||!stream._writableState.ended)err=new ERR_STREAM_PREMATURE_CLOSE();return callback.call(stream,err);}};var onrequest=function onrequest(){stream.req.on('finish',onfinish);};if(isRequest(stream)){stream.on('complete',onfinish);stream.on('abort',onclose);if(stream.req)onrequest();else stream.on('request',onrequest);}else if(writable&&!stream._writableState){// legacy streams
-stream.on('end',onlegacyfinish);stream.on('close',onlegacyfinish);}stream.on('end',onend);stream.on('finish',onfinish);if(opts.error!==false)stream.on('error',onerror);stream.on('close',onclose);return function(){stream.removeListener('complete',onfinish);stream.removeListener('abort',onclose);stream.removeListener('request',onrequest);if(stream.req)stream.req.removeListener('finish',onfinish);stream.removeListener('end',onlegacyfinish);stream.removeListener('close',onlegacyfinish);stream.removeListener('finish',onfinish);stream.removeListener('end',onend);stream.removeListener('error',onerror);stream.removeListener('close',onclose);};}module.exports=eos;},{"../../../errors":70}],80:[function(require,module,exports){module.exports=function(){throw new Error('Readable.from is not available in the browser');};},{}],81:[function(require,module,exports){// Ported from https://github.com/mafintosh/pump with
+stream.on('end',onlegacyfinish);stream.on('close',onlegacyfinish);}stream.on('end',onend);stream.on('finish',onfinish);if(opts.error!==false)stream.on('error',onerror);stream.on('close',onclose);return function(){stream.removeListener('complete',onfinish);stream.removeListener('abort',onclose);stream.removeListener('request',onrequest);if(stream.req)stream.req.removeListener('finish',onfinish);stream.removeListener('end',onlegacyfinish);stream.removeListener('close',onlegacyfinish);stream.removeListener('finish',onfinish);stream.removeListener('end',onend);stream.removeListener('error',onerror);stream.removeListener('close',onclose);};}module.exports=eos;},{"../../../errors":69}],79:[function(require,module,exports){module.exports=function(){throw new Error('Readable.from is not available in the browser');};},{}],80:[function(require,module,exports){// Ported from https://github.com/mafintosh/pump with
 // permission from the author, Mathias Buus (@mafintosh).
 'use strict';var eos;function once(callback){var called=false;return function(){if(called)return;called=true;callback.apply(void 0,arguments);};}var _require$codes=require('../../../errors').codes,ERR_MISSING_ARGS=_require$codes.ERR_MISSING_ARGS,ERR_STREAM_DESTROYED=_require$codes.ERR_STREAM_DESTROYED;function noop(err){// Rethrow the error if it exists to avoid swallowing it
 if(err)throw err;}function isRequest(stream){return stream.setHeader&&typeof stream.abort==='function';}function destroyer(stream,reading,writing,callback){callback=once(callback);var closed=false;stream.on('close',function(){closed=true;});if(eos===undefined)eos=require('./end-of-stream');eos(stream,{readable:reading,writable:writing},function(err){if(err)return callback(err);closed=true;callback();});var destroyed=false;return function(err){if(closed)return;if(destroyed)return;destroyed=true;// request.destroy just do .end - .abort is what we want
-if(isRequest(stream))return stream.abort();if(typeof stream.destroy==='function')return stream.destroy();callback(err||new ERR_STREAM_DESTROYED('pipe'));};}function call(fn){fn();}function pipe(from,to){return from.pipe(to);}function popCallback(streams){if(!streams.length)return noop;if(typeof streams[streams.length-1]!=='function')return noop;return streams.pop();}function pipeline(){for(var _len=arguments.length,streams=new Array(_len),_key=0;_key<_len;_key++){streams[_key]=arguments[_key];}var callback=popCallback(streams);if(Array.isArray(streams[0]))streams=streams[0];if(streams.length<2){throw new ERR_MISSING_ARGS('streams');}var error;var destroys=streams.map(function(stream,i){var reading=i<streams.length-1;var writing=i>0;return destroyer(stream,reading,writing,function(err){if(!error)error=err;if(err)destroys.forEach(call);if(reading)return;destroys.forEach(call);callback(error);});});return streams.reduce(pipe);}module.exports=pipeline;},{"../../../errors":70,"./end-of-stream":79}],82:[function(require,module,exports){'use strict';var ERR_INVALID_OPT_VALUE=require('../../../errors').codes.ERR_INVALID_OPT_VALUE;function highWaterMarkFrom(options,isDuplex,duplexKey){return options.highWaterMark!=null?options.highWaterMark:isDuplex?options[duplexKey]:null;}function getHighWaterMark(state,options,duplexKey,isDuplex){var hwm=highWaterMarkFrom(options,isDuplex,duplexKey);if(hwm!=null){if(!(isFinite(hwm)&&Math.floor(hwm)===hwm)||hwm<0){var name=isDuplex?duplexKey:'highWaterMark';throw new ERR_INVALID_OPT_VALUE(name,hwm);}return Math.floor(hwm);}// Default value
-return state.objectMode?16:16*1024;}module.exports={getHighWaterMark:getHighWaterMark};},{"../../../errors":70}],83:[function(require,module,exports){module.exports=require('events').EventEmitter;},{"events":25}],84:[function(require,module,exports){exports=module.exports=require('./lib/_stream_readable.js');exports.Stream=exports;exports.Readable=exports;exports.Writable=require('./lib/_stream_writable.js');exports.Duplex=require('./lib/_stream_duplex.js');exports.Transform=require('./lib/_stream_transform.js');exports.PassThrough=require('./lib/_stream_passthrough.js');exports.finished=require('./lib/internal/streams/end-of-stream.js');exports.pipeline=require('./lib/internal/streams/pipeline.js');},{"./lib/_stream_duplex.js":71,"./lib/_stream_passthrough.js":72,"./lib/_stream_readable.js":73,"./lib/_stream_transform.js":74,"./lib/_stream_writable.js":75,"./lib/internal/streams/end-of-stream.js":79,"./lib/internal/streams/pipeline.js":81}],85:[function(require,module,exports){// Copyright Joyent, Inc. and other Node contributors.
+if(isRequest(stream))return stream.abort();if(typeof stream.destroy==='function')return stream.destroy();callback(err||new ERR_STREAM_DESTROYED('pipe'));};}function call(fn){fn();}function pipe(from,to){return from.pipe(to);}function popCallback(streams){if(!streams.length)return noop;if(typeof streams[streams.length-1]!=='function')return noop;return streams.pop();}function pipeline(){for(var _len=arguments.length,streams=new Array(_len),_key=0;_key<_len;_key++){streams[_key]=arguments[_key];}var callback=popCallback(streams);if(Array.isArray(streams[0]))streams=streams[0];if(streams.length<2){throw new ERR_MISSING_ARGS('streams');}var error;var destroys=streams.map(function(stream,i){var reading=i<streams.length-1;var writing=i>0;return destroyer(stream,reading,writing,function(err){if(!error)error=err;if(err)destroys.forEach(call);if(reading)return;destroys.forEach(call);callback(error);});});return streams.reduce(pipe);}module.exports=pipeline;},{"../../../errors":69,"./end-of-stream":78}],81:[function(require,module,exports){'use strict';var ERR_INVALID_OPT_VALUE=require('../../../errors').codes.ERR_INVALID_OPT_VALUE;function highWaterMarkFrom(options,isDuplex,duplexKey){return options.highWaterMark!=null?options.highWaterMark:isDuplex?options[duplexKey]:null;}function getHighWaterMark(state,options,duplexKey,isDuplex){var hwm=highWaterMarkFrom(options,isDuplex,duplexKey);if(hwm!=null){if(!(isFinite(hwm)&&Math.floor(hwm)===hwm)||hwm<0){var name=isDuplex?duplexKey:'highWaterMark';throw new ERR_INVALID_OPT_VALUE(name,hwm);}return Math.floor(hwm);}// Default value
+return state.objectMode?16:16*1024;}module.exports={getHighWaterMark:getHighWaterMark};},{"../../../errors":69}],82:[function(require,module,exports){module.exports=require('events').EventEmitter;},{"events":24}],83:[function(require,module,exports){exports=module.exports=require('./lib/_stream_readable.js');exports.Stream=exports;exports.Readable=exports;exports.Writable=require('./lib/_stream_writable.js');exports.Duplex=require('./lib/_stream_duplex.js');exports.Transform=require('./lib/_stream_transform.js');exports.PassThrough=require('./lib/_stream_passthrough.js');exports.finished=require('./lib/internal/streams/end-of-stream.js');exports.pipeline=require('./lib/internal/streams/pipeline.js');},{"./lib/_stream_duplex.js":70,"./lib/_stream_passthrough.js":71,"./lib/_stream_readable.js":72,"./lib/_stream_transform.js":73,"./lib/_stream_writable.js":74,"./lib/internal/streams/end-of-stream.js":78,"./lib/internal/streams/pipeline.js":80}],84:[function(require,module,exports){// Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the
@@ -6044,13 +2200,13 @@ function utf8End(buf){var r=buf&&buf.length?this.write(buf):'';if(this.lastNeed)
 function utf16Text(buf,i){if((buf.length-i)%2===0){var r=buf.toString('utf16le',i);if(r){var c=r.charCodeAt(r.length-1);if(c>=0xD800&&c<=0xDBFF){this.lastNeed=2;this.lastTotal=4;this.lastChar[0]=buf[buf.length-2];this.lastChar[1]=buf[buf.length-1];return r.slice(0,-1);}}return r;}this.lastNeed=1;this.lastTotal=2;this.lastChar[0]=buf[buf.length-1];return buf.toString('utf16le',i,buf.length-1);}// For UTF-16LE we do not explicitly append special replacement characters if we
 // end on a partial character, we simply let v8 handle that.
 function utf16End(buf){var r=buf&&buf.length?this.write(buf):'';if(this.lastNeed){var end=this.lastTotal-this.lastNeed;return r+this.lastChar.toString('utf16le',0,end);}return r;}function base64Text(buf,i){var n=(buf.length-i)%3;if(n===0)return buf.toString('base64',i);this.lastNeed=3-n;this.lastTotal=3;if(n===1){this.lastChar[0]=buf[buf.length-1];}else{this.lastChar[0]=buf[buf.length-2];this.lastChar[1]=buf[buf.length-1];}return buf.toString('base64',i,buf.length-n);}function base64End(buf){var r=buf&&buf.length?this.write(buf):'';if(this.lastNeed)return r+this.lastChar.toString('base64',0,3-this.lastNeed);return r;}// Pass bytes on through for single-byte encodings (e.g. ascii, latin1, hex)
-function simpleWrite(buf){return buf.toString(this.encoding);}function simpleEnd(buf){return buf&&buf.length?this.write(buf):'';}},{"safe-buffer":63}],86:[function(require,module,exports){(function(setImmediate,clearImmediate){(function(){var nextTick=require('process/browser.js').nextTick;var apply=Function.prototype.apply;var slice=Array.prototype.slice;var immediateIds={};var nextImmediateId=0;// DOM APIs, for completeness
+function simpleWrite(buf){return buf.toString(this.encoding);}function simpleEnd(buf){return buf&&buf.length?this.write(buf):'';}},{"safe-buffer":62}],85:[function(require,module,exports){(function(setImmediate,clearImmediate){(function(){var nextTick=require('process/browser.js').nextTick;var apply=Function.prototype.apply;var slice=Array.prototype.slice;var immediateIds={};var nextImmediateId=0;// DOM APIs, for completeness
 exports.setTimeout=function(){return new Timeout(apply.call(setTimeout,window,arguments),clearTimeout);};exports.setInterval=function(){return new Timeout(apply.call(setInterval,window,arguments),clearInterval);};exports.clearTimeout=exports.clearInterval=function(timeout){timeout.close();};function Timeout(id,clearFn){this._id=id;this._clearFn=clearFn;}Timeout.prototype.unref=Timeout.prototype.ref=function(){};Timeout.prototype.close=function(){this._clearFn.call(window,this._id);};// Does not start the time, just sets up the members needed.
 exports.enroll=function(item,msecs){clearTimeout(item._idleTimeoutId);item._idleTimeout=msecs;};exports.unenroll=function(item){clearTimeout(item._idleTimeoutId);item._idleTimeout=-1;};exports._unrefActive=exports.active=function(item){clearTimeout(item._idleTimeoutId);var msecs=item._idleTimeout;if(msecs>=0){item._idleTimeoutId=setTimeout(function onTimeout(){if(item._onTimeout)item._onTimeout();},msecs);}};// That's not how node.js implements it but the exposed api is the same.
 exports.setImmediate=typeof setImmediate==="function"?setImmediate:function(fn){var id=nextImmediateId++;var args=arguments.length<2?false:slice.call(arguments,1);immediateIds[id]=true;nextTick(function onNextTick(){if(immediateIds[id]){// fn.call() is faster so we optimize for the common use-case
 // @see http://jsperf.com/call-apply-segu
 if(args){fn.apply(null,args);}else{fn.call(null);}// Prevent ids from leaking
-exports.clearImmediate(id);}});return id;};exports.clearImmediate=typeof clearImmediate==="function"?clearImmediate:function(id){delete immediateIds[id];};}).call(this);}).call(this,require("timers").setImmediate,require("timers").clearImmediate);},{"process/browser.js":58,"timers":86}],87:[function(require,module,exports){// Copyright Joyent, Inc. and other Node contributors.
+exports.clearImmediate(id);}});return id;};exports.clearImmediate=typeof clearImmediate==="function"?clearImmediate:function(id){delete immediateIds[id];};}).call(this);}).call(this,require("timers").setImmediate,require("timers").clearImmediate);},{"process/browser.js":57,"timers":85}],86:[function(require,module,exports){// Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the
@@ -6197,7 +2353,7 @@ if(psychotic){result.hostname=result.host=isAbsolute?'':srcPath.length?srcPath.s
 //this especially happens in cases like
 //url.resolveObject('mailto:local1@domain1', 'local2@domain2')
 var authInHost=result.host&&result.host.indexOf('@')>0?result.host.split('@'):false;if(authInHost){result.auth=authInHost.shift();result.host=result.hostname=authInHost.shift();}}mustEndAbs=mustEndAbs||result.host&&srcPath.length;if(mustEndAbs&&!isAbsolute){srcPath.unshift('');}if(!srcPath.length){result.pathname=null;result.path=null;}else{result.pathname=srcPath.join('/');}//to support request.http
-if(!util.isNull(result.pathname)||!util.isNull(result.search)){result.path=(result.pathname?result.pathname:'')+(result.search?result.search:'');}result.auth=relative.auth||result.auth;result.slashes=result.slashes||relative.slashes;result.href=result.format();return result;};Url.prototype.parseHost=function(){var host=this.host;var port=portPattern.exec(host);if(port){port=port[0];if(port!==':'){this.port=port.substr(1);}host=host.substr(0,host.length-port.length);}if(host)this.hostname=host;};},{"./util":88,"punycode":59,"querystring":62}],88:[function(require,module,exports){'use strict';module.exports={isString:function isString(arg){return typeof arg==='string';},isObject:function isObject(arg){return typeof arg==='object'&&arg!==null;},isNull:function isNull(arg){return arg===null;},isNullOrUndefined:function isNullOrUndefined(arg){return arg==null;}};},{}],89:[function(require,module,exports){(function(global){(function(){/**
+if(!util.isNull(result.pathname)||!util.isNull(result.search)){result.path=(result.pathname?result.pathname:'')+(result.search?result.search:'');}result.auth=relative.auth||result.auth;result.slashes=result.slashes||relative.slashes;result.href=result.format();return result;};Url.prototype.parseHost=function(){var host=this.host;var port=portPattern.exec(host);if(port){port=port[0];if(port!==':'){this.port=port.substr(1);}host=host.substr(0,host.length-port.length);}if(host)this.hostname=host;};},{"./util":87,"punycode":58,"querystring":61}],87:[function(require,module,exports){'use strict';module.exports={isString:function isString(arg){return typeof arg==='string';},isObject:function isObject(arg){return typeof arg==='object'&&arg!==null;},isNull:function isNull(arg){return arg===null;},isNullOrUndefined:function isNullOrUndefined(arg){return arg==null;}};},{}],88:[function(require,module,exports){(function(global){(function(){/**
  * Module exports.
  */module.exports=deprecate;/**
  * Mark that a method should not be used.
@@ -6222,12 +2378,12 @@ if(!util.isNull(result.pathname)||!util.isNull(result.search)){result.path=(resu
  * @returns {Boolean}
  * @api private
  */function config(name){// accessing global.localStorage can trigger a DOMException in sandboxed iframes
-try{if(!global.localStorage)return false;}catch(_){return false;}var val=global.localStorage[name];if(null==val)return false;return String(val).toLowerCase()==='true';}}).call(this);}).call(this,typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{}],90:[function(require,module,exports){// Returns a wrapper function that returns a wrapped callback
+try{if(!global.localStorage)return false;}catch(_){return false;}var val=global.localStorage[name];if(null==val)return false;return String(val).toLowerCase()==='true';}}).call(this);}).call(this,typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{}],89:[function(require,module,exports){// Returns a wrapper function that returns a wrapped callback
 // The wrapper function should do some stuff, and return a
 // presumably different callback function.
 // This makes sure that own properties are retained, so that
 // decorations and such are not lost along the way.
-module.exports=wrappy;function wrappy(fn,cb){if(fn&&cb)return wrappy(fn)(cb);if(typeof fn!=='function')throw new TypeError('need wrapper function');Object.keys(fn).forEach(function(k){wrapper[k]=fn[k];});return wrapper;function wrapper(){var args=new Array(arguments.length);for(var i=0;i<args.length;i++){args[i]=arguments[i];}var ret=fn.apply(this,args);var cb=args[args.length-1];if(typeof ret==='function'&&ret!==cb){Object.keys(cb).forEach(function(k){ret[k]=cb[k];});}return ret;}}},{}],91:[function(require,module,exports){module.exports=extend;var hasOwnProperty=Object.prototype.hasOwnProperty;function extend(){var target={};for(var i=0;i<arguments.length;i++){var source=arguments[i];for(var key in source){if(hasOwnProperty.call(source,key)){target[key]=source[key];}}}return target;}},{}],92:[function(require,module,exports){var libNPMModuleWrapper=require('./Fable.js');if(typeof window==='object'&&!window.hasOwnProperty('Fable')){window.Fable=libNPMModuleWrapper;}module.exports=libNPMModuleWrapper;},{"./Fable.js":94}],93:[function(require,module,exports){/**
+module.exports=wrappy;function wrappy(fn,cb){if(fn&&cb)return wrappy(fn)(cb);if(typeof fn!=='function')throw new TypeError('need wrapper function');Object.keys(fn).forEach(function(k){wrapper[k]=fn[k];});return wrapper;function wrapper(){var args=new Array(arguments.length);for(var i=0;i<args.length;i++){args[i]=arguments[i];}var ret=fn.apply(this,args);var cb=args[args.length-1];if(typeof ret==='function'&&ret!==cb){Object.keys(cb).forEach(function(k){ret[k]=cb[k];});}return ret;}}},{}],90:[function(require,module,exports){module.exports=extend;var hasOwnProperty=Object.prototype.hasOwnProperty;function extend(){var target={};for(var i=0;i<arguments.length;i++){var source=arguments[i];for(var key in source){if(hasOwnProperty.call(source,key)){target[key]=source[key];}}}return target;}},{}],91:[function(require,module,exports){var libNPMModuleWrapper=require('./Fable.js');if(typeof window==='object'&&!window.hasOwnProperty('Fable')){window.Fable=libNPMModuleWrapper;}module.exports=libNPMModuleWrapper;},{"./Fable.js":93}],92:[function(require,module,exports){/**
 * Fable Application Services Management
 * @author <steven@velozo.com>
 */const libFableServiceBase=require('fable-serviceproviderbase');class FableService extends libFableServiceBase.CoreServiceProviderBase{constructor(pSettings,pServiceHash){super(pSettings,pServiceHash);this.serviceType='ServiceManager';this.serviceTypes=[];// A map of instantiated services
@@ -6250,7 +2406,7 @@ pServiceInstance.connectFable(this.fable);if(!this.services.hasOwnProperty(tmpSe
 // This means you couldn't register another with this type unless it was later registered with a constructor class.
 this.services[tmpServiceType]={};}// Add the service to the service map
 this.services[tmpServiceType][tmpServiceHash]=pServiceInstance;// If this is the first service of this type, make it the default
-if(!this.defaultServices.hasOwnProperty(tmpServiceType)){this.setDefaultServiceInstantiation(tmpServiceType,tmpServiceHash);}return pServiceInstance;}setDefaultServiceInstantiation(pServiceType,pServiceHash){if(this.services[pServiceType].hasOwnProperty(pServiceHash)){this.fable[pServiceType]=this.services[pServiceType][pServiceHash];this.defaultServices[pServiceType]=this.services[pServiceType][pServiceHash];return true;}return false;}}module.exports=FableService;module.exports.ServiceProviderBase=libFableServiceBase;module.exports.CoreServiceProviderBase=libFableServiceBase.CoreServiceProviderBase;},{"fable-serviceproviderbase":33}],94:[function(require,module,exports){/**
+if(!this.defaultServices.hasOwnProperty(tmpServiceType)){this.setDefaultServiceInstantiation(tmpServiceType,tmpServiceHash);}return pServiceInstance;}setDefaultServiceInstantiation(pServiceType,pServiceHash){if(this.services[pServiceType].hasOwnProperty(pServiceHash)){this.fable[pServiceType]=this.services[pServiceType][pServiceHash];this.defaultServices[pServiceType]=this.services[pServiceType][pServiceHash];return true;}return false;}}module.exports=FableService;module.exports.ServiceProviderBase=libFableServiceBase;module.exports.CoreServiceProviderBase=libFableServiceBase.CoreServiceProviderBase;},{"fable-serviceproviderbase":32}],93:[function(require,module,exports){/**
 * Fable Application Services Support Library
 * @author <steven@velozo.com>
 */ // Pre-init services
@@ -6268,7 +2424,7 @@ this._coreServices.ServiceManager=new libFableServiceManager(this);this.serviceM
 // They will then be available in the Default service provider set as well.
 this.serviceManager.connectPreinitServiceProviderInstance(this._coreServices.ServiceManager);this.serviceManager.connectPreinitServiceProviderInstance(this._coreServices.UUID);this.serviceManager.connectPreinitServiceProviderInstance(this._coreServices.Logging);this.serviceManager.connectPreinitServiceProviderInstance(this._coreServices.SettingsManager);// Initialize and instantiate the default baked-in Data Arithmatic service
 this.serviceManager.addAndInstantiateServiceType('EnvironmentData',require('./services/Fable-Service-EnvironmentData.js'));this.serviceManager.addServiceType('Template',require('./services/Fable-Service-Template.js'));this.serviceManager.addServiceType('MetaTemplate',require('./services/Fable-Service-MetaTemplate.js'));this.serviceManager.addAndInstantiateServiceType('DataFormat',require('./services/Fable-Service-DataFormat.js'));this.serviceManager.addAndInstantiateServiceType('Utility',require('./services/Fable-Service-Utility.js'));this.serviceManager.addServiceType('Operation',require('./services/Fable-Service-Operation.js'));this.serviceManager.addServiceType('RestClient',require('./services/Fable-Service-RestClient.js'));this.serviceManager.addServiceType('CSVParser',require('./services/Fable-Service-CSVParser.js'));this.serviceManager.addServiceType('Manifest',require('manyfest'));this.serviceManager.addServiceType('ObjectCache',require('cachetrax'));}get isFable(){return true;}get settings(){return this._coreServices.SettingsManager.settings;}get settingsManager(){return this._coreServices.SettingsManager;}get log(){return this._coreServices.Logging;}get services(){return this._coreServices.ServiceManager.services;}get defaultServices(){return this._coreServices.ServiceManager.defaultServices;}getUUID(){return this._coreServices.UUID.getUUID();}get fable(){return this;}}// This is for backwards compatibility
-function autoConstruct(pSettings){return new Fable(pSettings);}module.exports=Fable;module.exports.new=autoConstruct;module.exports.LogProviderBase=libFableLog.LogProviderBase;module.exports.ServiceProviderBase=libFableServiceManager.ServiceProviderBase;module.exports.CoreServiceProviderBase=libFableServiceManager.CoreServiceProviderBase;module.exports.precedent=libFableSettings.precedent;},{"./Fable-ServiceManager.js":93,"./services/Fable-Service-CSVParser.js":95,"./services/Fable-Service-DataFormat.js":96,"./services/Fable-Service-EnvironmentData.js":97,"./services/Fable-Service-MetaTemplate.js":98,"./services/Fable-Service-Operation.js":100,"./services/Fable-Service-RestClient.js":101,"./services/Fable-Service-Template.js":102,"./services/Fable-Service-Utility.js":103,"cachetrax":22,"fable-log":31,"fable-settings":36,"fable-uuid":38,"manyfest":52}],95:[function(require,module,exports){const libFableServiceProviderBase=require('fable-serviceproviderbase');/**
+function autoConstruct(pSettings){return new Fable(pSettings);}module.exports=Fable;module.exports.new=autoConstruct;module.exports.LogProviderBase=libFableLog.LogProviderBase;module.exports.ServiceProviderBase=libFableServiceManager.ServiceProviderBase;module.exports.CoreServiceProviderBase=libFableServiceManager.CoreServiceProviderBase;module.exports.precedent=libFableSettings.precedent;},{"./Fable-ServiceManager.js":92,"./services/Fable-Service-CSVParser.js":94,"./services/Fable-Service-DataFormat.js":95,"./services/Fable-Service-EnvironmentData.js":96,"./services/Fable-Service-MetaTemplate.js":97,"./services/Fable-Service-Operation.js":101,"./services/Fable-Service-RestClient.js":102,"./services/Fable-Service-Template.js":103,"./services/Fable-Service-Utility.js":104,"cachetrax":21,"fable-log":30,"fable-settings":35,"fable-uuid":37,"manyfest":51}],94:[function(require,module,exports){const libFableServiceProviderBase=require('fable-serviceproviderbase');/**
 * Parsing CSVs.  Why?  Because it's a thing that needs to be done.
 *
 * 1. And the other node CSV parsers had issues with the really messy files we had.
@@ -6291,7 +2447,7 @@ if(!this.InQuote){// Push the last remaining column from the buffer to the curre
 this.pushLine();// Check to see if there is a header -- and if so, if this is the header row
 if(this.HasHeader&&!this.HasSetHeader&&this.RowsEmitted==this.HeaderLineIndex){this.HasSetHeader=true;// Override the format as json bit
 this.setHeader(this.emitRow(false));// No matter what, formatting this as JSON is silly and we don't want to go there anyway.
-if(this.EmitHeader){return this.Header;}else{return false;}}else{return this.emitRow();}}else{return false;}}}module.exports=CSVParser;},{"fable-serviceproviderbase":33}],96:[function(require,module,exports){const libFableServiceProviderBase=require('fable-serviceproviderbase');/**
+if(this.EmitHeader){return this.Header;}else{return false;}}else{return this.emitRow();}}else{return false;}}}module.exports=CSVParser;},{"fable-serviceproviderbase":32}],95:[function(require,module,exports){const libFableServiceProviderBase=require('fable-serviceproviderbase');/**
 * Data Formatting and Translation Functions
 *
 * @class DataFormat
@@ -6486,24 +2642,138 @@ return'';}if(tmpEnclosedValueEndIndex>0&&tmpEnclosedValueEndIndex>tmpEnclosedVal
 	 * @param {number} pEnclosureEnd
 	 * @returns {string}
 	 */stringRemoveEnclosureByIndex(pString,pEnclosureIndexToRemove,pEnclosureStart,pEnclosureEnd){let tmpString=typeof pString=='string'?pString:'';let tmpEnclosureIndexToRemove=typeof pEnclosureIndexToRemove=='number'?pEnclosureIndexToRemove:0;let tmpEnclosureStart=typeof pEnclosureStart=='string'?pEnclosureStart:'(';let tmpEnclosureEnd=typeof pEnclosureEnd=='string'?pEnclosureEnd:')';let tmpEnclosureCount=0;let tmpEnclosureDepth=0;let tmpMatchedEnclosureIndex=false;let tmpEnclosureStartIndex=0;let tmpEnclosureEndIndex=0;for(let i=0;i<tmpString.length;i++){// This is the start of an enclosure
-if(tmpString[i]==tmpEnclosureStart){tmpEnclosureDepth++;if(tmpEnclosureDepth==1){tmpEnclosureCount++;if(tmpEnclosureIndexToRemove==tmpEnclosureCount-1){tmpMatchedEnclosureIndex=true;tmpEnclosureStartIndex=i;}}}else if(tmpString[i]==tmpEnclosureEnd){tmpEnclosureDepth--;if(tmpEnclosureDepth==0&&tmpMatchedEnclosureIndex&&tmpEnclosureEndIndex<=tmpEnclosureStartIndex){tmpEnclosureEndIndex=i;tmpMatchedEnclosureIndex=false;}}}if(tmpEnclosureCount<=tmpEnclosureIndexToRemove){return tmpString;}let tmpReturnString='';if(tmpEnclosureStartIndex>1){tmpReturnString=tmpString.substring(0,tmpEnclosureStartIndex);}if(tmpString.length>tmpEnclosureEndIndex+1&&tmpEnclosureEndIndex>tmpEnclosureStartIndex){tmpReturnString+=tmpString.substring(tmpEnclosureEndIndex+1);}return tmpReturnString;}}module.exports=DataFormat;},{"fable-serviceproviderbase":33}],97:[function(require,module,exports){const libFableServiceBase=require('../Fable-ServiceManager.js').ServiceProviderBase;class FableServiceEnvironmentData extends libFableServiceBase{constructor(pFable,pOptions,pServiceHash){super(pFable,pOptions,pServiceHash);this.serviceType='EnvironmentData';this.Environment="node.js";}}module.exports=FableServiceEnvironmentData;},{"../Fable-ServiceManager.js":93}],98:[function(require,module,exports){const libFableServiceBase=require('../Fable-ServiceManager.js').ServiceProviderBase;const libPrecedent=require('precedent');class FableServiceMetaTemplate extends libFableServiceBase{constructor(pFable,pOptions,pServiceHash){super(pFable,pOptions,pServiceHash);this.serviceType='MetaTemplate';this._MetaTemplateLibrary=new libPrecedent(this.options);}/**
+if(tmpString[i]==tmpEnclosureStart){tmpEnclosureDepth++;if(tmpEnclosureDepth==1){tmpEnclosureCount++;if(tmpEnclosureIndexToRemove==tmpEnclosureCount-1){tmpMatchedEnclosureIndex=true;tmpEnclosureStartIndex=i;}}}else if(tmpString[i]==tmpEnclosureEnd){tmpEnclosureDepth--;if(tmpEnclosureDepth==0&&tmpMatchedEnclosureIndex&&tmpEnclosureEndIndex<=tmpEnclosureStartIndex){tmpEnclosureEndIndex=i;tmpMatchedEnclosureIndex=false;}}}if(tmpEnclosureCount<=tmpEnclosureIndexToRemove){return tmpString;}let tmpReturnString='';if(tmpEnclosureStartIndex>1){tmpReturnString=tmpString.substring(0,tmpEnclosureStartIndex);}if(tmpString.length>tmpEnclosureEndIndex+1&&tmpEnclosureEndIndex>tmpEnclosureStartIndex){tmpReturnString+=tmpString.substring(tmpEnclosureEndIndex+1);}return tmpReturnString;}}module.exports=DataFormat;},{"fable-serviceproviderbase":32}],96:[function(require,module,exports){const libFableServiceBase=require('../Fable-ServiceManager.js').ServiceProviderBase;class FableServiceEnvironmentData extends libFableServiceBase{constructor(pFable,pOptions,pServiceHash){super(pFable,pOptions,pServiceHash);this.serviceType='EnvironmentData';this.Environment="node.js";}}module.exports=FableServiceEnvironmentData;},{"../Fable-ServiceManager.js":92}],97:[function(require,module,exports){const libFableServiceBase=require('../Fable-ServiceManager.js').ServiceProviderBase;/**
+* Precedent Meta-Templating
+* @author      Steven Velozo <steven@velozo.com>
+* @description Process text stream trie and postfix tree, parsing out meta-template expression functions.
+*/const libWordTree=require("./Fable-Service-MetaTemplate/MetaTemplate-WordTree.js");const libStringParser=require("./Fable-Service-MetaTemplate/MetaTemplate-StringParser.js");class FableServiceMetaTemplate extends libFableServiceBase{constructor(pFable,pOptions,pServiceHash){super(pFable,pOptions,pServiceHash);this.serviceType='MetaTemplate';this.WordTree=new libWordTree();// In order to allow asynchronous template processing we need to use the async.eachLimit function
+this.StringParser=new libStringParser(this.fable.defaultServices.Utility.eachLimit);this.ParseTree=this.WordTree.ParseTree;}/**
 	 * Add a Pattern to the Parse Tree
 	 * @method addPattern
 	 * @param {Object} pTree - A node on the parse tree to push the characters into
 	 * @param {string} pPattern - The string to add to the tree
 	 * @param {number} pIndex - callback function
 	 * @return {bool} True if adding the pattern was successful
-	 */addPattern(pPatternStart,pPatternEnd,pParser){return this._MetaTemplateLibrary.addPattern(pPatternStart,pPatternEnd,pParser);}addPatternAsync(pPatternStart,pPatternEnd,pParser){return this._MetaTemplateLibrary.addPatternAsync(pPatternStart,pPatternEnd,pParser);}/**
+	 */addPattern(pPatternStart,pPatternEnd,pParser){return this.WordTree.addPattern(pPatternStart,pPatternEnd,pParser);}addPatternAsync(pPatternStart,pPatternEnd,pParserPromise){return this.WordTree.addPatternAsync(pPatternStart,pPatternEnd,pParserPromise);}/**
 	 * Parse a string with the existing parse tree
 	 * @method parseString
 	 * @param {string} pString - The string to parse
+	 * @param {object} pData - Data to pass in as the second argument
 	 * @return {string} The result from the parser
-	 */parseString(pString,pData,fCallback){return this._MetaTemplateLibrary.parseString(pString,pData,fCallback);}}module.exports=FableServiceMetaTemplate;},{"../Fable-ServiceManager.js":93,"precedent":55}],99:[function(require,module,exports){module.exports={"Metadata":{"GUID":false,"Hash":false,"Title":"","Summary":"","Version":0},"Status":{"Completed":false,"CompletionProgress":0,"CompletionTimeElapsed":0,"Steps":1,"StepsCompleted":0,"StartTime":0,"EndTime":0},"Errors":[],"Log":[]};},{}],100:[function(require,module,exports){const libFableServiceBase=require('../Fable-ServiceManager.js').ServiceProviderBase;const _OperationStatePrototypeString=JSON.stringify(require('./Fable-Service-Operation-DefaultSettings.js'));class FableOperation extends libFableServiceBase{constructor(pFable,pOptions,pServiceHash){super(pFable,pOptions,pServiceHash);this.serviceType='PhasedOperation';this.state=JSON.parse(_OperationStatePrototypeString);this.state.Metadata.GUID=this.fable.getUUID();this.state.Metadata.Hash=this.Hash;this.name=typeof this.options.Name=='string'?this.options.Name:"Unnamed Operation ".concat(this.state.Metadata.GUID);}get GUID(){return this.state.Metadata.GUID;}get log(){return this;}writeOperationLog(pLogLevel,pLogText,pLogObject){this.state.Log.push("".concat(new Date().toUTCString()," [").concat(pLogLevel,"]: ").concat(pLogText));if(typeof pLogObject=='object'){this.state.Log.push(JSON.stringify(pLogObject));}}writeOperationErrors(pLogText,pLogObject){this.state.Errors.push("".concat(pLogText));if(typeof pLogObject=='object'){this.state.Errors.push(JSON.stringify(pLogObject));}}trace(pLogText,pLogObject){this.writeOperationLog('TRACE',pLogText,pLogObject);this.fable.log.trace(pLogText,pLogObject);}debug(pLogText,pLogObject){this.writeOperationLog('DEBUG',pLogText,pLogObject);this.fable.log.debug(pLogText,pLogObject);}info(pLogText,pLogObject){this.writeOperationLog('INFO',pLogText,pLogObject);this.fable.log.info(pLogText,pLogObject);}warn(pLogText,pLogObject){this.writeOperationLog('WARN',pLogText,pLogObject);this.fable.log.warn(pLogText,pLogObject);}error(pLogText,pLogObject){this.writeOperationLog('ERROR',pLogText,pLogObject);this.writeOperationErrors(pLogText,pLogObject);this.fable.log.error(pLogText,pLogObject);}fatal(pLogText,pLogObject){this.writeOperationLog('FATAL',pLogText,pLogObject);this.writeOperationErrors(pLogText,pLogObject);this.fable.log.fatal(pLogText,pLogObject);}}module.exports=FableOperation;},{"../Fable-ServiceManager.js":93,"./Fable-Service-Operation-DefaultSettings.js":99}],101:[function(require,module,exports){const libFableServiceBase=require('../Fable-ServiceManager.js').ServiceProviderBase;const libSimpleGet=require('simple-get');class FableServiceRestClient extends libFableServiceBase{constructor(pFable,pOptions,pServiceHash){super(pFable,pOptions,pServiceHash);this.TraceLog=false;if(this.options.TraceLog||this.fable.TraceLog){this.TraceLog=true;}this.dataFormat=this.fable.defaultServices.DataFormat;this.serviceType='RestClient';// This is a function that can be overridden, to allow the management
+	 */parseString(pString,pData,fCallback){return this.StringParser.parseString(pString,this.ParseTree,pData,fCallback);}}module.exports=FableServiceMetaTemplate;},{"../Fable-ServiceManager.js":92,"./Fable-Service-MetaTemplate/MetaTemplate-StringParser.js":98,"./Fable-Service-MetaTemplate/MetaTemplate-WordTree.js":99}],98:[function(require,module,exports){/**
+* MetaTemplate String Parser
+* @author      Steven Velozo <steven@velozo.com>
+* @description Parse a string, properly processing each matched token in the word tree.
+*/class StringParser{/**
+	 * StringParser Constructor
+	 */constructor(fEachLimit){this.eachLimit=fEachLimit;}/**
+	 * Create a fresh parsing state object to work with.
+	 * @method newParserState
+	 * @param {Object} pParseTree - A node on the parse tree to begin parsing from (usually root)
+	 * @return {Object} A new parser state object for running a character parser on
+	 * @private
+	 */newParserState(pParseTree){return{ParseTree:pParseTree,Asynchronous:false,Output:'',OutputBuffer:'',Pattern:false,PatternMatch:false,PatternMatchOutputBuffer:''};}/**
+	 * Assign a node of the parser tree to be the next potential match.
+	 * If the node has a PatternEnd property, it is a valid match and supercedes the last valid match (or becomes the initial match).
+	 * @method assignNode
+	 * @param {Object} pNode - A node on the parse tree to assign
+	 * @param {Object} pParserState - The state object for the current parsing task
+	 * @private
+	 */assignNode(pNode,pParserState){pParserState.PatternMatch=pNode;// If the pattern has a END we can assume it has a parse function...
+if(pParserState.PatternMatch.hasOwnProperty('PatternEnd')){// ... this is the legitimate start of a pattern.
+pParserState.Pattern=pParserState.PatternMatch;}}/**
+	 * Append a character to the output buffer in the parser state.
+	 * This output buffer is used when a potential match is being explored, or a match is being explored.
+	 * @method appendOutputBuffer
+	 * @param {string} pCharacter - The character to append
+	 * @param {Object} pParserState - The state object for the current parsing task
+	 * @private
+	 */appendOutputBuffer(pCharacter,pParserState){pParserState.OutputBuffer+=pCharacter;}/**
+	 * Flush the output buffer to the output and clear it.
+	 * @method flushOutputBuffer
+	 * @param {Object} pParserState - The state object for the current parsing task
+	 * @private
+	 */flushOutputBuffer(pParserState){pParserState.Output+=pParserState.OutputBuffer;pParserState.OutputBuffer='';}/**
+	 * Check if the pattern has ended.  If it has, properly flush the buffer and start looking for new patterns.
+	 * @method checkPatternEnd
+	 * @param {Object} pParserState - The state object for the current parsing task
+	 * @private
+	 */checkPatternEnd(pParserState,pData){if(pParserState.OutputBuffer.length>=pParserState.Pattern.PatternEnd.length+pParserState.Pattern.PatternStart.length&&pParserState.OutputBuffer.substr(-pParserState.Pattern.PatternEnd.length)===pParserState.Pattern.PatternEnd){// ... this is the end of a pattern, cut off the end tag and parse it.
+// Trim the start and end tags off the output buffer now
+if(pParserState.Pattern.isAsync){console.log("Precedent ERROR: Async template detected for pattern ".concat(pParserState.Pattern.PatternStart," ... ").concat(pParserState.Pattern.PatternEnd," but the template engine is being run in non-async mode."));this.OutputBuffer='';// Flush the output buffer.
+this.flushOutputBuffer(pParserState);// End pattern mode
+pParserState.Pattern=false;pParserState.PatternMatch=false;}else{pParserState.OutputBuffer=pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStart.length,pParserState.OutputBuffer.length-(pParserState.Pattern.PatternStart.length+pParserState.Pattern.PatternEnd.length)),pData);// Flush the output buffer.
+this.flushOutputBuffer(pParserState);// End pattern mode
+pParserState.Pattern=false;pParserState.PatternMatch=false;}}}checkPatternEndAsync(pParserState,pData,fCallback){if(pParserState.OutputBuffer.length>=pParserState.Pattern.PatternEnd.length+pParserState.Pattern.PatternStart.length&&pParserState.OutputBuffer.substr(-pParserState.Pattern.PatternEnd.length)===pParserState.Pattern.PatternEnd){// ... this is the end of a pattern, cut off the end tag and parse it.
+// Trim the start and end tags off the output buffer now
+if(pParserState.Pattern.isAsync){return pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStart.length,pParserState.OutputBuffer.length-(pParserState.Pattern.PatternStart.length+pParserState.Pattern.PatternEnd.length)),pData,(pError,pAsyncOutput)=>{if(pError){console.log("Precedent ERROR: Async template error happened parsing ".concat(pParserState.Pattern.PatternStart," ... ").concat(pParserState.Pattern.PatternEnd,": ").concat(pError));}pParserState.OutputBuffer=pAsyncOutput;// Flush the output buffer.
+this.flushOutputBuffer(pParserState);// End pattern mode
+pParserState.Pattern=false;pParserState.PatternMatch=false;return fCallback();});}else{pParserState.OutputBuffer=pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStart.length,pParserState.OutputBuffer.length-(pParserState.Pattern.PatternStart.length+pParserState.Pattern.PatternEnd.length)),pData);// Flush the output buffer.
+this.flushOutputBuffer(pParserState);// End pattern mode
+pParserState.Pattern=false;pParserState.PatternMatch=false;}}return fCallback();}/**
+	 * Parse a character in the buffer.
+	 * @method parseCharacter
+	 * @param {string} pCharacter - The character to append
+	 * @param {Object} pParserState - The state object for the current parsing task
+	 * @private
+	 */parseCharacter(pCharacter,pParserState,pData){// (1) If we aren't in a pattern match, and we aren't potentially matching, and this may be the start of a new pattern....
+if(!pParserState.PatternMatch&&pParserState.ParseTree.hasOwnProperty(pCharacter)){// ... assign the node as the matched node.
+this.assignNode(pParserState.ParseTree[pCharacter],pParserState);this.appendOutputBuffer(pCharacter,pParserState);}// (2) If we are in a pattern match (actively seeing if this is part of a new pattern token)
+else if(pParserState.PatternMatch){// If the pattern has a subpattern with this key
+if(pParserState.PatternMatch.hasOwnProperty(pCharacter)){// Continue matching patterns.
+this.assignNode(pParserState.PatternMatch[pCharacter],pParserState);}this.appendOutputBuffer(pCharacter,pParserState);if(pParserState.Pattern){// ... Check if this is the end of the pattern (if we are matching a valid pattern)...
+this.checkPatternEnd(pParserState,pData);}}// (3) If we aren't in a pattern match or pattern, and this isn't the start of a new pattern (RAW mode)....
+else{pParserState.Output+=pCharacter;}}parseCharacterAsync(pCharacter,pParserState,pData,fCallback){// (1) If we aren't in a pattern match, and we aren't potentially matching, and this may be the start of a new pattern....
+if(!pParserState.PatternMatch&&pParserState.ParseTree.hasOwnProperty(pCharacter)){// ... assign the node as the matched node.
+this.assignNode(pParserState.ParseTree[pCharacter],pParserState);this.appendOutputBuffer(pCharacter,pParserState);}// (2) If we are in a pattern match (actively seeing if this is part of a new pattern token)
+else if(pParserState.PatternMatch){// If the pattern has a subpattern with this key
+if(pParserState.PatternMatch.hasOwnProperty(pCharacter)){// Continue matching patterns.
+this.assignNode(pParserState.PatternMatch[pCharacter],pParserState);}this.appendOutputBuffer(pCharacter,pParserState);if(pParserState.Pattern){// ... Check if this is the end of the pattern (if we are matching a valid pattern)...
+return this.checkPatternEndAsync(pParserState,pData,fCallback);}}// (3) If we aren't in a pattern match or pattern, and this isn't the start of a new pattern (RAW mode)....
+else{pParserState.Output+=pCharacter;}return fCallback(null);}/**
+	 * Parse a string for matches, and process any template segments that occur.
+	 * @method parseString
+	 * @param {string} pString - The string to parse.
+	 * @param {Object} pParseTree - The parse tree to begin parsing from (usually root)
+	 * @param {Object} pData - The data to pass to the function as a second parameter
+	 * @param {function} fCallback - The callback function to call when the parse is complete
+	 */parseString(pString,pParseTree,pData,fCallback){if(typeof fCallback!=='function'){let tmpParserState=this.newParserState(pParseTree);for(var i=0;i<pString.length;i++){// TODO: This is not fast.
+this.parseCharacter(pString[i],tmpParserState,pData,fCallback);}this.flushOutputBuffer(tmpParserState);return tmpParserState.Output;}else{// This is the async mode
+let tmpParserState=this.newParserState(pParseTree);this.eachLimit(pString,1,(pCharacter,fCharacterCallback)=>{this.parseCharacterAsync(pCharacter,tmpParserState,pData,fCharacterCallback);},pError=>{// Flush the remaining data
+this.flushOutputBuffer(tmpParserState);fCallback(pError,tmpParserState.Output);});}}}module.exports=StringParser;},{}],99:[function(require,module,exports){/**
+* MetaTemplate Word Tree
+* @author      Steven Velozo <steven@velozo.com>
+* @description Create a tree (directed graph) of Javascript objects, one character per object.
+*/class WordTree{/**
+	 * WordTree Constructor
+	 */constructor(){this.ParseTree={};}/**
+	 * Add a child character to a Parse Tree node
+	 * @method addChild
+	 * @param {Object} pTree - A parse tree to push the characters into
+	 * @param {string} pPattern - The string to add to the tree
+	 * @param {number} pIndex - The index of the character in the pattern
+	 * @returns {Object} The resulting leaf node that was added (or found)
+	 * @private
+	 */addChild(pTree,pPattern,pIndex){if(!pTree.hasOwnProperty(pPattern[pIndex]))pTree[pPattern[pIndex]]={};return pTree[pPattern[pIndex]];}/** Add a Pattern to the Parse Tree
+	 * @method addPattern
+	 * @param {Object} pPatternStart - The starting string for the pattern (e.g. "${")
+	 * @param {string} pPatternEnd - The ending string for the pattern (e.g. "}")
+	 * @param {number} pParser - The function to parse if this is the matched pattern, once the Pattern End is met.  If this is a string, a simple replacement occurs.
+	 * @return {bool} True if adding the pattern was successful
+	 */addPattern(pPatternStart,pPatternEnd,pParser){if(pPatternStart.length<1)return false;if(typeof pPatternEnd==='string'&&pPatternEnd.length<1)return false;let tmpLeaf=this.ParseTree;// Add the tree of leaves iteratively
+for(var i=0;i<pPatternStart.length;i++)tmpLeaf=this.addChild(tmpLeaf,pPatternStart,i);tmpLeaf.PatternStart=pPatternStart;tmpLeaf.PatternEnd=typeof pPatternEnd==='string'&&pPatternEnd.length>0?pPatternEnd:pPatternStart;tmpLeaf.Parse=typeof pParser==='function'?pParser:typeof pParser==='string'?()=>{return pParser;}:pData=>{return pData;};tmpLeaf.isPromise=false;return true;}/** Add a Pattern to the Parse Tree (asynchronous)
+	 * @method addPattern
+	 * @param {Object} pPatternStart - The starting string for the pattern (e.g. "${")
+	 * @param {string} pPatternEnd - The ending string for the pattern (e.g. "}")
+	 * @param {number} pParserAsync - The function (with an asynchronous callback) to parse if this is the matched pattern, once the Pattern End is met.  If this is a string, a simple replacement occurs.
+	 * @return {bool} True if adding the pattern was successful
+	 */addPatternAsync(pPatternStart,pPatternEnd,pParserAsync){if(pPatternStart.length<1)return false;if(typeof pPatternEnd==='string'&&pPatternEnd.length<1)return false;let tmpLeaf=this.ParseTree;// Add the tree of leaves iteratively
+for(var i=0;i<pPatternStart.length;i++)tmpLeaf=this.addChild(tmpLeaf,pPatternStart,i);tmpLeaf.PatternStart=pPatternStart;tmpLeaf.PatternEnd=typeof pPatternEnd==='string'&&pPatternEnd.length>0?pPatternEnd:pPatternStart;tmpLeaf.Parse=typeof pParserAsync==='function'?pParserAsync:typeof pParserAsync==='string'?(pHash,pData,fCallback)=>{fCallback(pParserPromise);}:(pHash,pData,fCallback)=>{return fCallback(pHash);};tmpLeaf.isAsync=true;return true;}}module.exports=WordTree;},{}],100:[function(require,module,exports){module.exports={"Metadata":{"GUID":false,"Hash":false,"Title":"","Summary":"","Version":0},"Status":{"Completed":false,"CompletionProgress":0,"CompletionTimeElapsed":0,"Steps":1,"StepsCompleted":0,"StartTime":0,"EndTime":0},"Errors":[],"Log":[]};},{}],101:[function(require,module,exports){const libFableServiceBase=require('../Fable-ServiceManager.js').ServiceProviderBase;const _OperationStatePrototypeString=JSON.stringify(require('./Fable-Service-Operation-DefaultSettings.js'));class FableOperation extends libFableServiceBase{constructor(pFable,pOptions,pServiceHash){super(pFable,pOptions,pServiceHash);this.serviceType='PhasedOperation';this.state=JSON.parse(_OperationStatePrototypeString);this.state.Metadata.GUID=this.fable.getUUID();this.state.Metadata.Hash=this.Hash;this.name=typeof this.options.Name=='string'?this.options.Name:"Unnamed Operation ".concat(this.state.Metadata.GUID);}get GUID(){return this.state.Metadata.GUID;}get log(){return this;}writeOperationLog(pLogLevel,pLogText,pLogObject){this.state.Log.push("".concat(new Date().toUTCString()," [").concat(pLogLevel,"]: ").concat(pLogText));if(typeof pLogObject=='object'){this.state.Log.push(JSON.stringify(pLogObject));}}writeOperationErrors(pLogText,pLogObject){this.state.Errors.push("".concat(pLogText));if(typeof pLogObject=='object'){this.state.Errors.push(JSON.stringify(pLogObject));}}trace(pLogText,pLogObject){this.writeOperationLog('TRACE',pLogText,pLogObject);this.fable.log.trace(pLogText,pLogObject);}debug(pLogText,pLogObject){this.writeOperationLog('DEBUG',pLogText,pLogObject);this.fable.log.debug(pLogText,pLogObject);}info(pLogText,pLogObject){this.writeOperationLog('INFO',pLogText,pLogObject);this.fable.log.info(pLogText,pLogObject);}warn(pLogText,pLogObject){this.writeOperationLog('WARN',pLogText,pLogObject);this.fable.log.warn(pLogText,pLogObject);}error(pLogText,pLogObject){this.writeOperationLog('ERROR',pLogText,pLogObject);this.writeOperationErrors(pLogText,pLogObject);this.fable.log.error(pLogText,pLogObject);}fatal(pLogText,pLogObject){this.writeOperationLog('FATAL',pLogText,pLogObject);this.writeOperationErrors(pLogText,pLogObject);this.fable.log.fatal(pLogText,pLogObject);}}module.exports=FableOperation;},{"../Fable-ServiceManager.js":92,"./Fable-Service-Operation-DefaultSettings.js":100}],102:[function(require,module,exports){const libFableServiceBase=require('../Fable-ServiceManager.js').ServiceProviderBase;const libSimpleGet=require('simple-get');class FableServiceRestClient extends libFableServiceBase{constructor(pFable,pOptions,pServiceHash){super(pFable,pOptions,pServiceHash);this.TraceLog=false;if(this.options.TraceLog||this.fable.TraceLog){this.TraceLog=true;}this.dataFormat=this.fable.defaultServices.DataFormat;this.serviceType='RestClient';// This is a function that can be overridden, to allow the management
 // of the request options before they are passed to the request library.
 this.prepareRequestOptions=pOptions=>{return pOptions;};}preRequest(pOptions){// Validate the options object
 return this.prepareRequestOptions(pOptions);}executeChunkedRequest(pOptions,fCallback){let tmpOptions=this.preRequest(pOptions);tmpOptions.RequestStartTime=this.fable.log.getTimeStamp();if(this.TraceLog){this.fable.log.debug("Beginning ".concat(tmpOptions.method," request to ").concat(tmpOptions.url," at ").concat(tmpOptions.RequestStartTime));}return libSimpleGet(tmpOptions,(pError,pResponse)=>{if(pError){return fCallback(pError,pResponse);}if(this.TraceLog){let tmpConnectTime=this.fable.log.getTimeStamp();this.fable.log.debug("--> ".concat(tmpOptions.method," connected in ").concat(this.dataFormat.formatTimeDelta(tmpOptions.RequestStartTime,tmpConnectTime),"ms code ").concat(pResponse.statusCode));}let tmpData='';pResponse.on('data',pChunk=>{// For JSON, the chunk is the serialized object.
 if(this.TraceLog){let tmpChunkTime=this.fable.log.getTimeStamp();this.fable.log.debug("--> ".concat(tmpOptions.method," data chunk size ").concat(pChunk.length,"b received in ").concat(this.dataFormat.formatTimeDelta(tmpOptions.RequestStartTime,tmpChunkTime),"ms"));}tmpData+=pChunk;});pResponse.on('end',()=>{if(this.TraceLog){let tmpCompletionTime=this.fable.log.getTimeStamp();this.fable.log.debug("==> ".concat(tmpOptions.method," completed data size ").concat(tmpData.length,"b received in ").concat(this.dataFormat.formatTimeDelta(tmpOptions.RequestStartTime,tmpCompletionTime),"ms"));}return fCallback(pError,pResponse,tmpData);});});}executeJSONRequest(pOptions,fCallback){pOptions.json=true;let tmpOptions=this.preRequest(pOptions);tmpOptions.RequestStartTime=this.fable.log.getTimeStamp();if(this.TraceLog){this.fable.log.debug("Beginning ".concat(tmpOptions.method," JSON request to ").concat(tmpOptions.url," at ").concat(tmpOptions.RequestStartTime));}return libSimpleGet(tmpOptions,(pError,pResponse)=>{if(pError){return fCallback(pError,pResponse);}if(this.TraceLog){let tmpConnectTime=this.fable.log.getTimeStamp();this.fable.log.debug("--> JSON ".concat(tmpOptions.method," connected in ").concat(this.dataFormat.formatTimeDelta(tmpOptions.RequestStartTime,tmpConnectTime),"ms code ").concat(pResponse.statusCode));}pResponse.on('data',pChunk=>{if(this.TraceLog){let tmpChunkTime=this.fable.log.getTimeStamp();this.fable.log.debug("--> JSON ".concat(tmpOptions.method," data chunk size ").concat(pChunk.length,"b received in ").concat(this.dataFormat.formatTimeDelta(tmpOptions.RequestStartTime,tmpChunkTime),"ms"));}// In a JSON request, the chunk is the serialized method.
-return fCallback(pError,pResponse,JSON.parse(pChunk));});pResponse.on('end',()=>{if(this.TraceLog){let tmpCompletionTime=this.fable.log.getTimeStamp();this.fable.log.debug("==> JSON ".concat(tmpOptions.method," completed - received in ").concat(this.dataFormat.formatTimeDelta(tmpOptions.RequestStartTime,tmpCompletionTime),"ms"));}});});}getJSON(pOptionsOrURL,fCallback){let tmpRequestOptions=typeof pOptionsOrURL=='object'?pOptionsOrURL:{};if(typeof pOptionsOrURL=='string'){tmpRequestOptions.url=pOptionsOrURL;}tmpRequestOptions.method='GET';return this.executeJSONRequest(tmpRequestOptions,fCallback);}putJSON(pOptions,fCallback){if(typeof pOptions.body!='object'){return fCallback(new Error("PUT JSON Error Invalid options object"));}pOptions.method='PUT';return this.executeJSONRequest(pOptions,fCallback);}postJSON(pOptions,fCallback){if(typeof pOptions.body!='object'){return fCallback(new Error("POST JSON Error Invalid options object"));}pOptions.method='POST';return this.executeJSONRequest(pOptions,fCallback);}patchJSON(pOptions,fCallback){if(typeof pOptions.body!='object'){return fCallback(new Error("PATCH JSON Error Invalid options object"));}pOptions.method='PATCH';return this.executeJSONRequest(pOptions,fCallback);}headJSON(pOptions,fCallback){if(typeof pOptions.body!='object'){return fCallback(new Error("HEAD JSON Error Invalid options object"));}pOptions.method='HEAD';return this.executeJSONRequest(pOptions,fCallback);}delJSON(pOptions,fCallback){pOptions.method='DELETE';return this.executeJSONRequest(pOptions,fCallback);}getRawText(pOptionsOrURL,fCallback){let tmpRequestOptions=typeof pOptionsOrURL=='object'?pOptionsOrURL:{};if(typeof pOptionsOrURL=='string'){tmpRequestOptions.url=pOptionsOrURL;}tmpRequestOptions.method='GET';return this.executeChunkedRequest(tmpRequestOptions,fCallback);}}module.exports=FableServiceRestClient;},{"../Fable-ServiceManager.js":93,"simple-get":65}],102:[function(require,module,exports){const libFableServiceBase=require('../Fable-ServiceManager.js').ServiceProviderBase;class FableServiceTemplate extends libFableServiceBase{// Underscore and lodash have a behavior, _.template, which compiles a
+return fCallback(pError,pResponse,JSON.parse(pChunk));});pResponse.on('end',()=>{if(this.TraceLog){let tmpCompletionTime=this.fable.log.getTimeStamp();this.fable.log.debug("==> JSON ".concat(tmpOptions.method," completed - received in ").concat(this.dataFormat.formatTimeDelta(tmpOptions.RequestStartTime,tmpCompletionTime),"ms"));}});});}getJSON(pOptionsOrURL,fCallback){let tmpRequestOptions=typeof pOptionsOrURL=='object'?pOptionsOrURL:{};if(typeof pOptionsOrURL=='string'){tmpRequestOptions.url=pOptionsOrURL;}tmpRequestOptions.method='GET';return this.executeJSONRequest(tmpRequestOptions,fCallback);}putJSON(pOptions,fCallback){if(typeof pOptions.body!='object'){return fCallback(new Error("PUT JSON Error Invalid options object"));}pOptions.method='PUT';return this.executeJSONRequest(pOptions,fCallback);}postJSON(pOptions,fCallback){if(typeof pOptions.body!='object'){return fCallback(new Error("POST JSON Error Invalid options object"));}pOptions.method='POST';return this.executeJSONRequest(pOptions,fCallback);}patchJSON(pOptions,fCallback){if(typeof pOptions.body!='object'){return fCallback(new Error("PATCH JSON Error Invalid options object"));}pOptions.method='PATCH';return this.executeJSONRequest(pOptions,fCallback);}headJSON(pOptions,fCallback){if(typeof pOptions.body!='object'){return fCallback(new Error("HEAD JSON Error Invalid options object"));}pOptions.method='HEAD';return this.executeJSONRequest(pOptions,fCallback);}delJSON(pOptions,fCallback){pOptions.method='DELETE';return this.executeJSONRequest(pOptions,fCallback);}getRawText(pOptionsOrURL,fCallback){let tmpRequestOptions=typeof pOptionsOrURL=='object'?pOptionsOrURL:{};if(typeof pOptionsOrURL=='string'){tmpRequestOptions.url=pOptionsOrURL;}tmpRequestOptions.method='GET';return this.executeChunkedRequest(tmpRequestOptions,fCallback);}}module.exports=FableServiceRestClient;},{"../Fable-ServiceManager.js":92,"simple-get":64}],103:[function(require,module,exports){const libFableServiceBase=require('../Fable-ServiceManager.js').ServiceProviderBase;class FableServiceTemplate extends libFableServiceBase{// Underscore and lodash have a behavior, _.template, which compiles a
 // string-based template with code snippets into simple executable pieces,
 // with the added twist of returning a precompiled function ready to go.
 //
@@ -6523,7 +2793,7 @@ this.renderFunction=false;this.templateString=false;}renderTemplate(pData){retur
 // underscore code until this is rewritten using precedent.
 this.TemplateSource="__p+='"+pTemplateText.replace(this.Matchers.Escaper,pMatch=>{return"\\".concat(this.templateEscapes[pMatch]);}).replace(this.Matchers.Interpolate||this.Matchers.GuaranteedNonMatch,(pMatch,pCode)=>{return"'+\n(".concat(decodeURIComponent(pCode),")+\n'");}).replace(this.Matchers.Evaluate||this.Matchers.GuaranteedNonMatch,(pMatch,pCode)=>{return"';\n".concat(decodeURIComponent(pCode),"\n;__p+='");})+"';\n";this.TemplateSource="with(pTemplateDataObject||{}){\n".concat(this.TemplateSource,"}\n");this.TemplateSource="var __p='';var print=function(){__p+=Array.prototype.join.call(arguments, '')};\n".concat(this.TemplateSource,"return __p;\n");this.renderFunction=new Function('pTemplateDataObject',this.TemplateSource);if(typeof pData!='undefined'){return this.renderFunction(pData);}// Provide the compiled function source as a convenience for build time
 // precompilation.
-this.TemplateSourceCompiled='function(obj){\n'+this.TemplateSource+'}';return this.templateFunction();}}module.exports=FableServiceTemplate;},{"../Fable-ServiceManager.js":93}],103:[function(require,module,exports){const libFableServiceBase=require('../Fable-ServiceManager.js').ServiceProviderBase;// TODO: These are still pretty big -- consider the smaller polyfills
+this.TemplateSourceCompiled='function(obj){\n'+this.TemplateSource+'}';return this.templateFunction();}}module.exports=FableServiceTemplate;},{"../Fable-ServiceManager.js":92}],104:[function(require,module,exports){const libFableServiceBase=require('../Fable-ServiceManager.js').ServiceProviderBase;// TODO: These are still pretty big -- consider the smaller polyfills
 const libAsyncWaterfall=require('async.waterfall');const libAsyncEachLimit=require('async.eachlimit');class FableServiceUtility extends libFableServiceBase{// Underscore and lodash have a behavior, _.template, which compiles a
 // string-based template with code snippets into simple executable pieces,
 // with the added twist of returning a precompiled function ready to go.
@@ -6536,7 +2806,7 @@ const libAsyncWaterfall=require('async.waterfall');const libAsyncEachLimit=requi
 constructor(pFable,pOptions,pServiceHash){super(pFable,pOptions,pServiceHash);this.templates={};// These two functions are used extensively throughout
 this.waterfall=libAsyncWaterfall;this.eachLimit=libAsyncEachLimit;}// Underscore and lodash have a behavior, _.extend, which merges objects.
 // Now that es6 gives us this, use the native thingy.
-extend(pDestinationObject){for(var _len37=arguments.length,pSourceObjects=new Array(_len37>1?_len37-1:0),_key37=1;_key37<_len37;_key37++){pSourceObjects[_key37-1]=arguments[_key37];}return Object.assign(pDestinationObject,...pSourceObjects);}// Underscore and lodash have a behavior, _.template, which compiles a
+extend(pDestinationObject){for(var _len2=arguments.length,pSourceObjects=new Array(_len2>1?_len2-1:0),_key2=1;_key2<_len2;_key2++){pSourceObjects[_key2-1]=arguments[_key2];}return Object.assign(pDestinationObject,...pSourceObjects);}// Underscore and lodash have a behavior, _.template, which compiles a
 // string-based template with code snippets into simple executable pieces,
 // with the added twist of returning a precompiled function ready to go.
 template(pTemplateText,pData){let tmpTemplate=this.fable.serviceManager.instantiateServiceProviderWithoutRegistration('Template');return tmpTemplate.buildTemplateFunction(pTemplateText,pData);}// Build a template function from a template hash, and, register it with the service provider
@@ -6575,4 +2845,4 @@ tmpTimeZoneOffsetInHours=parseInt(tmpDateParts[7])+tmpTimeZoneOffsetInMinutes;//
 if(pISOString.substr(-6,1)=="+"){// Make the offset negative since the hours will need to be subtracted from the date.
 tmpTimeZoneOffsetInHours*=-1;}}// Get the current hours for the date and add the offset to get the correct time adjusted for timezone.
 tmpReturnDate.setHours(tmpReturnDate.getHours()+tmpTimeZoneOffsetInHours);// Return the Date object calculated from the string.
-return tmpReturnDate;}}module.exports=FableServiceUtility;},{"../Fable-ServiceManager.js":93,"async.eachlimit":1,"async.waterfall":15}]},{},[92])(92);});
+return tmpReturnDate;}}module.exports=FableServiceUtility;},{"../Fable-ServiceManager.js":92,"async.eachlimit":1,"async.waterfall":15}]},{},[91])(91);});

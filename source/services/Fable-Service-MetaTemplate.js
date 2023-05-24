@@ -1,6 +1,13 @@
 const libFableServiceBase = require('../Fable-ServiceManager.js').ServiceProviderBase;
 
-const libPrecedent = require('precedent');
+/**
+* Precedent Meta-Templating
+* @author      Steven Velozo <steven@velozo.com>
+* @description Process text stream trie and postfix tree, parsing out meta-template expression functions.
+*/
+const libWordTree = require(`./Fable-Service-MetaTemplate/MetaTemplate-WordTree.js`);
+const libStringParser = require(`./Fable-Service-MetaTemplate/MetaTemplate-StringParser.js`);
+
 
 class FableServiceMetaTemplate extends libFableServiceBase
 {
@@ -10,8 +17,14 @@ class FableServiceMetaTemplate extends libFableServiceBase
 
         this.serviceType = 'MetaTemplate';
 
-        this._MetaTemplateLibrary = new libPrecedent(this.options);
+		this.WordTree = new libWordTree();
+
+		// In order to allow asynchronous template processing we need to use the async.eachLimit function
+		this.StringParser = new libStringParser(this.fable.defaultServices.Utility.eachLimit);
+
+		this.ParseTree = this.WordTree.ParseTree;
 	}
+
 
 	/**
 	 * Add a Pattern to the Parse Tree
@@ -23,23 +36,24 @@ class FableServiceMetaTemplate extends libFableServiceBase
 	 */
 	addPattern(pPatternStart, pPatternEnd, pParser)
 	{
-		return this._MetaTemplateLibrary.addPattern(pPatternStart, pPatternEnd, pParser);
+		return this.WordTree.addPattern(pPatternStart, pPatternEnd, pParser);
 	}
 
-	addPatternAsync(pPatternStart, pPatternEnd, pParser)
+	addPatternAsync(pPatternStart, pPatternEnd, pParserPromise)
 	{
-		return this._MetaTemplateLibrary.addPatternAsync(pPatternStart, pPatternEnd, pParser);
+		return this.WordTree.addPatternAsync(pPatternStart, pPatternEnd, pParserPromise);
 	}
 
 	/**
 	 * Parse a string with the existing parse tree
 	 * @method parseString
 	 * @param {string} pString - The string to parse
+	 * @param {object} pData - Data to pass in as the second argument
 	 * @return {string} The result from the parser
 	 */
 	parseString(pString, pData, fCallback)
 	{
-		return this._MetaTemplateLibrary.parseString(pString, pData, fCallback);
+		return this.StringParser.parseString(pString, this.ParseTree, pData, fCallback);
 	}
 }
 
