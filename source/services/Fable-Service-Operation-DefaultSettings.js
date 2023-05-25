@@ -1,7 +1,7 @@
 module.exports = (
     {
         "Metadata": {
-            "GUID": false,
+            "UUID": false,
             "Hash": false,
 
             "Title": "",

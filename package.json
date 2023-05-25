@@ -1,6 +1,6 @@
 {
   "name": "fable",
-  "version": "3.0.46",
+  "version": "3.0.47",
   "description": "An entity behavior management and API bundling library.",
   "main": "source/Fable.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "build": "./node_modules/.bin/gulp build",
     "build-compatible": "GULP_CUSTOM_BUILD_TARGET=compatible ./node_modules/.bin/gulp build",
     "docker-dev-build": "docker build ./ -f Dockerfile_LUXURYCode -t retold/fable:local",
-    "docker-dev-run": "docker run -it -d --name retold-fable-dev -p 30001:8080 -p 8086:8086 -v \"$PWD/.config:/home/coder/.config\"  -v \"$PWD:/home/coder/fable\" -u \"$(id -u):$(id -g)\" -e \"DOCKER_USER=$USER\" retold/fable:local",
+    "docker-dev-run": "docker run -it -d --name retold-fable-dev -p 30001:8080 -p 38086:8086 -v \"$PWD/.config:/home/coder/.config\"  -v \"$PWD:/home/coder/fable\" -u \"$(id -u):$(id -g)\" -e \"DOCKER_USER=$USER\" retold/fable:local",
     "docker-dev-shell": "docker exec -it retold-fable-dev /bin/bash"
   },
   "mocha": {
@@ -62,6 +62,7 @@
     "gulp-util": "^3.0.8",
     "mocha": "10.2.0",
     "nyc": "^15.1.0",
+    "retold-data-service": "^1.0.3",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
   },
@@ -71,7 +72,7 @@
     "cachetrax": "^1.0.3",
     "data-arithmatic": "^1.0.7",
     "fable-log": "^3.0.10",
-    "fable-serviceproviderbase": "^3.0.4",
+    "fable-serviceproviderbase": "^3.0.5",
     "fable-settings": "^3.0.6",
     "fable-uuid": "^3.0.5",
     "manyfest": "^1.0.24",

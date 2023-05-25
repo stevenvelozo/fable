@@ -13,20 +13,13 @@ class FableOperation extends libFableServiceBase
 
 		this.state = JSON.parse(_OperationStatePrototypeString);
 
-		this.state.Metadata.GUID = this.fable.getUUID();
+		// Match the service instantiation to the operation.
 		this.state.Metadata.Hash = this.Hash;
+		this.state.Metadata.UUID = this.UUID;
 
-		this.name = (typeof(this.options.Name) == 'string') ? this.options.Name : `Unnamed Operation ${this.state.Metadata.GUID}`;
-	}
+		this.name = (typeof(this.options.Name) == 'string') ? this.options.Name : `Unnamed Operation ${this.state.Metadata.UUID}`;
 
-	get GUID()
-	{
-		return this.state.Metadata.GUID;
-	}
-
-	get log()
-	{
-		return this;
+		this.log = this;
 	}
 
 	writeOperationLog(pLogLevel, pLogText, pLogObject)

@@ -43,7 +43,7 @@ suite
 							{
 								Expect(pBody).to.be.an('object');
 								Expect(pBody.hasOwnProperty('Name')).to.equal(true);
-								Expect(pBody.Name).to.equal('Suzanne Collins');
+								Expect(pBody.Name).to.equal('John Green');
 								fTestComplete();
 							});
 					}

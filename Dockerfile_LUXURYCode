@@ -56,14 +56,16 @@ RUN code-server --install-extension mtxr.sqltools-driver-mysql
 RUN echo "...configuring mariadb (mysql) server...."
 RUN sudo apt install default-mysql-server default-mysql-client -y
 RUN sudo sed -i "s|bind-address|#bind-address|g" /etc/mysql/mariadb.conf.d/50-server.cnf
-ADD ./retold-harness/MySQL-Security.sql /home/coder/MySQL-Configure-Security.sql
-ADD ./retold-harness/MySQL-Laden-Entry.sh /usr/bin/MySQL-Laden-Entry.sh
+ADD ./retold-harness/model/sql_create/MySQL-Security.sql /home/coder/MySQL-Configure-Security.sql
+ADD ./retold-harness/docker_scripts/MySQL-Laden-Entry.sh /usr/bin/MySQL-Laden-Entry.sh
 RUN ( sudo mysqld_safe --skip-grant-tables --skip-networking & ) && sleep 5 &&  mysql -u root < /home/coder/MySQL-Configure-Security.sql
 
 # Import the initial database
 COPY ./retold-harness/model/sql_create/BookStore-CreateDatabase.mysql.sql /home/coder/MySQL-Create-Databases.sql
+COPY ./retold-harness/model/sql_create/BookStore-DeleteAndRepopulateTables.sql /home/coder/MySQL-Repopulate-Databases.sql
 RUN sudo service mariadb restart && sleep 5 && mysql -u root -p"123456789" -e "CREATE DATABASE bookstore;"
 RUN sudo service mariadb restart && sleep 5 && mysql -u root -p"123456789" bookstore < /home/coder/MySQL-Create-Databases.sql
+RUN sudo service mariadb restart && sleep 5 && mysql -u root -p"123456789" bookstore < /home/coder/MySQL-Repopulate-Databases.sql
 
 RUN echo "...mapping library specific volumes..."
 
@@ -83,8 +85,5 @@ RUN . ~/.nvm/nvm.sh && source ~/.bashrc && nvm install 14
 RUN . ~/.nvm/nvm.sh && source ~/.bashrc && nvm alias default 14
 
 WORKDIR /home/coder/fable
-
-# RUN . ~/.nvm/nvm.sh && source ~/.bashrc && npm install
-# RUN . /home/coder/fable/retold-harness/Bookstore-Import-Books.sh
 
 ENTRYPOINT ["/usr/bin/MySQL-Laden-Entry.sh"]
