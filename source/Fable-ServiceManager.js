@@ -54,6 +54,25 @@ class FableService extends libFableServiceBase.CoreServiceProviderBase
 		this.instantiateServiceProvider(pServiceType, {}, `${pServiceType}-Default`);
 	}
 
+	// Some servicds expect to be overloaded / customized class.
+	instantiateServiceProviderFromPrototype(pServiceType, pOptions, pCustomServiceHash, pServicePrototype)
+	{
+		// Instantiate the service
+		let tmpService = new pServicePrototype(this.fable, pOptions, pCustomServiceHash);
+
+		// Add the service to the service map
+		this.services[pServiceType][tmpService.Hash] = tmpService;
+
+		// If this is the first service of this type, make it the default
+		if (!this.defaultServices.hasOwnProperty(pServiceType))
+		{
+			this.setDefaultServiceInstantiation(pServiceType, tmpService.Hash)
+		}
+
+		return tmpService;
+	}
+
+
 	instantiateServiceProvider(pServiceType, pOptions, pCustomServiceHash)
 	{
 		// Instantiate the service

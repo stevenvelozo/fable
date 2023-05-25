@@ -2396,7 +2396,11 @@ this.services[pServiceType]={};// Using the static member of the class is a much
 if(typeof pServiceClass=='function'&&pServiceClass.isFableService){// Add the class to the list of classes
 this.serviceClasses[pServiceType]=pServiceClass;}else{// Add the base class to the list of classes
 this.fable.log.error("Attempted to add service type [".concat(pServiceType,"] with an invalid class.  Using base service class, which will not crash but won't provide meaningful services."));this.serviceClasses[pServiceType]=libFableServiceBase;}}// This is for the services that are meant to run mostly single-instance so need a default at initialization
-},{key:"addAndInstantiateServiceType",value:function addAndInstantiateServiceType(pServiceType,pServiceClass){this.addServiceType(pServiceType,pServiceClass);this.instantiateServiceProvider(pServiceType,{},"".concat(pServiceType,"-Default"));}},{key:"instantiateServiceProvider",value:function instantiateServiceProvider(pServiceType,pOptions,pCustomServiceHash){// Instantiate the service
+},{key:"addAndInstantiateServiceType",value:function addAndInstantiateServiceType(pServiceType,pServiceClass){this.addServiceType(pServiceType,pServiceClass);this.instantiateServiceProvider(pServiceType,{},"".concat(pServiceType,"-Default"));}// Some servicds expect to be overloaded / customized class.
+},{key:"instantiateServiceProviderFromPrototype",value:function instantiateServiceProviderFromPrototype(pServiceType,pOptions,pCustomServiceHash,pServicePrototype){// Instantiate the service
+var tmpService=new pServicePrototype(this.fable,pOptions,pCustomServiceHash);// Add the service to the service map
+this.services[pServiceType][tmpService.Hash]=tmpService;// If this is the first service of this type, make it the default
+if(!this.defaultServices.hasOwnProperty(pServiceType)){this.setDefaultServiceInstantiation(pServiceType,tmpService.Hash);}return tmpService;}},{key:"instantiateServiceProvider",value:function instantiateServiceProvider(pServiceType,pOptions,pCustomServiceHash){// Instantiate the service
 var tmpService=this.instantiateServiceProviderWithoutRegistration(pServiceType,pOptions,pCustomServiceHash);// Add the service to the service map
 this.services[pServiceType][tmpService.Hash]=tmpService;// If this is the first service of this type, make it the default
 if(!this.defaultServices.hasOwnProperty(pServiceType)){this.setDefaultServiceInstantiation(pServiceType,tmpService.Hash);}return tmpService;}// Create a service provider but don't register it to live forever in fable.services

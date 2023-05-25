@@ -138,8 +138,11 @@ suite
                         testFable.serviceManager.addServiceType('SimpleService', SimpleService);
 
                         let tmpService = testFable.serviceManager.instantiateServiceProviderWithoutRegistration('SimpleService', {SomeOption: true}, 'SimpleService-99');
+                        let tmpServiceFromPrototype = testFable.serviceManager.instantiateServiceProviderFromPrototype('SimpleService', {SomeOption: true}, 'SimpleService-100', SimpleService);
 
                         Expect(testFable.services.SimpleService['SimpleService-99']).to.be.an('undefined');
+                        Expect(testFable.services.SimpleService['SimpleService-100']).to.be.an('object');
+                        Expect(tmpServiceFromPrototype).to.be.an('object');
 
                         Expect(tmpService).to.be.an('object');
                     }
