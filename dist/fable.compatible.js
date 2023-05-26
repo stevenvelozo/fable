@@ -2666,7 +2666,7 @@ _this20.StringParser=new libStringParser(_this20.fable.defaultServices.Utility.e
 	 * @param {object} pData - Data to pass in as the second argument
 	 * @return {string} The result from the parser
 	 */},{key:"parseString",value:function parseString(pString,pData,fCallback){return this.StringParser.parseString(pString,this.ParseTree,pData,fCallback);}}]);return FableServiceMetaTemplate;}(libFableServiceBase);module.exports=FableServiceMetaTemplate;},{"../Fable-ServiceManager.js":92,"./Fable-Service-MetaTemplate/MetaTemplate-StringParser.js":98,"./Fable-Service-MetaTemplate/MetaTemplate-WordTree.js":99}],98:[function(require,module,exports){/**
-* MetaTemplate String Parser
+* String Parser
 * @author      Steven Velozo <steven@velozo.com>
 * @description Parse a string, properly processing each matched token in the word tree.
 */var StringParser=/*#__PURE__*/function(){/**
@@ -2677,16 +2677,7 @@ _this20.StringParser=new libStringParser(_this20.fable.defaultServices.Utility.e
 	 * @param {Object} pParseTree - A node on the parse tree to begin parsing from (usually root)
 	 * @return {Object} A new parser state object for running a character parser on
 	 * @private
-	 */_createClass2(StringParser,[{key:"newParserState",value:function newParserState(pParseTree){return{ParseTree:pParseTree,Asynchronous:false,Output:'',OutputBuffer:'',Pattern:false,PatternMatch:false,PatternMatchOutputBuffer:''};}/**
-	 * Assign a node of the parser tree to be the next potential match.
-	 * If the node has a PatternEnd property, it is a valid match and supercedes the last valid match (or becomes the initial match).
-	 * @method assignNode
-	 * @param {Object} pNode - A node on the parse tree to assign
-	 * @param {Object} pParserState - The state object for the current parsing task
-	 * @private
-	 */},{key:"assignNode",value:function assignNode(pNode,pParserState){pParserState.PatternMatch=pNode;// If the pattern has a END we can assume it has a parse function...
-if(pParserState.PatternMatch.hasOwnProperty('PatternEnd')){// ... this is the legitimate start of a pattern.
-pParserState.Pattern=pParserState.PatternMatch;}}/**
+	 */_createClass2(StringParser,[{key:"newParserState",value:function newParserState(pParseTree){return{ParseTree:pParseTree,Asynchronous:false,Output:'',OutputBuffer:'',Pattern:{},PatternMatch:false,PatternMatchEnd:false};}/**
 	 * Append a character to the output buffer in the parser state.
 	 * This output buffer is used when a potential match is being explored, or a match is being explored.
 	 * @method appendOutputBuffer
@@ -2698,44 +2689,57 @@ pParserState.Pattern=pParserState.PatternMatch;}}/**
 	 * @method flushOutputBuffer
 	 * @param {Object} pParserState - The state object for the current parsing task
 	 * @private
-	 */},{key:"flushOutputBuffer",value:function flushOutputBuffer(pParserState){pParserState.Output+=pParserState.OutputBuffer;pParserState.OutputBuffer='';}/**
-	 * Check if the pattern has ended.  If it has, properly flush the buffer and start looking for new patterns.
-	 * @method checkPatternEnd
-	 * @param {Object} pParserState - The state object for the current parsing task
-	 * @private
-	 */},{key:"checkPatternEnd",value:function checkPatternEnd(pParserState,pData){if(pParserState.OutputBuffer.length>=pParserState.Pattern.PatternEnd.length+pParserState.Pattern.PatternStart.length&&pParserState.OutputBuffer.substr(-pParserState.Pattern.PatternEnd.length)===pParserState.Pattern.PatternEnd){// ... this is the end of a pattern, cut off the end tag and parse it.
-// Trim the start and end tags off the output buffer now
-if(pParserState.Pattern.isAsync){console.log("Precedent ERROR: Async template detected for pattern ".concat(pParserState.Pattern.PatternStart," ... ").concat(pParserState.Pattern.PatternEnd," but the template engine is being run in non-async mode."));this.OutputBuffer='';// Flush the output buffer.
+	 */},{key:"flushOutputBuffer",value:function flushOutputBuffer(pParserState){pParserState.Output+=pParserState.OutputBuffer;pParserState.OutputBuffer='';}},{key:"resetOutputBuffer",value:function resetOutputBuffer(pParserState){// Flush the output buffer.
 this.flushOutputBuffer(pParserState);// End pattern mode
-pParserState.Pattern=false;pParserState.PatternMatch=false;}else{pParserState.OutputBuffer=pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStart.length,pParserState.OutputBuffer.length-(pParserState.Pattern.PatternStart.length+pParserState.Pattern.PatternEnd.length)),pData);// Flush the output buffer.
-this.flushOutputBuffer(pParserState);// End pattern mode
-pParserState.Pattern=false;pParserState.PatternMatch=false;}}}},{key:"checkPatternEndAsync",value:function checkPatternEndAsync(pParserState,pData,fCallback){var _this21=this;if(pParserState.OutputBuffer.length>=pParserState.Pattern.PatternEnd.length+pParserState.Pattern.PatternStart.length&&pParserState.OutputBuffer.substr(-pParserState.Pattern.PatternEnd.length)===pParserState.Pattern.PatternEnd){// ... this is the end of a pattern, cut off the end tag and parse it.
-// Trim the start and end tags off the output buffer now
-if(pParserState.Pattern.isAsync){return pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStart.length,pParserState.OutputBuffer.length-(pParserState.Pattern.PatternStart.length+pParserState.Pattern.PatternEnd.length)),pData,function(pError,pAsyncOutput){if(pError){console.log("Precedent ERROR: Async template error happened parsing ".concat(pParserState.Pattern.PatternStart," ... ").concat(pParserState.Pattern.PatternEnd,": ").concat(pError));}pParserState.OutputBuffer=pAsyncOutput;// Flush the output buffer.
-_this21.flushOutputBuffer(pParserState);// End pattern mode
-pParserState.Pattern=false;pParserState.PatternMatch=false;return fCallback();});}else{pParserState.OutputBuffer=pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStart.length,pParserState.OutputBuffer.length-(pParserState.Pattern.PatternStart.length+pParserState.Pattern.PatternEnd.length)),pData);// Flush the output buffer.
-this.flushOutputBuffer(pParserState);// End pattern mode
-pParserState.Pattern=false;pParserState.PatternMatch=false;}}return fCallback();}/**
+pParserState.Pattern=false;pParserState.PatternStartNode=false;pParserState.StartPatternMatchComplete=false;pParserState.EndPatternMatchBegan=false;pParserState.PatternMatch=false;return true;}/**
 	 * Parse a character in the buffer.
 	 * @method parseCharacter
 	 * @param {string} pCharacter - The character to append
 	 * @param {Object} pParserState - The state object for the current parsing task
 	 * @private
-	 */},{key:"parseCharacter",value:function parseCharacter(pCharacter,pParserState,pData){// (1) If we aren't in a pattern match, and we aren't potentially matching, and this may be the start of a new pattern....
-if(!pParserState.PatternMatch&&pParserState.ParseTree.hasOwnProperty(pCharacter)){// ... assign the node as the matched node.
-this.assignNode(pParserState.ParseTree[pCharacter],pParserState);this.appendOutputBuffer(pCharacter,pParserState);}// (2) If we are in a pattern match (actively seeing if this is part of a new pattern token)
-else if(pParserState.PatternMatch){// If the pattern has a subpattern with this key
-if(pParserState.PatternMatch.hasOwnProperty(pCharacter)){// Continue matching patterns.
-this.assignNode(pParserState.PatternMatch[pCharacter],pParserState);}this.appendOutputBuffer(pCharacter,pParserState);if(pParserState.Pattern){// ... Check if this is the end of the pattern (if we are matching a valid pattern)...
-this.checkPatternEnd(pParserState,pData);}}// (3) If we aren't in a pattern match or pattern, and this isn't the start of a new pattern (RAW mode)....
-else{pParserState.Output+=pCharacter;}}},{key:"parseCharacterAsync",value:function parseCharacterAsync(pCharacter,pParserState,pData,fCallback){// (1) If we aren't in a pattern match, and we aren't potentially matching, and this may be the start of a new pattern....
-if(!pParserState.PatternMatch&&pParserState.ParseTree.hasOwnProperty(pCharacter)){// ... assign the node as the matched node.
-this.assignNode(pParserState.ParseTree[pCharacter],pParserState);this.appendOutputBuffer(pCharacter,pParserState);}// (2) If we are in a pattern match (actively seeing if this is part of a new pattern token)
-else if(pParserState.PatternMatch){// If the pattern has a subpattern with this key
-if(pParserState.PatternMatch.hasOwnProperty(pCharacter)){// Continue matching patterns.
-this.assignNode(pParserState.PatternMatch[pCharacter],pParserState);}this.appendOutputBuffer(pCharacter,pParserState);if(pParserState.Pattern){// ... Check if this is the end of the pattern (if we are matching a valid pattern)...
-return this.checkPatternEndAsync(pParserState,pData,fCallback);}}// (3) If we aren't in a pattern match or pattern, and this isn't the start of a new pattern (RAW mode)....
-else{pParserState.Output+=pCharacter;}return fCallback(null);}/**
+	 */},{key:"parseCharacter",value:function parseCharacter(pCharacter,pParserState,pData){// If we are already in a pattern match traversal
+if(pParserState.PatternMatch){// If the pattern is still matching the start and we haven't passed the buffer
+if(!pParserState.StartPatternMatchComplete&&pParserState.Pattern.hasOwnProperty(pCharacter)){pParserState.Pattern=pParserState.Pattern[pCharacter];this.appendOutputBuffer(pCharacter,pParserState);}else if(pParserState.EndPatternMatchBegan){if(pParserState.Pattern.PatternEnd.hasOwnProperty(pCharacter)){// This leaf has a PatternEnd tree, so we will wait until that end is met.
+pParserState.Pattern=pParserState.Pattern.PatternEnd[pCharacter];// Flush the output buffer.
+this.appendOutputBuffer(pCharacter,pParserState);// If this last character is the end of the pattern, parse it.
+if(pParserState.Pattern.hasOwnProperty('Parse')){// Run the function
+pParserState.OutputBuffer=pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length,pParserState.OutputBuffer.length-(pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)),pData);return this.resetOutputBuffer(pParserState);}}else if(pParserState.PatternStartNode.PatternEnd.hasOwnProperty(pCharacter)){// We broke out of the end -- see if this is a new start of the end.
+pParserState.Pattern=pParserState.PatternStartNode.PatternEnd[pCharacter];this.appendOutputBuffer(pCharacter,pParserState);}else{pParserState.EndPatternMatchBegan=false;this.appendOutputBuffer(pCharacter,pParserState);}}else if(pParserState.Pattern.hasOwnProperty('PatternEnd')){if(!pParserState.StartPatternMatchComplete){pParserState.StartPatternMatchComplete=true;pParserState.PatternStartNode=pParserState.Pattern;}this.appendOutputBuffer(pCharacter,pParserState);if(pParserState.Pattern.PatternEnd.hasOwnProperty(pCharacter)){// This is the first character of the end pattern.
+pParserState.EndPatternMatchBegan=true;// This leaf has a PatternEnd tree, so we will wait until that end is met.
+pParserState.Pattern=pParserState.Pattern.PatternEnd[pCharacter];// If this last character is the end of the pattern, parse it.
+if(pParserState.Pattern.hasOwnProperty('Parse')){if(pParserState.Pattern.isAsync){this.log.error("MetaTemplate: The pattern ".concat(pParserState.Pattern.PatternStartString," is asynchronous and cannot be used in a synchronous parser."));this.resetOutputBuffer(pParserState);}else{// Run the t*mplate function
+pParserState.OutputBuffer=pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length,pParserState.OutputBuffer.length-(pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)),pData);return this.resetOutputBuffer(pParserState);}}}}else{// We are in a pattern start but didn't match one; reset and start trying again from this character.
+this.resetOutputBuffer(pParserState);}}// If we aren't in a pattern match or pattern, and this isn't the start of a new pattern (RAW mode)....
+if(!pParserState.PatternMatch){// This may be the start of a new pattern....
+if(pParserState.ParseTree.hasOwnProperty(pCharacter)){// ... assign the root node as the matched node.
+this.resetOutputBuffer(pParserState);this.appendOutputBuffer(pCharacter,pParserState);pParserState.Pattern=pParserState.ParseTree[pCharacter];pParserState.PatternMatch=true;return true;}else{this.appendOutputBuffer(pCharacter,pParserState);}}return false;}/**
+	 * Parse a character in the buffer.
+	 * @method parseCharacter
+	 * @param {string} pCharacter - The character to append
+	 * @param {Object} pParserState - The state object for the current parsing task
+	 * @private
+	 */},{key:"parseCharacterAsync",value:function parseCharacterAsync(pCharacter,pParserState,pData,fCallback){var _this21=this;// If we are already in a pattern match traversal
+if(pParserState.PatternMatch){// If the pattern is still matching the start and we haven't passed the buffer
+if(!pParserState.StartPatternMatchComplete&&pParserState.Pattern.hasOwnProperty(pCharacter)){pParserState.Pattern=pParserState.Pattern[pCharacter];this.appendOutputBuffer(pCharacter,pParserState);}else if(pParserState.EndPatternMatchBegan){if(pParserState.Pattern.PatternEnd.hasOwnProperty(pCharacter)){// This leaf has a PatternEnd tree, so we will wait until that end is met.
+pParserState.Pattern=pParserState.Pattern.PatternEnd[pCharacter];// Flush the output buffer.
+this.appendOutputBuffer(pCharacter,pParserState);// If this last character is the end of the pattern, parse it.
+if(pParserState.Pattern.hasOwnProperty('Parse')){// ... this is the end of a pattern, cut off the end tag and parse it.
+// Trim the start and end tags off the output buffer now
+if(pParserState.Pattern.isAsync){// Run the function
+return pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length,pParserState.OutputBuffer.length-(pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)),pData,function(pError,pAsyncOutput){if(pError){console.log("Precedent ERROR: Async template error happened parsing ".concat(pParserState.Pattern.PatternStart," ... ").concat(pParserState.Pattern.PatternEnd,": ").concat(pError));}pParserState.OutputBuffer=pAsyncOutput;_this21.resetOutputBuffer(pParserState);return fCallback();});}else{// Run the t*mplate function
+pParserState.OutputBuffer=pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length,pParserState.OutputBuffer.length-(pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)),pData);this.resetOutputBuffer(pParserState);return fCallback();}}}else if(pParserState.PatternStartNode.PatternEnd.hasOwnProperty(pCharacter)){// We broke out of the end -- see if this is a new start of the end.
+pParserState.Pattern=pParserState.PatternStartNode.PatternEnd[pCharacter];this.appendOutputBuffer(pCharacter,pParserState);}else{pParserState.EndPatternMatchBegan=false;this.appendOutputBuffer(pCharacter,pParserState);}}else if(pParserState.Pattern.hasOwnProperty('PatternEnd')){if(!pParserState.StartPatternMatchComplete){pParserState.StartPatternMatchComplete=true;pParserState.PatternStartNode=pParserState.Pattern;}this.appendOutputBuffer(pCharacter,pParserState);if(pParserState.Pattern.PatternEnd.hasOwnProperty(pCharacter)){// This is the first character of the end pattern.
+pParserState.EndPatternMatchBegan=true;// This leaf has a PatternEnd tree, so we will wait until that end is met.
+pParserState.Pattern=pParserState.Pattern.PatternEnd[pCharacter];// If this last character is the end of the pattern, parse it.
+if(pParserState.Pattern.hasOwnProperty('Parse')){// ... this is the end of a pattern, cut off the end tag and parse it.
+// Trim the start and end tags off the output buffer now
+if(pParserState.Pattern.isAsync){// Run the function
+return pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length,pParserState.OutputBuffer.length-(pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)),pData,function(pError,pAsyncOutput){if(pError){console.log("Precedent ERROR: Async template error happened parsing ".concat(pParserState.Pattern.PatternStart," ... ").concat(pParserState.Pattern.PatternEnd,": ").concat(pError));}pParserState.OutputBuffer=pAsyncOutput;_this21.resetOutputBuffer(pParserState);return fCallback();});}else{// Run the t*mplate function
+pParserState.OutputBuffer=pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length,pParserState.OutputBuffer.length-(pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)),pData);this.resetOutputBuffer(pParserState);return fCallback();}}}}else{// We are in a pattern start but didn't match one; reset and start trying again from this character.
+this.resetOutputBuffer(pParserState);return fCallback();}}// If we aren't in a pattern match or pattern, and this isn't the start of a new pattern (RAW mode)....
+if(!pParserState.PatternMatch){// This may be the start of a new pattern....
+if(pParserState.ParseTree.hasOwnProperty(pCharacter)){// ... assign the root node as the matched node.
+this.resetOutputBuffer(pParserState);this.appendOutputBuffer(pCharacter,pParserState);pParserState.Pattern=pParserState.ParseTree[pCharacter];pParserState.PatternMatch=true;}else{this.appendOutputBuffer(pCharacter,pParserState);}}return fCallback();}/**
 	 * Parse a string for matches, and process any template segments that occur.
 	 * @method parseString
 	 * @param {string} pString - The string to parse.
@@ -2744,9 +2748,9 @@ else{pParserState.Output+=pCharacter;}return fCallback(null);}/**
 	 * @param {function} fCallback - The callback function to call when the parse is complete
 	 */},{key:"parseString",value:function parseString(pString,pParseTree,pData,fCallback){var _this22=this;if(typeof fCallback!=='function'){var tmpParserState=this.newParserState(pParseTree);for(var i=0;i<pString.length;i++){// TODO: This is not fast.
 this.parseCharacter(pString[i],tmpParserState,pData,fCallback);}this.flushOutputBuffer(tmpParserState);return tmpParserState.Output;}else{// This is the async mode
-var _tmpParserState=this.newParserState(pParseTree);this.eachLimit(pString,1,function(pCharacter,fCharacterCallback){_this22.parseCharacterAsync(pCharacter,_tmpParserState,pData,fCharacterCallback);},function(pError){// Flush the remaining data
+var _tmpParserState=this.newParserState(pParseTree);_tmpParserState.Asynchronous=true;this.eachLimit(pString,1,function(pCharacter,fCharacterCallback){_this22.parseCharacterAsync(pCharacter,_tmpParserState,pData,fCharacterCallback);},function(pError){// Flush the remaining data
 _this22.flushOutputBuffer(_tmpParserState);fCallback(pError,_tmpParserState.Output);});}}}]);return StringParser;}();module.exports=StringParser;},{}],99:[function(require,module,exports){/**
-* MetaTemplate Word Tree
+* Word Tree
 * @author      Steven Velozo <steven@velozo.com>
 * @description Create a tree (directed graph) of Javascript objects, one character per object.
 */var WordTree=/*#__PURE__*/function(){/**
@@ -2756,24 +2760,29 @@ _this22.flushOutputBuffer(_tmpParserState);fCallback(pError,_tmpParserState.Outp
 	 * @method addChild
 	 * @param {Object} pTree - A parse tree to push the characters into
 	 * @param {string} pPattern - The string to add to the tree
-	 * @param {number} pIndex - The index of the character in the pattern
 	 * @returns {Object} The resulting leaf node that was added (or found)
 	 * @private
-	 */_createClass2(WordTree,[{key:"addChild",value:function addChild(pTree,pPattern,pIndex){if(!pTree.hasOwnProperty(pPattern[pIndex]))pTree[pPattern[pIndex]]={};return pTree[pPattern[pIndex]];}/** Add a Pattern to the Parse Tree
+	 */_createClass2(WordTree,[{key:"addChild",value:function addChild(pTree,pPattern){if(!pTree.hasOwnProperty(pPattern)){pTree[pPattern]={};}return pTree[pPattern];}/**
+	 * Add a child character to a Parse Tree PatternEnd subtree
+	 * @method addChild
+	 * @param {Object} pTree - A parse tree to push the characters into
+	 * @param {string} pPattern - The string to add to the tree
+	 * @returns {Object} The resulting leaf node that was added (or found)
+	 * @private
+	 */},{key:"addEndChild",value:function addEndChild(pTree,pPattern){if(!pTree.hasOwnProperty('PatternEnd')){pTree.PatternEnd={};}pTree.PatternEnd[pPattern]={};return pTree.PatternEnd[pPattern];}/** Add a Pattern to the Parse Tree
 	 * @method addPattern
 	 * @param {Object} pPatternStart - The starting string for the pattern (e.g. "${")
 	 * @param {string} pPatternEnd - The ending string for the pattern (e.g. "}")
-	 * @param {number} pParser - The function to parse if this is the matched pattern, once the Pattern End is met.  If this is a string, a simple replacement occurs.
+	 * @param {function} fParser - The function to parse if this is the matched pattern, once the Pattern End is met.  If this is a string, a simple replacement occurs.
 	 * @return {bool} True if adding the pattern was successful
-	 */},{key:"addPattern",value:function addPattern(pPatternStart,pPatternEnd,pParser){if(pPatternStart.length<1)return false;if(typeof pPatternEnd==='string'&&pPatternEnd.length<1)return false;var tmpLeaf=this.ParseTree;// Add the tree of leaves iteratively
-for(var i=0;i<pPatternStart.length;i++)tmpLeaf=this.addChild(tmpLeaf,pPatternStart,i);tmpLeaf.PatternStart=pPatternStart;tmpLeaf.PatternEnd=typeof pPatternEnd==='string'&&pPatternEnd.length>0?pPatternEnd:pPatternStart;tmpLeaf.Parse=typeof pParser==='function'?pParser:typeof pParser==='string'?function(){return pParser;}:function(pData){return pData;};tmpLeaf.isPromise=false;return true;}/** Add a Pattern to the Parse Tree (asynchronous)
+	 */},{key:"addPattern",value:function addPattern(pPatternStart,pPatternEnd,fParser){if(pPatternStart.length<1){return false;}if(typeof pPatternEnd==='string'&&pPatternEnd.length<1){return false;}var tmpLeaf=this.ParseTree;// Add the tree of leaves iteratively
+for(var i=0;i<pPatternStart.length;i++){tmpLeaf=this.addChild(tmpLeaf,pPatternStart[i],i);}if(!tmpLeaf.hasOwnProperty('PatternEnd')){tmpLeaf.PatternEnd={};}var tmpPatternEnd=typeof pPatternEnd==='string'?pPatternEnd:pPatternStart;for(var _i10=0;_i10<tmpPatternEnd.length;_i10++){tmpLeaf=this.addEndChild(tmpLeaf,tmpPatternEnd[_i10],_i10);}tmpLeaf.PatternStartString=pPatternStart;tmpLeaf.PatternEndString=tmpPatternEnd;tmpLeaf.Parse=typeof fParser==='function'?fParser:typeof fParser==='string'?function(){return fParser;}:function(pData){return pData;};return tmpLeaf;}/** Add a Pattern to the Parse Tree
 	 * @method addPattern
 	 * @param {Object} pPatternStart - The starting string for the pattern (e.g. "${")
 	 * @param {string} pPatternEnd - The ending string for the pattern (e.g. "}")
-	 * @param {number} pParserAsync - The function (with an asynchronous callback) to parse if this is the matched pattern, once the Pattern End is met.  If this is a string, a simple replacement occurs.
+	 * @param {function} fParser - The function to parse if this is the matched pattern, once the Pattern End is met.  If this is a string, a simple replacement occurs.
 	 * @return {bool} True if adding the pattern was successful
-	 */},{key:"addPatternAsync",value:function addPatternAsync(pPatternStart,pPatternEnd,pParserAsync){if(pPatternStart.length<1)return false;if(typeof pPatternEnd==='string'&&pPatternEnd.length<1)return false;var tmpLeaf=this.ParseTree;// Add the tree of leaves iteratively
-for(var i=0;i<pPatternStart.length;i++)tmpLeaf=this.addChild(tmpLeaf,pPatternStart,i);tmpLeaf.PatternStart=pPatternStart;tmpLeaf.PatternEnd=typeof pPatternEnd==='string'&&pPatternEnd.length>0?pPatternEnd:pPatternStart;tmpLeaf.Parse=typeof pParserAsync==='function'?pParserAsync:typeof pParserAsync==='string'?function(pHash,pData,fCallback){fCallback(pParserPromise);}:function(pHash,pData,fCallback){return fCallback(pHash);};tmpLeaf.isAsync=true;return true;}}]);return WordTree;}();module.exports=WordTree;},{}],100:[function(require,module,exports){module.exports={"Metadata":{"UUID":false,"Hash":false,"Title":"","Summary":"","Version":0},"Status":{"Completed":false,"CompletionProgress":0,"CompletionTimeElapsed":0,"Steps":1,"StepsCompleted":0,"StartTime":0,"EndTime":0},"Errors":[],"Log":[]};},{}],101:[function(require,module,exports){var libFableServiceBase=require('../Fable-ServiceManager.js').ServiceProviderBase;var _OperationStatePrototypeString=JSON.stringify(require('./Fable-Service-Operation-DefaultSettings.js'));var FableOperation=/*#__PURE__*/function(_libFableServiceBase3){_inherits(FableOperation,_libFableServiceBase3);var _super13=_createSuper(FableOperation);function FableOperation(pFable,pOptions,pServiceHash){var _this23;_classCallCheck2(this,FableOperation);_this23=_super13.call(this,pFable,pOptions,pServiceHash);_this23.serviceType='PhasedOperation';_this23.state=JSON.parse(_OperationStatePrototypeString);// Match the service instantiation to the operation.
+	 */},{key:"addPatternAsync",value:function addPatternAsync(pPatternStart,pPatternEnd,fParser){var tmpLeaf=this.addPattern(pPatternStart,pPatternEnd,fParser);if(tmpLeaf){tmpLeaf.isAsync=true;}}}]);return WordTree;}();module.exports=WordTree;},{}],100:[function(require,module,exports){module.exports={"Metadata":{"UUID":false,"Hash":false,"Title":"","Summary":"","Version":0},"Status":{"Completed":false,"CompletionProgress":0,"CompletionTimeElapsed":0,"Steps":1,"StepsCompleted":0,"StartTime":0,"EndTime":0},"Errors":[],"Log":[]};},{}],101:[function(require,module,exports){var libFableServiceBase=require('../Fable-ServiceManager.js').ServiceProviderBase;var _OperationStatePrototypeString=JSON.stringify(require('./Fable-Service-Operation-DefaultSettings.js'));var FableOperation=/*#__PURE__*/function(_libFableServiceBase3){_inherits(FableOperation,_libFableServiceBase3);var _super13=_createSuper(FableOperation);function FableOperation(pFable,pOptions,pServiceHash){var _this23;_classCallCheck2(this,FableOperation);_this23=_super13.call(this,pFable,pOptions,pServiceHash);_this23.serviceType='PhasedOperation';_this23.state=JSON.parse(_OperationStatePrototypeString);// Match the service instantiation to the operation.
 _this23.state.Metadata.Hash=_this23.Hash;_this23.state.Metadata.UUID=_this23.UUID;_this23.name=typeof _this23.options.Name=='string'?_this23.options.Name:"Unnamed Operation ".concat(_this23.state.Metadata.UUID);_this23.log=_assertThisInitialized(_this23);return _this23;}_createClass2(FableOperation,[{key:"writeOperationLog",value:function writeOperationLog(pLogLevel,pLogText,pLogObject){this.state.Log.push("".concat(new Date().toUTCString()," [").concat(pLogLevel,"]: ").concat(pLogText));if(_typeof(pLogObject)=='object'){this.state.Log.push(JSON.stringify(pLogObject));}}},{key:"writeOperationErrors",value:function writeOperationErrors(pLogText,pLogObject){this.state.Errors.push("".concat(pLogText));if(_typeof(pLogObject)=='object'){this.state.Errors.push(JSON.stringify(pLogObject));}}},{key:"trace",value:function trace(pLogText,pLogObject){this.writeOperationLog('TRACE',pLogText,pLogObject);this.fable.log.trace(pLogText,pLogObject);}},{key:"debug",value:function debug(pLogText,pLogObject){this.writeOperationLog('DEBUG',pLogText,pLogObject);this.fable.log.debug(pLogText,pLogObject);}},{key:"info",value:function info(pLogText,pLogObject){this.writeOperationLog('INFO',pLogText,pLogObject);this.fable.log.info(pLogText,pLogObject);}},{key:"warn",value:function warn(pLogText,pLogObject){this.writeOperationLog('WARN',pLogText,pLogObject);this.fable.log.warn(pLogText,pLogObject);}},{key:"error",value:function error(pLogText,pLogObject){this.writeOperationLog('ERROR',pLogText,pLogObject);this.writeOperationErrors(pLogText,pLogObject);this.fable.log.error(pLogText,pLogObject);}},{key:"fatal",value:function fatal(pLogText,pLogObject){this.writeOperationLog('FATAL',pLogText,pLogObject);this.writeOperationErrors(pLogText,pLogObject);this.fable.log.fatal(pLogText,pLogObject);}}]);return FableOperation;}(libFableServiceBase);module.exports=FableOperation;},{"../Fable-ServiceManager.js":92,"./Fable-Service-Operation-DefaultSettings.js":100}],102:[function(require,module,exports){var libFableServiceBase=require('../Fable-ServiceManager.js').ServiceProviderBase;var libSimpleGet=require('simple-get');var FableServiceRestClient=/*#__PURE__*/function(_libFableServiceBase4){_inherits(FableServiceRestClient,_libFableServiceBase4);var _super14=_createSuper(FableServiceRestClient);function FableServiceRestClient(pFable,pOptions,pServiceHash){var _this24;_classCallCheck2(this,FableServiceRestClient);_this24=_super14.call(this,pFable,pOptions,pServiceHash);_this24.TraceLog=false;if(_this24.options.TraceLog||_this24.fable.TraceLog){_this24.TraceLog=true;}_this24.dataFormat=_this24.fable.defaultServices.DataFormat;_this24.serviceType='RestClient';// This is a function that can be overridden, to allow the management
 // of the request options before they are passed to the request library.
 _this24.prepareRequestOptions=function(pOptions){return pOptions;};return _this24;}_createClass2(FableServiceRestClient,[{key:"preRequest",value:function preRequest(pOptions){// Validate the options object

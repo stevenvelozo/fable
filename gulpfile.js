@@ -131,7 +131,7 @@ libGulp.task('minified',
 		.pipe(libVinylBuffer())
 		.pipe(libSourcemaps.init({loadMaps: true}))
 				// Add transformation tasks to the pipeline here.
-				.pipe(libBabel())
+				.pipe(libBabel({"presets": ["@babel/preset-env"]}))
 				.pipe(libTerser())
 				.on('error', libGulpUtil.log)
 		.pipe(libSourcemaps.write('./'))
@@ -152,7 +152,7 @@ libGulp.task('debug',
 		return tmpBrowserify.bundle()
 			.pipe(libVinylSourceStream(_CONFIG.LibraryUniminifiedFileName))
 			.pipe(libVinylBuffer())
-					.pipe(libBabel())
+					.pipe(libBabel({"presets": ["@babel/preset-env"]}))
 					.on('error', libGulpUtil.log)
 			.pipe(libGulp.dest(_CONFIG.LibraryOutputFolder));
 	});

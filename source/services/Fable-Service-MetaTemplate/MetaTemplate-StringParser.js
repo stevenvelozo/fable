@@ -1,5 +1,5 @@
 /**
-* MetaTemplate String Parser
+* String Parser
 * @author      Steven Velozo <steven@velozo.com>
 * @description Parse a string, properly processing each matched token in the word tree.
 */
@@ -32,31 +32,11 @@ class StringParser
 			Output: '',
 			OutputBuffer: '',
 
-			Pattern: false,
+			Pattern: {},
 
 			PatternMatch: false,
-			PatternMatchOutputBuffer: ''
+			PatternMatchEnd: false
 		});
-	}
-
-	/**
-	 * Assign a node of the parser tree to be the next potential match.
-	 * If the node has a PatternEnd property, it is a valid match and supercedes the last valid match (or becomes the initial match).
-	 * @method assignNode
-	 * @param {Object} pNode - A node on the parse tree to assign
-	 * @param {Object} pParserState - The state object for the current parsing task
-	 * @private
-	 */
-	assignNode (pNode, pParserState)
-	{
-		pParserState.PatternMatch = pNode;
-
-		// If the pattern has a END we can assume it has a parse function...
-		if (pParserState.PatternMatch.hasOwnProperty('PatternEnd'))
-		{
-			// ... this is the legitimate start of a pattern.
-			pParserState.Pattern = pParserState.PatternMatch;
-		}
 	}
 
 	/**
@@ -84,80 +64,18 @@ class StringParser
 		pParserState.OutputBuffer = '';
 	}
 
-	/**
-	 * Check if the pattern has ended.  If it has, properly flush the buffer and start looking for new patterns.
-	 * @method checkPatternEnd
-	 * @param {Object} pParserState - The state object for the current parsing task
-	 * @private
-	 */
-	checkPatternEnd (pParserState, pData)
+	resetOutputBuffer (pParserState)
 	{
-		if ((pParserState.OutputBuffer.length >= pParserState.Pattern.PatternEnd.length+pParserState.Pattern.PatternStart.length) &&
-			(pParserState.OutputBuffer.substr(-pParserState.Pattern.PatternEnd.length) === pParserState.Pattern.PatternEnd))
-		{
-			// ... this is the end of a pattern, cut off the end tag and parse it.
-			// Trim the start and end tags off the output buffer now
-			if (pParserState.Pattern.isAsync)
-			{
-				console.log(`Precedent ERROR: Async template detected for pattern ${pParserState.Pattern.PatternStart} ... ${pParserState.Pattern.PatternEnd} but the template engine is being run in non-async mode.`);
-				this.OutputBuffer = '';
-				// Flush the output buffer.
-				this.flushOutputBuffer(pParserState);
-				// End pattern mode
-				pParserState.Pattern = false;
-				pParserState.PatternMatch = false;
-			}
-			else
-			{
-				pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStart.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStart.length+pParserState.Pattern.PatternEnd.length)), pData);
-				// Flush the output buffer.
-				this.flushOutputBuffer(pParserState);
-				// End pattern mode
-				pParserState.Pattern = false;
-				pParserState.PatternMatch = false;
-			}
-		}
-	}
+		// Flush the output buffer.
+		this.flushOutputBuffer(pParserState);
+		// End pattern mode
+		pParserState.Pattern = false;
+		pParserState.PatternStartNode = false;
+		pParserState.StartPatternMatchComplete = false;
+		pParserState.EndPatternMatchBegan = false;
+		pParserState.PatternMatch = false;
 
-	checkPatternEndAsync (pParserState, pData, fCallback)
-	{
-		if ((pParserState.OutputBuffer.length >= pParserState.Pattern.PatternEnd.length+pParserState.Pattern.PatternStart.length) &&
-			(pParserState.OutputBuffer.substr(-pParserState.Pattern.PatternEnd.length) === pParserState.Pattern.PatternEnd))
-		{
-			// ... this is the end of a pattern, cut off the end tag and parse it.
-			// Trim the start and end tags off the output buffer now
-			if (pParserState.Pattern.isAsync)
-			{
-				return pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStart.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStart.length+pParserState.Pattern.PatternEnd.length)), pData,
-					(pError, pAsyncOutput) =>
-					{
-						if (pError)
-						{
-							console.log(`Precedent ERROR: Async template error happened parsing ${pParserState.Pattern.PatternStart} ... ${pParserState.Pattern.PatternEnd}: ${pError}`);
-						}
-
-						pParserState.OutputBuffer = pAsyncOutput;
-						// Flush the output buffer.
-						this.flushOutputBuffer(pParserState);
-						// End pattern mode
-						pParserState.Pattern = false;
-						pParserState.PatternMatch = false;
-
-						return fCallback();
-					});
-			}
-			else
-			{
-				pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStart.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStart.length+pParserState.Pattern.PatternEnd.length)), pData);
-				// Flush the output buffer.
-				this.flushOutputBuffer(pParserState);
-				// End pattern mode
-				pParserState.Pattern = false;
-				pParserState.PatternMatch = false;
-			}
-		}
-
-		return fCallback();
+		return true;
 	}
 
 	/**
@@ -169,68 +87,243 @@ class StringParser
 	 */
 	parseCharacter (pCharacter, pParserState, pData)
 	{
-		// (1) If we aren't in a pattern match, and we aren't potentially matching, and this may be the start of a new pattern....
-		if (!pParserState.PatternMatch && pParserState.ParseTree.hasOwnProperty(pCharacter))
+		// If we are already in a pattern match traversal
+		if (pParserState.PatternMatch)
 		{
-			// ... assign the node as the matched node.
-			this.assignNode(pParserState.ParseTree[pCharacter], pParserState);
-			this.appendOutputBuffer(pCharacter, pParserState);
-		}
-		// (2) If we are in a pattern match (actively seeing if this is part of a new pattern token)
-		else if (pParserState.PatternMatch)
-		{
-			// If the pattern has a subpattern with this key
-			if (pParserState.PatternMatch.hasOwnProperty(pCharacter))
+			// If the pattern is still matching the start and we haven't passed the buffer
+			if (!pParserState.StartPatternMatchComplete && pParserState.Pattern.hasOwnProperty(pCharacter))
 			{
-				// Continue matching patterns.
-				this.assignNode(pParserState.PatternMatch[pCharacter], pParserState);
+				pParserState.Pattern = pParserState.Pattern[pCharacter];
+				this.appendOutputBuffer(pCharacter, pParserState);
 			}
-			this.appendOutputBuffer(pCharacter, pParserState);
-			if (pParserState.Pattern)
+			else if (pParserState.EndPatternMatchBegan)
 			{
-				// ... Check if this is the end of the pattern (if we are matching a valid pattern)...
-				this.checkPatternEnd(pParserState, pData);
+				if (pParserState.Pattern.PatternEnd.hasOwnProperty(pCharacter))
+				{
+					// This leaf has a PatternEnd tree, so we will wait until that end is met.
+					pParserState.Pattern = pParserState.Pattern.PatternEnd[pCharacter];
+					// Flush the output buffer.
+					this.appendOutputBuffer(pCharacter, pParserState);
+					// If this last character is the end of the pattern, parse it.
+					if (pParserState.Pattern.hasOwnProperty('Parse'))
+					{
+						// Run the function
+						pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData);
+						return this.resetOutputBuffer(pParserState);
+					}
+				}
+				else if (pParserState.PatternStartNode.PatternEnd.hasOwnProperty(pCharacter))
+				{
+					// We broke out of the end -- see if this is a new start of the end.
+					pParserState.Pattern = pParserState.PatternStartNode.PatternEnd[pCharacter];
+					this.appendOutputBuffer(pCharacter, pParserState);
+				}
+				else
+				{
+					pParserState.EndPatternMatchBegan = false;
+					this.appendOutputBuffer(pCharacter, pParserState);
+				}
+			}
+			else if (pParserState.Pattern.hasOwnProperty('PatternEnd'))
+			{
+				if (!pParserState.StartPatternMatchComplete)
+				{
+					pParserState.StartPatternMatchComplete = true;
+					pParserState.PatternStartNode = pParserState.Pattern;
+				}
+
+				this.appendOutputBuffer(pCharacter, pParserState);
+
+				if (pParserState.Pattern.PatternEnd.hasOwnProperty(pCharacter))
+				{
+					// This is the first character of the end pattern.
+					pParserState.EndPatternMatchBegan = true;
+					// This leaf has a PatternEnd tree, so we will wait until that end is met.
+					pParserState.Pattern = pParserState.Pattern.PatternEnd[pCharacter];
+					// If this last character is the end of the pattern, parse it.
+					if (pParserState.Pattern.hasOwnProperty('Parse'))
+					{
+						if (pParserState.Pattern.isAsync)
+						{
+							this.log.error(`MetaTemplate: The pattern ${pParserState.Pattern.PatternStartString} is asynchronous and cannot be used in a synchronous parser.`);
+							this.resetOutputBuffer(pParserState);
+						}
+						else
+						{
+							// Run the t*mplate function
+							pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData);
+							return this.resetOutputBuffer(pParserState);
+						}
+					}
+				}
+			}
+			else
+			{
+				// We are in a pattern start but didn't match one; reset and start trying again from this character.
+				this.resetOutputBuffer(pParserState);
 			}
 		}
-		// (3) If we aren't in a pattern match or pattern, and this isn't the start of a new pattern (RAW mode)....
-		else
+		// If we aren't in a pattern match or pattern, and this isn't the start of a new pattern (RAW mode)....
+		if (!pParserState.PatternMatch)
 		{
-			pParserState.Output += pCharacter;
+			// This may be the start of a new pattern....
+			if (pParserState.ParseTree.hasOwnProperty(pCharacter))
+			{
+				// ... assign the root node as the matched node.
+				this.resetOutputBuffer(pParserState);
+				this.appendOutputBuffer(pCharacter, pParserState);
+				pParserState.Pattern = pParserState.ParseTree[pCharacter];
+				pParserState.PatternMatch = true;
+				return true;
+			}
+			else
+			{
+				this.appendOutputBuffer(pCharacter, pParserState);
+			}
 		}
+		return false;
 	}
 
+	/**
+	 * Parse a character in the buffer.
+	 * @method parseCharacter
+	 * @param {string} pCharacter - The character to append
+	 * @param {Object} pParserState - The state object for the current parsing task
+	 * @private
+	 */
 	parseCharacterAsync (pCharacter, pParserState, pData, fCallback)
 	{
-		// (1) If we aren't in a pattern match, and we aren't potentially matching, and this may be the start of a new pattern....
-		if (!pParserState.PatternMatch && pParserState.ParseTree.hasOwnProperty(pCharacter))
+		// If we are already in a pattern match traversal
+		if (pParserState.PatternMatch)
 		{
-			// ... assign the node as the matched node.
-			this.assignNode(pParserState.ParseTree[pCharacter], pParserState);
-			this.appendOutputBuffer(pCharacter, pParserState);
-		}
-		// (2) If we are in a pattern match (actively seeing if this is part of a new pattern token)
-		else if (pParserState.PatternMatch)
-		{
-			// If the pattern has a subpattern with this key
-			if (pParserState.PatternMatch.hasOwnProperty(pCharacter))
+			// If the pattern is still matching the start and we haven't passed the buffer
+			if (!pParserState.StartPatternMatchComplete && pParserState.Pattern.hasOwnProperty(pCharacter))
 			{
-				// Continue matching patterns.
-				this.assignNode(pParserState.PatternMatch[pCharacter], pParserState);
+				pParserState.Pattern = pParserState.Pattern[pCharacter];
+				this.appendOutputBuffer(pCharacter, pParserState);
 			}
-			this.appendOutputBuffer(pCharacter, pParserState);
-			if (pParserState.Pattern)
+			else if (pParserState.EndPatternMatchBegan)
 			{
-				// ... Check if this is the end of the pattern (if we are matching a valid pattern)...
-				return this.checkPatternEndAsync(pParserState, pData, fCallback);
-			}
-		}
-		// (3) If we aren't in a pattern match or pattern, and this isn't the start of a new pattern (RAW mode)....
-		else
-		{
-			pParserState.Output += pCharacter;
-		}
+				if (pParserState.Pattern.PatternEnd.hasOwnProperty(pCharacter))
+				{
+					// This leaf has a PatternEnd tree, so we will wait until that end is met.
+					pParserState.Pattern = pParserState.Pattern.PatternEnd[pCharacter];
+					// Flush the output buffer.
+					this.appendOutputBuffer(pCharacter, pParserState);
+					// If this last character is the end of the pattern, parse it.
+					if (pParserState.Pattern.hasOwnProperty('Parse'))
+					{
+						// ... this is the end of a pattern, cut off the end tag and parse it.
+						// Trim the start and end tags off the output buffer now
+						if (pParserState.Pattern.isAsync)
+						{
+							// Run the function
+							return pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData,
+								(pError, pAsyncOutput) =>
+								{
+									if (pError)
+									{
+										console.log(`Precedent ERROR: Async template error happened parsing ${pParserState.Pattern.PatternStart} ... ${pParserState.Pattern.PatternEnd}: ${pError}`);
+									}
 
-		return fCallback(null);
+									pParserState.OutputBuffer = pAsyncOutput;
+									this.resetOutputBuffer(pParserState);
+									return fCallback();
+								});
+						}
+						else
+						{
+							// Run the t*mplate function
+							pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData);
+							this.resetOutputBuffer(pParserState);
+							return fCallback();
+						}
+					}
+				}
+				else if (pParserState.PatternStartNode.PatternEnd.hasOwnProperty(pCharacter))
+				{
+					// We broke out of the end -- see if this is a new start of the end.
+					pParserState.Pattern = pParserState.PatternStartNode.PatternEnd[pCharacter];
+					this.appendOutputBuffer(pCharacter, pParserState);
+				}
+				else
+				{
+					pParserState.EndPatternMatchBegan = false;
+					this.appendOutputBuffer(pCharacter, pParserState);
+				}
+			}
+			else if (pParserState.Pattern.hasOwnProperty('PatternEnd'))
+			{
+				if (!pParserState.StartPatternMatchComplete)
+				{
+					pParserState.StartPatternMatchComplete = true;
+					pParserState.PatternStartNode = pParserState.Pattern;
+				}
+
+				this.appendOutputBuffer(pCharacter, pParserState);
+
+				if (pParserState.Pattern.PatternEnd.hasOwnProperty(pCharacter))
+				{
+					// This is the first character of the end pattern.
+					pParserState.EndPatternMatchBegan = true;
+					// This leaf has a PatternEnd tree, so we will wait until that end is met.
+					pParserState.Pattern = pParserState.Pattern.PatternEnd[pCharacter];
+					// If this last character is the end of the pattern, parse it.
+					if (pParserState.Pattern.hasOwnProperty('Parse'))
+					{
+						// ... this is the end of a pattern, cut off the end tag and parse it.
+						// Trim the start and end tags off the output buffer now
+						if (pParserState.Pattern.isAsync)
+						{
+							// Run the function
+							return pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData,
+								(pError, pAsyncOutput) =>
+								{
+									if (pError)
+									{
+										console.log(`Precedent ERROR: Async template error happened parsing ${pParserState.Pattern.PatternStart} ... ${pParserState.Pattern.PatternEnd}: ${pError}`);
+									}
+
+									pParserState.OutputBuffer = pAsyncOutput;
+									this.resetOutputBuffer(pParserState);
+									return fCallback();
+								});
+						}
+						else
+						{
+							// Run the t*mplate function
+							pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData);
+							this.resetOutputBuffer(pParserState);
+							return fCallback();
+						}
+					}
+				}
+			}
+			else
+			{
+				// We are in a pattern start but didn't match one; reset and start trying again from this character.
+				this.resetOutputBuffer(pParserState);
+				return fCallback();
+			}
+		}
+		// If we aren't in a pattern match or pattern, and this isn't the start of a new pattern (RAW mode)....
+		if (!pParserState.PatternMatch)
+		{
+			// This may be the start of a new pattern....
+			if (pParserState.ParseTree.hasOwnProperty(pCharacter))
+			{
+				// ... assign the root node as the matched node.
+				this.resetOutputBuffer(pParserState);
+				this.appendOutputBuffer(pCharacter, pParserState);
+				pParserState.Pattern = pParserState.ParseTree[pCharacter];
+				pParserState.PatternMatch = true;
+			}
+			else
+			{
+				this.appendOutputBuffer(pCharacter, pParserState);
+			}
+		}
+		return fCallback();
 	}
 
 	/**
@@ -261,6 +354,7 @@ class StringParser
 		{
 			// This is the async mode
 			let tmpParserState = this.newParserState(pParseTree);
+			tmpParserState.Asynchronous = true;
 
 			this.eachLimit(pString, 1,
 				(pCharacter, fCharacterCallback) =>

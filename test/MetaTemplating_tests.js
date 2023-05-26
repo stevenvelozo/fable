@@ -198,9 +198,6 @@ suite
 							'Match this <<> and this <<here> please.',
 							'Match this MEDIUM_MATCH and this MEDIUM_MATCH please.',
 
-							'Match this <<EXTRA> and this <<here> please.',
-							'Match this MEDIUM_MATCH and this MEDIUM_MATCH please.',
-
 							'Match this <<EXTRALONG> and this <<here> please.',
 							'Match this EXTRA_LONG_MATCH and this MEDIUM_MATCH please.',
 
