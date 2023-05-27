@@ -2473,9 +2473,9 @@ if(this.EmitHeader){return this.Header;}else{return false;}}else{return this.emi
 this._Regex_formatterInsertCommas=/.{1,3}/g;// Match Function:
 // function(pMatch, pSign, pZeros, pBefore, pDecimal, pAfter)
 // Thoughts about below:   /^([+-]?)(0*)(\d+)(\.(\d+))?$/;
-this._Regex_formatterAddCommasToNumber=/^([-+]?)(0?)(\d+)(.?)(\d+)$/g;this._Regex_formatterDollarsRemoveCommas=/,/gi;this._Regex_formatterCleanNonAlpha=/[^a-z0-9]/gi;// TODO: Potentially pull these in from a configuration.
+this._Regex_formatterAddCommasToNumber=/^([-+]?)(0?)(\d+)(.?)(\d+)$/g;this._Regex_formatterDollarsRemoveCommas=/,/gi;this._Regex_formatterCleanNonAlphaChar=/[^a-zA-Z]/gi;this._Regex_formatterCapitalizeEachWord=/([a-zA-Z]+)/g;// TODO: Potentially pull these in from a configuration.
 // TODO: Use locale data for this if it's defaults all the way down.
-this._Value_MoneySign_Currency='$';this._Value_NaN_Currency='--';this._Value_GroupSeparator_Number=',';this._Value_Prefix_StringHash='HSH';this._Value_Clean_formatterCleanNonAlpha='_';this._UseEngineStringStartsWith=typeof String.prototype.startsWith==='function';this._UseEngineStringEndsWith=typeof String.prototype.endsWith==='function';}/*************************************************************************
+this._Value_MoneySign_Currency='$';this._Value_NaN_Currency='--';this._Value_GroupSeparator_Number=',';this._Value_Prefix_StringHash='HSH';this._Value_Clean_formatterCleanNonAlpha='';this._UseEngineStringStartsWith=typeof String.prototype.startsWith==='function';this._UseEngineStringEndsWith=typeof String.prototype.endsWith==='function';}/*************************************************************************
 	 * String Manipulation and Comparison Functions
 	 *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/ /**
 	 * Reverse a string
@@ -2518,7 +2518,7 @@ if(!(pEndIndex<this.length)){pEndIndex=this.length;}else{pEndIndex|=0;// round p
 	 *
 	 * @param {string} pString
 	 * @returns {string}
-	 */insecureStringHash(pString){let tmpHash=0;let tmpStringLength=pString.length;let tmpCharacterIndex=0;while(tmpCharacterIndex<tmpStringLength){tmpHash=(tmpHash<<5)-tmpHash+pString.charCodeAt(tmpCharacterIndex++)|0;}return"".concat(this._Value_Prefix_StringHash).concat(tmpHash);}/**
+	 */insecureStringHash(pString){let tmpHash=0;let tmpStringLength=pString.length;let tmpCharacterIndex=0;while(tmpCharacterIndex<tmpStringLength){tmpHash=(tmpHash<<5)-tmpHash+pString.charCodeAt(tmpCharacterIndex++)|0;}return"".concat(this._Value_Prefix_StringHash).concat(tmpHash);}capitalizeEachWord(pString){return pString.replace(this._Regex_formatterCapitalizeEachWord,pMatch=>{return pMatch.charAt(0).toUpperCase()+pMatch.substr(1);});}/**
 	 * Clean wrapping characters if they exist consistently around the string.  If they do not, the string is returned unchanged.
 	 *
 	 * @param {string} pWrapCharacter - The character expected as the wrapping character
@@ -2537,10 +2537,11 @@ if(!(pEndIndex<this.length)){pEndIndex=this.length;}else{pEndIndex|=0;// round p
 // This function is necessary to remove the wrapping quotes before object
 // resolution can occur.
 if(pString.startsWith(pWrapCharacter)&&pString.endsWith(pWrapCharacter)){return pString.substring(1,pString.length-1);}else{return pString;}}/**
+	 * Clean a string of any non-alpha characters (including numbers)
 	 *
 	 * @param {*} pString
 	 * @returns
-	 */cleanNonAlphaCharacters(pString){if(typeof pString=='string'&&pString!=''){return pString.replace(this._Regex_formatterCleanNonAlpha,this._Value_Clean_formatterCleanNonAlpha);}}/*************************************************************************
+	 */cleanNonAlphaCharacters(pString){if(typeof pString=='string'&&pString!=''){return pString.replace(this._Regex_formatterCleanNonAlphaChar,this._Value_Clean_formatterCleanNonAlpha);}return'';}/*************************************************************************
 	 * Number Formatting Functions
 	 *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/ /**
 	 * Insert commas every 3 characters from the right.  Used by formatterAddCommasToNumber().

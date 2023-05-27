@@ -20,7 +20,8 @@ class DataFormat extends libFableServiceProviderBase
 		// Thoughts about below:   /^([+-]?)(0*)(\d+)(\.(\d+))?$/;
 		this._Regex_formatterAddCommasToNumber = /^([-+]?)(0?)(\d+)(.?)(\d+)$/g;
 		this._Regex_formatterDollarsRemoveCommas = /,/gi;
-		this._Regex_formatterCleanNonAlpha = /[^a-z0-9]/gi;
+		this._Regex_formatterCleanNonAlphaChar = /[^a-zA-Z]/gi;
+		this._Regex_formatterCapitalizeEachWord = /([a-zA-Z]+)/g;
 
 		// TODO: Potentially pull these in from a configuration.
 		// TODO: Use locale data for this if it's defaults all the way down.
@@ -29,7 +30,7 @@ class DataFormat extends libFableServiceProviderBase
 		this._Value_GroupSeparator_Number = ',';
 
 		this._Value_Prefix_StringHash = 'HSH';
-		this._Value_Clean_formatterCleanNonAlpha = '_';
+		this._Value_Clean_formatterCleanNonAlpha = '';
 
 		this._UseEngineStringStartsWith = (typeof(String.prototype.startsWith) === 'function');
 		this._UseEngineStringEndsWith = (typeof(String.prototype.endsWith) === 'function');
@@ -147,6 +148,15 @@ class DataFormat extends libFableServiceProviderBase
 		return `${this._Value_Prefix_StringHash}${tmpHash}`;
 	}
 
+	capitalizeEachWord (pString)
+	{
+		return pString.replace(this._Regex_formatterCapitalizeEachWord,
+			(pMatch) =>
+			{
+				return pMatch.charAt(0).toUpperCase() + pMatch.substr(1);
+			});
+	}
+
 	/**
 	 * Clean wrapping characters if they exist consistently around the string.  If they do not, the string is returned unchanged.
 	 *
@@ -179,6 +189,7 @@ class DataFormat extends libFableServiceProviderBase
 	}
 
 	/**
+	 * Clean a string of any non-alpha characters (including numbers)
 	 *
 	 * @param {*} pString
 	 * @returns
@@ -187,8 +198,10 @@ class DataFormat extends libFableServiceProviderBase
 	{
 		if ((typeof(pString) == 'string') && (pString != ''))
 		{
-			return pString.replace(this._Regex_formatterCleanNonAlpha, this._Value_Clean_formatterCleanNonAlpha);
+			return pString.replace(this._Regex_formatterCleanNonAlphaChar, this._Value_Clean_formatterCleanNonAlpha);
 		}
+
+		return '';
 	}
 
 

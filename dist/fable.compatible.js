@@ -2473,9 +2473,9 @@ if(this.EmitHeader){return this.Header;}else{return false;}}else{return this.emi
 _this18._Regex_formatterInsertCommas=/.{1,3}/g;// Match Function:
 // function(pMatch, pSign, pZeros, pBefore, pDecimal, pAfter)
 // Thoughts about below:   /^([+-]?)(0*)(\d+)(\.(\d+))?$/;
-_this18._Regex_formatterAddCommasToNumber=/^([-+]?)(0?)(\d+)(.?)(\d+)$/g;_this18._Regex_formatterDollarsRemoveCommas=/,/gi;_this18._Regex_formatterCleanNonAlpha=/[^a-z0-9]/gi;// TODO: Potentially pull these in from a configuration.
+_this18._Regex_formatterAddCommasToNumber=/^([-+]?)(0?)(\d+)(.?)(\d+)$/g;_this18._Regex_formatterDollarsRemoveCommas=/,/gi;_this18._Regex_formatterCleanNonAlphaChar=/[^a-zA-Z]/gi;_this18._Regex_formatterCapitalizeEachWord=/([a-zA-Z]+)/g;// TODO: Potentially pull these in from a configuration.
 // TODO: Use locale data for this if it's defaults all the way down.
-_this18._Value_MoneySign_Currency='$';_this18._Value_NaN_Currency='--';_this18._Value_GroupSeparator_Number=',';_this18._Value_Prefix_StringHash='HSH';_this18._Value_Clean_formatterCleanNonAlpha='_';_this18._UseEngineStringStartsWith=typeof String.prototype.startsWith==='function';_this18._UseEngineStringEndsWith=typeof String.prototype.endsWith==='function';return _this18;}/*************************************************************************
+_this18._Value_MoneySign_Currency='$';_this18._Value_NaN_Currency='--';_this18._Value_GroupSeparator_Number=',';_this18._Value_Prefix_StringHash='HSH';_this18._Value_Clean_formatterCleanNonAlpha='';_this18._UseEngineStringStartsWith=typeof String.prototype.startsWith==='function';_this18._UseEngineStringEndsWith=typeof String.prototype.endsWith==='function';return _this18;}/*************************************************************************
 	 * String Manipulation and Comparison Functions
 	 *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/ /**
 	 * Reverse a string
@@ -2518,7 +2518,7 @@ if(!(pEndIndex<this.length)){pEndIndex=this.length;}else{pEndIndex|=0;// round p
 	 *
 	 * @param {string} pString
 	 * @returns {string}
-	 */},{key:"insecureStringHash",value:function insecureStringHash(pString){var tmpHash=0;var tmpStringLength=pString.length;var tmpCharacterIndex=0;while(tmpCharacterIndex<tmpStringLength){tmpHash=(tmpHash<<5)-tmpHash+pString.charCodeAt(tmpCharacterIndex++)|0;}return"".concat(this._Value_Prefix_StringHash).concat(tmpHash);}/**
+	 */},{key:"insecureStringHash",value:function insecureStringHash(pString){var tmpHash=0;var tmpStringLength=pString.length;var tmpCharacterIndex=0;while(tmpCharacterIndex<tmpStringLength){tmpHash=(tmpHash<<5)-tmpHash+pString.charCodeAt(tmpCharacterIndex++)|0;}return"".concat(this._Value_Prefix_StringHash).concat(tmpHash);}},{key:"capitalizeEachWord",value:function capitalizeEachWord(pString){return pString.replace(this._Regex_formatterCapitalizeEachWord,function(pMatch){return pMatch.charAt(0).toUpperCase()+pMatch.substr(1);});}/**
 	 * Clean wrapping characters if they exist consistently around the string.  If they do not, the string is returned unchanged.
 	 *
 	 * @param {string} pWrapCharacter - The character expected as the wrapping character
@@ -2537,10 +2537,11 @@ if(!(pEndIndex<this.length)){pEndIndex=this.length;}else{pEndIndex|=0;// round p
 // This function is necessary to remove the wrapping quotes before object
 // resolution can occur.
 if(pString.startsWith(pWrapCharacter)&&pString.endsWith(pWrapCharacter)){return pString.substring(1,pString.length-1);}else{return pString;}}/**
+	 * Clean a string of any non-alpha characters (including numbers)
 	 *
 	 * @param {*} pString
 	 * @returns
-	 */},{key:"cleanNonAlphaCharacters",value:function cleanNonAlphaCharacters(pString){if(typeof pString=='string'&&pString!=''){return pString.replace(this._Regex_formatterCleanNonAlpha,this._Value_Clean_formatterCleanNonAlpha);}}/*************************************************************************
+	 */},{key:"cleanNonAlphaCharacters",value:function cleanNonAlphaCharacters(pString){if(typeof pString=='string'&&pString!=''){return pString.replace(this._Regex_formatterCleanNonAlphaChar,this._Value_Clean_formatterCleanNonAlpha);}return'';}/*************************************************************************
 	 * Number Formatting Functions
 	 *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/ /**
 	 * Insert commas every 3 characters from the right.  Used by formatterAddCommasToNumber().

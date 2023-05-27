@@ -64,6 +64,37 @@ suite
 				)
 				test
 				(
+					'Remove non-alpha characters from a string',
+					(fTestComplete)=>
+					{
+						let testFable = new libFable({LogStreams: false});
+						let _DataFormat = testFable.defaultServices.DataFormat;
+						Expect(_DataFormat.cleanNonAlphaCharacters('Dogs'))
+							.to.equal('Dogs');
+						Expect(_DataFormat.cleanNonAlphaCharacters('Dogs1'))
+							.to.equal('Dogs');
+						Expect(_DataFormat.cleanNonAlphaCharacters('Dogs-with-guns 12321'))
+							.to.equal('Dogswithguns');
+						return fTestComplete();
+					}
+				)
+				test
+				(
+					'Capitalize each word in a string',
+					(fTestComplete)=>
+					{
+						let testFable = new libFable({LogStreams: false});
+						let _DataFormat = testFable.defaultServices.DataFormat;
+						Expect(_DataFormat.capitalizeEachWord('Dogs-with-guns 12321'))
+							.to.equal('Dogs-With-Guns 12321');
+						Expect(_DataFormat.cleanNonAlphaCharacters(_DataFormat.capitalizeEachWord('meadow-endpoints')))
+							.to.equal('MeadowEndpoints');
+						return fTestComplete();
+					}
+				)
+
+				test
+				(
 					'Clean wrapping characters from a valid enclosure.',
 					(fTestComplete)=>
 					{
@@ -205,15 +236,15 @@ suite
 							.to.equal('Dogs');
 						Expect(_DataFormat
 							.cleanNonAlphaCharacters('Dogs are cool'))
-							.to.equal('Dogs_are_cool');
-						Expect(_DataFormat
-							.cleanNonAlphaCharacters('Dogs are cool!'))
-							.to.equal('Dogs_are_cool_');
-						// Test cleaning with no character
-						_DataFormat._Value_Clean_formatterCleanNonAlpha = '';
+							.to.equal('Dogsarecool');
 						Expect(_DataFormat
 							.cleanNonAlphaCharacters('Dogs are cool!'))
 							.to.equal('Dogsarecool');
+						// Test cleaning with no character
+						_DataFormat._Value_Clean_formatterCleanNonAlpha = '_';
+						Expect(_DataFormat
+							.cleanNonAlphaCharacters('Dogs are cool!'))
+							.to.equal('Dogs_are_cool_');
 						return fTestComplete();
 					}
 				);
