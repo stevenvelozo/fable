@@ -1,4 +1,5 @@
 const libFableServiceBase = require('../Fable-ServiceManager.js').ServiceProviderBase;
+//const libLokiDB = require('@lokidb/loki');
 
 class FableServiceFilePersistence extends libFableServiceBase
 {

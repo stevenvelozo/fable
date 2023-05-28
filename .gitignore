@@ -1,5 +1,11 @@
 .DS_Store
 
+# Quackage detritus:
+.browserslistrc-BACKUP
+.gulpfile-quackage-config.json
+.gulpfile-quackage.js
+.package.json.quackage.bak
+
 # Logs
 logs
 *.log

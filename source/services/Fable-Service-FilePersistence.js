@@ -16,7 +16,15 @@ class FableServiceFilePersistence extends libFableServiceBase
         {
             this.options.Mode = parseInt('0777', 8) & ~process.umask();
         }
+
+        this.currentInputFolder = `/tmp`;
+        this.currentOutputFolder = `/tmp`;
 	}
+
+    joinPath(pPathArray)
+    {
+        return libPath.resolve(...pPathArray);
+    }
 
     existsSync(pPath)
     {
@@ -29,6 +37,63 @@ class FableServiceFilePersistence extends libFableServiceBase
 
         return fCallback(null, tmpFileExists);
     }
+
+    writeFileSync(pFileName, pFileContent, pOptions)
+    {
+        let tmpOptions = (typeof(pOptions) === 'undefined') ? 'utf8' : pOptions;
+        libFS.writeFileSync(pFileName, pFileContent, tmpOptions);
+    }
+
+    appendFileSync(pFileName, pAppendContent, pOptions)
+    {
+        let tmpOptions = (typeof(pOptions) === 'undefined') ? 'utf8' : pOptions;
+        libFS.appendFileSync(pFileName, pAppendContent, tmpOptions);
+    }
+
+    writeFileSyncFromObject(pFileName, pObject)
+    {
+        this.writeFileSync(pFileName, JSON.stringify(pObject, null, 4));
+    }
+
+    writeFileSyncFromArray(pFileName, pFileArray)
+    {
+        if (!Array.isArray(pFileArray))
+        {
+            this.log.error(`File Persistence Service attempted to write ${pFileName} from array but the expected array was not an array (it was a ${typeof(pFileArray)}).`);
+            return Error('Attempted to write ${pFileName} from array but the expected array was not an array (it was a ${typeof(pFileArray)}).');
+        }
+        else
+        {
+            for (let i = 0; i < pFileArray.length; i++)
+            {
+                this.appendFileSync(pFileName, `${pFileArray[i]}\n`);
+            }
+        }
+    }
+
+    // Default folder behaviors
+
+    getDefaultOutputPath(pFileName)
+    {
+        return libPath.join(this.currentOutputFolder, pFileName);
+    }
+
+	dataFolderWriteSync(pFileName, pFileContent)
+	{
+		return this.writeFileSync(this.getDefaultOutputPath(pFileName), pFileContent);
+	}
+
+	dataFolderWriteSyncFromObject(pFileName, pObject)
+	{
+		return this.writeFileSyncFromObject(this.getDefaultOutputPath(pFileName), pObject);
+	}
+
+	dataFolderWriteSyncFromArray(pFileName, pFileArray)
+	{
+		return this.writeFileSyncFromArray(this.getDefaultOutputPath(pFileName), pFileArray);
+	}
+
+    // Folder management
 
     makeFolderRecursive (pParameters, fCallback)
     {
@@ -88,7 +153,7 @@ class FableServiceFilePersistence extends libFableServiceBase
             return true;
         }
 
-        // Check if the path exists
+        // Check if the path exists (and is a folder)
         libFS.open(tmpParameters.CurrentPath + libPath.sep + tmpParameters.ActualPathParts[tmpParameters.CurrentPathIndex], 'r',
             function(pError, pFileDescriptor)
             {

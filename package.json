@@ -1,81 +1,68 @@
 {
-  "name": "fable",
-  "version": "3.0.50",
-  "description": "An entity behavior management and API bundling library.",
-  "main": "source/Fable.js",
-  "scripts": {
-    "start": "node source/Fable.js",
-    "coverage": "./node_modules/.bin/nyc --reporter=lcov --reporter=text-lcov ./node_modules/mocha/bin/_mocha -- -u tdd -R spec",
-    "test": "./node_modules/.bin/mocha -u tdd -R spec",
-    "build": "./node_modules/.bin/gulp build",
-    "build-compatible": "GULP_CUSTOM_BUILD_TARGET=compatible ./node_modules/.bin/gulp build",
-    "docker-dev-build": "docker build ./ -f Dockerfile_LUXURYCode -t retold/fable:local",
-    "docker-dev-run": "docker run -it -d --name retold-fable-dev -p 30001:8080 -p 38086:8086 -v \"$PWD/.config:/home/coder/.config\"  -v \"$PWD:/home/coder/fable\" -u \"$(id -u):$(id -g)\" -e \"DOCKER_USER=$USER\" retold/fable:local",
-    "docker-dev-shell": "docker exec -it retold-fable-dev /bin/bash"
-  },
-  "mocha": {
-    "diff": true,
-    "extension": [
-      "js"
+    "name": "fable",
+    "version": "3.0.50",
+    "description": "An entity behavior management and API bundling library.",
+    "main": "source/Fable.js",
+    "scripts": {
+        "start": "node source/Fable.js",
+        "coverage": "./node_modules/.bin/nyc --reporter=lcov --reporter=text-lcov ./node_modules/mocha/bin/_mocha -- -u tdd -R spec",
+        "test": "./node_modules/.bin/mocha -u tdd -R spec",
+        "build": "./node_modules/.bin/gulp build",
+        "build-compatible": "GULP_CUSTOM_BUILD_TARGET=compatible ./node_modules/.bin/gulp build",
+        "docker-dev-build": "docker build ./ -f Dockerfile_LUXURYCode -t fable-image:local",
+        "docker-dev-run": "docker run -it -d --name fable-dev -p 30001:8080 -p 38086:8086 -v \"$PWD/.config:/home/coder/.config\"  -v \"$PWD:/home/coder/fable\" -u \"$(id -u):$(id -g)\" -e \"DOCKER_USER=$USER\" fable-image:local",
+        "docker-dev-shell": "docker exec -it fable-dev /bin/bash"
+    },
+    "mocha": {
+        "diff": true,
+        "extension": [
+            "js"
+        ],
+        "package": "./package.json",
+        "reporter": "spec",
+        "slow": "75",
+        "timeout": "5000",
+        "ui": "tdd",
+        "watch-files": [
+            "source/**/*.js",
+            "test/**/*.js"
+        ],
+        "watch-ignore": [
+            "lib/vendor"
+        ]
+    },
+    "browser": {
+        "./source/service/Fable-Service-EnvironmentData.js": "./source/service/Fable-Service-EnvironmentData-Web.js",
+        "./source/service/Fable-Service-FilePersistence.js": "./source/service/Fable-Service-FilePersistence-Web.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/stevenvelozo/fable.git"
+    },
+    "keywords": [
+        "entity",
+        "behavior"
     ],
-    "package": "./package.json",
-    "reporter": "spec",
-    "slow": "75",
-    "timeout": "5000",
-    "ui": "tdd",
-    "watch-files": [
-      "source/**/*.js",
-      "test/**/*.js"
-    ],
-    "watch-ignore": [
-      "lib/vendor"
-    ]
-  },
-  "browser": {
-    "./source/service/Fable-Service-EnvironmentData.js": "./source/service/Fable-Service-EnvironmentData-Web.js",
-    "./source/service/Fable-Service-FilePersistence.js": "./source/service/Fable-Service-FilePersistence-Web.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/stevenvelozo/fable.git"
-  },
-  "keywords": [
-    "entity",
-    "behavior"
-  ],
-  "author": "Steven Velozo <steven@velozo.com> (http://velozo.com/)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/stevenvelozo/fable/issues"
-  },
-  "homepage": "https://github.com/stevenvelozo/fable",
-  "devDependencies": {
-    "@babel/core": "^7.21.8",
-    "@babel/preset-env": "^7.21.5",
-    "browserify": "^17.0.0",
-    "chai": "4.3.7",
-    "gulp": "^4.0.2",
-    "gulp-babel": "^8.0.0",
-    "gulp-env": "^0.4.0",
-    "gulp-sourcemaps": "^3.0.0",
-    "gulp-terser": "^2.1.0",
-    "gulp-util": "^3.0.8",
-    "mocha": "10.2.0",
-    "nyc": "^15.1.0",
-    "retold-data-service": "^1.0.3",
-    "vinyl-buffer": "^1.0.1",
-    "vinyl-source-stream": "^2.0.0"
-  },
-  "dependencies": {
-    "async.eachlimit": "^0.5.2",
-    "async.waterfall": "^0.5.2",
-    "cachetrax": "^1.0.3",
-    "data-arithmatic": "^1.0.7",
-    "fable-log": "^3.0.10",
-    "fable-serviceproviderbase": "^3.0.5",
-    "fable-settings": "^3.0.6",
-    "fable-uuid": "^3.0.5",
-    "manyfest": "^1.0.24",
-    "simple-get": "^4.0.1"
-  }
+    "author": "Steven Velozo <steven@velozo.com> (http://velozo.com/)",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/stevenvelozo/fable/issues"
+    },
+    "homepage": "https://github.com/stevenvelozo/fable",
+    "devDependencies": {
+        "retold-data-service": "^1.0.3"
+    },
+    "dependencies": {
+        "async.eachlimit": "^0.5.2",
+        "async.waterfall": "^0.5.2",
+        "cachetrax": "^1.0.3",
+        "data-arithmatic": "^1.0.7",
+        "fable-log": "^3.0.10",
+        "fable-serviceproviderbase": "^3.0.5",
+        "fable-settings": "^3.0.6",
+        "fable-uuid": "^3.0.5",
+        "manyfest": "^1.0.24",
+        "quackage": "^1.0.6",
+        "simple-get": "^4.0.1"
+    }
 }
