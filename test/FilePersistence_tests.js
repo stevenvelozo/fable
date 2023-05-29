@@ -70,6 +70,53 @@ suite
 				);
 				test
 				(
+					'Join a path.',
+					function(fTestComplete)
+					{
+						let testFable = new libFable();
+						let tmpFilePersistence = testFable.serviceManager.instantiateServiceProvider('FilePersistence');
+
+						Expect(tmpFilePersistence.joinPath('/tmp/tests/../othertests/names/'))
+							.to.equal('/tmp/othertests/names');
+
+						return fTestComplete();
+					}
+				);
+				test
+				(
+					'Create a recursive folder.',
+					function(fTestComplete)
+					{
+						let testFable = new libFable();
+						let tmpFilePersistence = testFable.serviceManager.instantiateServiceProvider('FilePersistence');
+						let tmpDataGeneration = testFable.serviceManager.instantiateServiceProvider('DataGeneration');
+
+						let tmpFolderExtras = [];
+
+						for (let i = 0; i < 3; i++)
+						{
+							tmpFolderExtras.push(tmpDataGeneration.randomName()); 
+						}
+
+						let tmpFullPathName = `/tmp/${tmpFolderExtras.join('/')}`;
+						testFable.log.info(`Creating test folder recursively: [${tmpFullPathName}]`);
+
+						tmpFilePersistence.makeFolderRecursive(tmpFullPathName, (pError)=>
+						{
+							// Now clean up the folder
+							for (let i = 0; i < 3; i++)
+							{
+								tmpFullPathName = `/tmp/${tmpFolderExtras.join('/')}`;
+								testFable.log.info(`Deleting test folder recursively: [${tmpFullPathName}]`);
+								tmpFilePersistence.deleteFolderSync(tmpFullPathName);
+								tmpFolderExtras.pop();
+							}
+							return fTestComplete();
+						});
+					}
+				);
+				test
+				(
 					'Create, write, read and then delete a file.',
 					function(fTestComplete)
 					{

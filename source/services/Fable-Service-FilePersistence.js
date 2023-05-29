@@ -21,7 +21,7 @@ class FableServiceFilePersistence extends libFableServiceBase
 		this.currentOutputFolder = `/tmp`;
 	}
 
-	joinPath(pPathArray)
+	joinPath(...pPathArray)
 	{
 		return libPath.resolve(...pPathArray);
 	}
@@ -53,6 +53,11 @@ class FableServiceFilePersistence extends libFableServiceBase
 	deleteFileSync(pFileName)
 	{
 		return libFS.unlinkSync(pFileName);
+	}
+
+	deleteFolderSync(pFileName)
+	{
+		return libFS.rmdirSync(pFileName);
 	}
 
 	writeFileSyncFromObject(pFileName, pObject)
@@ -99,8 +104,7 @@ class FableServiceFilePersistence extends libFableServiceBase
 	}
 
 	// Folder management
-
-	makeFolderRecursive (pParameters, fCallback)
+	makeFolderRecursive(pParameters, fCallback)
 	{
 		let tmpParameters = pParameters;
 
@@ -160,7 +164,7 @@ class FableServiceFilePersistence extends libFableServiceBase
 
 		// Check if the path exists (and is a folder)
 		libFS.open(tmpParameters.CurrentPath + libPath.sep + tmpParameters.ActualPathParts[tmpParameters.CurrentPathIndex], 'r',
-			function(pError, pFileDescriptor)
+			(pError, pFileDescriptor)=>
 			{
 				if (pFileDescriptor)
 				{
@@ -189,8 +193,7 @@ class FableServiceFilePersistence extends libFableServiceBase
 				{
 					return this.makeFolderRecursive(tmpParameters, fCallback);
 				}
-			}
-		);
+			});
 	}
 }
 
