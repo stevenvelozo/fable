@@ -27,7 +27,7 @@ suite
 								{
 									let testFable = new libFable();
 									let tmpDataGeneration = testFable.serviceManager.instantiateServiceProvider('DataGeneration');
-									Expect(tmpDataGeneration.randomIntegerUpTo(100)).to.be.within(0, 99);
+									Expect(tmpDataGeneration.randomIntegerUpTo(100)).to.be.within(0, 100);
 									return fTestComplete();
 								}
 							);

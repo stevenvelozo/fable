@@ -54,6 +54,7 @@ class Fable
 		this.serviceManager.addServiceType('CSVParser', require('./services/Fable-Service-CSVParser.js'));
 		this.serviceManager.addServiceType('Manifest', require('manyfest'));
 		this.serviceManager.addServiceType('ObjectCache', require('cachetrax'));
+		this.serviceManager.addServiceType('FilePersistence', require('./services/Fable-Service-FilePersistence.js'));
 	}
 
 	get isFable()
