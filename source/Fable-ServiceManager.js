@@ -23,6 +23,9 @@ class FableService extends libFableServiceBase.CoreServiceProviderBase
 
 		// A map of class constructors for services
 		this.serviceClasses = {};
+
+		// If we need extra service initialization capabilities
+		this.extraServiceInitialization = false;
 	}
 
 	addServiceType(pServiceType, pServiceClass)
@@ -60,6 +63,11 @@ class FableService extends libFableServiceBase.CoreServiceProviderBase
 		// Instantiate the service
 		let tmpService = new pServicePrototype(this.fable, pOptions, pCustomServiceHash);
 
+		if (this.extraServiceInitialization)
+		{
+			tmpService = this.extraServiceInitialization(tmpService);
+		}
+
 		// Add the service to the service map
 		this.services[pServiceType][tmpService.Hash] = tmpService;
 
@@ -95,6 +103,10 @@ class FableService extends libFableServiceBase.CoreServiceProviderBase
 	{
 		// Instantiate the service
 		let tmpService = new this.serviceClasses[pServiceType](this.fable, pOptions, pCustomServiceHash);
+		if (this.extraServiceInitialization)
+		{
+			tmpService = this.extraServiceInitialization(tmpService);
+		}
 		return tmpService;
 	}
 

@@ -2390,7 +2390,8 @@ module.exports=wrappy;function wrappy(fn,cb){if(fn&&cb)return wrappy(fn)(cb);if(
 */var libFableServiceBase=require('fable-serviceproviderbase');var FableService=/*#__PURE__*/function(_libFableServiceBase$){_inherits(FableService,_libFableServiceBase$);var _super8=_createSuper(FableService);function FableService(pSettings,pServiceHash){var _this16;_classCallCheck2(this,FableService);_this16=_super8.call(this,pSettings,pServiceHash);_this16.serviceType='ServiceManager';_this16.serviceTypes=[];// A map of instantiated services
 _this16.services={};// A map of the default instantiated service by type
 _this16.defaultServices={};// A map of class constructors for services
-_this16.serviceClasses={};return _this16;}_createClass2(FableService,[{key:"addServiceType",value:function addServiceType(pServiceType,pServiceClass){// Add the type to the list of types
+_this16.serviceClasses={};// If we need extra service initialization capabilities
+_this16.extraServiceInitialization=false;return _this16;}_createClass2(FableService,[{key:"addServiceType",value:function addServiceType(pServiceType,pServiceClass){// Add the type to the list of types
 this.serviceTypes.push(pServiceType);// Add the container for instantiated services to go in
 this.services[pServiceType]={};// Using the static member of the class is a much more reliable way to check if it is a service class than instanceof
 if(typeof pServiceClass=='function'&&pServiceClass.isFableService){// Add the class to the list of classes
@@ -2398,14 +2399,14 @@ this.serviceClasses[pServiceType]=pServiceClass;}else{// Add the base class to t
 this.fable.log.error("Attempted to add service type [".concat(pServiceType,"] with an invalid class.  Using base service class, which will not crash but won't provide meaningful services."));this.serviceClasses[pServiceType]=libFableServiceBase;}}// This is for the services that are meant to run mostly single-instance so need a default at initialization
 },{key:"addAndInstantiateServiceType",value:function addAndInstantiateServiceType(pServiceType,pServiceClass){this.addServiceType(pServiceType,pServiceClass);this.instantiateServiceProvider(pServiceType,{},"".concat(pServiceType,"-Default"));}// Some services expect to be overloaded / customized class.
 },{key:"instantiateServiceProviderFromPrototype",value:function instantiateServiceProviderFromPrototype(pServiceType,pOptions,pCustomServiceHash,pServicePrototype){// Instantiate the service
-var tmpService=new pServicePrototype(this.fable,pOptions,pCustomServiceHash);// Add the service to the service map
+var tmpService=new pServicePrototype(this.fable,pOptions,pCustomServiceHash);if(this.extraServiceInitialization){tmpService=this.extraServiceInitialization(tmpService);}// Add the service to the service map
 this.services[pServiceType][tmpService.Hash]=tmpService;// If this is the first service of this type, make it the default
 if(!this.defaultServices.hasOwnProperty(pServiceType)){this.setDefaultServiceInstantiation(pServiceType,tmpService.Hash);}return tmpService;}},{key:"instantiateServiceProvider",value:function instantiateServiceProvider(pServiceType,pOptions,pCustomServiceHash){// Instantiate the service
 var tmpService=this.instantiateServiceProviderWithoutRegistration(pServiceType,pOptions,pCustomServiceHash);// Add the service to the service map
 this.services[pServiceType][tmpService.Hash]=tmpService;// If this is the first service of this type, make it the default
 if(!this.defaultServices.hasOwnProperty(pServiceType)){this.setDefaultServiceInstantiation(pServiceType,tmpService.Hash);}return tmpService;}// Create a service provider but don't register it to live forever in fable.services
 },{key:"instantiateServiceProviderWithoutRegistration",value:function instantiateServiceProviderWithoutRegistration(pServiceType,pOptions,pCustomServiceHash){// Instantiate the service
-var tmpService=new this.serviceClasses[pServiceType](this.fable,pOptions,pCustomServiceHash);return tmpService;}// Connect an initialized service provider that came before Fable was initialized
+var tmpService=new this.serviceClasses[pServiceType](this.fable,pOptions,pCustomServiceHash);if(this.extraServiceInitialization){tmpService=this.extraServiceInitialization(tmpService);}return tmpService;}// Connect an initialized service provider that came before Fable was initialized
 },{key:"connectPreinitServiceProviderInstance",value:function connectPreinitServiceProviderInstance(pServiceInstance){var tmpServiceType=pServiceInstance.serviceType;var tmpServiceHash=pServiceInstance.Hash;// The service should already be instantiated, so just connect it to fable
 pServiceInstance.connectFable(this.fable);if(!this.services.hasOwnProperty(tmpServiceType)){// If the core service hasn't registered itself yet, create the service container for it.
 // This means you couldn't register another with this type unless it was later registered with a constructor class.
