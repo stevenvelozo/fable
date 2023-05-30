@@ -153,8 +153,8 @@ class FableServiceRestClient extends libFableServiceBase
 						{
 							let tmpCompletionTime = this.fable.log.getTimeStamp();
 							this.fable.log.debug(`==> JSON ${tmpOptions.method} completed - received in ${this.dataFormat.formatTimeDelta(tmpOptions.RequestStartTime, tmpCompletionTime)}ms`);
-							return fCallback(pError, pResponse, JSON.parse(tmpJSONData));
 						}
+						return fCallback(pError, pResponse, JSON.parse(tmpJSONData));
 					});
 			});
 	}
