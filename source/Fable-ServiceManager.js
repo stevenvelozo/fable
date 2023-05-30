@@ -54,7 +54,7 @@ class FableService extends libFableServiceBase.CoreServiceProviderBase
 		this.instantiateServiceProvider(pServiceType, {}, `${pServiceType}-Default`);
 	}
 
-	// Some servicds expect to be overloaded / customized class.
+	// Some services expect to be overloaded / customized class.
 	instantiateServiceProviderFromPrototype(pServiceType, pOptions, pCustomServiceHash, pServicePrototype)
 	{
 		// Instantiate the service
