@@ -107,10 +107,12 @@ class FableServiceRestClient extends libFableServiceBase
 		{
 			tmpOptions.headers = {};
 		}
+		/* Automated headers break some APIs
 		if (!tmpOptions.headers.hasOwnProperty('Content-Type'))
 		{
 			tmpOptions.headers['Content-Type'] = 'application/json';
 		}
+		*/
 
 		tmpOptions.RequestStartTime = this.fable.log.getTimeStamp();
 
