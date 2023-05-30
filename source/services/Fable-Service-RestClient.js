@@ -103,6 +103,15 @@ class FableServiceRestClient extends libFableServiceBase
 
 		let tmpOptions = this.preRequest(pOptions);
 
+		if (!tmpOptions.hasOwnProperty('headers'))
+		{
+			tmpOptions.headers = {};
+		}
+		if (!tmpOptions.headers.hasOwnProperty('Content-Type'))
+		{
+			tmpOptions.headers['Content-Type'] = 'application/json';
+		}
+
 		tmpOptions.RequestStartTime = this.fable.log.getTimeStamp();
 
 		if (this.TraceLog)
