@@ -1,6 +1,6 @@
 {
     "name": "fable",
-    "version": "3.0.56",
+    "version": "3.0.57",
     "description": "An entity behavior management and API bundling library.",
     "main": "source/Fable.js",
     "scripts": {
@@ -55,6 +55,7 @@
         "async.eachlimit": "^0.5.2",
         "async.waterfall": "^0.5.2",
         "cachetrax": "^1.0.3",
+        "cookie": "^0.5.0",
         "data-arithmatic": "^1.0.7",
         "fable-log": "^3.0.10",
         "fable-serviceproviderbase": "^3.0.5",

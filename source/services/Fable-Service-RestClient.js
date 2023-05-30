@@ -1,6 +1,7 @@
 const libFableServiceBase = require('../Fable-ServiceManager.js').ServiceProviderBase;
 
 const libSimpleGet = require('simple-get');
+const libCookie = require('cookie');
 
 class FableServiceRestClient extends libFableServiceBase
 {
@@ -18,15 +19,32 @@ class FableServiceRestClient extends libFableServiceBase
 
 		this.serviceType = 'RestClient';
 
+		this.cookie = false;
+
 		// This is a function that can be overridden, to allow the management
 		// of the request options before they are passed to the request library.
 		this.prepareRequestOptions = (pOptions) => { return pOptions; };
 	}
 
+	prepareCookies(pRequestOptions)
+	{
+		if (this.cookie)
+		{
+			if (!pRequestOptions.hasOwnProperty('headers'))
+			{
+				pRequestOptions.headers = {};
+			}
+			let tmpCookieKey = Object.keys(this.cookie);
+			pRequestOptions.headers.cookie = libCookie.serialize(tmpCookieKey, this.cookie[tmpCookieKey]);
+		}
+		return pRequestOptions;
+	}
+
 	preRequest(pOptions)
 	{
 		// Validate the options object
-		return this.prepareRequestOptions(pOptions);
+		let tmpOptions = this.prepareCookies(pOptions);
+		return this.prepareRequestOptions(tmpOptions);
 	}
 
 	executeChunkedRequest(pOptions, fCallback)
