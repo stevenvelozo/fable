@@ -14,7 +14,7 @@ class FableServiceDataGeneration extends libFableServiceBase
 	// Return a random integer between pMinimum and pMaximum
 	randomIntegerBetween(pMinimum, pMaximum)
 	{
-		return Math.floor(Math.random() * (pMaximum - pMinimum + 1)) + pMinimum;
+		return Math.floor(Math.random() * (pMaximum - pMinimum)) + pMinimum;
 	}
 	// Return a random integer up to the passed-in maximum
 	randomIntegerUpTo(pMaximum)

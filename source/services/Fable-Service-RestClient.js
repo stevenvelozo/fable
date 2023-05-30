@@ -124,6 +124,8 @@ class FableServiceRestClient extends libFableServiceBase
 					this.fable.log.debug(`--> JSON ${tmpOptions.method} connected in ${this.dataFormat.formatTimeDelta(tmpOptions.RequestStartTime, tmpConnectTime)}ms code ${pResponse.statusCode}`);
 				}
 
+				let tmpJSONData = '';
+
 				pResponse.on('data', (pChunk) =>
 					{
 						if (this.TraceLog)
@@ -131,8 +133,7 @@ class FableServiceRestClient extends libFableServiceBase
 							let tmpChunkTime = this.fable.log.getTimeStamp();
 							this.fable.log.debug(`--> JSON ${tmpOptions.method} data chunk size ${pChunk.length}b received in ${this.dataFormat.formatTimeDelta(tmpOptions.RequestStartTime, tmpChunkTime)}ms`);
 						}
-						// In a JSON request, the chunk is the serialized method.
-						return fCallback(pError, pResponse, JSON.parse(pChunk));
+						tmpJSONData += pChunk;
 					});
 
 				pResponse.on('end', ()=>
@@ -141,6 +142,7 @@ class FableServiceRestClient extends libFableServiceBase
 						{
 							let tmpCompletionTime = this.fable.log.getTimeStamp();
 							this.fable.log.debug(`==> JSON ${tmpOptions.method} completed - received in ${this.dataFormat.formatTimeDelta(tmpOptions.RequestStartTime, tmpCompletionTime)}ms`);
+							return fCallback(pError, pResponse, JSON.parse(tmpJSONData));
 						}
 					});
 			});
