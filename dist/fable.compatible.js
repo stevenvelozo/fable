@@ -2913,7 +2913,9 @@ var libAsyncWaterfall=require('async.waterfall');var libAsyncEachLimit=require('
 function FableServiceUtility(pFable,pOptions,pServiceHash){var _this33;_classCallCheck2(this,FableServiceUtility);_this33=_super19.call(this,pFable,pOptions,pServiceHash);_this33.templates={};// These two functions are used extensively throughout
 _this33.waterfall=libAsyncWaterfall;_this33.eachLimit=libAsyncEachLimit;return _this33;}// Underscore and lodash have a behavior, _.extend, which merges objects.
 // Now that es6 gives us this, use the native thingy.
-_createClass2(FableServiceUtility,[{key:"extend",value:function extend(pDestinationObject){for(var _len2=arguments.length,pSourceObjects=new Array(_len2>1?_len2-1:0),_key2=1;_key2<_len2;_key2++){pSourceObjects[_key2-1]=arguments[_key2];}return Object.assign.apply(Object,[pDestinationObject].concat(pSourceObjects));}// Underscore and lodash have a behavior, _.template, which compiles a
+// Nevermind, the native thing is not stable enough across environments
+// Basic shallow copy
+_createClass2(FableServiceUtility,[{key:"extend",value:function extend(pDestinationObject){for(var i=0;i<(arguments.length<=1?0:arguments.length-1);i++){var tmpSourceObject=i+1<1||arguments.length<=i+1?undefined:arguments[i+1];var tmpObjectProperties=Object.keys(tmpSourceObject);for(var k=0;k<tmpObjectProperties.length;k++){pDestinationObject[tmpObjectProperties[k]]=tmpSourceObject[tmpObjectProperties[k]];}}return pDestinationObject;}// Underscore and lodash have a behavior, _.template, which compiles a
 // string-based template with code snippets into simple executable pieces,
 // with the added twist of returning a precompiled function ready to go.
 },{key:"template",value:function template(pTemplateText,pData){var tmpTemplate=this.fable.serviceManager.instantiateServiceProviderWithoutRegistration('Template');return tmpTemplate.buildTemplateFunction(pTemplateText,pData);}// Build a template function from a template hash, and, register it with the service provider
@@ -2935,17 +2937,17 @@ var tmpChunkSize=typeof pChunkSize=='number'?pChunkSize:0;var tmpChunkCache=type
 // with ultra limited JS capabilities where those don't work.
 },{key:"isoStringToDate",value:function isoStringToDate(pISOString){// Split the string into an array based on the digit groups.
 var tmpDateParts=pISOString.split(/\D+/);// Set up a date object with the current time.
-var tmpReturnDate=new Date();// Manually parse the parts of the string and set each part for the
+var tmpReturnDate=new Date();// Track the number of hours we need to adjust the date by based on the timezone.
+var tmpTimeZoneOffsetInHours=0;// Track the number of minutes we need to adjust the date by based on the timezone.
+var tmpTimeZoneOffsetInMinutes=0;// Manually parse the parts of the string and set each part for the
 // date. Note: Using the UTC versions of these functions is necessary
 // because we're manually adjusting for time zones stored in the
 // string.
 tmpReturnDate.setUTCFullYear(parseInt(tmpDateParts[0]));// The month numbers are one "off" from what normal humans would expect
 // because January == 0.
 tmpReturnDate.setUTCMonth(parseInt(tmpDateParts[1]-1));tmpReturnDate.setUTCDate(parseInt(tmpDateParts[2]));// Set the time parts of the date object.
-tmpReturnDate.setUTCHours(parseInt(tmpDateParts[3]));tmpReturnDate.setUTCMinutes(parseInt(tmpDateParts[4]));tmpReturnDate.setUTCSeconds(parseInt(tmpDateParts[5]));tmpReturnDate.setUTCMilliseconds(parseInt(tmpDateParts[6]));// Track the number of hours we need to adjust the date by based on the timezone.
-var tmpTimeZoneOffsetInHours=0;// If there's a value for either the hours or minutes offset.
-if(tmpDateParts[7]||tmpDateParts[8]){// Track the number of minutes we need to adjust the date by based on the timezone.
-var tmpTimeZoneOffsetInMinutes=0;// If there's a value for the minutes offset.
+tmpReturnDate.setUTCHours(parseInt(tmpDateParts[3]));tmpReturnDate.setUTCMinutes(parseInt(tmpDateParts[4]));tmpReturnDate.setUTCSeconds(parseInt(tmpDateParts[5]));tmpReturnDate.setUTCMilliseconds(parseInt(tmpDateParts[6]));// If there's a value for either the hours or minutes offset.
+if(tmpDateParts[7]||tmpDateParts[8]){// If there's a value for the minutes offset.
 if(tmpDateParts[8]){// Convert the minutes value into an hours value.
 tmpTimeZoneOffsetInMinutes=parseInt(tmpDateParts[8])/60;}// Add the hours and minutes values to get the total offset in hours.
 tmpTimeZoneOffsetInHours=parseInt(tmpDateParts[7])+tmpTimeZoneOffsetInMinutes;// If the sign for the timezone is a plus to indicate the timezone is ahead of UTC time.

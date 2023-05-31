@@ -79,7 +79,7 @@ suite
 				);
 				test
 				(
-					'Processed Template like Underscore Work With Variables and no scope leakage',
+					'Processed Multiple Templates like Underscore Work With Variables and no scope leakage',
 					function()
 					{
 						testFable = new libFable();
@@ -187,9 +187,11 @@ suite
 					function(fDone)
 					{
 						testFable = new libFable();
-						Expect(testFable.defaultServices.Utility.isoStringToDate('2022-11-04T11:34:45.000Z').getTime()).to.equal(1667561685000);
-						Expect(testFable.defaultServices.Utility.isoStringToDate('2022-11-04T11:34:46.000Z').getTime()).to.equal(1667561686000);
 						Expect(testFable.defaultServices.Utility.isoStringToDate('1986-06-11T09:34:46.012Z').getTime()).to.equal(518866486012);
+						Expect(testFable.defaultServices.Utility.isoStringToDate('2022-11-04T11:34:46.000Z').getTime()).to.equal(1667561686000);
+						Expect(testFable.defaultServices.Utility.isoStringToDate('2022-11-04T11:34:45.000Z').getTime()).to.equal(1667561685000);
+						Expect(testFable.defaultServices.Utility.isoStringToDate('1986-06-11T09:34:46.012Z').getTime()).to.equal(518866486012);
+						Expect(testFable.defaultServices.Utility.isoStringToDate('1986-06-11T09:34:46.012Z+0200').getTime()).to.equal(519586486012);
 						Expect(testFable.defaultServices.Utility.isoStringToDate('1986-06-11T09:34:46.012Z+0200').getTime()).to.equal(519586486012);
 						fDone();
 					}

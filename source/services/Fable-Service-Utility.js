@@ -28,9 +28,20 @@ class FableServiceUtility extends libFableServiceBase
 
 	// Underscore and lodash have a behavior, _.extend, which merges objects.
 	// Now that es6 gives us this, use the native thingy.
+	// Nevermind, the native thing is not stable enough across environments
+	// Basic shallow copy
 	extend(pDestinationObject, ...pSourceObjects)
 	{
-		return Object.assign(pDestinationObject, ...pSourceObjects);
+		for (let i = 0; i < pSourceObjects.length; i++)
+		{
+			let tmpSourceObject = pSourceObjects[i];
+			let tmpObjectProperties = Object.keys(tmpSourceObject);
+			for (let k = 0; k < tmpObjectProperties.length; k++)
+			{
+				pDestinationObject[tmpObjectProperties[k]] = tmpSourceObject[tmpObjectProperties[k]];
+			}
+		}
+		return pDestinationObject;
 	}
 
 	// Underscore and lodash have a behavior, _.template, which compiles a
@@ -92,10 +103,15 @@ class FableServiceUtility extends libFableServiceBase
 	{
 
 		// Split the string into an array based on the digit groups.
-		var tmpDateParts = pISOString.split( /\D+/ );
+		let tmpDateParts = pISOString.split( /\D+/ );
 
 		// Set up a date object with the current time.
-		var tmpReturnDate = new Date();
+		let tmpReturnDate = new Date();
+
+		// Track the number of hours we need to adjust the date by based on the timezone.
+		let tmpTimeZoneOffsetInHours = 0;
+		// Track the number of minutes we need to adjust the date by based on the timezone.
+		let tmpTimeZoneOffsetInMinutes = 0;
 
 		// Manually parse the parts of the string and set each part for the
 		// date. Note: Using the UTC versions of these functions is necessary
@@ -114,16 +130,9 @@ class FableServiceUtility extends libFableServiceBase
 		tmpReturnDate.setUTCSeconds( parseInt( tmpDateParts[ 5 ] ) );
 		tmpReturnDate.setUTCMilliseconds( parseInt( tmpDateParts[ 6 ] ) );
 
-		// Track the number of hours we need to adjust the date by based on the timezone.
-		var tmpTimeZoneOffsetInHours = 0;
-
 		// If there's a value for either the hours or minutes offset.
 		if (tmpDateParts[ 7 ] || tmpDateParts[ 8 ])
 		{
-
-			// Track the number of minutes we need to adjust the date by based on the timezone.
-			var tmpTimeZoneOffsetInMinutes = 0;
-
 			// If there's a value for the minutes offset.
 			if (tmpDateParts[8])
 			{

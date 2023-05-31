@@ -2913,7 +2913,9 @@ const libAsyncWaterfall=require('async.waterfall');const libAsyncEachLimit=requi
 constructor(pFable,pOptions,pServiceHash){super(pFable,pOptions,pServiceHash);this.templates={};// These two functions are used extensively throughout
 this.waterfall=libAsyncWaterfall;this.eachLimit=libAsyncEachLimit;}// Underscore and lodash have a behavior, _.extend, which merges objects.
 // Now that es6 gives us this, use the native thingy.
-extend(pDestinationObject){for(var _len2=arguments.length,pSourceObjects=new Array(_len2>1?_len2-1:0),_key2=1;_key2<_len2;_key2++){pSourceObjects[_key2-1]=arguments[_key2];}return Object.assign(pDestinationObject,...pSourceObjects);}// Underscore and lodash have a behavior, _.template, which compiles a
+// Nevermind, the native thing is not stable enough across environments
+// Basic shallow copy
+extend(pDestinationObject){for(let i=0;i<(arguments.length<=1?0:arguments.length-1);i++){let tmpSourceObject=i+1<1||arguments.length<=i+1?undefined:arguments[i+1];let tmpObjectProperties=Object.keys(tmpSourceObject);for(let k=0;k<tmpObjectProperties.length;k++){pDestinationObject[tmpObjectProperties[k]]=tmpSourceObject[tmpObjectProperties[k]];}}return pDestinationObject;}// Underscore and lodash have a behavior, _.template, which compiles a
 // string-based template with code snippets into simple executable pieces,
 // with the added twist of returning a precompiled function ready to go.
 template(pTemplateText,pData){let tmpTemplate=this.fable.serviceManager.instantiateServiceProviderWithoutRegistration('Template');return tmpTemplate.buildTemplateFunction(pTemplateText,pData);}// Build a template function from a template hash, and, register it with the service provider
@@ -2934,18 +2936,18 @@ let tmpChunkSize=typeof pChunkSize=='number'?pChunkSize:0;let tmpChunkCache=type
 // This *is* meant to be a simple, small, and fast way to convert ISO strings to dates in engines
 // with ultra limited JS capabilities where those don't work.
 isoStringToDate(pISOString){// Split the string into an array based on the digit groups.
-var tmpDateParts=pISOString.split(/\D+/);// Set up a date object with the current time.
-var tmpReturnDate=new Date();// Manually parse the parts of the string and set each part for the
+let tmpDateParts=pISOString.split(/\D+/);// Set up a date object with the current time.
+let tmpReturnDate=new Date();// Track the number of hours we need to adjust the date by based on the timezone.
+let tmpTimeZoneOffsetInHours=0;// Track the number of minutes we need to adjust the date by based on the timezone.
+let tmpTimeZoneOffsetInMinutes=0;// Manually parse the parts of the string and set each part for the
 // date. Note: Using the UTC versions of these functions is necessary
 // because we're manually adjusting for time zones stored in the
 // string.
 tmpReturnDate.setUTCFullYear(parseInt(tmpDateParts[0]));// The month numbers are one "off" from what normal humans would expect
 // because January == 0.
 tmpReturnDate.setUTCMonth(parseInt(tmpDateParts[1]-1));tmpReturnDate.setUTCDate(parseInt(tmpDateParts[2]));// Set the time parts of the date object.
-tmpReturnDate.setUTCHours(parseInt(tmpDateParts[3]));tmpReturnDate.setUTCMinutes(parseInt(tmpDateParts[4]));tmpReturnDate.setUTCSeconds(parseInt(tmpDateParts[5]));tmpReturnDate.setUTCMilliseconds(parseInt(tmpDateParts[6]));// Track the number of hours we need to adjust the date by based on the timezone.
-var tmpTimeZoneOffsetInHours=0;// If there's a value for either the hours or minutes offset.
-if(tmpDateParts[7]||tmpDateParts[8]){// Track the number of minutes we need to adjust the date by based on the timezone.
-var tmpTimeZoneOffsetInMinutes=0;// If there's a value for the minutes offset.
+tmpReturnDate.setUTCHours(parseInt(tmpDateParts[3]));tmpReturnDate.setUTCMinutes(parseInt(tmpDateParts[4]));tmpReturnDate.setUTCSeconds(parseInt(tmpDateParts[5]));tmpReturnDate.setUTCMilliseconds(parseInt(tmpDateParts[6]));// If there's a value for either the hours or minutes offset.
+if(tmpDateParts[7]||tmpDateParts[8]){// If there's a value for the minutes offset.
 if(tmpDateParts[8]){// Convert the minutes value into an hours value.
 tmpTimeZoneOffsetInMinutes=parseInt(tmpDateParts[8])/60;}// Add the hours and minutes values to get the total offset in hours.
 tmpTimeZoneOffsetInHours=parseInt(tmpDateParts[7])+tmpTimeZoneOffsetInMinutes;// If the sign for the timezone is a plus to indicate the timezone is ahead of UTC time.
