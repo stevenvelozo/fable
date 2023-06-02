@@ -30,11 +30,19 @@ class FableService extends libFableServiceBase.CoreServiceProviderBase
 
 	addServiceType(pServiceType, pServiceClass)
 	{
-		// Add the type to the list of types
-		this.serviceTypes.push(pServiceType);
+		if (this.serviceMap.hasOwnProperty(pServiceType))
+		{
+			// TODO: Check if any services are running?
+			this.fable.log.warn(`Adding a service type [${pServiceType}] that already exists.`);
+		}
+		else
+		{
+			// Add the container for instantiated services to go in
+			this.serviceMap[pServiceType] = {};
 
-		// Add the container for instantiated services to go in
-		this.serviceMap[pServiceType] = {};
+			// Add the type to the list of types
+			this.serviceTypes.push(pServiceType);
+		}
 
 		// Using the static member of the class is a much more reliable way to check if it is a service class than instanceof
 		if ((typeof(pServiceClass) == 'function') && (pServiceClass.isFableService))
@@ -54,7 +62,7 @@ class FableService extends libFableServiceBase.CoreServiceProviderBase
 	addAndInstantiateServiceType(pServiceType, pServiceClass)
 	{
 		this.addServiceType(pServiceType, pServiceClass);
-		this.instantiateServiceProvider(pServiceType, {}, `${pServiceType}-Default`);
+		return this.instantiateServiceProvider(pServiceType, {}, `${pServiceType}-Default`);
 	}
 
 	// Some services expect to be overloaded / customized class.
@@ -123,7 +131,7 @@ class FableService extends libFableServiceBase.CoreServiceProviderBase
 		{
 			// If the core service hasn't registered itself yet, create the service container for it.
 			// This means you couldn't register another with this type unless it was later registered with a constructor class.
-			this.services[tmpServiceType] = {};
+			this.serviceMap[tmpServiceType] = {};
 		}
 		// Add the service to the service map
 		this.serviceMap[tmpServiceType][tmpServiceHash] = pServiceInstance;
