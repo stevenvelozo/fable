@@ -29,7 +29,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						Expect(_DataFormat
 							.formatterAddCommasToNumber(1000))
 							.to.equal('1,000');
@@ -54,7 +54,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						Expect(_DataFormat
 							.formatterDollars(1000))
 							.to.equal('$1,000.00');
@@ -82,7 +82,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						Expect(_DataFormat
 							.formatterRoundNumber(1000, 2))
 							.to.equal('1000.00');

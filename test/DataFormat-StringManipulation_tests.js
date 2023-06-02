@@ -29,7 +29,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						Expect(_DataFormat
 							.stringReverse('Dogs'))
 							.to.equal('sgoD');
@@ -45,7 +45,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						Expect(_DataFormat
 							.insecureStringHash('Dogs'))
 							.to.equal('HSH2135767');
@@ -68,7 +68,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						Expect(_DataFormat.cleanNonAlphaCharacters('Dogs'))
 							.to.equal('Dogs');
 						Expect(_DataFormat.cleanNonAlphaCharacters('Dogs1'))
@@ -84,7 +84,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						Expect(_DataFormat.capitalizeEachWord('Dogs-with-guns 12321'))
 							.to.equal('Dogs-With-Guns 12321');
 						Expect(_DataFormat.cleanNonAlphaCharacters(_DataFormat.capitalizeEachWord('meadow-endpoints')))
@@ -99,7 +99,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						// Test the enclosure cleaning function
 						Expect(_DataFormat
 							.cleanEnclosureWrapCharacters('`', '`Dogs`'))
@@ -133,7 +133,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						Expect(_DataFormat
 							.stringStartsWith('Dogs', 'Do'))
 							.to.equal(true);
@@ -155,7 +155,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						_DataFormat._UseEngineStringStartsWith = false;
 						Expect(_DataFormat
 							.stringStartsWith('Dogs', 'Do'))
@@ -178,7 +178,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						Expect(_DataFormat
 							.stringEndsWith('Dogs', 'gs'))
 							.to.equal(true);
@@ -200,7 +200,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						_DataFormat._UseEngineStringEndsWith = false;
 						Expect(_DataFormat
 							.stringEndsWith('Dogs', 'gs'))
@@ -230,7 +230,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						Expect(_DataFormat
 							.cleanNonAlphaCharacters('Dogs'))
 							.to.equal('Dogs');
@@ -254,7 +254,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						// The usual use case (e.g. for zero padding dates)
 						Expect(_DataFormat.stringPadStart('9', 2, '0'))
 							.to.equal('09');
@@ -282,7 +282,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						// The usual use case (e.g. for left justifying text in fixed-width scenarios)
 						Expect(_DataFormat.stringPadEnd('Bob', 10, ' '))
 							.to.equal('Bob       ');

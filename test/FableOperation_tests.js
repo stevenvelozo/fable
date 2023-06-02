@@ -29,9 +29,9 @@ suite
 						let testFable = new libFable();
 						let tmpOperation = testFable.serviceManager.instantiateServiceProvider('Operation', {Name: 'Big Complex Integration Operation'}, 'INTEGRATION-123');
 						Expect(tmpOperation).to.be.an('object');
-						Expect(testFable.services.Operation['INTEGRATION-123']).to.equal(tmpOperation);
-						Expect(testFable.services.Operation['BADHASH']).to.be.undefined;
-						Expect(testFable.services.Operation.hasOwnProperty('INTEGRATION-123')).to.equal(true);
+						Expect(testFable.serviceMap.Operation['INTEGRATION-123']).to.equal(tmpOperation);
+						Expect(testFable.serviceMap.Operation['BADHASH']).to.be.undefined;
+						Expect(testFable.serviceMap.Operation.hasOwnProperty('INTEGRATION-123')).to.equal(true);
 						tmpOperation.log.info(`Operation GUID ${tmpOperation.GUID} ---- Test 123`);
 						Expect(tmpOperation.state.Log.length).to.equal(1);
 						Expect(tmpOperation.state.Log[0]).to.contain('Test 123');
@@ -51,7 +51,7 @@ suite
 						Expect(tmpCollisionOperation).to.be.an('object');
 						Expect(tmpCollisionOperation.name).to.equal('Another Big Complex Integration Operation with Colliding Name');
 
-						Expect(testFable.services.Operation['INTEGRATION-123']).to.equal(tmpCollisionOperation);
+						Expect(testFable.serviceMap.Operation['INTEGRATION-123']).to.equal(tmpCollisionOperation);
 
 					}
 				);
@@ -63,7 +63,7 @@ suite
 						let testFable = new libFable();
 						let tmpOperation = testFable.serviceManager.instantiateServiceProvider('Operation', {Name:'Another Big Complex Integration Operation'});
 						Expect(tmpOperation).to.be.an('object');
-						Expect(testFable.services.Operation.hasOwnProperty(tmpOperation.Hash)).to.equal(true);
+						Expect(testFable.serviceMap.Operation.hasOwnProperty(tmpOperation.Hash)).to.equal(true);
 						Expect(tmpOperation.state.Log.length).to.equal(0);
 						let tmpText = `Operation ${tmpOperation.Hash} starting up...`;
 						tmpOperation.log.info(tmpText);

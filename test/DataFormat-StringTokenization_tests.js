@@ -29,7 +29,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						Expect(_DataFormat
 							.stringBeforeMatch('Dogs are cool', 'are'))
 							.to.equal('Dogs ');
@@ -48,7 +48,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						Expect(_DataFormat
 							.stringAfterMatch('Dogs are cool', 'are'))
 							.to.equal(' cool');
@@ -67,7 +67,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						Expect(_DataFormat
 							.stringCountEnclosures('Dogs (are) cool'))
 							.to.equal(1);
@@ -100,7 +100,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						Expect(_DataFormat
 							.stringGetEnclosureValueByIndex('Dogs (are) cool', 0))
 							.to.equal('are');
@@ -135,7 +135,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						Expect(_DataFormat
 							.stringRemoveEnclosureByIndex('Dogs (are) cool', 0))
 							.to.equal('Dogs  cool');

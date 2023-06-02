@@ -84,7 +84,7 @@ class Fable
 
 	get defaultServices()
 	{
-		return this._coreServices.ServiceManager.defaultServices;
+		return this._coreServices.ServiceManager.services;
 	}
 
 	getUUID()

@@ -1,6 +1,6 @@
 {
     "name": "fable",
-    "version": "3.0.62",
+    "version": "3.0.63",
     "description": "An entity behavior management and API bundling library.",
     "main": "source/Fable.js",
     "scripts": {
@@ -49,7 +49,7 @@
     },
     "homepage": "https://github.com/stevenvelozo/fable",
     "devDependencies": {
-        "quackage": "^1.0.11"
+        "quackage": "^1.0.13"
     },
     "dependencies": {
         "async.eachlimit": "^0.5.2",
@@ -58,7 +58,7 @@
         "cookie": "^0.5.0",
         "data-arithmatic": "^1.0.7",
         "fable-log": "^3.0.10",
-        "fable-serviceproviderbase": "^3.0.5",
+        "fable-serviceproviderbase": "^3.0.6",
         "fable-settings": "^3.0.6",
         "fable-uuid": "^3.0.5",
         "manyfest": "^1.0.24",

@@ -29,7 +29,7 @@ suite
 					(fTestComplete)=>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						Expect(_DataFormat
 							.formatTimeSpan(1000))
 							.to.equal('00:00:01.000');
@@ -51,7 +51,7 @@ suite
 					(fTestComplete) =>
 					{
 						let testFable = new libFable({LogStreams: false});
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						Expect(_DataFormat
 							.formatTimeDelta(1000, 2000))
 							.to.equal('00:00:01.000');
@@ -73,7 +73,7 @@ suite
 					(fTestComplete) =>
 					{
 						let testFable = new libFable();
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						Expect(_DataFormat
 							.getMonthFromDate(new Date('10/20/1988')))
 							.to.equal('October');
@@ -96,7 +96,7 @@ suite
 					(fTestComplete) =>
 					{
 						let testFable = new libFable();
-						let _DataFormat = testFable.defaultServices.DataFormat;
+						let _DataFormat = testFable.services.DataFormat;
 						Expect(_DataFormat
 							.formatSortableStringFromDate(new Date('10/20/1986')))
 							.to.equal('19860920');

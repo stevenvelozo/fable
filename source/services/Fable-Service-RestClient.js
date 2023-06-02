@@ -15,7 +15,7 @@ class FableServiceRestClient extends libFableServiceBase
 			this.TraceLog = true;
 		}
 
-		this.dataFormat = this.fable.defaultServices.DataFormat;
+		this.dataFormat = this.fable.services.DataFormat;
 
 		this.serviceType = 'RestClient';
 

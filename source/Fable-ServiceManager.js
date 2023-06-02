@@ -16,10 +16,10 @@ class FableService extends libFableServiceBase.CoreServiceProviderBase
 		this.serviceTypes = [];
 
 		// A map of instantiated services
-		this.services = {};
+		this.serviceMap = {};
 
 		// A map of the default instantiated service by type
-		this.defaultServices = {};
+		this.services = {};
 
 		// A map of class constructors for services
 		this.serviceClasses = {};
@@ -34,7 +34,7 @@ class FableService extends libFableServiceBase.CoreServiceProviderBase
 		this.serviceTypes.push(pServiceType);
 
 		// Add the container for instantiated services to go in
-		this.services[pServiceType] = {};
+		this.serviceMap[pServiceType] = {};
 
 		// Using the static member of the class is a much more reliable way to check if it is a service class than instanceof
 		if ((typeof(pServiceClass) == 'function') && (pServiceClass.isFableService))
@@ -69,10 +69,10 @@ class FableService extends libFableServiceBase.CoreServiceProviderBase
 		}
 
 		// Add the service to the service map
-		this.services[pServiceType][tmpService.Hash] = tmpService;
+		this.serviceMap[pServiceType][tmpService.Hash] = tmpService;
 
 		// If this is the first service of this type, make it the default
-		if (!this.defaultServices.hasOwnProperty(pServiceType))
+		if (!this.services.hasOwnProperty(pServiceType))
 		{
 			this.setDefaultServiceInstantiation(pServiceType, tmpService.Hash)
 		}
@@ -87,10 +87,10 @@ class FableService extends libFableServiceBase.CoreServiceProviderBase
 		let tmpService = this.instantiateServiceProviderWithoutRegistration(pServiceType, pOptions, pCustomServiceHash);
 
 		// Add the service to the service map
-		this.services[pServiceType][tmpService.Hash] = tmpService;
+		this.serviceMap[pServiceType][tmpService.Hash] = tmpService;
 
 		// If this is the first service of this type, make it the default
-		if (!this.defaultServices.hasOwnProperty(pServiceType))
+		if (!this.services.hasOwnProperty(pServiceType))
 		{
 			this.setDefaultServiceInstantiation(pServiceType, tmpService.Hash)
 		}
@@ -119,17 +119,17 @@ class FableService extends libFableServiceBase.CoreServiceProviderBase
 		// The service should already be instantiated, so just connect it to fable
 		pServiceInstance.connectFable(this.fable);
 
-		if (!this.services.hasOwnProperty(tmpServiceType))
+		if (!this.serviceMap.hasOwnProperty(tmpServiceType))
 		{
 			// If the core service hasn't registered itself yet, create the service container for it.
 			// This means you couldn't register another with this type unless it was later registered with a constructor class.
 			this.services[tmpServiceType] = {};
 		}
 		// Add the service to the service map
-		this.services[tmpServiceType][tmpServiceHash] = pServiceInstance;
+		this.serviceMap[tmpServiceType][tmpServiceHash] = pServiceInstance;
 
 		// If this is the first service of this type, make it the default
-		if (!this.defaultServices.hasOwnProperty(tmpServiceType))
+		if (!this.services.hasOwnProperty(tmpServiceType))
 		{
 			this.setDefaultServiceInstantiation(tmpServiceType, tmpServiceHash)
 		}
@@ -139,10 +139,10 @@ class FableService extends libFableServiceBase.CoreServiceProviderBase
 
 	setDefaultServiceInstantiation(pServiceType, pServiceHash)
 	{
-		if (this.services[pServiceType].hasOwnProperty(pServiceHash))
+		if (this.serviceMap[pServiceType].hasOwnProperty(pServiceHash))
 		{
-			this.fable[pServiceType] = this.services[pServiceType][pServiceHash];
-			this.defaultServices[pServiceType] = this.services[pServiceType][pServiceHash];
+			this.fable[pServiceType] = this.serviceMap[pServiceType][pServiceHash];
+			this.services[pServiceType] = this.serviceMap[pServiceType][pServiceHash];
 			return true;
 		}
 

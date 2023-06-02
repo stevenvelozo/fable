@@ -36,7 +36,7 @@ suite
 					function()
 					{
 						testFable = new libFable();
-						let tmpTemplate = testFable.defaultServices.Utility.template('Something');
+						let tmpTemplate = testFable.services.Utility.template('Something');
 						Expect(tmpTemplate).to.be.a('function');
 					}
 				);
@@ -46,7 +46,7 @@ suite
 					function()
 					{
 						testFable = new libFable();
-						let tmpTemplate = testFable.defaultServices.Utility.template('Something');
+						let tmpTemplate = testFable.services.Utility.template('Something');
 						Expect(tmpTemplate).to.be.a('function');
 						Expect(tmpTemplate()).to.equal('Something');
 					}
@@ -57,7 +57,7 @@ suite
 					function()
 					{
 						testFable = new libFable();
-						let tmpTemplate = testFable.defaultServices.Utility.template('There // %> are \\ */ /* <%= Count %> things....');
+						let tmpTemplate = testFable.services.Utility.template('There // %> are \\ */ /* <%= Count %> things....');
 						Expect(tmpTemplate).to.be.a('function');
 						Expect(tmpTemplate({Count:1000})).to.equal('There // %> are \\ */ /* 1000 things....');
 					}
@@ -68,10 +68,10 @@ suite
 					function()
 					{
 						testFable = new libFable();
-						let tmpTemplate = testFable.defaultServices.Utility.template('There are so many of these things (<%= Count %> to be exact)....');
+						let tmpTemplate = testFable.services.Utility.template('There are so many of these things (<%= Count %> to be exact)....');
 						Expect(tmpTemplate).to.be.a('function');
 						Expect(tmpTemplate({Count:1000})).to.equal('There are so many of these things (1000 to be exact)....');
-						let tmpOtherTemplate = testFable.defaultServices.Utility.template('Things count: <%= Count %>');
+						let tmpOtherTemplate = testFable.services.Utility.template('Things count: <%= Count %>');
 						Expect(tmpOtherTemplate).to.be.a('function');
 						Expect(tmpOtherTemplate({Count:600})).to.equal('Things count: 600');
 						Expect(tmpTemplate({Count:256})).to.equal('There are so many of these things (256 to be exact)....');
@@ -83,16 +83,16 @@ suite
 					function()
 					{
 						testFable = new libFable();
-						testFable.defaultServices.Utility.buildHashedTemplate('HeadLine', '<h1><%= TitleText %> Page</h1>');
-						testFable.defaultServices.Utility.buildHashedTemplate('Slogan', '<p>Some people, like <%= Name %>, have all the fun.</p>');
+						testFable.services.Utility.buildHashedTemplate('HeadLine', '<h1><%= TitleText %> Page</h1>');
+						testFable.services.Utility.buildHashedTemplate('Slogan', '<p>Some people, like <%= Name %>, have all the fun.</p>');
 						
 						// Access the low level service render function
-						Expect(testFable.services.Template.HeadLine.renderFunction({TitleText:'Test'})).to.equal('<h1>Test Page</h1>');
-						Expect(testFable.services.Template.Slogan.renderFunction({Name:'Jim'})).to.equal('<p>Some people, like Jim, have all the fun.</p>');
+						Expect(testFable.serviceMap.Template.HeadLine.renderFunction({TitleText:'Test'})).to.equal('<h1>Test Page</h1>');
+						Expect(testFable.serviceMap.Template.Slogan.renderFunction({Name:'Jim'})).to.equal('<p>Some people, like Jim, have all the fun.</p>');
 
 						// Use the high level simpler one
-						Expect(testFable.defaultServices.Utility.templates.HeadLine({TitleText:'A New'})).to.equal('<h1>A New Page</h1>');
-						Expect(testFable.defaultServices.Utility.templates.Slogan({Name:'Bob'})).to.equal('<p>Some people, like Bob, have all the fun.</p>');
+						Expect(testFable.services.Utility.templates.HeadLine({TitleText:'A New'})).to.equal('<h1>A New Page</h1>');
+						Expect(testFable.services.Utility.templates.Slogan({Name:'Bob'})).to.equal('<p>Some people, like Bob, have all the fun.</p>');
 					}
 				);
 				test
@@ -101,7 +101,7 @@ suite
 					function()
 					{
 						testFable = new libFable();
-						let tmpTemplate = testFable.defaultServices.Utility.template('There are <%= Count %> things....', {Count:1000});
+						let tmpTemplate = testFable.services.Utility.template('There are <%= Count %> things....', {Count:1000});
 						Expect(tmpTemplate).to.equal('There are 1000 things....');
 					}
 				);
@@ -111,7 +111,7 @@ suite
 					function()
 					{
 						testFable = new libFable();
-						let tmpResult = testFable.defaultServices.Utility.extend({SomeValue:'here'});
+						let tmpResult = testFable.services.Utility.extend({SomeValue:'here'});
 						Expect(tmpResult).to.have.a.property('SomeValue')
 							.that.is.a('string');
 						Expect(tmpResult.SomeValue).to.equal('here')
@@ -123,7 +123,7 @@ suite
 					function()
 					{
 						testFable = new libFable();
-						let tmpResult = testFable.defaultServices.Utility.extend({SomeValue:'here',Size:10},{Color:'Red',Size:20});
+						let tmpResult = testFable.services.Utility.extend({SomeValue:'here',Size:10},{Color:'Red',Size:20});
 						Expect(tmpResult).to.have.a.property('SomeValue')
 							.that.is.a('string');
 						Expect(tmpResult.SomeValue).to.equal('here');
@@ -137,7 +137,7 @@ suite
 					function()
 					{
 						testFable = new libFable();
-						let tmpResult = testFable.defaultServices.Utility.extend(
+						let tmpResult = testFable.services.Utility.extend(
 							{SomeValue:'here',Size:10, Race:'Human'},
 							{Color:'Red',Size:20, Band:'Metalocalypse'},
 							{Name:'Bilbo', Size:15, Race:'Hobbit', Band:'The dead hobbitz'});
@@ -165,20 +165,20 @@ suite
 						 */
 						// Regular Expressions for easy conversion of underscore tests:
 						// S: assert.deepEqual\(_.chunk\((.*)\), (.*), '
-						// R: Expect(testFable.defaultServices.Utility.chunk($1)).to.deep.equal($2);   // $3
-					    Expect(testFable.defaultServices.Utility.chunk([], 2)).to.deep.equal([]);   // chunk for empty array returns an empty array');
+						// R: Expect(testFable.services.Utility.chunk($1)).to.deep.equal($2);   // $3
+					    Expect(testFable.services.Utility.chunk([], 2)).to.deep.equal([]);   // chunk for empty array returns an empty array');
 
-					    Expect(testFable.defaultServices.Utility.chunk([1, 2, 3], 0)).to.deep.equal([]);   // chunk into parts of 0 elements returns empty array');
-					    Expect(testFable.defaultServices.Utility.chunk([1, 2, 3], -1)).to.deep.equal([]);   // chunk into parts of negative amount of elements returns an empty array');
-					    Expect(testFable.defaultServices.Utility.chunk([1, 2, 3])).to.deep.equal([]);   // defaults to empty array (chunk size 0)');
+					    Expect(testFable.services.Utility.chunk([1, 2, 3], 0)).to.deep.equal([]);   // chunk into parts of 0 elements returns empty array');
+					    Expect(testFable.services.Utility.chunk([1, 2, 3], -1)).to.deep.equal([]);   // chunk into parts of negative amount of elements returns an empty array');
+					    Expect(testFable.services.Utility.chunk([1, 2, 3])).to.deep.equal([]);   // defaults to empty array (chunk size 0)');
 
-					    Expect(testFable.defaultServices.Utility.chunk([1, 2, 3], 1)).to.deep.equal([[1], [2], [3]]);   // chunk into parts of 1 elements returns original array');
+					    Expect(testFable.services.Utility.chunk([1, 2, 3], 1)).to.deep.equal([[1], [2], [3]]);   // chunk into parts of 1 elements returns original array');
 
-					    Expect(testFable.defaultServices.Utility.chunk([1, 2, 3], 3)).to.deep.equal([[1, 2, 3]]);   // chunk into parts of current array length elements returns the original array');
-					    Expect(testFable.defaultServices.Utility.chunk([1, 2, 3], 5)).to.deep.equal([[1, 2, 3]]);   // chunk into parts of more then current array length elements returns the original array');
+					    Expect(testFable.services.Utility.chunk([1, 2, 3], 3)).to.deep.equal([[1, 2, 3]]);   // chunk into parts of current array length elements returns the original array');
+					    Expect(testFable.services.Utility.chunk([1, 2, 3], 5)).to.deep.equal([[1, 2, 3]]);   // chunk into parts of more then current array length elements returns the original array');
 
-					    Expect(testFable.defaultServices.Utility.chunk([10, 20, 30, 40, 50, 60, 70], 2)).to.deep.equal([[10, 20], [30, 40], [50, 60], [70]]);   // chunk into parts of less then current array length elements');
-					    Expect(testFable.defaultServices.Utility.chunk([10, 20, 30, 40, 50, 60, 70], 3)).to.deep.equal([[10, 20, 30], [40, 50, 60], [70]]);   // chunk into parts of less then current array length elements');
+					    Expect(testFable.services.Utility.chunk([10, 20, 30, 40, 50, 60, 70], 2)).to.deep.equal([[10, 20], [30, 40], [50, 60], [70]]);   // chunk into parts of less then current array length elements');
+					    Expect(testFable.services.Utility.chunk([10, 20, 30, 40, 50, 60, 70], 3)).to.deep.equal([[10, 20, 30], [40, 50, 60], [70]]);   // chunk into parts of less then current array length elements');
 					}
 				);
 				test
@@ -187,12 +187,12 @@ suite
 					function(fDone)
 					{
 						testFable = new libFable();
-						Expect(testFable.defaultServices.Utility.isoStringToDate('1986-06-11T09:34:46.012Z').getTime()).to.equal(518866486012);
-						Expect(testFable.defaultServices.Utility.isoStringToDate('2022-11-04T11:34:46.000Z').getTime()).to.equal(1667561686000);
-						Expect(testFable.defaultServices.Utility.isoStringToDate('2022-11-04T11:34:45.000Z').getTime()).to.equal(1667561685000);
-						Expect(testFable.defaultServices.Utility.isoStringToDate('1986-06-11T09:34:46.012Z').getTime()).to.equal(518866486012);
-						Expect(testFable.defaultServices.Utility.isoStringToDate('1986-06-11T09:34:46.012Z+0200').getTime()).to.equal(519586486012);
-						Expect(testFable.defaultServices.Utility.isoStringToDate('1986-06-11T09:34:46.012Z+0200').getTime()).to.equal(519586486012);
+						Expect(testFable.services.Utility.isoStringToDate('1986-06-11T09:34:46.012Z').getTime()).to.equal(518866486012);
+						Expect(testFable.services.Utility.isoStringToDate('2022-11-04T11:34:46.000Z').getTime()).to.equal(1667561686000);
+						Expect(testFable.services.Utility.isoStringToDate('2022-11-04T11:34:45.000Z').getTime()).to.equal(1667561685000);
+						Expect(testFable.services.Utility.isoStringToDate('1986-06-11T09:34:46.012Z').getTime()).to.equal(518866486012);
+						Expect(testFable.services.Utility.isoStringToDate('1986-06-11T09:34:46.012Z+0200').getTime()).to.equal(519586486012);
+						Expect(testFable.services.Utility.isoStringToDate('1986-06-11T09:34:46.012Z+0200').getTime()).to.equal(519586486012);
 						fDone();
 					}
 				)
@@ -205,7 +205,7 @@ suite
 
 						let tmpState = {};
 
-						testFable.defaultServices.Utility.waterfall([
+						testFable.services.Utility.waterfall([
 							(fStageComplete)=>
 							{
 								tmpState.Name = 'The Pixies';
@@ -235,7 +235,7 @@ suite
 
 						let tmpData = ['a','b','c','d','e'];
 
-						testFable.defaultServices.Utility.eachLimit(tmpData, 2,
+						testFable.services.Utility.eachLimit(tmpData, 2,
 							(pItem, fCallback)=>
 							{
 								tmpState[pItem] = pItem;

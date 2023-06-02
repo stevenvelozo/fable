@@ -20,7 +20,7 @@ class FableServiceMetaTemplate extends libFableServiceBase
 		this.WordTree = new libWordTree();
 
 		// In order to allow asynchronous template processing we need to use the async.eachLimit function
-		this.StringParser = new libStringParser(this.fable.defaultServices.Utility.eachLimit);
+		this.StringParser = new libStringParser(this.fable.services.Utility.eachLimit);
 
 		this.ParseTree = this.WordTree.ParseTree;
 	}

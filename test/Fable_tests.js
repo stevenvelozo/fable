@@ -106,7 +106,7 @@ suite
 							.to.equal('ApplicationNameHere');
 						Expect(testFable.settings.ProductVersion)
 							.to.equal('0.0.0');
-						testFable.defaultServices.SettingsManager.merge({Product:'TestProduct'});
+						testFable.services.SettingsManager.merge({Product:'TestProduct'});
 						Expect(testFable.settings.Product)
 							.to.equal('TestProduct');
 						Expect(testFable.settings.ProductVersion)
