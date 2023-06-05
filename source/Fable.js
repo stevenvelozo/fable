@@ -82,9 +82,9 @@ class Fable
 		return this._coreServices.ServiceManager.services;
 	}
 
-	get serviceMap()
+	get servicesMap()
 	{
-		return this._coreServices.ServiceManager.serviceMap;
+		return this._coreServices.ServiceManager.servicesMap;
 	}
 
 	getUUID()
