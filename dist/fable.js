@@ -2914,7 +2914,7 @@ this.waterfall=libAsyncWaterfall;this.eachLimit=libAsyncEachLimit;}// Underscore
 // Now that es6 gives us this, use the native thingy.
 // Nevermind, the native thing is not stable enough across environments
 // Basic shallow copy
-extend(pDestinationObject){for(let i=0;i<(arguments.length<=1?0:arguments.length-1);i++){let tmpSourceObject=i+1<1||arguments.length<=i+1?undefined:arguments[i+1];let tmpObjectProperties=Object.keys(tmpSourceObject);for(let k=0;k<tmpObjectProperties.length;k++){pDestinationObject[tmpObjectProperties[k]]=tmpSourceObject[tmpObjectProperties[k]];}}return pDestinationObject;}// Underscore and lodash have a behavior, _.template, which compiles a
+extend(pDestinationObject){for(let i=0;i<(arguments.length<=1?0:arguments.length-1);i++){let tmpSourceObject=i+1<1||arguments.length<=i+1?undefined:arguments[i+1];if(typeof tmpSourceObject==='object'){let tmpObjectProperties=Object.keys(tmpSourceObject);for(let k=0;k<tmpObjectProperties.length;k++){pDestinationObject[tmpObjectProperties[k]]=tmpSourceObject[tmpObjectProperties[k]];}}}return pDestinationObject;}// Underscore and lodash have a behavior, _.template, which compiles a
 // string-based template with code snippets into simple executable pieces,
 // with the added twist of returning a precompiled function ready to go.
 template(pTemplateText,pData){let tmpTemplate=this.fable.serviceManager.instantiateServiceProviderWithoutRegistration('Template');return tmpTemplate.buildTemplateFunction(pTemplateText,pData);}// Build a template function from a template hash, and, register it with the service provider

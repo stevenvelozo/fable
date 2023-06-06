@@ -35,10 +35,13 @@ class FableServiceUtility extends libFableServiceBase
 		for (let i = 0; i < pSourceObjects.length; i++)
 		{
 			let tmpSourceObject = pSourceObjects[i];
-			let tmpObjectProperties = Object.keys(tmpSourceObject);
-			for (let k = 0; k < tmpObjectProperties.length; k++)
+			if (typeof(tmpSourceObject) === 'object')
 			{
-				pDestinationObject[tmpObjectProperties[k]] = tmpSourceObject[tmpObjectProperties[k]];
+				let tmpObjectProperties = Object.keys(tmpSourceObject);
+				for (let k = 0; k < tmpObjectProperties.length; k++)
+				{
+					pDestinationObject[tmpObjectProperties[k]] = tmpSourceObject[tmpObjectProperties[k]];
+				}
 			}
 		}
 		return pDestinationObject;

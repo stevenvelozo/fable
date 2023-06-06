@@ -133,6 +133,20 @@ suite
 				);
 				test
 				(
+					'merging objects should not fail with undefined or nulls',
+					function()
+					{
+						testFable = new libFable();
+						let tmpResult = testFable.services.Utility.extend({SomeValue:'here',Size:10},{Color:'Red',Size:20},undefined);
+						Expect(tmpResult).to.have.a.property('SomeValue')
+							.that.is.a('string');
+						Expect(tmpResult.SomeValue).to.equal('here');
+						Expect(tmpResult.Color).to.equal('Red');
+						Expect(tmpResult.Size).to.equal(20);
+					}
+				);
+				test
+				(
 					'merging objects should work like old underscore did with more paramters',
 					function()
 					{

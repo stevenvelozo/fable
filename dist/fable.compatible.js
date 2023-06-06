@@ -2914,7 +2914,7 @@ _this33.waterfall=libAsyncWaterfall;_this33.eachLimit=libAsyncEachLimit;return _
 // Now that es6 gives us this, use the native thingy.
 // Nevermind, the native thing is not stable enough across environments
 // Basic shallow copy
-_createClass2(FableServiceUtility,[{key:"extend",value:function extend(pDestinationObject){for(var i=0;i<(arguments.length<=1?0:arguments.length-1);i++){var tmpSourceObject=i+1<1||arguments.length<=i+1?undefined:arguments[i+1];var tmpObjectProperties=Object.keys(tmpSourceObject);for(var k=0;k<tmpObjectProperties.length;k++){pDestinationObject[tmpObjectProperties[k]]=tmpSourceObject[tmpObjectProperties[k]];}}return pDestinationObject;}// Underscore and lodash have a behavior, _.template, which compiles a
+_createClass2(FableServiceUtility,[{key:"extend",value:function extend(pDestinationObject){for(var i=0;i<(arguments.length<=1?0:arguments.length-1);i++){var tmpSourceObject=i+1<1||arguments.length<=i+1?undefined:arguments[i+1];if(_typeof(tmpSourceObject)==='object'){var tmpObjectProperties=Object.keys(tmpSourceObject);for(var k=0;k<tmpObjectProperties.length;k++){pDestinationObject[tmpObjectProperties[k]]=tmpSourceObject[tmpObjectProperties[k]];}}}return pDestinationObject;}// Underscore and lodash have a behavior, _.template, which compiles a
 // string-based template with code snippets into simple executable pieces,
 // with the added twist of returning a precompiled function ready to go.
 },{key:"template",value:function template(pTemplateText,pData){var tmpTemplate=this.fable.serviceManager.instantiateServiceProviderWithoutRegistration('Template');return tmpTemplate.buildTemplateFunction(pTemplateText,pData);}// Build a template function from a template hash, and, register it with the service provider
