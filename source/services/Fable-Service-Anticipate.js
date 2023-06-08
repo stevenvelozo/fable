@@ -18,7 +18,6 @@ class FableServiceAnticipate extends libFableServiceBase
 		this.maxOperations = 1;
 
 		this.lastError = undefined;
-
 		this.waitingFunctions = [];
 	}
 
@@ -40,6 +39,7 @@ class FableServiceAnticipate extends libFableServiceBase
 			}
 			// Reset our state
 			this.lastError = undefined;
+			this.waitingFunctions = [];
 		}
 	}
 
