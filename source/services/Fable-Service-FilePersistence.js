@@ -182,8 +182,14 @@ class FableServiceFilePersistence extends libFableServiceBase
 								// We have now created our folder and there was no error -- continue.
 								return this.makeFolderRecursive(tmpParameters, fCallback);
 							}
+							else if (pCreateError.code =='EEXIST')
+							{
+								// The folder exists -- our dev might be running this in parallel/async/whatnot.
+								return this.makeFolderRecursive(tmpParameters, fCallback);
+							}
 							else
 							{
+								console.log(pCreateError.code);
 								fCallback(pCreateError);
 								return false;
 							}

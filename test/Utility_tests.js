@@ -85,7 +85,7 @@ suite
 						testFable = new libFable();
 						testFable.services.Utility.buildHashedTemplate('HeadLine', '<h1><%= TitleText %> Page</h1>');
 						testFable.services.Utility.buildHashedTemplate('Slogan', '<p>Some people, like <%= Name %>, have all the fun.</p>');
-						
+
 						// Access the low level service render function
 						Expect(testFable.servicesMap.Template.HeadLine.renderFunction({TitleText:'Test'})).to.equal('<h1>Test Page</h1>');
 						Expect(testFable.servicesMap.Template.Slogan.renderFunction({Name:'Jim'})).to.equal('<p>Some people, like Jim, have all the fun.</p>');
