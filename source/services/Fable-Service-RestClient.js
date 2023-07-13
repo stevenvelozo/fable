@@ -26,6 +26,11 @@ class FableServiceRestClient extends libFableServiceBase
 		this.prepareRequestOptions = (pOptions) => { return pOptions; };
 	}
 
+	get simpleGet()
+	{
+		return libSimpleGet;
+	}
+
 	prepareCookies(pRequestOptions)
 	{
 		if (this.cookie)
@@ -98,6 +103,67 @@ class FableServiceRestClient extends libFableServiceBase
 							this.fable.log.debug(`==> ${tmpOptions.method} completed data size ${tmpData.length}b received in ${this.dataFormat.formatTimeDelta(tmpOptions.RequestStartTime, tmpCompletionTime)}ms`);
 						}
 						return fCallback(pError, pResponse, tmpData);
+					});
+			});
+	}
+
+	executeChunkedRequestBinary(pOptions, fCallback)
+	{
+		let tmpOptions = this.preRequest(pOptions);
+
+		tmpOptions.RequestStartTime = this.fable.log.getTimeStamp();
+
+		if (this.TraceLog)
+		{
+			this.fable.log.debug(`Beginning ${tmpOptions.method} request to ${tmpOptions.url} at ${tmpOptions.RequestStartTime}`);
+		}
+
+		tmpOptions.json = false;
+		tmpOptions.encoding = null;
+
+		return libSimpleGet(tmpOptions,
+			(pError, pResponse)=>
+			{
+				if (pError)
+				{
+					return fCallback(pError, pResponse);
+				}
+
+				if (this.TraceLog)
+				{
+					let tmpConnectTime = this.fable.log.getTimeStamp();
+					this.fable.log.debug(`--> ${tmpOptions.method} connected in ${this.dataFormat.formatTimeDelta(tmpOptions.RequestStartTime, tmpConnectTime)}ms code ${pResponse.statusCode}`);
+				}
+
+				let tmpDataBuffer = false;
+
+				pResponse.on('data', (pChunk) =>
+					{
+						// For JSON, the chunk is the serialized object.
+						if (this.TraceLog)
+						{
+							let tmpChunkTime = this.fable.log.getTimeStamp();
+							this.fable.log.debug(`--> ${tmpOptions.method} data chunk size ${pChunk.length}b received in ${this.dataFormat.formatTimeDelta(tmpOptions.RequestStartTime, tmpChunkTime)}ms`);
+						}
+						// TODO: Potentially create a third option that streams this to a file?  So it doesn't have to hold it all in memory.
+						if (!tmpDataBuffer)
+						{
+							tmpDataBuffer = Buffer.from(pChunk);
+						}
+						else
+						{
+							tmpDataBuffer = Buffer.concat([tmpDataBuffer, pChunk]);
+						}
+					});
+
+				pResponse.on('end', ()=>
+					{
+						if (this.TraceLog)
+						{
+							let tmpCompletionTime = this.fable.log.getTimeStamp();
+							this.fable.log.debug(`==> ${tmpOptions.method} completed data size ${tmpDataBuffer.length}b received in ${this.dataFormat.formatTimeDelta(tmpOptions.RequestStartTime, tmpCompletionTime)}ms`);
+						}
+						return fCallback(pError, pResponse, tmpDataBuffer);
 					});
 			});
 	}

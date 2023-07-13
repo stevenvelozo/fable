@@ -158,8 +158,7 @@ class FableServiceFilePersistence extends libFableServiceBase
 		// Check if the path is fully complete
 		if (tmpParameters.CurrentPathIndex >= tmpParameters.ActualPathParts.length)
 		{
-			fCallback(null);
-			return true;
+			return fCallback(null);
 		}
 
 		// Check if the path exists (and is a folder)
@@ -190,8 +189,7 @@ class FableServiceFilePersistence extends libFableServiceBase
 							else
 							{
 								console.log(pCreateError.code);
-								fCallback(pCreateError);
-								return false;
+								return fCallback(pCreateError);
 							}
 						});
 				}
