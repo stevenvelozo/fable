@@ -59,6 +59,30 @@ suite
 							.formatterDollars(1000))
 							.to.equal('$1,000.00');
 						Expect(_DataFormat
+							.formatterDollars(1000.011))
+							.to.equal('$1,000.01');
+						Expect(_DataFormat
+							.formatterDollars(1000.013))
+							.to.equal('$1,000.01');
+						Expect(_DataFormat
+							.formatterDollars(1000.014))
+							.to.equal('$1,000.01');
+						Expect(_DataFormat
+							.formatterDollars(1000.015))
+							.to.equal('$1,000.02');
+						Expect(_DataFormat
+							.formatterDollars(1000.017))
+							.to.equal('$1,000.02');
+						Expect(_DataFormat
+							.formatterDollars(1000.019))
+							.to.equal('$1,000.02');
+						Expect(_DataFormat
+							.formatterDollars(1000.021))
+							.to.equal('$1,000.02');
+						Expect(_DataFormat
+							.formatterDollars(1000.515))
+							.to.equal('$1,000.52');
+						Expect(_DataFormat
 							.formatterDollars('Not dollars!'))
 							.to.equal('--');
 						Expect(_DataFormat

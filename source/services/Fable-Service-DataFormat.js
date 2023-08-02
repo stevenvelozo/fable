@@ -256,7 +256,12 @@ class DataFormat extends libFableServiceProviderBase
 	 */
 	formatterDollars (pValue)
 	{
-		let tmpDollarAmount = parseFloat(pValue).toFixed(2);
+		if (isNaN(pValue))
+		{
+			return this._Value_NaN_Currency;
+		}
+
+		let tmpDollarAmount = this.fable.Utility.bigDecimal.round(pValue, 2);
 
 		if (isNaN(tmpDollarAmount))
 		{
@@ -288,7 +293,13 @@ class DataFormat extends libFableServiceProviderBase
 	{
 		let tmpDigits = (typeof(pDigits) == 'undefined') ? 2 : pDigits;
 
-		let tmpValue = parseFloat(pValue).toFixed(tmpDigits);
+		if (isNaN(pValue))
+		{
+			let tmpZed = 0;
+			return tmpZed.toFixed(tmpDigits);
+		}
+
+		let tmpValue = this.fable.Utility.bigDecimal.round(pValue, tmpDigits);
 		if (isNaN(tmpValue))
 		{
 			let tmpZed = 0;

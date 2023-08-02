@@ -4,6 +4,8 @@ const libFableServiceBase = require('../Fable-ServiceManager.js').ServiceProvide
 const libAsyncWaterfall = require('async.waterfall');
 const libAsyncEachLimit = require('async.eachlimit');
 
+const libBigDecimal = require('js-big-decimal');
+
 class FableServiceUtility extends libFableServiceBase
 {
 	// Underscore and lodash have a behavior, _.template, which compiles a
@@ -24,6 +26,8 @@ class FableServiceUtility extends libFableServiceBase
 		// These two functions are used extensively throughout
 		this.waterfall = libAsyncWaterfall;
 		this.eachLimit = libAsyncEachLimit;
+
+		this.bigDecimal = libBigDecimal;
 	}
 
 	// Underscore and lodash have a behavior, _.extend, which merges objects.
