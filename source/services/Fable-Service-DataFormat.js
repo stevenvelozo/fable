@@ -261,7 +261,8 @@ class DataFormat extends libFableServiceProviderBase
 			return this._Value_NaN_Currency;
 		}
 
-		let tmpDollarAmount = this.fable.Utility.bigDecimal.round(pValue, 2);
+		let tmpDollarAmountArbitrary = this.fable.Utility.bigNumber(pValue);
+		let tmpDollarAmount = tmpDollarAmountArbitrary.toFixed(2);
 
 		if (isNaN(tmpDollarAmount))
 		{
@@ -299,7 +300,9 @@ class DataFormat extends libFableServiceProviderBase
 			return tmpZed.toFixed(tmpDigits);
 		}
 
-		let tmpValue = this.fable.Utility.bigDecimal.round(pValue, tmpDigits);
+		let tmpAmountArbitrary = this.fable.Utility.bigNumber(pValue);
+		let tmpValue = tmpAmountArbitrary.toFixed(tmpDigits);
+
 		if (isNaN(tmpValue))
 		{
 			let tmpZed = 0;
@@ -332,11 +335,11 @@ class DataFormat extends libFableServiceProviderBase
 		else
 		{
 			let tmpPadLength = pTargetLength - pString.length;
-			if (tmpPadLength > pPadString.length)
+			if (tmpPadLength > tmpPadString.length)
 			{
-				pPadString += pPadString.repeat(tmpTargetLength / pPadString.length);
+				tmpPadString += tmpPadString.repeat(tmpTargetLength / tmpPadString.length);
 			}
-			return pPadString.slice(0,tmpPadLength);
+			return tmpPadString.slice(0, tmpPadLength);
 		}
 	}
 

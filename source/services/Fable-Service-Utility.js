@@ -4,7 +4,7 @@ const libFableServiceBase = require('../Fable-ServiceManager.js').ServiceProvide
 const libAsyncWaterfall = require('async.waterfall');
 const libAsyncEachLimit = require('async.eachlimit');
 
-const libBigDecimal = require('js-big-decimal');
+const libBigNumber = require('big.js');
 
 class FableServiceUtility extends libFableServiceBase
 {
@@ -27,7 +27,7 @@ class FableServiceUtility extends libFableServiceBase
 		this.waterfall = libAsyncWaterfall;
 		this.eachLimit = libAsyncEachLimit;
 
-		this.bigDecimal = libBigDecimal;
+		this.bigNumber = libBigNumber;
 	}
 
 	// Underscore and lodash have a behavior, _.extend, which merges objects.
