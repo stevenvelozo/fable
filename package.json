@@ -58,7 +58,7 @@
         "cachetrax": "^1.0.4",
         "cookie": "^0.5.0",
         "data-arithmatic": "^1.0.7",
-        "fable-log": "^3.0.10",
+        "fable-log": "^3.0.12",
         "fable-serviceproviderbase": "^3.0.10",
         "fable-settings": "^3.0.8",
         "fable-uuid": "^3.0.5",
