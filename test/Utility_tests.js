@@ -207,6 +207,7 @@ suite
 						Expect(testFable.services.Utility.isoStringToDate('1986-06-11T09:34:46.012Z').getTime()).to.equal(518866486012);
 						Expect(testFable.services.Utility.isoStringToDate('1986-06-11T09:34:46.012Z+0200').getTime()).to.equal(519586486012);
 						Expect(testFable.services.Utility.isoStringToDate('1986-06-11T09:34:46.012Z+0200').getTime()).to.equal(519586486012);
+						Expect(testFable.services.Utility.isoStringToDate('2023-02-07T21:45:00.999Z').getMonth()).to.equal(1);
 						fDone();
 					}
 				)

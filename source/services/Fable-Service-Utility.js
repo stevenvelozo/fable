@@ -120,6 +120,9 @@ class FableServiceUtility extends libFableServiceBase
 		// Track the number of minutes we need to adjust the date by based on the timezone.
 		let tmpTimeZoneOffsetInMinutes = 0;
 
+		// This fixes an inconsistency with constructing the date programmatically.
+		tmpReturnDate.setUTCDate(1);
+
 		// Manually parse the parts of the string and set each part for the
 		// date. Note: Using the UTC versions of these functions is necessary
 		// because we're manually adjusting for time zones stored in the
@@ -128,7 +131,8 @@ class FableServiceUtility extends libFableServiceBase
 
 		// The month numbers are one "off" from what normal humans would expect
 		// because January == 0.
-		tmpReturnDate.setUTCMonth( parseInt( tmpDateParts[ 1 ] - 1 ) );
+		tmpReturnDate.setUTCMonth( parseInt( tmpDateParts[ 1 ] ) - 1 );
+
 		tmpReturnDate.setUTCDate( parseInt( tmpDateParts[ 2 ] ) );
 
 		// Set the time parts of the date object.
