@@ -122,6 +122,11 @@ class FableServiceUtility extends libFableServiceBase
 
 		// This fixes an inconsistency with constructing the date programmatically.
 		tmpReturnDate.setUTCDate(1);
+		tmpReturnDate.setUTCMonth(1);
+		tmpReturnDate.setUTCHours(0);
+		tmpReturnDate.setUTCMinutes(0);
+		tmpReturnDate.setUTCSeconds(0);
+		tmpReturnDate.setUTCMilliseconds(0);
 
 		// Manually parse the parts of the string and set each part for the
 		// date. Note: Using the UTC versions of these functions is necessary

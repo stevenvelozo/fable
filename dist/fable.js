@@ -3321,7 +3321,7 @@ let tmpDateParts=pISOString.split(/\D+/);// Set up a date object with the curren
 let tmpReturnDate=new Date();// Track the number of hours we need to adjust the date by based on the timezone.
 let tmpTimeZoneOffsetInHours=0;// Track the number of minutes we need to adjust the date by based on the timezone.
 let tmpTimeZoneOffsetInMinutes=0;// This fixes an inconsistency with constructing the date programmatically.
-tmpReturnDate.setUTCDate(1);// Manually parse the parts of the string and set each part for the
+tmpReturnDate.setUTCDate(1);tmpReturnDate.setUTCMonth(1);tmpReturnDate.setUTCHours(0);tmpReturnDate.setUTCMinutes(0);tmpReturnDate.setUTCSeconds(0);tmpReturnDate.setUTCMilliseconds(0);// Manually parse the parts of the string and set each part for the
 // date. Note: Using the UTC versions of these functions is necessary
 // because we're manually adjusting for time zones stored in the
 // string.
