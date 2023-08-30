@@ -423,6 +423,24 @@ class DataFormat extends libFableServiceProviderBase
 		return tmpMonths[pJavascriptDate.getMonth()];
 	}
 
+	formatMonthDayYearFromDate (pJavascriptDate, pStrict)
+	{
+		let tmpStrict = (typeof(pStrict) !== 'undefined') ? pStrict : false;
+
+		let tmpMonth = pJavascriptDate.getMonth() + 1;
+		let tmpDay = pJavascriptDate.getDate();
+		let tmpYear = pJavascriptDate.getFullYear();
+		
+		if (tmpStrict)
+		{
+			tmpMonth = this.stringPadStart(tmpMonth, 2, '0');
+			tmpDay = this.stringPadStart(tmpDay, 2, '0');
+			tmpYear = this.stringPadStart(tmpYear, 4, '0');
+		}
+
+		return `${tmpMonth}/${tmpDay}/${tmpYear}`;
+	}
+	
 	formatSortableStringFromDate (pDate)
 	{
 		return pDate.getFullYear()+this.stringPadStart(pDate.getMonth(),2,'0')+this.stringPadStart(pDate.getDate(),2,'0');

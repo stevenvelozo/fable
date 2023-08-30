@@ -103,6 +103,34 @@ suite
 						return fTestComplete();
 					}
 				)
+				test
+				(
+					'Get a human readable string from date',
+					(fTestComplete) =>
+					{
+						let testFable = new libFable();
+						let _DataFormat = testFable.services.DataFormat;
+						let tmpDateInput = new Date('1/02/1986');
+						Expect(_DataFormat
+							.formatMonthDayYearFromDate(tmpDateInput, true))
+							.to.equal('01/02/1986');
+						return fTestComplete();
+					}
+				)
+				test
+				(
+					'Get a human readable string from date no zerofill',
+					(fTestComplete) =>
+					{
+						let testFable = new libFable();
+						let _DataFormat = testFable.services.DataFormat;
+						let tmpDateInput = new Date('06/02/1999');
+						Expect(_DataFormat
+							.formatMonthDayYearFromDate(tmpDateInput, false))
+							.to.equal('6/2/1999');
+						return fTestComplete();
+					}
+				)
 			}
 		);
 	}
