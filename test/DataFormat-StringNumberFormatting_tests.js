@@ -89,6 +89,9 @@ suite
 							.formatterDollars(10000))
 							.to.equal('$10,000.00');
 						Expect(_DataFormat
+							.formatterDollars(null))
+							.to.equal('--');
+						Expect(_DataFormat
 							.formatterDollars(-8675309.75))
 							.to.equal('$-8,675,309.75');
 						Expect(_DataFormat
@@ -110,6 +113,9 @@ suite
 						Expect(_DataFormat
 							.formatterRoundNumber(1000, 2))
 							.to.equal('1000.00');
+						Expect(_DataFormat
+							.formatterRoundNumber(null, 2))
+							.to.equal('');
 						Expect(_DataFormat
 							.formatterRoundNumber(1000.129, 2))
 							.to.equal('1000.13');

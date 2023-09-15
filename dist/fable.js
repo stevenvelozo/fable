@@ -3003,7 +3003,7 @@ return pNumber.toString().replace(this._Regex_formatterAddCommasToNumber,this.pr
 	 *
 	 * @param {*} pValue
 	 * @returns {string}
-	 */formatterDollars(pValue){if(isNaN(pValue)){return this._Value_NaN_Currency;}let tmpDollarAmountArbitrary=this.fable.Utility.bigNumber(pValue);let tmpDollarAmount=tmpDollarAmountArbitrary.toFixed(2);if(isNaN(tmpDollarAmount)){// Try again and see if what was passed in was a dollars string.
+	 */formatterDollars(pValue){if(isNaN(pValue)){return this._Value_NaN_Currency;}if(pValue===null||pValue===undefined){return this._Value_NaN_Currency;}let tmpDollarAmountArbitrary=this.fable.Utility.bigNumber(pValue);let tmpDollarAmount=tmpDollarAmountArbitrary.toFixed(2);if(isNaN(tmpDollarAmount)){// Try again and see if what was passed in was a dollars string.
 if(typeof pValue=='string'){// TODO: Better rounding function?  This is a hack to get rid of the currency symbol and commas.
 tmpDollarAmount=parseFloat(pValue.replace(this._Value_MoneySign_Currency,'').replace(this._Regex_formatterDollarsRemoveCommas,'')).toFixed(2);}// If we didn't get a number, return the "not a number" string.
 if(isNaN(tmpDollarAmount)){return this._Value_NaN_Currency;}}// TODO: Get locale data and use that for this stuff.
@@ -3013,7 +3013,7 @@ return"$".concat(this.formatterAddCommasToNumber(tmpDollarAmount));}/**
 	 * @param {*} pValue
 	 * @param {number} pDigits
 	 * @returns {string}
-	 */formatterRoundNumber(pValue,pDigits){let tmpDigits=typeof pDigits=='undefined'?2:pDigits;if(isNaN(pValue)){let tmpZed=0;return tmpZed.toFixed(tmpDigits);}let tmpAmountArbitrary=this.fable.Utility.bigNumber(pValue);let tmpValue=tmpAmountArbitrary.toFixed(tmpDigits);if(isNaN(tmpValue)){let tmpZed=0;return tmpZed.toFixed(tmpDigits);}else{return tmpValue;}}/**
+	 */formatterRoundNumber(pValue,pDigits){let tmpDigits=typeof pDigits=='undefined'?2:pDigits;if(isNaN(pValue)){let tmpZed=0;return tmpZed.toFixed(tmpDigits);}if(pValue===null||pValue===undefined){return'';}let tmpAmountArbitrary=this.fable.Utility.bigNumber(pValue);let tmpValue=tmpAmountArbitrary.toFixed(tmpDigits);if(isNaN(tmpValue)){let tmpZed=0;return tmpZed.toFixed(tmpDigits);}else{return tmpValue;}}/**
 	 * Generate a reapeating padding string to be appended before or after depending on 
 	 * which padding function it uses.
 	 *

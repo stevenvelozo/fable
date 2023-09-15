@@ -261,6 +261,11 @@ class DataFormat extends libFableServiceProviderBase
 			return this._Value_NaN_Currency;
 		}
 
+		if (pValue === null || pValue === undefined)
+		{
+			return this._Value_NaN_Currency;
+		}
+
 		let tmpDollarAmountArbitrary = this.fable.Utility.bigNumber(pValue);
 		let tmpDollarAmount = tmpDollarAmountArbitrary.toFixed(2);
 
@@ -298,6 +303,11 @@ class DataFormat extends libFableServiceProviderBase
 		{
 			let tmpZed = 0;
 			return tmpZed.toFixed(tmpDigits);
+		}
+
+		if (pValue === null || pValue === undefined)
+		{
+			return '';
 		}
 
 		let tmpAmountArbitrary = this.fable.Utility.bigNumber(pValue);
