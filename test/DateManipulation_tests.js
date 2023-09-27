@@ -33,8 +33,6 @@ suite
 
 						testFable.log.info(`Guessing your timezone: ${tmpDates.dayJS.tz.guess()}`);
 
-//						tmpDates.dayJS.tz('Etc/UTC');
-
 						let tmpDate = tmpDates.dayJS.utc("2023-08-10T05:00:00.000Z");
 						testFable.log.trace(`Date formats to: ${tmpDate.format()}`);
 						let tmpDateCentral = tmpDate.tz("America/Chicago");
