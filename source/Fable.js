@@ -46,6 +46,7 @@ class Fable
 		this.serviceManager.addServiceType('Template', require('./services/Fable-Service-Template.js'));
 		this.serviceManager.addServiceType('MetaTemplate', require('./services/Fable-Service-MetaTemplate.js'));
 		this.serviceManager.addServiceType('Anticipate', require('./services/Fable-Service-Anticipate.js'));
+		this.serviceManager.addAndInstantiateServiceType('Dates', require('./services/Fable-Service-DateManipulation.js'));
 		this.serviceManager.addAndInstantiateServiceType('DataFormat', require('./services/Fable-Service-DataFormat.js'));
 		this.serviceManager.addAndInstantiateServiceType('DataGeneration', require('./services/Fable-Service-DataGeneration.js'));
 		this.serviceManager.addAndInstantiateServiceType('Utility', require('./services/Fable-Service-Utility.js'));

@@ -84,7 +84,7 @@ class FableOperation extends libFableServiceBase
 		this.writeOperationErrors(pLogText, pLogObject);
 		this.fable.log.fatal(pLogText, pLogObject);
 	}
-	
+
 	/************************************************************************
 	 * BEGINNING OF -->  Telemetry Helpers
 	 */
@@ -94,21 +94,21 @@ class FableOperation extends libFableServiceBase
 		this.timeStamps[tmpTimeStampHash] = +new Date();
 		return this.timeStamps[tmpTimeStampHash];
 	}
-	
+
 	getTimeDelta(pTimeStampHash)
 	{
 		let tmpTimeStampHash = (typeof(pTimeStampHash) == 'string') ? pTimeStampHash : 'Default';
 		if (this.timeStamps.hasOwnProperty(tmpTimeStampHash))
 		{
 			let tmpEndTime = +new Date();
-			return tmpEndTime-this.timeStamps[tmpTimeStampHash];	
+			return tmpEndTime-this.timeStamps[tmpTimeStampHash];
 		}
 		else
 		{
 			return -1;
 		}
 	}
-	
+
 	logTimeDelta(pTimeStampHash, pMessage)
 	{
 		let tmpTimeStampHash = (typeof(pTimeStampHash) == 'string') ? pTimeStampHash : 'Default';
@@ -117,12 +117,12 @@ class FableOperation extends libFableServiceBase
 		this.info(tmpMessage +' ('+tmpOperationTime+'ms)');
 		return tmpOperationTime;
 	}
-	
+
 	createProgressTracker(pTotalOperations, pProgressTrackerHash)
 	{
 		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'DefaultProgressTracker';
 		let tmpTotalOperations = (typeof(pTotalOperations) == 'number') ? pTotalOperations : 100;
-	
+
 		let tmpProgressTracker = (
 			{
 				Hash: tmpProgressTrackerHash,
@@ -135,92 +135,92 @@ class FableOperation extends libFableServiceBase
 				TotalCount: tmpTotalOperations,
 				CurrentCount:-1
 			});
-	
+
 		this.progressTrackers[tmpProgressTrackerHash] = tmpProgressTracker;
-	
+
 		return tmpProgressTracker;
 	}
-	
+
 	solveProgressTrackerStatus(pProgressTrackerHash)
 	{
 		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'DefaultProgressTracker';
-	
+
 		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
 		{
 			this.createProgressTracker(100, tmpProgressTrackerHash);
 		}
-	
+
 		let tmpProgressTracker = this.progressTrackers[tmpProgressTrackerHash];
-	
+
 		tmpProgressTracker.CurrentTime = this.getTimeDelta(tmpProgressTracker.Hash);
-	
+
 		if ((tmpProgressTracker.CurrentCount > 0) && (tmpProgressTracker.TotalCount > 0))
 		{
 			tmpProgressTracker.PercentComplete = (tmpProgressTracker.CurrentCount / tmpProgressTracker.TotalCount) * 100.0;
 		}
-	
+
 		if ((tmpProgressTracker.CurrentCount > 0) && (tmpProgressTracker.CurrentTime > 0))
 		{
 			tmpProgressTracker.AverageOperationTime = tmpProgressTracker.CurrentTime / tmpProgressTracker.CurrentCount;
 		}
-	
+
 		if ((tmpProgressTracker.CurrentCount < tmpProgressTracker.TotalCount) && (tmpProgressTracker.AverageOperationTime > 0))
 		{
 			tmpProgressTracker.EstimatedCompletionTime = (tmpProgressTracker.TotalCount - tmpProgressTracker.CurrentCount) * tmpProgressTracker.AverageOperationTime;
 		}
 	}
-	
+
 	updateProgressTrackerStatus(pProgressTrackerHash, pCurrentOperations)
 	{
 		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'DefaultProgressTracker';
 		let tmpCurrentOperations = parseInt(pCurrentOperations);
-	
+
 		if (isNaN(tmpCurrentOperations))
 		{
 			return false;
 		}
-	
+
 		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
 		{
 			this.createProgressTracker(100, tmpProgressTrackerHash);
 		}
-	
+
 		this.progressTrackers[tmpProgressTrackerHash].CurrentCount = tmpCurrentOperations;
 		this.progressTrackers[tmpProgressTrackerHash].CurrentTime = this.getTimeDelta(tmpProgressTrackerHash);
-	
+
 		this.solveProgressTrackerStatus(tmpProgressTrackerHash);
-	
+
 		return this.progressTrackers[tmpProgressTrackerHash];
 	}
-	
+
 	incrementProgressTrackerStatus(pProgressTrackerHash, pIncrementSize)
 	{
 		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'DefaultProgressTracker';
 		let tmpIncrementSize = parseInt(pIncrementSize);
-	
+
 		if (isNaN(tmpIncrementSize))
 		{
 			return false;
 		}
-	
+
 		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
 		{
 			this.createProgressTracker(100, tmpProgressTrackerHash);
 		}
-	
+
 		this.progressTrackers[tmpProgressTrackerHash].CurrentCount = this.progressTrackers[tmpProgressTrackerHash].CurrentCount + tmpIncrementSize;
 		this.progressTrackers[tmpProgressTrackerHash].CurrentTime = this.getTimeDelta(tmpProgressTrackerHash);
-	
+
 		this.solveProgressTrackerStatus(tmpProgressTrackerHash);
-	
+
 		return this.progressTrackers[tmpProgressTrackerHash];
 	}
-	
+
 	setProgressTrackerEndTime(pProgressTrackerHash, pCurrentOperations)
 	{
 		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'DefaultProgressTracker';
 		let tmpCurrentOperations = parseInt(pCurrentOperations);
-	
+
 		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
 		{
 			return false;
@@ -229,18 +229,18 @@ class FableOperation extends libFableServiceBase
 		{
 			this.updateProgressTrackerStatus(tmpProgressTrackerHash, tmpCurrentOperations);
 		}
-	
+
 		this.progressTrackers[tmpProgressTrackerHash].EndTime = this.getTimeDelta(tmpProgressTrackerHash);
-		
+
 		this.solveProgressTrackerStatus(tmpProgressTrackerHash);
-	
+
 		return this.progressTrackers[tmpProgressTrackerHash];
 	}
-	
+
 	printProgressTrackerStatus(pProgressTrackerHash)
 	{
 		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'DefaultProgressTracker';
-		
+
 		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
 		{
 			this.info(`>> Progress Tracker ${tmpProgressTrackerHash} does not exist!  No stats to display.`);
@@ -248,7 +248,7 @@ class FableOperation extends libFableServiceBase
 		else
 		{
 			const tmpProgressTracker = this.progressTrackers[tmpProgressTrackerHash];
-	
+
 			if (tmpProgressTracker.CurrentCount < 1)
 			{
 				this.info(`>> Progress Tracker ${tmpProgressTracker.Hash} has no completed operations.  ${tmpProgressTracker.CurrentTime}ms have elapsed since it was started.`);
@@ -263,12 +263,12 @@ class FableOperation extends libFableServiceBase
 			}
 		}
 	}
-	
+
 	// logMemoryResourcesUsed()
 	// {
-	// 
+	//
 	// 	const tmpResourcesUsed = process.memoryUsage().heapUsed / 1024 / 1024;
-	// 	this.info(`Memory usage at ${Math.round(tmpResourcesUsed * 100) / 100} MB`);		
+	// 	this.info(`Memory usage at ${Math.round(tmpResourcesUsed * 100) / 100} MB`);
 	// }
 	/*
 	 * END OF       -->  Logging and Telemetry Helpers
