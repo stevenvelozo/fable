@@ -27,7 +27,7 @@ class DateManipulation extends libFableServiceProviderBase
 		this.plugin_timezone = require('dayjs/plugin/timezone');
 		this.dayJS.extend(this.plugin_timezone);
 		// Include the `relativetime` plugin
-		this.plugin_relativetime = require('dayjs/plugin/relativetime');
+		this.plugin_relativetime = require('dayjs/plugin/relativeTime');
 		this.dayJS.extend(this.plugin_relativetime);
 		// Include the `utc` plugin
 		this.plugin_utc = require('dayjs/plugin/utc');
