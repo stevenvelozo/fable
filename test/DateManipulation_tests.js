@@ -29,7 +29,7 @@ suite
 					function(fDone)
 					{
 						let testFable = new libFable();
-						let tmpDates = testFable.serviceManager.instantiateServiceProvider('Dates');
+						let tmpDates = testFable.instantiateServiceProvider('Dates');
 
 						testFable.log.info(`Guessing your timezone: ${tmpDates.dayJS.tz.guess()}`);
 

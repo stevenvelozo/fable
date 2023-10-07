@@ -1,7 +1,8 @@
-const libFableServiceBase = require('../Fable-ServiceManager.js').ServiceProviderBase;
+const libFableServiceBase = require('fable-serviceproviderbase');
 
 const libFS = require('fs');
 const libPath = require('path');
+const libReadline = require('readline');
 
 
 class FableServiceFilePersistence extends libFableServiceBase
@@ -17,8 +18,9 @@ class FableServiceFilePersistence extends libFableServiceBase
 			this.options.Mode = parseInt('0777', 8) & ~process.umask();
 		}
 
-		this.currentInputFolder = `/tmp`;
-		this.currentOutputFolder = `/tmp`;
+		this.libFS = libFS;
+		this.libPath = libPath;
+		this.libReadline = libReadline;
 	}
 
 	joinPath(...pPathArray)
@@ -38,12 +40,6 @@ class FableServiceFilePersistence extends libFableServiceBase
 		return fCallback(null, tmpFileExists);
 	}
 
-	writeFileSync(pFileName, pFileContent, pOptions)
-	{
-		let tmpOptions = (typeof(pOptions) === 'undefined') ? 'utf8' : pOptions;
-		return libFS.writeFileSync(pFileName, pFileContent, tmpOptions);
-	}
-
 	appendFileSync(pFileName, pAppendContent, pOptions)
 	{
 		let tmpOptions = (typeof(pOptions) === 'undefined') ? 'utf8' : pOptions;
@@ -58,6 +54,24 @@ class FableServiceFilePersistence extends libFableServiceBase
 	deleteFolderSync(pFileName)
 	{
 		return libFS.rmdirSync(pFileName);
+	}
+
+	readFileSync(pFilePath, pOptions)
+	{
+		let tmpOptions = (typeof(pOptions) === 'undefined') ? 'utf8' : pOptions;
+		return libFS.readFileSync(pFilePath, tmpOptions);
+	}
+
+	readFile(pFilePath, pOptions, fCallback)
+	{
+		let tmpOptions = (typeof(pOptions) === 'undefined') ? 'utf8' : pOptions;
+		return libFS.readFile(pFilePath, tmpOptions, fCallback);
+	}
+
+	writeFileSync(pFileName, pFileContent, pOptions)
+	{
+		let tmpOptions = (typeof(pOptions) === 'undefined') ? 'utf8' : pOptions;
+		return libFS.writeFileSync(pFileName, pFileContent, tmpOptions);
 	}
 
 	writeFileSyncFromObject(pFileName, pObject)
@@ -81,26 +95,40 @@ class FableServiceFilePersistence extends libFableServiceBase
 		}
 	}
 
-	// Default folder behaviors
-
-	getDefaultOutputPath(pFileName)
+	writeFile(pFileName, pFileContent, pOptions, fCallback)
 	{
-		return libPath.join(this.currentOutputFolder, pFileName);
+		let tmpOptions = (typeof(pOptions) === 'undefined') ? 'utf8' : pOptions;
+		return libFS.writeFile(pFileName, pFileContent, tmpOptions, fCallback);
 	}
 
-	dataFolderWriteSync(pFileName, pFileContent)
+	lineReaderFactory(pFilePath, fOnLine, fOnComplete, fOnError)
 	{
-		return this.writeFileSync(this.getDefaultOutputPath(pFileName), pFileContent);
-	}
+		let tmpLineReader = {};
 
-	dataFolderWriteSyncFromObject(pFileName, pObject)
-	{
-		return this.writeFileSyncFromObject(this.getDefaultOutputPath(pFileName), pObject);
-	}
+		if (typeof(pFilePath) != 'string')
+		{
+			return false;
+		}
 
-	dataFolderWriteSyncFromArray(pFileName, pFileArray)
-	{
-		return this.writeFileSyncFromArray(this.getDefaultOutputPath(pFileName), pFileArray);
+		tmpLineReader.filePath = pFilePath;
+
+		tmpLineReader.fileStream = libFS.createReadStream(tmpLineReader.filePath);
+
+		tmpLineReader.reader = libReadline.createInterface({ input: tmpLineReader.fileStream, crlfDelay: Infinity });
+
+		if (typeof(fOnError) === 'function')
+		{
+			tmpLineReader.reader.on('error', fOnError);
+		}
+
+		tmpLineReader.reader.on('line', (typeof(fOnLine) === 'function') ? fOnLine : () => {});
+
+		if (typeof(fOnComplete) === 'function')
+		{
+			tmpLineReader.reader.on('close', fOnComplete);
+		}
+
+		return tmpLineReader;
 	}
 
 	// Folder management

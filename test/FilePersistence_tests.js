@@ -11,8 +11,6 @@ var libFable = require('../source/Fable.js');
 var Chai = require("chai");
 var Expect = Chai.expect;
 
-// https://en.wiktionary.org/w/api.php?action=parse&prop=wikitext&format=json&page=dog
-
 suite
 (
 	'Fable FilePersistence',
@@ -34,7 +32,7 @@ suite
 					function(fTestComplete)
 					{
 						let testFable = new libFable();
-						let tmpFilePersistence = testFable.serviceManager.instantiateServiceProvider('FilePersistence');
+						let tmpFilePersistence = testFable.instantiateServiceProvider('FilePersistence');
 						Expect(tmpFilePersistence).is.an('object');
 						Expect(tmpFilePersistence.existsSync(`${__dirname}/../package.json`)).to.equal(true);
 						Expect(tmpFilePersistence.existsSync(`${__dirname}/package.json`)).to.equal(false);
@@ -43,12 +41,47 @@ suite
 				);
 				test
 				(
+					'Read a file line-by-line',
+					function(fTestComplete)
+					{
+						let testFable = new libFable();
+						let tmpFilePersistence = testFable.instantiateServiceProvider('FilePersistence');
+						let tmpFirstLine = 'id,book_id,best_book_id,work_id,books_count,isbn,isbn13,authors,original_publication_year,original_title,title,language_code,average_rating,ratings_count,work_ratings_count,work_text_reviews_count,ratings_1,ratings_2,ratings_3,ratings_4,ratings_5,image_url,small_image_url';
+
+						let tmpLineReader = tmpFilePersistence.lineReaderFactory(`${__dirname}/data/books.csv`,
+							(pLine) =>
+							{
+								if (tmpFirstLine)
+								{
+									Expect(pLine).to.equal(tmpFirstLine);
+									tmpFirstLine = false;
+								}
+								//console.log(pLine);
+							},
+							() =>
+							{
+								console.log('LINE-BY-LINE FILE READING COMPLETE; GOOD DAY SIR.');
+								return fTestComplete();
+							},
+							(pError) =>
+							{
+								console.log(`Error reading file line-by-line: ${pError}`);
+							});
+						if (!tmpLineReader)
+						{
+							Expect(false).to.equal(true, 'The line reader was not initialized properly!')
+							return fTestComplete();
+						}
+					}
+				);
+				test
+				(
 					'Create, write, read and then delete a file.',
 					function(fTestComplete)
 					{
 						let testFable = new libFable();
-						let tmpFilePersistence = testFable.serviceManager.instantiateServiceProvider('FilePersistence');
-						let tmpDataGeneration = testFable.serviceManager.instantiateServiceProvider('DataGeneration');
+						let tmpFilePersistence = testFable.instantiateServiceProvider('FilePersistence');
+						let tmpDataGeneration = testFable.instantiateServiceProvider('DataGeneration');
 
 						let tmpLogFilePath = `/tmp/Fable-Test-${tmpDataGeneration.randomNumericString()}.log`;
 						testFable.log.info(`Writing test log file: [${tmpLogFilePath}]`);
@@ -62,7 +95,7 @@ suite
 
 						// Now delete the file
 						tmpFilePersistence.deleteFileSync(tmpLogFilePath);
-						
+
 						Expect(tmpFilePersistence.existsSync(tmpLogFilePath)).to.equal(false);
 
 						return fTestComplete();
@@ -74,7 +107,7 @@ suite
 					function(fTestComplete)
 					{
 						let testFable = new libFable();
-						let tmpFilePersistence = testFable.serviceManager.instantiateServiceProvider('FilePersistence');
+						let tmpFilePersistence = testFable.instantiateServiceProvider('FilePersistence');
 
 						Expect(tmpFilePersistence.joinPath('/tmp/tests/../othertests/names/'))
 							.to.equal('/tmp/othertests/names');
@@ -88,8 +121,8 @@ suite
 					function(fTestComplete)
 					{
 						let testFable = new libFable();
-						let tmpFilePersistence = testFable.serviceManager.instantiateServiceProvider('FilePersistence');
-						let tmpDataGeneration = testFable.serviceManager.instantiateServiceProvider('DataGeneration');
+						let tmpFilePersistence = testFable.instantiateServiceProvider('FilePersistence');
+						let tmpDataGeneration = testFable.instantiateServiceProvider('DataGeneration');
 
 						let tmpFolderExtras = [];
 
@@ -121,8 +154,8 @@ suite
 					function(fTestComplete)
 					{
 						let testFable = new libFable();
-						let tmpFilePersistence = testFable.serviceManager.instantiateServiceProvider('FilePersistence');
-						let tmpDataGeneration = testFable.serviceManager.instantiateServiceProvider('DataGeneration');
+						let tmpFilePersistence = testFable.instantiateServiceProvider('FilePersistence');
+						let tmpDataGeneration = testFable.instantiateServiceProvider('DataGeneration');
 
 						let tmpLogFilePath = `/tmp/Fable-Test-${tmpDataGeneration.randomNumericString()}.log`;
 						testFable.log.info(`Writing test log file: [${tmpLogFilePath}]`);
@@ -139,7 +172,7 @@ suite
 
 						// Now delete the file
 						tmpFilePersistence.deleteFileSync(tmpLogFilePath);
-						
+
 						Expect(tmpFilePersistence.existsSync(tmpLogFilePath)).to.equal(false);
 
 						return fTestComplete();

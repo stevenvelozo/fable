@@ -1,4 +1,4 @@
-const libFableServiceBase = require('../Fable-ServiceManager.js').ServiceProviderBase;
+const libFableServiceBase = require('fable-serviceproviderbase');
 
 // TODO: These are still pretty big -- consider the smaller polyfills
 const libAsyncWaterfall = require('async.waterfall');
@@ -56,7 +56,7 @@ class FableServiceUtility extends libFableServiceBase
 	// with the added twist of returning a precompiled function ready to go.
 	template(pTemplateText, pData)
 	{
-		let tmpTemplate = this.fable.serviceManager.instantiateServiceProviderWithoutRegistration('Template');
+		let tmpTemplate = this.fable.instantiateServiceProviderWithoutRegistration('Template');
 
 		return tmpTemplate.buildTemplateFunction(pTemplateText, pData);
 	}
@@ -64,7 +64,7 @@ class FableServiceUtility extends libFableServiceBase
 	// Build a template function from a template hash, and, register it with the service provider
 	buildHashedTemplate(pTemplateHash, pTemplateText, pData)
 	{
-		let tmpTemplate = this.fable.serviceManager.instantiateServiceProvider('Template', {}, pTemplateHash);
+		let tmpTemplate = this.fable.instantiateServiceProvider('Template', {}, pTemplateHash);
 
 		this.templates[pTemplateHash] = tmpTemplate.buildTemplateFunction(pTemplateText, pData);
 

@@ -1,4 +1,4 @@
-const libFableServiceBase = require('../Fable-ServiceManager.js').ServiceProviderBase;
+const libFableServiceBase = require('fable-serviceproviderbase');
 
 const _OperationStatePrototypeString = JSON.stringify(require('./Fable-Service-Operation-DefaultSettings.js'));
 
@@ -18,13 +18,106 @@ class FableOperation extends libFableServiceBase
 
 		this.state = JSON.parse(_OperationStatePrototypeString);
 
+		this.stepMap = {};
+		this.stepFunctions = {};
+
 		// Match the service instantiation to the operation.
 		this.state.Metadata.Hash = this.Hash;
 		this.state.Metadata.UUID = this.UUID;
 
-		this.name = (typeof(this.options.Name) == 'string') ? this.options.Name : `Unnamed Operation ${this.state.Metadata.UUID}`;
+		this.state.Metadata.Name = (typeof(this.options.Name) == 'string') ? this.options.Name : `Unnamed Operation ${this.state.Metadata.UUID}`;
+		this.name = this.state.Metadata.Name;
 
 		this.log = this;
+	}
+
+	execute(fExecutionCompleteCallback)
+	{
+		if (this.state.Status.TimeStart)
+		{
+			return fExecutionCompleteCallback(new Error(`Operation [${this.state.Metadata.UUID}] ${this.state.Metadata.Name} has already been executed!`));
+		}
+
+		this.state.Status.TimeStart = +new Date();
+
+		let tmpAnticipate = this.fable.instantiateServiceProviderWithoutRegistration('Anticipate');
+
+		for (let i = 0; i < this.state.Steps; i++)
+		{
+			tmpAnticipate.anticipate(this.stepFunctions[this.state.Steps[i].GUIDStep].bind(this));
+		}
+
+		// Wait for the anticipation to complete
+		tmpAnticipate.wait(
+			(pError) =>
+			{
+				this.state.Status.TimeEnd = +new Date();
+				return fExecutionCompleteCallback();
+			});
+	}
+
+/*
+	TODO: I've gone back and forth on whether this should be an object, JSON 
+	object prototype, or set of functions here.  Discuss with colleagues!
+*/
+	addStep(pGUIDStep, fStepFunction, pStepName, pStepDescription, pStepMetadata)
+	{
+		let tmpStep = {};
+		tmpStep.GUIDStep = (typeof(pGUIDStep) !== 'undefined') ? pGUIDStep : `STEP-${this.state.Steps.length}-${this.fable.DataGeneration.randomNumericString()}`;
+		tmpStep.Name = (typeof(pStepName) !== 'undefined') ? pStepName : `Step [${tmpStep.GUIDStep}]`;
+		tmpStep.Description = (typeof(pStepDescription) !== 'undefined') ? pStepDescription : `Step execution of ${tmpStep.Name}.`;
+		// TODO: Right now this allows an Array... do we want to block that?
+		tmpStep.Metadata = (typeof(pStepMetadata) === 'object') ? pStepMetadata : {};
+
+		tmpStep.TimeStart = false;
+		tmpStep.TimeEnd = false;
+
+		// There is an array of steps, in the Operation State itself ... push a step there
+		this.state.Steps.push(tmpStep);
+
+		this.stepMap[tmpStep.GUIDStep]
+		this.stepFunctions[tmpStep.GUIDStep] = fStepFunction;
+
+		this.state.Status.StepCount++;
+		return tmpStep;
+	}
+
+	getStep(pGUIDStep)
+	{
+		if (this.stepMap.hasOwnProperty(pGUIDStep))
+		{
+			return this.stepMap[pGUIDStep];
+		}
+
+		return false;
+	}
+
+	startStep(pGUIDStep)
+	{
+		let tmpStep = this.getStep(pGUIDStep);
+
+		if (tmpStep === false)
+		{
+			return false;
+		}
+
+		tmpStep.TimeStart = +new Date();
+
+		return tmpStep;
+	}
+
+	stopStep(pGUIDStep)
+	{
+		let tmpStep = this.getStep(pGUIDStep);
+
+		if (tmpStep === false)
+		{
+			return false;
+		}
+
+		tmpStep.TimeEnd = +new Date();
+
+		return tmpStep;
 	}
 
 	writeOperationLog(pLogLevel, pLogText, pLogObject)
@@ -46,6 +139,7 @@ class FableOperation extends libFableServiceBase
 			this.state.Errors.push(JSON.stringify(pLogObject));
 		}
 	}
+
 
 	trace(pLogText, pLogObject)
 	{
@@ -84,6 +178,7 @@ class FableOperation extends libFableServiceBase
 		this.writeOperationErrors(pLogText, pLogObject);
 		this.fable.log.fatal(pLogText, pLogObject);
 	}
+
 
 	/************************************************************************
 	 * BEGINNING OF -->  Telemetry Helpers
@@ -263,7 +358,6 @@ class FableOperation extends libFableServiceBase
 			}
 		}
 	}
-
 	// logMemoryResourcesUsed()
 	// {
 	//

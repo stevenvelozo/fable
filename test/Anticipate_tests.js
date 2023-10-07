@@ -26,7 +26,7 @@ suite
 								function (fTestComplete)
 								{
 									let testFable = new libFable();
-									let tmpAnticipate = testFable.serviceManager.instantiateServiceProvider('Anticipate');
+									let tmpAnticipate = testFable.instantiateServiceProvider('Anticipate');
 									tmpAnticipate.anticipate(function (fCallback)
 									{
 										testFable.log.info('Operation First test timeout entered...');
@@ -58,7 +58,7 @@ suite
 								function (fTestComplete)
 								{
 									let testFable = new libFable();
-									let tmpAnticipate = testFable.serviceManager.instantiateServiceProvider('Anticipate');
+									let tmpAnticipate = testFable.instantiateServiceProvider('Anticipate');
 									tmpAnticipate.maxOperations = 2;
 									tmpAnticipate.anticipate(function (fCallback)
 									{

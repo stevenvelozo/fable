@@ -28,7 +28,7 @@ suite
 					{
 						let testFable = new libFable();
 
-						let testCache = testFable.serviceManager.instantiateServiceProvider('ObjectCache');
+						let testCache = testFable.instantiateServiceProvider('ObjectCache');
 
 						testCache.maxLength = 2;
 

@@ -1,37 +1,33 @@
-const libFableServiceBase = require('../Fable-ServiceManager.js').ServiceProviderBase;
+const libFableServiceBase = require('fable-serviceproviderbase');
 //const libLokiDB = require('@lokidb/loki');
 
 class FableServiceFilePersistence extends libFableServiceBase
 {
 	constructor(pFable, pOptions, pServiceHash)
 	{
-        super(pFable, pOptions, pServiceHash);
+		super(pFable, pOptions, pServiceHash);
 
-        this.serviceType = 'FilePersistence';
-
-        if (!this.options.hasOwnProperty('Mode'))
-        {
-            this.options.Mode = parseInt('0777', 8) & ~process.umask();
-        }
+		this.serviceType = 'FilePersistence';
 	}
 
-    existsSync(pPath)
-    {
-        //return libFS.existsSync(pPath);
-        return false;
-    }
+	existsSync(pPath)
+	{
+		//return libFS.existsSync(pPath);
+		console.log('I SHOULD BE IN YOUR BUILD YO');
+		return false;
+	}
 
-    exists(pPath, fCallback)
-    {
-        let tmpFileExists = this.existsSync(pPath);;
+	exists(pPath, fCallback)
+	{
+		let tmpFileExists = this.existsSync(pPath);;
 
-        return fCallback(null, tmpFileExists);
-    }
+		return fCallback(null, tmpFileExists);
+	}
 
-    makeFolderRecursive (pParameters, fCallback)
-    {
-        return fCallback();
-    }
+	makeFolderRecursive(pParameters, fCallback)
+	{
+		return fCallback();
+	}
 }
 
 module.exports = FableServiceFilePersistence;

@@ -27,7 +27,7 @@ suite
 					function()
 					{
 						let testFable = new libFable();
-						let tmpOperation = testFable.serviceManager.instantiateServiceProvider('Operation', {Name: 'Big Complex Integration Operation'}, 'INTEGRATION-123');
+						let tmpOperation = testFable.instantiateServiceProvider('Operation', {Name: 'Big Complex Integration Operation'}, 'INTEGRATION-123');
 						Expect(tmpOperation).to.be.an('object');
 						Expect(testFable.servicesMap.Operation['INTEGRATION-123']).to.equal(tmpOperation);
 						Expect(testFable.servicesMap.Operation['BADHASH']).to.be.undefined;
@@ -43,11 +43,11 @@ suite
 					function()
 					{
 						let testFable = new libFable();
-						let tmpOperation = testFable.serviceManager.instantiateServiceProvider('Operation', {Name: 'Big Complex Integration Operation'}, 'INTEGRATION-123');;
+						let tmpOperation = testFable.instantiateServiceProvider('Operation', {Name: 'Big Complex Integration Operation'}, 'INTEGRATION-123');;
 						Expect(tmpOperation).to.be.an('object');
 						Expect(tmpOperation.name).to.equal('Big Complex Integration Operation');
 
-						let tmpCollisionOperation = testFable.serviceManager.instantiateServiceProvider('Operation', {Name: 'Another Big Complex Integration Operation with Colliding Name'}, 'INTEGRATION-123');;
+						let tmpCollisionOperation = testFable.instantiateServiceProvider('Operation', {Name: 'Another Big Complex Integration Operation with Colliding Name'}, 'INTEGRATION-123');;
 						Expect(tmpCollisionOperation).to.be.an('object');
 						Expect(tmpCollisionOperation.name).to.equal('Another Big Complex Integration Operation with Colliding Name');
 
@@ -61,7 +61,7 @@ suite
 					function()
 					{
 						let testFable = new libFable();
-						let tmpOperation = testFable.serviceManager.instantiateServiceProvider('Operation', {Name:'Another Big Complex Integration Operation'});
+						let tmpOperation = testFable.instantiateServiceProvider('Operation', {Name:'Another Big Complex Integration Operation'});
 						Expect(tmpOperation).to.be.an('object');
 						Expect(testFable.servicesMap.Operation.hasOwnProperty(tmpOperation.Hash)).to.equal(true);
 						Expect(tmpOperation.state.Log.length).to.equal(0);
@@ -78,6 +78,35 @@ suite
 						Expect(tmpOperation.state.Log.length).to.equal(9);
 						Expect(tmpOperation.state.Log[3]).to.equal('{"TestData":"Ignition Complete"}')
 						Expect(tmpOperation.state.Errors.length).to.equal(4);
+					}
+				);
+				test
+				(
+					'Timing Stuff for Operations',
+					function(fDone)
+					{
+						let testFable = new libFable();
+						let tmpOperation = testFable.instantiateServiceProvider('Operation', {Name:'The last operation in town.'});
+						Expect(tmpOperation).to.be.an('object');
+						Expect(testFable.servicesMap.Operation.hasOwnProperty(tmpOperation.Hash)).to.equal(true);
+						Expect(tmpOperation.state.Log.length).to.equal(0);
+						let tmpText = `Operation ${tmpOperation.Hash} starting up...`;
+						tmpOperation.log.info(tmpText);
+						Expect(tmpOperation.state.Log.length).to.equal(1);
+						Expect(tmpOperation.state.Log[0]).to.contain(tmpText);
+
+						tmpOperation.addStep('001-Login',
+							(fStepComplete) =>
+							{
+								setTimeout(
+									() =>
+									{
+										tmpOperation.log.trace('Login thingy complete!');
+										return fStepComplete();
+									}, 150);
+							}, 'Example step 1!');
+
+						tmpOperation.execute(fDone);
 					}
 				);
 			}

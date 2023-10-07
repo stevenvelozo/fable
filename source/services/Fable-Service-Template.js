@@ -1,4 +1,4 @@
-const libFableServiceBase = require('../Fable-ServiceManager.js').ServiceProviderBase;
+const libFableServiceBase = require('fable-serviceproviderbase');
 
 class FableServiceTemplate extends libFableServiceBase
 {

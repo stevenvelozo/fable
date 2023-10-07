@@ -1,4 +1,4 @@
-const libFableServiceBase = require('../Fable-ServiceManager.js').ServiceProviderBase;
+const libFableServiceBase = require('fable-serviceproviderbase');
 
 const libSimpleGet = require('simple-get');
 const libCookie = require('cookie');

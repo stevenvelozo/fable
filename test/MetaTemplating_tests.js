@@ -15,7 +15,7 @@ const Expect = Chai.expect;
 const loadMetaTemplateModule = () =>
 {
 	let tmpFable = new libFable();
-	return tmpFable.serviceManager.instantiateServiceProviderWithoutRegistration('MetaTemplate', {});
+	return tmpFable.instantiateServiceProviderWithoutRegistration('MetaTemplate', {});
 };
 
 const configMetaTemplate = (pModule) =>

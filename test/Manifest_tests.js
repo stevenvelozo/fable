@@ -28,7 +28,7 @@ suite
 					{
 						let testFable = new libFable();
 
-						let animalManyfest = testFable.serviceManager.instantiateServiceProvider('Manifest',
+						let animalManyfest = testFable.instantiateServiceProvider('Manifest',
 							{
 								"Scope": "Animal",
 								"Descriptors":

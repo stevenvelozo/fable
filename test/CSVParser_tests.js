@@ -30,7 +30,7 @@ suite
 					function(fDone)
 					{
 						let testFable = new libFable();
-						let tmpCSVParser = testFable.serviceManager.instantiateServiceProvider('CSVParser', {Name: 'Big Complex Integration Operation'}, 'CSV Parser-123');
+						let tmpCSVParser = testFable.instantiateServiceProvider('CSVParser', {Name: 'Big Complex Integration Operation'}, 'CSV Parser-123');
 						let tmpRecords = [];
 
 						const tmpReadline = libReadline.createInterface(

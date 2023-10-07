@@ -4,7 +4,7 @@ module.exports = (
             "UUID": false,
             "Hash": false,
 
-            "Title": "",
+            "Name": "",
             "Summary": "",
 
             "Version": 0
@@ -15,12 +15,10 @@ module.exports = (
             "CompletionProgress": 0,
             "CompletionTimeElapsed": 0,
 
-            "Steps": 1,
-            "StepsCompleted": 0,
-
-            "StartTime": 0,
-            "EndTime": 0
+            "TimeStart": 0,
+            "TimeEnd": 0
         },
+        "Steps": [],
         "Errors": [],
         "Log": []
     }

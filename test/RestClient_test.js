@@ -35,7 +35,7 @@ suite
 								{
 									let testFable = new libFable();
 									// Instantiate the RestClient Service Provider
-									let tmpRestClient = testFable.serviceManager.instantiateServiceProvider('RestClient', { TraceLog: true }, 'RestClient-99');
+									let tmpRestClient = testFable.instantiateServiceProvider('RestClient', { TraceLog: true }, 'RestClient-99');
 
 									// Download the wiktionary entry for dog!
 									tmpRestClient.getJSON('http://localhost:8086/1.0/Author/1',
@@ -55,7 +55,7 @@ suite
 								{
 									let testFable = new libFable();
 									// Instantiate the RestClient Service Provider
-									let tmpRestClient = testFable.serviceManager.instantiateServiceProvider('RestClient', { TraceLog: true }, 'RestClient-99');
+									let tmpRestClient = testFable.instantiateServiceProvider('RestClient', { TraceLog: true }, 'RestClient-99');
 
 									tmpRestClient.prepareRequestOptions = (pOptions) =>
 									{
@@ -81,14 +81,14 @@ suite
 								{
 									let testFable = new libFable();
 									// Instantiate the RestClient Service Provider
-									let tmpRestClient = testFable.serviceManager.instantiateServiceProvider('RestClient', { TraceLog: true }, 'RestClient-99');
+									let tmpRestClient = testFable.instantiateServiceProvider('RestClient', { TraceLog: true }, 'RestClient-99');
 
 									// Download the wiktionary entry for dog!
 									tmpRestClient.executeChunkedRequestBinary({ url: 'http://localhost:8086/1.0/Author/1', method: 'GET' },
 										(pError, pResponse, pBuffer) =>
 										{
 											Expect(pBuffer).to.be.instanceof(Buffer);
-											testFable.serviceManager.instantiateServiceProvider('FilePersistence');
+											testFable.instantiateServiceProvider('FilePersistence');
 											// TODO: How to test this on all operating systems safely?
 											//testFable.FilePersistence.writeFileSync(`/tmp/RestClient_binary_test.jpg`, pBuffer);
 											fTestComplete();
@@ -102,7 +102,7 @@ suite
 								{
 									let testFable = new libFable();
 									// Instantiate the RestClient Service Provider
-									let tmpRestClient = testFable.serviceManager.instantiateServiceProvider('RestClient', { TraceLog: true }, 'RestClient-99');
+									let tmpRestClient = testFable.instantiateServiceProvider('RestClient', { TraceLog: true }, 'RestClient-99');
 
 									// Download the wiktionary entry for dog!
 									tmpRestClient.putJSON({ url: 'http://localhost:8086/1.0/Author/Upsert', body: { GUIDAuthor: 'TestAuthor', Name: 'Test Author 2' } },
@@ -122,7 +122,7 @@ suite
 								{
 									let testFable = new libFable();
 									// Instantiate the RestClient Service Provider
-									let tmpRestClient = testFable.serviceManager.instantiateServiceProvider('RestClient', { TraceLog: true }, 'RestClient-99');
+									let tmpRestClient = testFable.instantiateServiceProvider('RestClient', { TraceLog: true }, 'RestClient-99');
 
 									// Download the wiktionary entry for dog!
 									tmpRestClient.putJSON({ url: 'http://localhost:8086/1.0/Author/Upsert', body: { Name: 'Test Author 2 DELETE' } },

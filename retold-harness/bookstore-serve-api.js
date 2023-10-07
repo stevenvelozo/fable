@@ -3,9 +3,9 @@ const _Settings = require('./configuration-bookstore-serve-api.js');
 const libFable = require('fable');
 
 _Fable = new libFable(_Settings);
-_Fable.serviceManager.addServiceType('RetoldDataService', require('retold-data-service'));
+_Fable.addServiceType('RetoldDataService', require('retold-data-service'));
 // The RetoldDataService defaults to process.cwd() but we want to run this from wherever.
-_Fable.serviceManager.instantiateServiceProvider('RetoldDataService',
+_Fable.instantiateServiceProvider('RetoldDataService',
     {
         "FullMeadowSchemaPath": `${__dirname}/model/`,
 		"DALMeadowSchemaPath": `${__dirname}/model/meadow/`
