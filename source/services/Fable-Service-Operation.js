@@ -122,7 +122,7 @@ class FableOperation extends libFableServiceBase
 
 	writeOperationLog(pLogLevel, pLogText, pLogObject)
 	{
-		this.state.Log.push(`${new Date().toUTCString()} [${pLogLevel}]: ${pLogText}`);
+		this.state.Log.push(`[${new Date().toUTCString()}]-[${pLogLevel}]: ${pLogText}`);
 
 		if (typeof(pLogObject) == 'object')
 		{
@@ -139,7 +139,6 @@ class FableOperation extends libFableServiceBase
 			this.state.Errors.push(JSON.stringify(pLogObject));
 		}
 	}
-
 
 	trace(pLogText, pLogObject)
 	{
@@ -358,12 +357,6 @@ class FableOperation extends libFableServiceBase
 			}
 		}
 	}
-	// logMemoryResourcesUsed()
-	// {
-	//
-	// 	const tmpResourcesUsed = process.memoryUsage().heapUsed / 1024 / 1024;
-	// 	this.info(`Memory usage at ${Math.round(tmpResourcesUsed * 100) / 100} MB`);
-	// }
 	/*
 	 * END OF       -->  Logging and Telemetry Helpers
 	 ************************************************************************/
