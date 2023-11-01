@@ -44,6 +44,11 @@ class FableServiceMetaTemplate extends libFableServiceBase
 		return this.WordTree.addPatternAsync(pPatternStart, pPatternEnd, pParserPromise);
 	}
 
+	addPatternBoth(pPatternStart, pPatternEnd, pParser, pParserPromise)
+	{
+		return this.WordTree.addPatternBoth(pPatternStart, pPatternEnd, pParser, pParserPromise);
+	}
+
 	/**
 	 * Parse a string with the existing parse tree
 	 * @method parseString

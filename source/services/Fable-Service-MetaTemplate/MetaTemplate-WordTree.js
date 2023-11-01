@@ -101,18 +101,37 @@ class WordTree
 
 
 	/** Add a Pattern to the Parse Tree
-	 * @method addPattern
+	 * @method addPatternAsync
+	 * @param {Object} pPatternStart - The starting string for the pattern (e.g. "${")
+	 * @param {string} pPatternEnd - The ending string for the pattern (e.g. "}")
+	 * @param {function} fParserAsync - The function to parse if this is the matched pattern, once the Pattern End is met.  If this is a string, a simple replacement occurs.
+	 * @return {bool} True if adding the pattern was successful
+	 */
+	addPatternAsync (pPatternStart, pPatternEnd, fParserAsync)
+	{
+		let tmpLeaf = this.addPattern(pPatternStart, pPatternEnd, fParserAsync);
+		if (tmpLeaf)
+		{
+			tmpLeaf.isAsync = true;
+		}
+	}
+
+	/** Add a Pattern to the Parse Tree
+	 * @method addPatternBoth
 	 * @param {Object} pPatternStart - The starting string for the pattern (e.g. "${")
 	 * @param {string} pPatternEnd - The ending string for the pattern (e.g. "}")
 	 * @param {function} fParser - The function to parse if this is the matched pattern, once the Pattern End is met.  If this is a string, a simple replacement occurs.
 	 * @return {bool} True if adding the pattern was successful
 	 */
-	addPatternAsync (pPatternStart, pPatternEnd, fParser)
+	addPatternBoth (pPatternStart, pPatternEnd, fParser, fParserAsync)
 	{
 		let tmpLeaf = this.addPattern(pPatternStart, pPatternEnd, fParser);
 		if (tmpLeaf)
 		{
 			tmpLeaf.isAsync = true;
+			tmpLeaf.isBoth = true;
+			// When a leaf has both async and non-async versions of the functions, we store the async in fParserAsync.
+			tmpLeaf.ParseAsync = fParserAsync;
 		}
 	}
 }

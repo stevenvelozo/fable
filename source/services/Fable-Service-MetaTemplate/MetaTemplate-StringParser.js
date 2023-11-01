@@ -105,10 +105,15 @@ class StringParser
 					// Flush the output buffer.
 					this.appendOutputBuffer(pCharacter, pParserState);
 					// If this last character is the end of the pattern, parse it.
-					if (pParserState.Pattern.hasOwnProperty('Parse'))
+					if (pParserState.Pattern.hasOwnProperty('Parse') && (!pParserState.Pattern.isAsync || pParserState.Pattern.isBoth))
 					{
 						// Run the function
 						pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData);
+						return this.resetOutputBuffer(pParserState);
+					}
+					else
+					{
+						console.log(`MetaTemplate: The pattern ${pParserState.Pattern.PatternStartString} is asynchronous and cannot be used in a synchronous parser.`);
 						return this.resetOutputBuffer(pParserState);
 					}
 				}
@@ -143,9 +148,9 @@ class StringParser
 					// If this last character is the end of the pattern, parse it.
 					if (pParserState.Pattern.hasOwnProperty('Parse'))
 					{
-						if (pParserState.Pattern.isAsync)
+						if (pParserState.Pattern.isAsync && !pParserState.Pattern.isBoth)
 						{
-							this.log.error(`MetaTemplate: The pattern ${pParserState.Pattern.PatternStartString} is asynchronous and cannot be used in a synchronous parser.`);
+							console.log(`MetaTemplate: The pattern ${pParserState.Pattern.PatternStartString} is asynchronous and cannot be used in a synchronous parser.`);
 							this.resetOutputBuffer(pParserState);
 						}
 						else
@@ -215,10 +220,26 @@ class StringParser
 					{
 						// ... this is the end of a pattern, cut off the end tag and parse it.
 						// Trim the start and end tags off the output buffer now
-						if (pParserState.Pattern.isAsync)
+						if (pParserState.Pattern.isAsync && !pParserState.Pattern.isBoth)
 						{
 							// Run the function
 							return pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData,
+								(pError, pAsyncOutput) =>
+								{
+									if (pError)
+									{
+										console.log(`Precedent ERROR: Async template error happened parsing ${pParserState.Pattern.PatternStart} ... ${pParserState.Pattern.PatternEnd}: ${pError}`);
+									}
+
+									pParserState.OutputBuffer = pAsyncOutput;
+									this.resetOutputBuffer(pParserState);
+									return fCallback();
+								});
+						}
+						else if (pParserState.Pattern.isAsync && pParserState.Pattern.isBoth)
+						{
+							// Run the function when both async and non async were provided with the pattern
+							return pParserState.Pattern.ParseAsync(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData,
 								(pError, pAsyncOutput) =>
 								{
 									if (pError)

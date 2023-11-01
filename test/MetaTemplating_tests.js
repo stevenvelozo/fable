@@ -37,6 +37,16 @@ const configMetaTemplate = (pModule) =>
 		{
 			return fCallback(null, `ASYNC DATA IS [${pHash}]`);
 		});
+	
+	pModule.addPatternBoth('<~', '~>',
+		(pHash, pData) =>
+		{
+			return `Non-Async Jellyfish called for pData which is [${pData}] with a hash of [${pHash}]`
+		},
+		(pHash, pData, fCallback)=>
+		{
+			return fCallback(null, `Async Jellyfish called for pData which is [${pData}] with a hash of [${pHash}]`);
+		});
 
 };
 
@@ -160,6 +170,25 @@ suite
 					}
 				);
 				test
+				(
+					'Passing both Async and Non-async Function',
+					(fDone) =>
+					{
+						let tmpTestString = 'The <^SomeValue^> and <~JELLY FISH~> pData and Async <%AsyncThe Funny String%> up in here and a $comment$ as well.';
+						let tmpExpectedResultAsync = 'The hash of [SomeValue] from pData is AirbornLight and Async Jellyfish called for pData which is [[object Object]] with a hash of [JELLY FISH] pData and Async ASYNC DATA IS [The Funny String] up in here and a comment as well.';
+						let tmpExpectedResult = 'The hash of [SomeValue] from pData is AirbornLight and Non-Async Jellyfish called for pData which is [[object Object]] with a hash of [JELLY FISH] pData and Async <%AsyncThe Funny String%> up in here and a comment as well.';
+						let testMetaTemplate = loadMetaTemplateModule();
+						configMetaTemplate(testMetaTemplate);
+						let tmpNonAsyncResult = testMetaTemplate.parseString(tmpTestString, {SomeValue:'AirbornLight'});
+						Expect(tmpNonAsyncResult).to.equal(tmpExpectedResult);
+						let	tmpResult = testMetaTemplate.parseString(tmpTestString, {SomeValue:'AirbornLight'},
+							(pError, pValue) =>
+							{
+								Expect(pValue).to.equal(tmpExpectedResultAsync);
+								return fDone();
+							});
+					}
+				);				test
 				(
 					'Bad pattern start parameter...',
 					(fDone) =>
