@@ -326,7 +326,8 @@ class StringParser
 			}
 		}
 		// Without this, templates of all sizes work fine in node.  They do not in the browser.
-		return setTimeout(fCallback, 0);
+		// Trying this out without the timout on non asynchronous template flips.
+		return fCallback();
 	}
 
 	/**

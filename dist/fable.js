@@ -3209,7 +3209,8 @@ this.resetOutputBuffer(pParserState);}}// If we aren't in a pattern match or pat
 else{// This may be the start of a new pattern....
 if(pParserState.ParseTree.hasOwnProperty(pCharacter)){// ... assign the root node as the matched node.
 this.resetOutputBuffer(pParserState);this.appendOutputBuffer(pCharacter,pParserState);pParserState.Pattern=pParserState.ParseTree[pCharacter];pParserState.PatternMatch=true;}else{this.appendOutputBuffer(pCharacter,pParserState);}}// Without this, templates of all sizes work fine in node.  They do not in the browser.
-return setTimeout(fCallback,0);}/**
+// Trying this out without the timout on non asynchronous template flips.
+return fCallback();}/**
 	 * Parse a string for matches, and process any template segments that occur.
 	 * @method parseString
 	 * @param {string} pString - The string to parse.
