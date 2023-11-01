@@ -189,50 +189,50 @@ class StringParser
 		return false;
 	}
 
-    executePatternAsync(pParserState, pData, fCallback)
-    {
-        // ... this is the end of a pattern, cut off the end tag and parse it.
-        // Trim the start and end tags off the output buffer now
-        if (pParserState.Pattern.isAsync && !pParserState.Pattern.isBoth)
-        {
-            // Run the function
-            return pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData,
-                (pError, pAsyncOutput) =>
-                {
-                    if (pError)
-                    {
-                        console.log(`Precedent ERROR: Async template error happened parsing ${pParserState.Pattern.PatternStart} ... ${pParserState.Pattern.PatternEnd}: ${pError}`);
-                    }
+	executePatternAsync(pParserState, pData, fCallback)
+	{
+		// ... this is the end of a pattern, cut off the end tag and parse it.
+		// Trim the start and end tags off the output buffer now
+		if (pParserState.Pattern.isAsync && !pParserState.Pattern.isBoth)
+		{
+			// Run the function
+			return pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData,
+				(pError, pAsyncOutput) =>
+				{
+					if (pError)
+					{
+						console.log(`Precedent ERROR: Async template error happened parsing ${pParserState.Pattern.PatternStart} ... ${pParserState.Pattern.PatternEnd}: ${pError}`);
+					}
 
-                    pParserState.OutputBuffer = pAsyncOutput;
-                    this.resetOutputBuffer(pParserState);
-                    return fCallback();
-                });
-        }
-        else if (pParserState.Pattern.isAsync && pParserState.Pattern.isBoth)
-        {
-            // Run the function when both async and non async were provided with the pattern
-            return pParserState.Pattern.ParseAsync(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData,
-                (pError, pAsyncOutput) =>
-                {
-                    if (pError)
-                    {
-                        console.log(`Precedent ERROR: Async template error happened parsing ${pParserState.Pattern.PatternStart} ... ${pParserState.Pattern.PatternEnd}: ${pError}`);
-                    }
+					pParserState.OutputBuffer = pAsyncOutput;
+					this.resetOutputBuffer(pParserState);
+					return setTimeout(fCallback, 0);
+				});
+		}
+		else if (pParserState.Pattern.isAsync && pParserState.Pattern.isBoth)
+		{
+			// Run the function when both async and non async were provided with the pattern
+			return pParserState.Pattern.ParseAsync(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData,
+				(pError, pAsyncOutput) =>
+				{
+					if (pError)
+					{
+						console.log(`Precedent ERROR: Async template error happened parsing ${pParserState.Pattern.PatternStart} ... ${pParserState.Pattern.PatternEnd}: ${pError}`);
+					}
 
-                    pParserState.OutputBuffer = pAsyncOutput;
-                    this.resetOutputBuffer(pParserState);
-                    return fCallback();
-                });
-        }
-        else
-        {
-            // Run the t*mplate function
-            pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData);
-            this.resetOutputBuffer(pParserState);
-            return fCallback();
-        }
-    }
+					pParserState.OutputBuffer = pAsyncOutput;
+					this.resetOutputBuffer(pParserState);
+					return setTimeout(fCallback, 0);
+				});
+		}
+		else
+		{
+			// Run the t*mplate function
+			pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData);
+			this.resetOutputBuffer(pParserState);
+			return setTimeout(fCallback, 0);
+		}
+	}
 
 
 	/**
@@ -325,7 +325,8 @@ class StringParser
 				this.appendOutputBuffer(pCharacter, pParserState);
 			}
 		}
-		return fCallback();
+		// Without this, templates of all sizes work fine in node.  They do not in the browser.
+		return setTimeout(fCallback, 0);
 	}
 
 	/**
