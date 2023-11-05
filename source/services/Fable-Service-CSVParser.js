@@ -83,7 +83,7 @@ class CSVParser extends libFableServiceProviderBase
             }
             else
             {
-                this.HeaderFieldNames[i] = this.Header[i].toString();
+                this.HeaderFieldNames[i] = this.Header[i].toString().trim();
             }
         }
     }
