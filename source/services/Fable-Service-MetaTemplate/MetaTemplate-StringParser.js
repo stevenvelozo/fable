@@ -9,9 +9,9 @@ class StringParser
 	/**
 	 * StringParser Constructor
 	 */
-	constructor(fEachLimit)
+	constructor(pFable)
 	{
-		this.eachLimit = fEachLimit;
+		this.fable = pFable;
 	}
 
 	/**
@@ -206,7 +206,7 @@ class StringParser
 
 					pParserState.OutputBuffer = pAsyncOutput;
 					this.resetOutputBuffer(pParserState);
-					return setTimeout(fCallback, 0);
+					return fCallback();
 				});
 		}
 		else if (pParserState.Pattern.isAsync && pParserState.Pattern.isBoth)
@@ -222,7 +222,7 @@ class StringParser
 
 					pParserState.OutputBuffer = pAsyncOutput;
 					this.resetOutputBuffer(pParserState);
-					return setTimeout(fCallback, 0);
+					return fCallback();
 				});
 		}
 		else
@@ -230,7 +230,7 @@ class StringParser
 			// Run the t*mplate function
 			pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData);
 			this.resetOutputBuffer(pParserState);
-			return setTimeout(fCallback, 0);
+			return fCallback();
 		}
 	}
 
@@ -360,18 +360,25 @@ class StringParser
 			let tmpParserState = this.newParserState(pParseTree);
 			tmpParserState.Asynchronous = true;
 
-			this.eachLimit(pString, 1,
-				(pCharacter, fCharacterCallback) =>
-				{
-					this.parseCharacterAsync(pCharacter, tmpParserState, pData, fCharacterCallback);
-				},
+			let tmpAnticipate = this.fable.instantiateServiceProviderWithoutRegistration('Anticipate');
+
+			for (let i = 0; i < pString.length; i++)
+			{
+				tmpAnticipate.anticipate(
+					(fCallback) =>
+					{
+						console.log(`Running template for character [${pString[i]}] index ${i}`);
+						this.parseCharacterAsync(pString[i], tmpParserState, pData, fCallback);
+					});
+			}
+
+			tmpAnticipate.wait(
 				(pError) =>
 				{
 					// Flush the remaining data
 					this.flushOutputBuffer(tmpParserState);
-					fCallback(pError, tmpParserState.Output);
+					return fCallback(pError, tmpParserState.Output);
 				});
-
 		}
 	}
 }

@@ -35,6 +35,7 @@ class FableServiceAnticipate extends libFableServiceBase
 			// If there are no operations left, and we have waiting functions, call them.
 			for (let i = 0; i < this.waitingFunctions.length; i++)
 			{
+				this.log.trace('Calling waiting function.')
 				this.waitingFunctions[i](this.lastError);
 			}
 			// Reset our state
@@ -46,6 +47,7 @@ class FableServiceAnticipate extends libFableServiceBase
 	// Expects a function fAsynchronousFunction(fCallback)
 	anticipate(fAsynchronousFunction)
 	{
+		this.log.trace('Adding a function...')
 		this.operationQueue.push(fAsynchronousFunction);
 		this.checkQueue();
 	}
