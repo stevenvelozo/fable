@@ -3226,7 +3226,7 @@ return fCallback();}/**
 	 * @param {function} fCallback - The callback function to call when the parse is complete
 	 */parseString(pString,pParseTree,pData,fCallback){if(typeof fCallback!=='function'){let tmpParserState=this.newParserState(pParseTree);for(var i=0;i<pString.length;i++){// TODO: This is not fast.
 this.parseCharacter(pString[i],tmpParserState,pData,fCallback);}this.flushOutputBuffer(tmpParserState);return tmpParserState.Output;}else{// This is the async mode
-let tmpParserState=this.newParserState(pParseTree);tmpParserState.Asynchronous=true;let tmpAnticipate=this.fable.instantiateServiceProviderWithoutRegistration('Anticipate');for(let i=0;i<pString.length;i++){tmpAnticipate.anticipate(fCallback=>{console.log("Running template for character [".concat(pString[i],"] index ").concat(i));this.parseCharacterAsync(pString[i],tmpParserState,pData,fCallback);});}tmpAnticipate.wait(pError=>{// Flush the remaining data
+let tmpParserState=this.newParserState(pParseTree);tmpParserState.Asynchronous=true;let tmpAnticipate=this.fable.instantiateServiceProviderWithoutRegistration('Anticipate');for(let i=0;i<pString.length;i++){tmpAnticipate.anticipate(fCallback=>{this.parseCharacterAsync(pString[i],tmpParserState,pData,fCallback);});}tmpAnticipate.wait(pError=>{// Flush the remaining data
 this.flushOutputBuffer(tmpParserState);return fCallback(pError,tmpParserState.Output);});}}}module.exports=StringParser;},{}],130:[function(require,module,exports){/**
 * Word Tree
 * @author      Steven Velozo <steven@velozo.com>

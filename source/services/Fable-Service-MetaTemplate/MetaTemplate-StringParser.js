@@ -367,7 +367,6 @@ class StringParser
 				tmpAnticipate.anticipate(
 					(fCallback) =>
 					{
-						console.log(`Running template for character [${pString[i]}] index ${i}`);
 						this.parseCharacterAsync(pString[i], tmpParserState, pData, fCallback);
 					});
 			}
