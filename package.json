@@ -1,6 +1,6 @@
 {
     "name": "fable",
-    "version": "3.0.102",
+    "version": "3.0.103",
     "description": "An entity behavior management and API bundling library.",
     "main": "source/Fable.js",
     "scripts": {
@@ -64,7 +64,7 @@
         "fable-serviceproviderbase": "^3.0.12",
         "fable-settings": "^3.0.9",
         "fable-uuid": "^3.0.6",
-        "manyfest": "^1.0.25",
+        "manyfest": "^1.0.27",
         "simple-get": "^4.0.1"
     }
 }

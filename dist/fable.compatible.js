@@ -2831,7 +2831,8 @@ _this17.serviceTypes=[];// A map of instantiated services
 _this17.servicesMap={};// A map of the default instantiated service by type
 _this17.services={};// A map of class constructors for services
 _this17.serviceClasses={};// If we need extra service initialization capabilities
-_this17.extraServiceInitialization=false;// Initialization Phase 1: Set up the core utility services
+_this17.extraServiceInitialization=false;// Set how noisy the system is about signaling complexity
+_this17.LogNoisiness=0;// Initialization Phase 1: Set up the core utility services
 // These are things like power, water, and sewage.  They are required for fable to run (e.g. logging, settings, etc)
 // Instantiate the default Settings Manager
 _this17.SettingsManager=new libFableSettings(pSettings);_this17.SettingsManager=_this17.SettingsManager;// Instantiate the UUID generator
@@ -3132,8 +3133,7 @@ return _this25.makeFolderRecursive(tmpParameters,fCallback);}else{console.log(pC
 * Precedent Meta-Templating
 * @author      Steven Velozo <steven@velozo.com>
 * @description Process text stream trie and postfix tree, parsing out meta-template expression functions.
-*/var libWordTree=require("./Fable-Service-MetaTemplate/MetaTemplate-WordTree.js");var libStringParser=require("./Fable-Service-MetaTemplate/MetaTemplate-StringParser.js");var FableServiceMetaTemplate=/*#__PURE__*/function(_libFableServiceBase5){_inherits(FableServiceMetaTemplate,_libFableServiceBase5);var _super17=_createSuper(FableServiceMetaTemplate);function FableServiceMetaTemplate(pFable,pOptions,pServiceHash){var _this26;_classCallCheck2(this,FableServiceMetaTemplate);_this26=_super17.call(this,pFable,pOptions,pServiceHash);_this26.serviceType='MetaTemplate';_this26.WordTree=new libWordTree();// In order to allow asynchronous template processing we need to use the async.eachLimit function
-_this26.StringParser=new libStringParser(_this26.fable);_this26.ParseTree=_this26.WordTree.ParseTree;return _this26;}/**
+*/var libWordTree=require("./Fable-Service-MetaTemplate/MetaTemplate-WordTree.js");var libStringParser=require("./Fable-Service-MetaTemplate/MetaTemplate-StringParser.js");var FableServiceMetaTemplate=/*#__PURE__*/function(_libFableServiceBase5){_inherits(FableServiceMetaTemplate,_libFableServiceBase5);var _super17=_createSuper(FableServiceMetaTemplate);function FableServiceMetaTemplate(pFable,pOptions,pServiceHash){var _this26;_classCallCheck2(this,FableServiceMetaTemplate);_this26=_super17.call(this,pFable,pOptions,pServiceHash);_this26.serviceType='MetaTemplate';_this26.WordTree=new libWordTree();_this26.StringParser=new libStringParser(_this26.fable);_this26.ParseTree=_this26.WordTree.ParseTree;return _this26;}/**
 	 * Add a Pattern to the Parse Tree
 	 * @method addPattern
 	 * @param {Object} pTree - A node on the parse tree to push the characters into
@@ -3146,7 +3146,7 @@ _this26.StringParser=new libStringParser(_this26.fable);_this26.ParseTree=_this2
 	 * @param {string} pString - The string to parse
 	 * @param {object} pData - Data to pass in as the second argument
 	 * @return {string} The result from the parser
-	 */},{key:"parseString",value:function parseString(pString,pData,fCallback){return this.StringParser.parseString(pString,this.ParseTree,pData,fCallback);}}]);return FableServiceMetaTemplate;}(libFableServiceBase);module.exports=FableServiceMetaTemplate;},{"./Fable-Service-MetaTemplate/MetaTemplate-StringParser.js":129,"./Fable-Service-MetaTemplate/MetaTemplate-WordTree.js":130,"fable-serviceproviderbase":44}],129:[function(require,module,exports){/**
+	 */},{key:"parseString",value:function parseString(pString,pData,fCallback){if(this.LogNoisiness>4){this.fable.log.trace("Metatemplate parsing template string [".concat(pString,"] where the callback is a ").concat(_typeof(fCallback)),{TemplateData:pData});}return this.StringParser.parseString(pString,this.ParseTree,pData,fCallback);}}]);return FableServiceMetaTemplate;}(libFableServiceBase);module.exports=FableServiceMetaTemplate;},{"./Fable-Service-MetaTemplate/MetaTemplate-StringParser.js":129,"./Fable-Service-MetaTemplate/MetaTemplate-WordTree.js":130,"fable-serviceproviderbase":44}],129:[function(require,module,exports){/**
 * String Parser
 * @author      Steven Velozo <steven@velozo.com>
 * @description Parse a string, properly processing each matched token in the word tree.

@@ -19,7 +19,6 @@ class FableServiceMetaTemplate extends libFableServiceBase
 
 		this.WordTree = new libWordTree();
 
-		// In order to allow asynchronous template processing we need to use the async.eachLimit function
 		this.StringParser = new libStringParser(this.fable);
 
 		this.ParseTree = this.WordTree.ParseTree;
@@ -58,6 +57,10 @@ class FableServiceMetaTemplate extends libFableServiceBase
 	 */
 	parseString(pString, pData, fCallback)
 	{
+		if (this.LogNoisiness > 4)
+		{
+			this.fable.log.trace(`Metatemplate parsing template string [${pString}] where the callback is a ${typeof(fCallback)}`, {TemplateData:pData});
+		}
 		return this.StringParser.parseString(pString, this.ParseTree, pData, fCallback);
 	}
 }

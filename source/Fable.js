@@ -31,6 +31,8 @@ class Fable extends libFableServiceBase.CoreServiceProviderBase
 		// If we need extra service initialization capabilities
 		this.extraServiceInitialization = false;
 
+		// Set how noisy the system is about signaling complexity
+		this.LogNoisiness = 0;
 
 		// Initialization Phase 1: Set up the core utility services
 		// These are things like power, water, and sewage.  They are required for fable to run (e.g. logging, settings, etc)
