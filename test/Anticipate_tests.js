@@ -85,6 +85,30 @@ suite
 									});
 								}
 							);
+						test
+							(
+								'Huge call stack',
+								function (fTestComplete)
+								{
+									this.timeout(10000);
+									let testFable = new libFable();
+									let tmpAnticipate = testFable.instantiateServiceProvider('Anticipate');
+
+									for (let i = 0; i < 50000; i++)
+									{
+										tmpAnticipate.anticipate(function (fCallback)
+										{
+											return fCallback();
+										});
+									}
+
+									tmpAnticipate.wait(function (pError)
+									{
+										testFable.log.info(`Waits completed!`)
+										return fTestComplete();
+									});
+								}
+							);
 					}
 				);
 		}

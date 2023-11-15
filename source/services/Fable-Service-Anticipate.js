@@ -15,6 +15,8 @@ class FableServiceAnticipate extends libFableServiceBase
 		this.executingOperationCount = 0;
 		this.completedOperationCount = 0;
 
+		this.callDepth = 0;
+
 		this.maxOperations = 1;
 
 		this.lastError = undefined;
@@ -60,8 +62,8 @@ class FableServiceAnticipate extends libFableServiceBase
 				Called: false,
 				Error: undefined,
 				OperationSet: this
-			});		
-		return hoistedCallback;
+			});
+		return hoistedCallback.bind(this);
 		function hoistedCallback(pError)
 		{
 			if (tmpCallbackState.Called)
@@ -75,7 +77,18 @@ class FableServiceAnticipate extends libFableServiceBase
 			tmpCallbackState.OperationSet.executingOperationCount -= 1;
 			tmpCallbackState.OperationSet.completedOperationCount += 1;
 
-			tmpCallbackState.OperationSet.checkQueue();
+			tmpCallbackState.OperationSet.callDepth++;
+
+			// TODO: Figure out a better pattern for chaining templates so the call stack doesn't get abused.
+			if (tmpCallbackState.OperationSet.callDepth > 400)
+			{
+				tmpCallbackState.OperationSet.callDepth = 0;
+				setTimeout(tmpCallbackState.OperationSet.checkQueue.bind(this), 0);
+			}
+			else
+			{
+				tmpCallbackState.OperationSet.checkQueue();
+			}
 		}
 	}
 
