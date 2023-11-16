@@ -58,7 +58,7 @@ suite
 								function (fTestComplete)
 								{
 									let testFable = new libFable();
-									let tmpAnticipate = testFable.instantiateServiceProvider('Anticipate');
+									let tmpAnticipate = testFable.newAnticipate();
 									tmpAnticipate.maxOperations = 2;
 									tmpAnticipate.anticipate(function (fCallback)
 									{

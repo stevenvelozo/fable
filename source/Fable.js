@@ -101,6 +101,11 @@ class Fable extends libFableServiceBase.CoreServiceProviderBase
 		return this.UUID.getUUID();
 	}
 
+	newAnticipate()
+	{
+		return this.instantiateServiceProviderWithoutRegistration('Anticipate');
+	}
+
 	/* Service Manager Methods */
 	addServiceType(pServiceType, pServiceClass)
 	{
