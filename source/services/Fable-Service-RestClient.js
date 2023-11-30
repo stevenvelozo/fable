@@ -54,6 +54,13 @@ class FableServiceRestClient extends libFableServiceBase
 	{
 		// Validate the options object
 		let tmpOptions = this.prepareCookies(pOptions);
+
+		// Prepend a string to the URL if it exists in the Fable Config
+		if (this.fable.settings.hasOwnProperty('RestClientURLPrefix'))
+		{
+			tmpOptions.url = this.fable.settings.RestClientURLPrefix + tmpOptions.url;
+		}
+
 		return this.prepareRequestOptions(tmpOptions);
 	}
 
