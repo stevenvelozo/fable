@@ -113,7 +113,7 @@ class StringParser
 					}
 					else
 					{
-						console.log(`MetaTemplate: The pattern ${pParserState.Pattern.PatternStartString} is asynchronous and cannot be used in a synchronous parser.`);
+						this.fable.log.info(`MetaTemplate: The pattern ${pParserState.Pattern.PatternStartString} is asynchronous and cannot be used in a synchronous parser.`);
 						return this.resetOutputBuffer(pParserState);
 					}
 				}
@@ -150,7 +150,7 @@ class StringParser
 					{
 						if (pParserState.Pattern.isAsync && !pParserState.Pattern.isBoth)
 						{
-							console.log(`MetaTemplate: The pattern ${pParserState.Pattern.PatternStartString} is asynchronous and cannot be used in a synchronous parser.`);
+							this.fable.log.info(`MetaTemplate: The pattern ${pParserState.Pattern.PatternStartString} is asynchronous and cannot be used in a synchronous parser.`);
 							this.resetOutputBuffer(pParserState);
 						}
 						else
@@ -201,7 +201,7 @@ class StringParser
 				{
 					if (pError)
 					{
-						console.log(`Precedent ERROR: Async template error happened parsing ${pParserState.Pattern.PatternStart} ... ${pParserState.Pattern.PatternEnd}: ${pError}`);
+						this.fable.log.info(`Precedent ERROR: Async template error happened parsing ${pParserState.Pattern.PatternStart} ... ${pParserState.Pattern.PatternEnd}: ${pError}`);
 					}
 
 					pParserState.OutputBuffer = pAsyncOutput;
@@ -217,7 +217,7 @@ class StringParser
 				{
 					if (pError)
 					{
-						console.log(`Precedent ERROR: Async template error happened parsing ${pParserState.Pattern.PatternStart} ... ${pParserState.Pattern.PatternEnd}: ${pError}`);
+						this.fable.log.info(`Precedent ERROR: Async template error happened parsing ${pParserState.Pattern.PatternStart} ... ${pParserState.Pattern.PatternEnd}: ${pError}`);
 					}
 
 					pParserState.OutputBuffer = pAsyncOutput;

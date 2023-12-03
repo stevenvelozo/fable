@@ -38,5 +38,5 @@ let tmpRestClient = testFable.instantiateServiceProvider('RestClient', {TraceLog
 tmpRestClient.getJSON('https://en.wiktionary.org/w/api.php?action=parse&prop=wikitext&format=json&page=dog',
     (pError, pResponse, pBody)=>
     {
-        testFable.log.info('Response received!');
+        testFable.log.info('Response received~', pBody);
     });
