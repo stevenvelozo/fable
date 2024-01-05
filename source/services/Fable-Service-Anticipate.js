@@ -25,8 +25,21 @@ class FableServiceAnticipate extends libFableServiceBase
 
 	checkQueue()
 	{
+		// This could be combined with the last else if stanza but the logic for errors and non-errors would be blended and more complex to follow so keeping it unrolled.
+		if (this.lastError)
+		{
+			// If there are no operations left, and we have waiting functions, call them.
+			for (let i = 0; i < this.waitingFunctions.length; i++)
+			{
+				//this.log.trace('Calling waiting function.')
+				this.waitingFunctions[i](this.lastError);
+			}
+			// Reset our state
+			this.lastError = undefined;
+			this.waitingFunctions = [];
+		}
 		// This checks to see if we need to start any operations.
-		if (this.operationQueue.length > 0 && this.executingOperationCount < this.maxOperations)
+		else if (this.operationQueue.length > 0 && this.executingOperationCount < this.maxOperations)
 		{
 			let tmpOperation = this.operationQueue.shift();
 			this.executingOperationCount += 1;
@@ -72,7 +85,7 @@ class FableServiceAnticipate extends libFableServiceBase
 				throw new Error("Anticipation async callback called twice...");
 			}
 			tmpCallbackState.Called = true;
-			tmpCallbackState.error = pError;
+			this.lastError = pError;
 
 			tmpCallbackState.OperationSet.executingOperationCount -= 1;
 			tmpCallbackState.OperationSet.completedOperationCount += 1;

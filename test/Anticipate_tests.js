@@ -87,6 +87,60 @@ suite
 							);
 						test
 							(
+								'Error bailout',
+								function (fTestComplete)
+								{
+									let testFable = new libFable();
+									let tmpAnticipate = testFable.newAnticipate();
+									let tmpPostErrorMethodCalled = false;
+									tmpAnticipate.anticipate(function (fCallback)
+									{
+										testFable.log.info('Operation First test timeout entered...');
+										setTimeout(function ()
+										{
+											testFable.log.info(`Operation First test timeout done!`);
+											fCallback();
+										}, 500);
+									});
+									tmpAnticipate.anticipate(function (fCallback)
+									{
+										testFable.log.info('Operation Second test timeout entered...');
+										setTimeout(function ()
+										{
+											testFable.log.info(`Operation Second test timeout done!`);
+											fCallback();
+										}, 50);
+									});
+									tmpAnticipate.anticipate(function (fCallback)
+									{
+										testFable.log.info('Operation Second test timeout entered...');
+										setTimeout(function ()
+										{
+											testFable.log.info(`Operation Second test timeout done!`);
+											fCallback(new Error('Bail out or else!'));
+										}, 50);
+									});
+									tmpAnticipate.anticipate(function (fCallback)
+									{
+										testFable.log.info('Operation Third test timeout entered...');
+										setTimeout(function ()
+										{
+											tmpPostErrorMethodCalled = true;
+											testFable.log.info(`Operation Third test timeout done!`);
+											fCallback();
+										}, 50);
+									});
+									tmpAnticipate.wait(function (pError)
+									{
+										Expect(pError).to.be.an('error');
+										Expect(tmpPostErrorMethodCalled).to.equal(false);
+										testFable.log.info(`Wait 1 completed: ${pError}`)
+										return fTestComplete();
+									});
+								}
+							);
+						test
+							(
 								'Huge call stack',
 								function (fTestComplete)
 								{
