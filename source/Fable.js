@@ -71,6 +71,7 @@ class Fable extends libFableServiceBase.CoreServiceProviderBase
 		this.addAndInstantiateServiceType('DataFormat', require('./services/Fable-Service-DataFormat.js'));
 		this.addAndInstantiateServiceType('DataGeneration', require('./services/Fable-Service-DataGeneration.js'));
 		this.addAndInstantiateServiceType('Utility', require('./services/Fable-Service-Utility.js'));
+		this.addAndInstantiateServiceType('Math', require('./services/Fable-Service-Math.js'));
 		this.addServiceType('Operation', require('./services/Fable-Service-Operation.js'));
 		this.addServiceType('RestClient', require('./services/Fable-Service-RestClient.js'));
 		this.addServiceType('CSVParser', require('./services/Fable-Service-CSVParser.js'));
