@@ -15,6 +15,22 @@ class FableServiceMath extends libFableServiceBase
         this.serviceType = 'Math';
 	}
 
+	parsePrecise(pValue)
+	{
+		let tmpNumber = "0.0";
+
+		try
+		{
+		    tmpNumber = new this.fable.Utility.bigNumber(pValue);
+		}
+		catch(pError)
+		{
+		    console.log(`Error parsing number (type ${typeof(pValue)}): ${pError}`);
+		}
+
+		return tmpNumber.toString();
+	}
+
 	addPrecise(pLeftValue, pRightValue)
 	{
 		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;

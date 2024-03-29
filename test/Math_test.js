@@ -42,6 +42,21 @@ suite
 						return fDone();
 					}
 				);
+				test
+				(
+					'Parse Numbers',
+					function(fDone)
+					{
+						let testFable = new libFable();
+
+						Expect(testFable.Math.parsePrecise(1)).to.equal('1');
+						// 3.3333333333333333333333333333333 in the current node.js implementation collapses to 3.3333333333333335
+						Expect(testFable.Math.parsePrecise('4.3333333333333333333333333333333')).to.equal('4.3333333333333333333333333333333');
+						Expect(testFable.Math.parsePrecise(undefined)).to.equal('0.0');
+						
+						return fDone();
+					}
+				);
 			}
 		);
 	}

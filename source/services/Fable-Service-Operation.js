@@ -11,6 +11,7 @@ class FableOperation extends libFableServiceBase
 
 		// Timestamps will just be the long ints
 		this.timeStamps = {};
+
 		// ProgressTrackers have an object format of: {Hash:'SomeHash',EndTime:UINT,CurrentTime:UINT,TotalCount:INT,CurrentCount:INT}
 		this.progressTrackers = {};
 

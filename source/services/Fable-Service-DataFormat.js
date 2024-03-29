@@ -8,7 +8,7 @@ class DataFormat extends libFableServiceProviderBase
 {
 	constructor(pFable, pOptions, pServiceHash)
 	{
-		super(pFable, pOptions, pServiceHash)
+		super(pFable, pOptions, pServiceHash);
 
 		this.serviceType = 'DataArithmatic';
 
@@ -60,7 +60,7 @@ class DataFormat extends libFableServiceProviderBase
 	 * @param {*} pString
 	 * @param {*} pSearchString
 	 * @param {*} pStartIndex
-	 * @returns {*}
+	 * @returns {boolean}
 	 */
 	stringStartsWith (pString, pSearchString, pStartIndex)
 	{
