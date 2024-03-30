@@ -254,7 +254,7 @@ class DataFormat extends libFableServiceProviderBase
 	 * @param {*} pValue
 	 * @returns {string}
 	 */
-	formatterDollars (pValue)
+	formatterDollars (pValue, pPrecision, pRoundingMethod)
 	{
 		if (isNaN(pValue))
 		{
@@ -266,23 +266,9 @@ class DataFormat extends libFableServiceProviderBase
 			return this._Value_NaN_Currency;
 		}
 
-		let tmpDollarAmountArbitrary = this.fable.Utility.bigNumber(pValue);
-		let tmpDollarAmount = tmpDollarAmountArbitrary.toFixed(2);
-
-		if (isNaN(tmpDollarAmount))
-		{
-			// Try again and see if what was passed in was a dollars string.
-			if (typeof(pValue) == 'string')
-			{
-				// TODO: Better rounding function?  This is a hack to get rid of the currency symbol and commas.
-				tmpDollarAmount = parseFloat(pValue.replace(this._Value_MoneySign_Currency,'').replace(this._Regex_formatterDollarsRemoveCommas,'')).toFixed(2);
-			}
-			// If we didn't get a number, return the "not a number" string.
-			if (isNaN(tmpDollarAmount))
-			{
-				return this._Value_NaN_Currency;
-			}
-		}
+		let tmpDollarAmountArbitrary = this.fable.Math.parsePrecise(pValue);
+		let tmpPrecision = (typeof(pPrecision) == 'undefined') ? 2 : pPrecision;
+		let tmpDollarAmount = this.fable.Math.toFixedPrecise(tmpDollarAmountArbitrary, tmpPrecision, pRoundingMethod);
 
 		// TODO: Get locale data and use that for this stuff.
 		return `$${this.formatterAddCommasToNumber(tmpDollarAmount)}`;

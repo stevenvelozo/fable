@@ -3,7 +3,7 @@ const libFableServiceBase = require('fable-serviceproviderbase');
 /**
 * Arbitrary Precision Math Operations
 * @author      Steven Velozo <steven@velozo.com>
-* @description Simple functions that perform arbitrary precision math operations and return string resultant values.
+* @description Simple functions that perform arbitrary precision math operations and return string resultant values.  Wraps big.js
 */
 
 class FableServiceMath extends libFableServiceBase
@@ -15,20 +15,76 @@ class FableServiceMath extends libFableServiceBase
         this.serviceType = 'Math';
 	}
 
-	parsePrecise(pValue)
+
+/*
+	Rounding Methods:
+
+	Property	   Value   BigDecimal Equiv   Description
+	----------     -----   ----------------   -----------
+	roundDown      0       ROUND_DOWN         Rounds towards zero. (_I.e. truncate, no rounding._)
+	roundHalfUp    1       ROUND_HALF_UP      Rounds towards nearest neighbour. (_If equidistant, rounds away from zero._)
+	roundHalfEven  2       ROUND_HALF_EVEN    Rounds towards nearest neighbour. (_If equidistant, rounds towards even neighbour._)
+	roundUp        3       ROUND_UP           Rounds positively away from zero. (_Always round up._)
+*/
+	get roundDown() { return this.fable.Utility.bigNumber.roundDown; }
+	get roundHalfUp() { return this.fable.Utility.bigNumber.roundHalfUp; }
+	get roundHalfEven() { return this.fable.Utility.bigNumber.roundHalfEven; }
+	get roundUp() { return this.fable.Utility.bigNumber.roundUp; }
+
+	parsePrecise(pValue, pNonNumberValue)
 	{
-		let tmpNumber = "0.0";
+		let tmpNumber;
 
 		try
 		{
-		    tmpNumber = new this.fable.Utility.bigNumber(pValue);
+			tmpNumber = new this.fable.Utility.bigNumber(pValue);
 		}
 		catch(pError)
 		{
-		    console.log(`Error parsing number (type ${typeof(pValue)}): ${pError}`);
+			this.log.warn(`Error parsing number (type ${typeof(pValue)}): ${pError}`);
+			tmpNumber = (typeof(pNonNumberValue) === 'undefined') ? "0.0" : pNonNumberValue;
 		}
 
 		return tmpNumber.toString();
+	}
+
+	percentagePrecise(pIs, pOf)
+	{
+		let tmpLeftValue = isNaN(pIs) ? 0 : pIs;
+		let tmpRightValue = isNaN(pOf) ? 0 : pOf;
+
+		if (tmpRightValue == 0)
+		{
+			return '0';
+		}
+
+		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+		let tmpResult = tmpLeftArbitraryValue.div(tmpRightValue);
+		tmpResult = tmpResult.times(100);
+		return tmpResult.toString();
+	}
+
+	roundPrecise(pValue, pDecimals, pRoundingMethod)
+	{
+		let tmpValue = isNaN(pValue) ? 0 : pValue;
+		let tmpDecimals = isNaN(pDecimals) ? 0 : pDecimals;
+		let tmpRoundingMethod = (typeof(pRoundingMethod) === 'undefined') ? this.roundHalfUp : pRoundingMethod;
+
+		let tmpArbitraryValue = new this.fable.Utility.bigNumber(tmpValue);
+		let tmpResult = tmpArbitraryValue.round(tmpDecimals, tmpRoundingMethod);
+		return tmpResult.toString();
+	}
+
+	toFixedPrecise(pValue, pDecimals, pRoundingMethod)
+	{
+		let tmpValue = isNaN(pValue) ? 0 : pValue;
+		let tmpDecimals = isNaN(pDecimals) ? 0 : pDecimals;
+		let tmpRoundingMethod = (typeof(pRoundingMethod) === 'undefined') ? this.roundHalfUp : pRoundingMethod;
+
+		let tmpArbitraryValue = new this.fable.Utility.bigNumber(tmpValue);
+		let tmpResult = tmpArbitraryValue.toFixed(tmpDecimals, tmpRoundingMethod);
+	
+		return tmpResult.toString();
 	}
 
 	addPrecise(pLeftValue, pRightValue)
@@ -68,22 +124,6 @@ class FableServiceMath extends libFableServiceBase
 
 		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
 		let tmpResult = tmpLeftArbitraryValue.div(tmpRightValue);
-		return tmpResult.toString();
-	}
-
-	percentagePrecise(pIs, pOf)
-	{
-		let tmpLeftValue = isNaN(pIs) ? 0 : pIs;
-		let tmpRightValue = isNaN(pOf) ? 0 : pOf;
-
-		if (tmpRightValue == 0)
-		{
-			return '0';
-		}
-
-		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
-		let tmpResult = tmpLeftArbitraryValue.div(tmpRightValue);
-		tmpResult = tmpResult.times(100);
 		return tmpResult.toString();
 	}
 }
