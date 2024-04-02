@@ -43,6 +43,22 @@ suite
 						Expect(testFable.Math.percentagePrecise(0, 0)).to.equal('0');
 						Expect(testFable.Math.percentagePrecise(500, 100)).to.equal('500');
 						Expect(testFable.Math.percentagePrecise(100, 500)).to.equal('20');
+
+						Expect(testFable.Math.powerPrecise(4,4)).to.equal('256');
+						Expect(testFable.Math.powerPrecise(5,2)).to.equal('25');
+						Expect(testFable.Math.powerPrecise(50,7)).to.equal('781250000000');
+						Expect(testFable.Math.sqrtPrecise(4)).to.equal('2');
+
+						Expect(testFable.Math.gtPrecise(4, 5)).to.equal(false);
+						Expect(testFable.Math.gtePrecise(1000, 5)).to.equal(true);
+						Expect(testFable.Math.ltePrecise(1000, 5)).to.equal(false);
+						Expect(testFable.Math.ltPrecise(4, 5)).to.equal(true);
+
+						Expect(testFable.Math.comparePrecise(4, 5)).to.equal(-1);
+						
+						Expect(testFable.Math.modPrecise(4.939323, 4)).to.equal('0.939323');
+
+						Expect(testFable.Math.absPrecise('-492')).to.equal('492');
 						
 						return fDone();
 					}

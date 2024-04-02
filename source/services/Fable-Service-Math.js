@@ -107,6 +107,16 @@ class FableServiceMath extends libFableServiceBase
 		return tmpResult.toString();
 	}
 
+	powerPrecise(pLeftValue, pRightValue)
+	{
+		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;
+		let tmpRightValue = isNaN(pRightValue) ? 0 : pRightValue;
+
+		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+		let tmpResult = tmpLeftArbitraryValue.pow(tmpRightValue);
+		return tmpResult.toString();
+	}
+
 	multiplyPrecise(pLeftValue, pRightValue)
 	{
 		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;
@@ -125,6 +135,79 @@ class FableServiceMath extends libFableServiceBase
 		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
 		let tmpResult = tmpLeftArbitraryValue.div(tmpRightValue);
 		return tmpResult.toString();
+	}
+
+	modPrecise(pLeftValue, pRightValue)
+	{
+		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;
+		let tmpRightValue = isNaN(pRightValue) ? 0 : pRightValue;
+
+		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+		let tmpResult = tmpLeftArbitraryValue.mod(tmpRightValue);
+		return tmpResult.toString();
+	}
+
+	sqrtPrecise(pValue)
+	{
+		let tmpValue = isNaN(pValue) ? 0 : pValue;
+
+		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpValue);
+		let tmpResult = tmpLeftArbitraryValue.sqrt();
+		return tmpResult.toString();
+	}
+
+	absPrecise(pValue)
+	{
+		let tmpValue = isNaN(pValue) ? 0 : pValue;
+
+		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpValue);
+		let tmpResult = tmpLeftArbitraryValue.abs();
+		return tmpResult.toString();
+	}
+
+	comparePrecise(pLeftValue, pRightValue)
+	{
+		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;
+		let tmpRightValue = isNaN(pRightValue) ? 0 : pRightValue;
+
+		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+		return tmpLeftArbitraryValue.cmp(tmpRightValue);
+	}
+
+	gtPrecise(pLeftValue, pRightValue)
+	{
+		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;
+		let tmpRightValue = isNaN(pRightValue) ? 0 : pRightValue;
+
+		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+		return tmpLeftArbitraryValue.gt(tmpRightValue);
+	}
+
+	gtePrecise(pLeftValue, pRightValue)
+	{
+		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;
+		let tmpRightValue = isNaN(pRightValue) ? 0 : pRightValue;
+
+		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+		return tmpLeftArbitraryValue.gte(tmpRightValue);
+	}
+
+	ltPrecise(pLeftValue, pRightValue)
+	{
+		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;
+		let tmpRightValue = isNaN(pRightValue) ? 0 : pRightValue;
+
+		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+		return tmpLeftArbitraryValue.lt(tmpRightValue);
+	}
+
+	ltePrecise(pLeftValue, pRightValue)
+	{
+		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;
+		let tmpRightValue = isNaN(pRightValue) ? 0 : pRightValue;
+
+		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+		return tmpLeftArbitraryValue.lt(tmpRightValue);
 	}
 }
 
