@@ -34,6 +34,7 @@ class FableOperation extends libFableServiceBase
 
 	execute(fExecutionCompleteCallback)
 	{
+		// TODO: Should the same operation be allowed to execute more than one time?
 		if (this.state.Status.TimeStart)
 		{
 			return fExecutionCompleteCallback(new Error(`Operation [${this.state.Metadata.UUID}] ${this.state.Metadata.Name} has already been executed!`));
@@ -61,13 +62,17 @@ class FableOperation extends libFableServiceBase
 	TODO: I've gone back and forth on whether this should be an object, JSON 
 	object prototype, or set of functions here.  Discuss with colleagues!
 */
-	addStep(pGUIDStep, fStepFunction, pStepName, pStepDescription, pStepMetadata)
+	addStep(fStepFunction, pStepName, pStepDescription, pStepMetadata, pGUIDStep)
 	{
 		let tmpStep = {};
+
+		// GUID is optional
 		tmpStep.GUIDStep = (typeof(pGUIDStep) !== 'undefined') ? pGUIDStep : `STEP-${this.state.Steps.length}-${this.fable.DataGeneration.randomNumericString()}`;
+
+		// Name is optional
 		tmpStep.Name = (typeof(pStepName) !== 'undefined') ? pStepName : `Step [${tmpStep.GUIDStep}]`;
 		tmpStep.Description = (typeof(pStepDescription) !== 'undefined') ? pStepDescription : `Step execution of ${tmpStep.Name}.`;
-		// TODO: Right now this allows an Array... do we want to block that?
+
 		tmpStep.Metadata = (typeof(pStepMetadata) === 'object') ? pStepMetadata : {};
 
 		tmpStep.TimeStart = false;
@@ -76,13 +81,20 @@ class FableOperation extends libFableServiceBase
 		// There is an array of steps, in the Operation State itself ... push a step there
 		this.state.Steps.push(tmpStep);
 
-		this.stepMap[tmpStep.GUIDStep]
-		this.stepFunctions[tmpStep.GUIDStep] = fStepFunction;
+		this.stepFunctions[tmpStep.GUIDStep] = fStepFunction;;
+
+		this.stepMap[tmpStep.GUIDStep];
 
 		this.state.Status.StepCount++;
+
 		return tmpStep;
 	}
 
+	/**
+	 * Retrieves a step from the step map based on the provided GUID.
+	 * @param {string} pGUIDStep - The GUID of the step to retrieve.
+	 * @returns {object|boolean} - The step object if found, otherwise false.
+	 */
 	getStep(pGUIDStep)
 	{
 		if (this.stepMap.hasOwnProperty(pGUIDStep))
@@ -93,7 +105,12 @@ class FableOperation extends libFableServiceBase
 		return false;
 	}
 
-	startStep(pGUIDStep)
+	/**
+	 * Begins a step in the Fable service operation.
+	 * @param {string} pGUIDStep - The GUID of the step to begin.
+	 * @returns {object|boolean} - The step object if found, or `false` if not found.
+	 */
+	beginStep(pGUIDStep)
 	{
 		let tmpStep = this.getStep(pGUIDStep);
 
@@ -107,7 +124,7 @@ class FableOperation extends libFableServiceBase
 		return tmpStep;
 	}
 
-	stopStep(pGUIDStep)
+	endStep(pGUIDStep)
 	{
 		let tmpStep = this.getStep(pGUIDStep);
 
@@ -178,189 +195,6 @@ class FableOperation extends libFableServiceBase
 		this.writeOperationErrors(pLogText, pLogObject);
 		this.fable.log.fatal(pLogText, pLogObject);
 	}
-
-
-	/************************************************************************
-	 * BEGINNING OF -->  Telemetry Helpers
-	 */
-	createTimeStamp(pTimeStampHash)
-	{
-		let tmpTimeStampHash = (typeof(pTimeStampHash) == 'string') ? pTimeStampHash : 'Default';
-		this.timeStamps[tmpTimeStampHash] = +new Date();
-		return this.timeStamps[tmpTimeStampHash];
-	}
-
-	getTimeDelta(pTimeStampHash)
-	{
-		let tmpTimeStampHash = (typeof(pTimeStampHash) == 'string') ? pTimeStampHash : 'Default';
-		if (this.timeStamps.hasOwnProperty(tmpTimeStampHash))
-		{
-			let tmpEndTime = +new Date();
-			return tmpEndTime-this.timeStamps[tmpTimeStampHash];
-		}
-		else
-		{
-			return -1;
-		}
-	}
-
-	logTimeDelta(pTimeStampHash, pMessage)
-	{
-		let tmpTimeStampHash = (typeof(pTimeStampHash) == 'string') ? pTimeStampHash : 'Default';
-		let tmpMessage = (typeof(pMessage) !== 'undefined') ? pMessage : `Elapsed for ${tmpTimeStampHash}: `;
-		let tmpOperationTime = this.getTimeDelta(pTimeStampHash);
-		this.info(tmpMessage +' ('+tmpOperationTime+'ms)');
-		return tmpOperationTime;
-	}
-
-	createProgressTracker(pTotalOperations, pProgressTrackerHash)
-	{
-		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'DefaultProgressTracker';
-		let tmpTotalOperations = (typeof(pTotalOperations) == 'number') ? pTotalOperations : 100;
-
-		let tmpProgressTracker = (
-			{
-				Hash: tmpProgressTrackerHash,
-				StartTime: this.createTimeStamp(tmpProgressTrackerHash),
-				EndTime: 0,
-				CurrentTime: 0,
-				PercentComplete: -1,
-				AverageOperationTime: -1,
-				EstimatedCompletionTime: -1,
-				TotalCount: tmpTotalOperations,
-				CurrentCount:-1
-			});
-
-		this.progressTrackers[tmpProgressTrackerHash] = tmpProgressTracker;
-
-		return tmpProgressTracker;
-	}
-
-	solveProgressTrackerStatus(pProgressTrackerHash)
-	{
-		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'DefaultProgressTracker';
-
-		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
-		{
-			this.createProgressTracker(100, tmpProgressTrackerHash);
-		}
-
-		let tmpProgressTracker = this.progressTrackers[tmpProgressTrackerHash];
-
-		tmpProgressTracker.CurrentTime = this.getTimeDelta(tmpProgressTracker.Hash);
-
-		if ((tmpProgressTracker.CurrentCount > 0) && (tmpProgressTracker.TotalCount > 0))
-		{
-			tmpProgressTracker.PercentComplete = (tmpProgressTracker.CurrentCount / tmpProgressTracker.TotalCount) * 100.0;
-		}
-
-		if ((tmpProgressTracker.CurrentCount > 0) && (tmpProgressTracker.CurrentTime > 0))
-		{
-			tmpProgressTracker.AverageOperationTime = tmpProgressTracker.CurrentTime / tmpProgressTracker.CurrentCount;
-		}
-
-		if ((tmpProgressTracker.CurrentCount < tmpProgressTracker.TotalCount) && (tmpProgressTracker.AverageOperationTime > 0))
-		{
-			tmpProgressTracker.EstimatedCompletionTime = (tmpProgressTracker.TotalCount - tmpProgressTracker.CurrentCount) * tmpProgressTracker.AverageOperationTime;
-		}
-	}
-
-	updateProgressTrackerStatus(pProgressTrackerHash, pCurrentOperations)
-	{
-		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'DefaultProgressTracker';
-		let tmpCurrentOperations = parseInt(pCurrentOperations);
-
-		if (isNaN(tmpCurrentOperations))
-		{
-			return false;
-		}
-
-		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
-		{
-			this.createProgressTracker(100, tmpProgressTrackerHash);
-		}
-
-		this.progressTrackers[tmpProgressTrackerHash].CurrentCount = tmpCurrentOperations;
-		this.progressTrackers[tmpProgressTrackerHash].CurrentTime = this.getTimeDelta(tmpProgressTrackerHash);
-
-		this.solveProgressTrackerStatus(tmpProgressTrackerHash);
-
-		return this.progressTrackers[tmpProgressTrackerHash];
-	}
-
-	incrementProgressTrackerStatus(pProgressTrackerHash, pIncrementSize)
-	{
-		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'DefaultProgressTracker';
-		let tmpIncrementSize = parseInt(pIncrementSize);
-
-		if (isNaN(tmpIncrementSize))
-		{
-			return false;
-		}
-
-		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
-		{
-			this.createProgressTracker(100, tmpProgressTrackerHash);
-		}
-
-		this.progressTrackers[tmpProgressTrackerHash].CurrentCount = this.progressTrackers[tmpProgressTrackerHash].CurrentCount + tmpIncrementSize;
-		this.progressTrackers[tmpProgressTrackerHash].CurrentTime = this.getTimeDelta(tmpProgressTrackerHash);
-
-		this.solveProgressTrackerStatus(tmpProgressTrackerHash);
-
-		return this.progressTrackers[tmpProgressTrackerHash];
-	}
-
-	setProgressTrackerEndTime(pProgressTrackerHash, pCurrentOperations)
-	{
-		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'DefaultProgressTracker';
-		let tmpCurrentOperations = parseInt(pCurrentOperations);
-
-		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
-		{
-			return false;
-		}
-		if (!isNaN(tmpCurrentOperations))
-		{
-			this.updateProgressTrackerStatus(tmpProgressTrackerHash, tmpCurrentOperations);
-		}
-
-		this.progressTrackers[tmpProgressTrackerHash].EndTime = this.getTimeDelta(tmpProgressTrackerHash);
-
-		this.solveProgressTrackerStatus(tmpProgressTrackerHash);
-
-		return this.progressTrackers[tmpProgressTrackerHash];
-	}
-
-	printProgressTrackerStatus(pProgressTrackerHash)
-	{
-		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'DefaultProgressTracker';
-
-		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
-		{
-			this.info(`>> Progress Tracker ${tmpProgressTrackerHash} does not exist!  No stats to display.`);
-		}
-		else
-		{
-			const tmpProgressTracker = this.progressTrackers[tmpProgressTrackerHash];
-
-			if (tmpProgressTracker.CurrentCount < 1)
-			{
-				this.info(`>> Progress Tracker ${tmpProgressTracker.Hash} has no completed operations.  ${tmpProgressTracker.CurrentTime}ms have elapsed since it was started.`);
-			}
-			else if (tmpProgressTracker.EndTime < 1)
-			{
-				this.info(`>> Progress Tracker ${tmpProgressTracker.Hash} is ${tmpProgressTracker.PercentComplete.toFixed(3)}% completed - ${tmpProgressTracker.CurrentCount} / ${tmpProgressTracker.TotalCount} operations over ${tmpProgressTracker.CurrentTime}ms (median ${tmpProgressTracker.AverageOperationTime.toFixed(3)} per).  Estimated completion in ${tmpProgressTracker.EstimatedCompletionTime.toFixed(0)}ms or ${(tmpProgressTracker.EstimatedCompletionTime / 1000 / 60).toFixed(2)}minutes`)
-			}
-			else
-			{
-				this.info(`>> Progress Tracker ${tmpProgressTracker.Hash} is done and completed ${tmpProgressTracker.CurrentCount} / ${tmpProgressTracker.TotalCount} operations in ${tmpProgressTracker.EndTime}ms.`)
-			}
-		}
-	}
-	/*
-	 * END OF       -->  Logging and Telemetry Helpers
-	 ************************************************************************/
 }
 
 module.exports = FableOperation;

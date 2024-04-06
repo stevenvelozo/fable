@@ -1,11 +1,12 @@
 const libFableServiceBase = require('fable-serviceproviderbase');
 
 /**
-* Arbitrary Precision Math Operations
-* @author      Steven Velozo <steven@velozo.com>
-* @description Simple functions that perform arbitrary precision math operations and return string resultant values.  Wraps big.js
-*/
-
+ * Arbitrary Precision Math Operations
+ * @author      Steven Velozo <steven@velozo.com>
+ * @description Simple functions that perform arbitrary precision math operations and return string resultant values.  Wraps big.js
+ * @class FableServiceMath
+ * @extends libFableServiceBase
+ */
 class FableServiceMath extends libFableServiceBase
 {
 	constructor(pFable, pOptions, pServiceHash)
@@ -15,9 +16,8 @@ class FableServiceMath extends libFableServiceBase
         this.serviceType = 'Math';
 	}
 
-
 /*
-	Rounding Methods:
+	Pass-through Rounding Method Constants
 
 	Property	   Value   BigDecimal Equiv   Description
 	----------     -----   ----------------   -----------
