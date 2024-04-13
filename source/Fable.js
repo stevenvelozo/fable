@@ -77,6 +77,7 @@ class Fable extends libFableServiceBase.CoreServiceProviderBase
 		this.addServiceType('ObjectCache', require('cachetrax'));
 		this.addServiceType('Operation', require('./services/Fable-Service-Operation.js'));
 		this.addServiceType('ProgressTracker', require('./services/Fable-Service-ProgressTracker.js'));
+		this.addAndInstantiateServiceType('ProgressTime', require('./services/Fable-Service-ProgressTime.js'));
 		this.addServiceType('CSVParser', require('./services/Fable-Service-CSVParser.js'));
 		this.addServiceType('FilePersistence', require('./services/Fable-Service-FilePersistence.js'));
 	}

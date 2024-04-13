@@ -23,7 +23,7 @@ suite
 			{
 				test
 				(
-					'Leverage the object cache',
+					'Basic progress tracker management',
 					function(fDone)
 					{
 						let testFable = new libFable();

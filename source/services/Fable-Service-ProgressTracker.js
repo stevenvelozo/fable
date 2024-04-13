@@ -7,36 +7,8 @@ class FableServiceProgressTracker extends libFableServiceBase
 		super(pFable, pOptions, pServiceHash);
 
 		this.serviceType = 'ProgressTracker';
-	}
 
-	createTimeStamp(pTimeStampHash)
-	{
-		let tmpTimeStampHash = (typeof(pTimeStampHash) == 'string') ? pTimeStampHash : 'Default';
-		this.timeStamps[tmpTimeStampHash] = +new Date();
-		return this.timeStamps[tmpTimeStampHash];
-	}
-
-	getTimeDelta(pTimeStampHash)
-	{
-		let tmpTimeStampHash = (typeof(pTimeStampHash) == 'string') ? pTimeStampHash : 'Default';
-		if (this.timeStamps.hasOwnProperty(tmpTimeStampHash))
-		{
-			let tmpEndTime = +new Date();
-			return tmpEndTime-this.timeStamps[tmpTimeStampHash];
-		}
-		else
-		{
-			return -1;
-		}
-	}
-
-	logTimeDelta(pTimeStampHash, pMessage)
-	{
-		let tmpTimeStampHash = (typeof(pTimeStampHash) == 'string') ? pTimeStampHash : 'Default';
-		let tmpMessage = (typeof(pMessage) !== 'undefined') ? pMessage : `Elapsed for ${tmpTimeStampHash}: `;
-		let tmpOperationTime = this.getTimeDelta(pTimeStampHash);
-		this.info(tmpMessage +' ('+tmpOperationTime+'ms)');
-		return tmpOperationTime;
+		this.progressTrackers = {};
 	}
 
 	createProgressTracker(pTotalOperations, pProgressTrackerHash)
@@ -164,7 +136,7 @@ class FableServiceProgressTracker extends libFableServiceBase
 
 		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
 		{
-			this.info(`>> Progress Tracker ${tmpProgressTrackerHash} does not exist!  No stats to display.`);
+			this.fable.log.info(`>> Progress Tracker ${tmpProgressTrackerHash} does not exist!  No stats to display.`);
 		}
 		else
 		{
@@ -172,15 +144,15 @@ class FableServiceProgressTracker extends libFableServiceBase
 
 			if (tmpProgressTracker.CurrentCount < 1)
 			{
-				this.info(`>> Progress Tracker ${tmpProgressTracker.Hash} has no completed operations.  ${tmpProgressTracker.CurrentTime}ms have elapsed since it was started.`);
+				this.fable.log.info(`>> Progress Tracker ${tmpProgressTracker.Hash} has no completed operations.  ${tmpProgressTracker.CurrentTime}ms have elapsed since it was started.`);
 			}
 			else if (tmpProgressTracker.EndTime < 1)
 			{
-				this.info(`>> Progress Tracker ${tmpProgressTracker.Hash} is ${tmpProgressTracker.PercentComplete.toFixed(3)}% completed - ${tmpProgressTracker.CurrentCount} / ${tmpProgressTracker.TotalCount} operations over ${tmpProgressTracker.CurrentTime}ms (median ${tmpProgressTracker.AverageOperationTime.toFixed(3)} per).  Estimated completion in ${tmpProgressTracker.EstimatedCompletionTime.toFixed(0)}ms or ${(tmpProgressTracker.EstimatedCompletionTime / 1000 / 60).toFixed(2)}minutes`)
+				this.fable.log.info(`>> Progress Tracker ${tmpProgressTracker.Hash} is ${tmpProgressTracker.PercentComplete.toFixed(3)}% completed - ${tmpProgressTracker.CurrentCount} / ${tmpProgressTracker.TotalCount} operations over ${tmpProgressTracker.CurrentTime}ms (median ${tmpProgressTracker.AverageOperationTime.toFixed(3)} per).  Estimated completion in ${tmpProgressTracker.EstimatedCompletionTime.toFixed(0)}ms or ${(tmpProgressTracker.EstimatedCompletionTime / 1000 / 60).toFixed(2)}minutes`)
 			}
 			else
 			{
-				this.info(`>> Progress Tracker ${tmpProgressTracker.Hash} is done and completed ${tmpProgressTracker.CurrentCount} / ${tmpProgressTracker.TotalCount} operations in ${tmpProgressTracker.EndTime}ms.`)
+				this.fable.log.info(`>> Progress Tracker ${tmpProgressTracker.Hash} is done and completed ${tmpProgressTracker.CurrentCount} / ${tmpProgressTracker.TotalCount} operations in ${tmpProgressTracker.EndTime}ms.`)
 			}
 		}
 	}
