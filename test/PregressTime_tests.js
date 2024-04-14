@@ -46,6 +46,24 @@ suite
 				);
 				test
 				(
+					'Basic progress time operations (with and without hashes)',
+					function(fDone)
+					{
+						let testFable = new libFable();
+						Expect(testFable.ProgressTime.getTimeStampDelta()).to.equal(-1);
+						testFable.ProgressTime.createTimeStamp();
+						Expect(testFable.ProgressTime.timeStamps.Default).to.be.greaterThan(0);
+						testFable.ProgressTime.createTimeStamp('TestHash');
+						Expect(testFable.ProgressTime.getTimeStampValue('TestHash')).to.be.greaterThan(0);
+						Expect(testFable.ProgressTime.timeStamps.TestHash).to.be.greaterThan(0);
+						testFable.ProgressTime.removeTimeStamp('TestHash');
+						Expect(testFable.ProgressTime.timeStamps.TestHash).to.be.undefined;
+						Expect(testFable.ProgressTime.getTimeStampValue('TestHash')).to.be.lessThan(0);
+						return fDone();
+					}
+				);
+				test
+				(
 					'Basic progress time logging operations (without hashes)',
 					function(fDone)
 					{

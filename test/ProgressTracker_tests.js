@@ -31,7 +31,7 @@ suite
 						let tmpProgressTracker = testFable.instantiateServiceProvider('ProgressTracker');
 
 						Expect(tmpProgressTracker).to.be.an('object');
-						Expect(tmpProgressTracker).to.have.property('incrementProgressTrackerStatus');
+						Expect(tmpProgressTracker).to.have.property('incrementProgressTracker');
 
 						return fDone();
 					}

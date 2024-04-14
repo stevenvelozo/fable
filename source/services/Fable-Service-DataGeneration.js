@@ -31,7 +31,7 @@ class FableServiceDataGeneration extends libFableServiceBase
 	randomNumericString(pLength, pMaxNumber)
 	{
 		let tmpLength = (typeof(pLength) === 'undefined') ? 10 : pLength;
-		let tmpMaxNumber = (typeof(pMaxNumber) === 'undefined') ? ((10 ** tmpLength) - 1) : pMaxNumber;
+		let tmpMaxNumber = (typeof(pMaxNumber) === 'undefined') ? 9999999999 : pMaxNumber;
 
 		return this.services.DataFormat.stringPadStart(this.randomIntegerUpTo(tmpMaxNumber), pLength, '0');
 	}

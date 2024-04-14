@@ -31,7 +31,7 @@ class FableServiceProgressTime extends libFableServiceBase
 			tmpTimeDurationString += Math.floor(tmpTimeDuration/1000)+'s ';
 			tmpTimeDuration = tmpTimeDuration % 1000;
 		}
-		tmpTimeDurationString += tmpTimeDuration+'ms';
+		tmpTimeDurationString += Math.round(tmpTimeDuration)+'ms';
 
 		return tmpTimeDurationString;
 	}
@@ -41,6 +41,56 @@ class FableServiceProgressTime extends libFableServiceBase
 		let tmpTimeStampHash = (typeof(pTimeStampHash) == 'string') ? pTimeStampHash : 'Default';
 		this.timeStamps[tmpTimeStampHash] = +new Date();
 		return this.timeStamps[tmpTimeStampHash];
+	}
+
+	getTimeStampValue(pTimeStampHash)
+	{
+		let tmpTimeStampHash = (typeof(pTimeStampHash) == 'string') ? pTimeStampHash : 'Default';
+		return this.timeStamps.hasOwnProperty(tmpTimeStampHash) ? this.timeStamps[tmpTimeStampHash] : -1;
+	}
+
+	updateTimeStampValue(pTimeStampHash, pReferenceTime)
+	{
+		let tmpTimeStampHash = (typeof(pTimeStampHash) == 'string') ? pTimeStampHash : 'Default';
+		let tmpReferenceTime = false;
+		
+		// This function allows the user to pass in either a reference time in ms, or, a hash of a timestamp.
+		if (typeof(pReferenceTime) == 'string')
+		{
+			tmpReferenceTime = this.timeStamps.hasOwnProperty(tmpReference) ? this.timeStamps[tmpReference] : false;
+		}
+		else if (typeof(pReferenceTime) == 'number')
+		{
+			tmpReferenceTime = pReferenceTime;
+		}
+		else
+		{
+			tmpReferenceTime = +new Date();
+		}
+
+		if (this.timeStamps.hasOwnProperty(tmpTimeStampHash) && tmpReferenceTime)
+		{
+			this.timeStamps[tmpTimeStampHash] = tmpReferenceTime;
+			return this.timeStamps[tmpTimeStampHash];
+		}
+		else
+		{
+			return -1;
+		}
+	}
+
+	removeTimeStamp(pTimeStampHash)
+	{
+		let tmpTimeStampHash = (typeof(pTimeStampHash) == 'string') ? pTimeStampHash : 'Default';
+		if (this.timeStamps.hasOwnProperty(tmpTimeStampHash))
+		{
+			delete this.timeStamps[tmpTimeStampHash];
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	getTimeStampDelta(pTimeStampHash, pReferenceTime)
