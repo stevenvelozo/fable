@@ -86,26 +86,76 @@ suite
 					function(fDone)
 					{
 						let testFable = new libFable();
-						let tmpOperation = testFable.instantiateServiceProvider('Operation', {Name:'The last operation in town.'});
+						let tmpOperation = testFable.instantiateServiceProvider('Operation', {Name:'MTO - The Mega Test Operation'});
 						Expect(tmpOperation).to.be.an('object');
 						Expect(testFable.servicesMap.Operation.hasOwnProperty(tmpOperation.Hash)).to.equal(true);
 						Expect(tmpOperation.state.Log.length).to.equal(0);
-						let tmpText = `Operation ${tmpOperation.Hash} starting up...`;
+
+						let tmpText = `Created operation ${tmpOperation.Hash}; ready to add a step and start execution...`;
 						tmpOperation.log.info(tmpText);
 						Expect(tmpOperation.state.Log.length).to.equal(1);
 						Expect(tmpOperation.state.Log[0]).to.contain(tmpText);
 
-						tmpOperation.addStep('001-Login',
-							(fStepComplete) =>
-							{
-								setTimeout(
-									() =>
-									{
-										tmpOperation.log.trace('Login thingy complete!');
-										return fStepComplete();
-									}, 150);
-							}, 'Example step 1!');
+						let tmpOperationCount = 10;
 
+						tmpOperation.addStep(
+							function (fStepComplete)
+							{
+								this.logProgressTrackerStatus();
+
+								let tmpAnticipate = testFable.newAnticipate();
+
+								for (let i = 1; i <= tmpOperationCount; i++)
+								{
+									tmpAnticipate.anticipate((fWorkComplete)=>
+										{
+											let tmpDelay = Math.floor(Math.random() * 100) + 100;
+											this.log.info(`Doing some big work for ${tmpDelay}ms on iteration ${i}...`);
+											setTimeout(
+												() =>
+												{
+													this.log.info(`Work done for iteration ${i}.`);
+													this.incrementProgressTracker(1);
+													this.logProgressTrackerStatus();
+													return fWorkComplete();
+												}, tmpDelay);
+										});
+								}
+
+								tmpAnticipate.wait(fStepComplete);
+							}, {}, 'Example Step 1', 'This is the first step of the mega test.', 'STEP1');
+						tmpOperation.setStepTotalOperations('STEP1', tmpOperationCount);
+
+						tmpOperation.addStep(
+							function (fStepComplete)
+							{
+								let tmpShortOperationCount = 300;
+
+								this.setProgressTrackerTotalOperations(tmpShortOperationCount);
+								this.logProgressTrackerStatus();
+
+								let tmpAnticipate = testFable.newAnticipate();
+
+								for (let i = 1; i <= tmpShortOperationCount; i++)
+								{
+									tmpAnticipate.anticipate((fWorkComplete)=>
+										{
+											let tmpDelay = Math.floor(Math.random() * 3) + 3;
+											this.log.info(`Doing a little work for ${tmpDelay}ms on iteration ${i}...`);
+											setTimeout(
+												() =>
+												{
+													this.log.info(`Leetle work done for iteration ${i}.`);
+													this.incrementProgressTracker(1);
+													this.logProgressTrackerStatus();
+													return fWorkComplete();
+												}, tmpDelay);
+										});
+								}
+
+								tmpAnticipate.wait(fStepComplete);
+							}, {}, 'Example Step 2', 'This is the second step of the mega test.', 'STEP2');
+						
 						tmpOperation.execute(fDone);
 					}
 				);

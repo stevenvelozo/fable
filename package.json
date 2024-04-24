@@ -1,6 +1,6 @@
 {
     "name": "fable",
-    "version": "3.0.116",
+    "version": "3.0.117",
     "description": "Anentity behavior management and API bundling library.",
     "main": "source/Fable.js",
     "scripts": {

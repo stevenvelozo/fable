@@ -15,6 +15,11 @@ class FableServiceProgressTime extends libFableServiceBase
 	{
 		let tmpTimeDuration = typeof(pTimeDurationInMilliseconds) == 'number' ? pTimeDurationInMilliseconds : 0;
 
+		if (pTimeDurationInMilliseconds < 0)
+		{
+			return 'unknown';
+		}
+
 		let tmpTimeDurationString = '';
 		if (tmpTimeDuration > 3600000)
 		{

@@ -23,7 +23,7 @@ class FableServiceProgressTracker extends libFableServiceBase
 
 		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
 		{
-			this.fable.log.warn(`Progress Tracker ${tmpProgressTrackerHash} does not exist!  Creating a new tracker...`);
+			this.fable.log.warn(`ProgressTracker ${tmpProgressTrackerHash} does not exist!  Creating a new tracker...`);
 			this.createProgressTracker(tmpProgressTrackerHash, 100);
 		}
 
@@ -46,6 +46,8 @@ class FableServiceProgressTracker extends libFableServiceBase
 				EndTimeStamp: -1,
 
 				PercentComplete: -1,
+				// If this is set to true, PercentComplete will be calculated as CurrentCount / TotalCount even if it goes over 100%
+				AllowTruePercentComplete: false,
 
 				ElapsedTime: -1,
 				AverageOperationTime: -1,
@@ -58,7 +60,7 @@ class FableServiceProgressTracker extends libFableServiceBase
 
 		if (this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
 		{
-			this.fable.log.warn(`Progress Tracker ${tmpProgressTrackerHash} already exists!  Overwriting with a new tracker...`);
+			this.fable.log.warn(`ProgressTracker ${tmpProgressTrackerHash} already exists!  Overwriting with a new tracker...`);
 			this.progressTimes.removeTimeStamp(tmpProgressTracker.StartTimeHash);
 			this.progressTimes.removeTimeStamp(tmpProgressTracker.EndTimeHash);
 		}
@@ -68,11 +70,27 @@ class FableServiceProgressTracker extends libFableServiceBase
 		return tmpProgressTracker;
 	}
 
+	setProgressTrackerTotalOperations(pProgressTrackerHash, pTotalOperations)
+	{
+		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'Default';
+		let tmpTotalOperations = (typeof(pTotalOperations) == 'number') ? pTotalOperations : 100;
+
+		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
+		{
+			this.fable.log.warn(`Attempted to set the total operations of ProgressTracker ${tmpProgressTrackerHash} but it does not exist!  Creating a new tracker...`);
+			this.createProgressTracker(tmpProgressTrackerHash, tmpTotalOperations);
+		}
+
+		this.progressTrackers[tmpProgressTrackerHash].TotalCount = tmpTotalOperations;
+
+		return this.progressTrackers[tmpProgressTrackerHash];
+	}
+
 	startProgressTracker(pProgressTrackerHash)
 	{
 		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'Default';
 
-		// This is the only method to lazily create Progress Trackers now
+		// This is the only method to lazily create ProgressTrackers now
 		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
 		{
 			this.createProgressTracker(tmpProgressTrackerHash, 100);
@@ -82,6 +100,10 @@ class FableServiceProgressTracker extends libFableServiceBase
 
 		this.progressTimes.createTimeStamp(this.progressTrackers[tmpProgressTrackerHash].StartTimeHash);
 		tmpProgressTracker.StartTimeStamp = this.progressTimes.getTimeStampValue(this.progressTrackers[tmpProgressTrackerHash].StartTimeHash);
+		if (tmpProgressTracker.CurrentCount < 0)
+		{
+			tmpProgressTracker.CurrentCount = 0;
+		}
 
 		return this.solveProgressTrackerStatus(tmpProgressTrackerHash);
 	}
@@ -92,9 +114,11 @@ class FableServiceProgressTracker extends libFableServiceBase
 
 		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
 		{
-			this.fable.log.error(`Attempted to end Progress Tracker ${tmpProgressTrackerHash} that does not exist!`);
+			this.fable.log.error(`Attempted to end ProgressTracker ${tmpProgressTrackerHash} that does not exist!`);
 			return false;
 		}
+
+		let tmpProgressTracker = this.progressTrackers[tmpProgressTrackerHash];
 
 		this.progressTimes.createTimeStamp(this.progressTrackers[tmpProgressTrackerHash].EndTimeHash);
 		tmpProgressTracker.EndTimeStamp = this.progressTimes.getTimeStampValue(this.progressTrackers[tmpProgressTrackerHash].EndTimeHash);
@@ -108,7 +132,7 @@ class FableServiceProgressTracker extends libFableServiceBase
 
 		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
 		{
-			this.fable.log.error(`Attempted to solve Progress Tracker ${tmpProgressTrackerHash} that does not exist!`);
+			this.fable.log.error(`Attempted to solve ProgressTracker ${tmpProgressTrackerHash} that does not exist!`);
 			return false;
 		}
 
@@ -116,7 +140,7 @@ class FableServiceProgressTracker extends libFableServiceBase
 
 		if ((tmpProgressTracker.TotalCount < 1) || isNaN(tmpProgressTracker.TotalCount))
 		{
-			this.fable.log.error(`Progress Tracker ${tmpProgressTracker.Hash} has an invalid total count of operations (${tmpProgressTracker.TotalCount}!  Setting it to the default of 100...`);
+			this.fable.log.error(`ProgressTracker ${tmpProgressTracker.Hash} has an invalid total count of operations (${tmpProgressTracker.TotalCount}!  Setting it to the default of 100...`);
 			tmpProgressTracker.TotalCount = 100;
 		}
 
@@ -124,17 +148,26 @@ class FableServiceProgressTracker extends libFableServiceBase
 		if (tmpProgressTracker.CurrentCount < 1)
 		{
 			tmpProgressTracker.PercentComplete = 0;
-			return tmpProgressTracker;
 		}
 		else
 		{
 			tmpProgressTracker.PercentComplete = (tmpProgressTracker.CurrentCount / tmpProgressTracker.TotalCount) * 100.0;
 		}
 
+		if (!tmpProgressTracker.AllowTruePercentComplete && (tmpProgressTracker.PercentComplete > 100))
+		{
+			tmpProgressTracker.PercentComplete = 100;
+		}
+
 		// Compute the average time per operation
 		this.progressTimes.updateTimeStampValue('CurrentTime');
 		tmpProgressTracker.CurrentTimeStamp = this.progressTimes.getTimeStampValue('CurrentTime');
 		tmpProgressTracker.ElapsedTime = tmpProgressTracker.CurrentTimeStamp - tmpProgressTracker.StartTimeStamp;
+
+		if (tmpProgressTracker.EndTimeStamp > 0)
+		{
+			tmpProgressTracker.ElapsedTime = tmpProgressTracker.EndTimeStamp - tmpProgressTracker.StartTimeStamp;
+		}
 
 		if (tmpProgressTracker.CurrentCount > 0)
 		{
@@ -165,7 +198,7 @@ class FableServiceProgressTracker extends libFableServiceBase
 
 		if (isNaN(tmpCurrentOperations))
 		{
-			this.fable.log.warn(`Attempted to update Progress Tracker ${tmpProgressTrackerHash} with an invalid number of operations!`)
+			this.fable.log.warn(`Attempted to update ProgressTracker ${tmpProgressTrackerHash} with an invalid number of operations!`)
 			return false;
 		}
 
@@ -191,13 +224,13 @@ class FableServiceProgressTracker extends libFableServiceBase
 
 		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
 		{
-			this.fable.log.warn(`Attempted to increment Progress Tracker ${tmpProgressTrackerHash} but it did not exist.`);
+			this.fable.log.warn(`Attempted to increment ProgressTracker ${tmpProgressTrackerHash} but it did not exist.`);
 			return false;
 		}
 
 		if (this.progressTrackers[tmpProgressTrackerHash].StartTimeStamp < 1)
 		{
-			this.fable.log.warn(`Attempted to increment Progress Tracker ${tmpProgressTrackerHash} but it was not started.. starting now.`);
+			this.fable.log.warn(`Attempted to increment ProgressTracker ${tmpProgressTrackerHash} but it was not started.. starting now.`);
 			this.startProgressTracker(tmpProgressTrackerHash);
 		}
 
@@ -206,31 +239,112 @@ class FableServiceProgressTracker extends libFableServiceBase
 		return this.solveProgressTrackerStatus(tmpProgressTrackerHash);
 	}
 
-	logProgressTrackerStatus(pProgressTrackerHash)
+	getProgressTrackerCompletedOperationCountString(pProgressTrackerHash)
 	{
 		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'Default';
 
+		// This call here can mean if we add operations and then immediately get the string, this function runs twice.
+		const tmpProgressTracker = this.progressTrackers[tmpProgressTrackerHash];
+
+		// The states of a progress tracker:
+		if (tmpProgressTracker.CurrentCount < 0)
+		{
+			return `none`;
+		}
+		else if (tmpProgressTracker.CurrentCount < 1)
+		{
+			return `0`;
+		}
+		else
+		{
+			return `${tmpProgressTracker.CurrentCount}`;
+		}
+	}
+
+	getProgressTrackerPercentCompleteString(pProgressTrackerHash)
+	{
+		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'Default';
+
+		// This call here can mean if we add operations and then immediately get the string, this function runs twice.
+		// TODO: Is there a pattern to avoid this double call that's worth putting in?
+		this.solveProgressTrackerStatus(tmpProgressTrackerHash);
+
 		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
 		{
-			this.fable.log.info(`>> Progress Tracker ${tmpProgressTrackerHash} does not exist!  No stats to display.`);
+			return `ProgressTracker ${tmpProgressTrackerHash} does not exist!  No stats to display.`;
 		}
 		else
 		{
 			const tmpProgressTracker = this.progressTrackers[tmpProgressTrackerHash];
 
+			// The states of a progress tracker:
+			// 1. Not started
+			if (tmpProgressTracker.StartTimeStamp < 1)
+			{
+				return `0%`;
+			}
+			// 2. Started, but no operations completed
+
 			if (tmpProgressTracker.CurrentCount < 1)
 			{
-				this.fable.log.info(`>> Progress Tracker ${tmpProgressTracker.Hash} has no completed operations.  ${tmpProgressTracker.CurrentTime}ms have elapsed since it was started.`);
+				return `0%`;
 			}
+			// 3. Started, some operations completed
 			else if (tmpProgressTracker.EndTimeStamp < 1)
 			{
-				this.fable.log.info(`>> Progress Tracker ${tmpProgressTracker.Hash} is ${tmpProgressTracker.PercentComplete.toFixed(3)}% completed - ${tmpProgressTracker.CurrentCount} / ${tmpProgressTracker.TotalCount} operations over ${this.progressTimes.formatTimeDuration(tmpProgressTracker.ElapsedTime)} (median ${this.progressTimes.formatTimeDuration(tmpProgressTracker.AverageOperationTime)} per).  Estimated completion in ${this.progressTimes.formatTimeDuration(tmpProgressTracker.EstimatedCompletionTime)}`)
+				return `${tmpProgressTracker.PercentComplete.toFixed(3)}%`;
 			}
+			// 4. Done
 			else
 			{
-				this.fable.log.info(`>> Progress Tracker ${tmpProgressTracker.Hash} is done and completed ${tmpProgressTracker.CurrentCount} / ${tmpProgressTracker.TotalCount} operations in ${tmpProgressTracker.EndTime}ms.`)
+				return `${tmpProgressTracker.PercentComplete.toFixed(3)}%`;
 			}
 		}
+	}
+
+	getProgressTrackerStatusString(pProgressTrackerHash)
+	{
+		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'Default';
+
+		// This call here can mean if we add operations and then immediately get the string, this function runs twice.
+		// TODO: Is there a pattern to avoid this double call that's worth putting in?
+		this.solveProgressTrackerStatus(tmpProgressTrackerHash);
+
+		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
+		{
+			return `ProgressTracker ${tmpProgressTrackerHash} does not exist!  No stats to display.`;
+		}
+		else
+		{
+			const tmpProgressTracker = this.progressTrackers[tmpProgressTrackerHash];
+
+			// The states of a progress tracker:
+			// 1. Not started
+			if (tmpProgressTracker.StartTimeStamp < 1)
+			{
+				return `ProgressTracker ${tmpProgressTracker.Hash} has not been started yet.`;
+			}
+			// 2. Started, but no operations completed
+
+			if ((tmpProgressTracker.CurrentCount < 1) && (tmpProgressTracker.EndTimeStamp < 1))
+			{
+				return `ProgressTracker ${tmpProgressTracker.Hash} has no completed operations.  ${this.progressTimes.formatTimeDuration(tmpProgressTracker.ElapsedTime)} have elapsed since it was started.`;
+			}
+			// 3. Started, some operations completed
+			else if (tmpProgressTracker.EndTimeStamp < 1)
+			{
+				return `ProgressTracker ${tmpProgressTracker.Hash} is ${tmpProgressTracker.PercentComplete.toFixed(3)}% completed - ${tmpProgressTracker.CurrentCount} / ${tmpProgressTracker.TotalCount} operations over ${this.progressTimes.formatTimeDuration(tmpProgressTracker.ElapsedTime)} (median ${this.progressTimes.formatTimeDuration(tmpProgressTracker.AverageOperationTime)} per).  Estimated completion: ${this.progressTimes.formatTimeDuration(tmpProgressTracker.EstimatedCompletionTime)}`;			}
+			// 4. Done
+			else
+			{
+				return `ProgressTracker ${tmpProgressTracker.Hash} is done. It completed ${tmpProgressTracker.CurrentCount} / ${tmpProgressTracker.TotalCount} operations in ${this.progressTimes.formatTimeDuration(tmpProgressTracker.ElapsedTime)} (median ${this.progressTimes.formatTimeDuration(tmpProgressTracker.AverageOperationTime)} per).`;
+			}
+		}
+	}
+
+	logProgressTrackerStatus(pProgressTrackerHash)
+	{
+		this.fable.log.info(this.getProgressTrackerStatusString(pProgressTrackerHash));
 	}
 }
 

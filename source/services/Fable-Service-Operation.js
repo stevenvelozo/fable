@@ -1,3 +1,4 @@
+const { PE } = require('big.js');
 const libFableServiceBase = require('fable-serviceproviderbase');
 
 const _OperationStatePrototypeString = JSON.stringify(require('./Fable-Service-Operation-DefaultSettings.js'));
@@ -11,9 +12,6 @@ class FableOperation extends libFableServiceBase
 
 		// Timestamps will just be the long ints
 		this.timeStamps = {};
-
-		// ProgressTrackers have an object format of: {Hash:'SomeHash',EndTime:UINT,CurrentTime:UINT,TotalCount:INT,CurrentCount:INT}
-		this.progressTrackers = {};
 
         this.serviceType = 'PhasedOperation';
 
@@ -29,113 +27,134 @@ class FableOperation extends libFableServiceBase
 		this.state.Metadata.Name = (typeof(this.options.Name) == 'string') ? this.options.Name : `Unnamed Operation ${this.state.Metadata.UUID}`;
 		this.name = this.state.Metadata.Name;
 
+		this.progressTrackers = this.fable.instantiateServiceProviderWithoutRegistration('ProgressTracker');
+
+		this.state.OverallProgressTracker = this.progressTrackers.createProgressTracker(`Overall-${this.state.Metadata.UUID}`);
+
+		// This is here to use the pass-through logging functions in the operation itself.
 		this.log = this;
 	}
 
 	execute(fExecutionCompleteCallback)
 	{
 		// TODO: Should the same operation be allowed to execute more than one time?
-		if (this.state.Status.TimeStart)
+		if (this.state.OverallProgressTracker.StartTimeStamp > 0)
 		{
 			return fExecutionCompleteCallback(new Error(`Operation [${this.state.Metadata.UUID}] ${this.state.Metadata.Name} has already been executed!`));
 		}
 
-		this.state.Status.TimeStart = +new Date();
-
 		let tmpAnticipate = this.fable.instantiateServiceProviderWithoutRegistration('Anticipate');
+		
+		this.progressTrackers.setProgressTrackerTotalOperations(this.state.OverallProgressTracker.Hash, this.state.Status.StepCount);
+		this.progressTrackers.startProgressTracker(this.state.OverallProgressTracker.Hash);
+		this.info(`Operation [${this.state.Metadata.UUID}] ${this.state.Metadata.Name} starting...`);
 
-		for (let i = 0; i < this.state.Steps; i++)
+		for (let i = 0; i < this.state.Steps.length; i++)
 		{
-			tmpAnticipate.anticipate(this.stepFunctions[this.state.Steps[i].GUIDStep].bind(this));
+			tmpAnticipate.anticipate(
+				function(fNext)
+				{
+					this.fable.log.info(`Step #${i} [${this.state.Steps[i].GUIDStep}] ${this.state.Steps[i].Name} starting...`);
+					this.progressTrackers.startProgressTracker(this.state.Steps[i].ProgressTracker.Hash);
+					return fNext();
+				}.bind(this));
+			// Steps are executed in a custom context with 
+			tmpAnticipate.anticipate(this.stepFunctions[this.state.Steps[i].GUIDStep].bind(
+				{
+					log:this,
+					fable:this.fable,
+					ProgressTracker:this.progressTrackers.getProgressTracker(this.state.Steps[i].ProgressTracker.Hash),
+					updateProgressTracker: function(pProgressAmount)
+						{
+							return this.progressTrackers.updateProgressTracker(this.state.Steps[i].ProgressTracker.Hash, pProgressAmount);
+						}.bind(this),
+					incrementProgressTracker: function(pProgressIncrementAmount)
+						{
+							return this.progressTrackers.incrementProgressTracker(this.state.Steps[i].ProgressTracker.Hash, pProgressIncrementAmount);
+						}.bind(this),
+					setProgressTrackerTotalOperations: function(pTotalOperationCount)
+						{
+							return this.progressTrackers.setProgressTrackerTotalOperations(this.state.Steps[i].ProgressTracker.Hash, pTotalOperationCount);
+						}.bind(this),
+					getProgressTrackerStatusString: function() 
+						{
+							return this.progressTrackers.getProgressTrackerStatusString(this.state.Steps[i].ProgressTracker.Hash);
+						}.bind(this),
+					logProgressTrackerStatus: function() 
+						{
+							return this.log.info(`Step #${i} [${this.state.Steps[i].GUIDStep}]: ${this.progressTrackers.getProgressTrackerStatusString(this.state.Steps[i].ProgressTracker.Hash)}`);
+						}.bind(this),
+					OperationState:this.state,
+					StepState:this.state.Steps[i]
+				}));
+			tmpAnticipate.anticipate(
+				function(fNext)
+				{
+					this.progressTrackers.endProgressTracker(this.state.Steps[i].ProgressTracker.Hash);
+					let tmpStepTimingMessage = this.progressTrackers.getProgressTrackerStatusString(this.state.Steps[i].ProgressTracker.Hash);
+					this.fable.log.info(`Step #${i} [${this.state.Steps[i].GUIDStep}] ${this.state.Steps[i].Name} complete.`);
+					this.fable.log.info(`Step #${i} [${this.state.Steps[i].GUIDStep}] ${this.state.Steps[i].Name} ${tmpStepTimingMessage}.`);
+			
+					this.progressTrackers.incrementProgressTracker(this.state.OverallProgressTracker.Hash, 1);
+					let tmpOperationTimingMessage = this.progressTrackers.getProgressTrackerStatusString(this.state.OverallProgressTracker.Hash);
+					this.fable.log.info(`Operation [${this.state.Metadata.UUID}] ${tmpOperationTimingMessage}.`);
+					return fNext();
+				}.bind(this));
 		}
 
 		// Wait for the anticipation to complete
 		tmpAnticipate.wait(
 			(pError) =>
 			{
-				this.state.Status.TimeEnd = +new Date();
+				if (pError)
+				{
+					this.fable.log.error(`Operation [${this.state.Metadata.UUID}] ${this.state.Metadata.Name} had an error: ${pError}`, pError);
+					return fExecutionCompleteCallback(pError);
+				}
+				this.info(`Operation [${this.state.Metadata.UUID}] ${this.state.Metadata.Name} complete.`);
+				let tmpOperationTimingMessage = this.progressTrackers.getProgressTrackerStatusString(this.state.OverallProgressTracker.Hash);
+				this.progressTrackers.endProgressTracker(this.state.OverallProgressTracker.Hash);
+				this.fable.log.info(`Operation [${this.state.Metadata.UUID}] ${tmpOperationTimingMessage}.`);
 				return fExecutionCompleteCallback();
 			});
 	}
 
-/*
-	TODO: I've gone back and forth on whether this should be an object, JSON 
-	object prototype, or set of functions here.  Discuss with colleagues!
-*/
-	addStep(fStepFunction, pStepName, pStepDescription, pStepMetadata, pGUIDStep)
+	addStep(fStepFunction, pStepMetadata, pStepName, pStepDescription, pGUIDStep)
 	{
 		let tmpStep = {};
 
 		// GUID is optional
 		tmpStep.GUIDStep = (typeof(pGUIDStep) !== 'undefined') ? pGUIDStep : `STEP-${this.state.Steps.length}-${this.fable.DataGeneration.randomNumericString()}`;
 
+
 		// Name is optional
 		tmpStep.Name = (typeof(pStepName) !== 'undefined') ? pStepName : `Step [${tmpStep.GUIDStep}]`;
 		tmpStep.Description = (typeof(pStepDescription) !== 'undefined') ? pStepDescription : `Step execution of ${tmpStep.Name}.`;
 
-		tmpStep.Metadata = (typeof(pStepMetadata) === 'object') ? pStepMetadata : {};
+		tmpStep.ProgressTracker = this.progressTrackers.createProgressTracker(tmpStep.GUIDStep);
 
-		tmpStep.TimeStart = false;
-		tmpStep.TimeEnd = false;
+		tmpStep.Metadata = (typeof(pStepMetadata) === 'object') ? pStepMetadata : {};
 
 		// There is an array of steps, in the Operation State itself ... push a step there
 		this.state.Steps.push(tmpStep);
 
-		this.stepFunctions[tmpStep.GUIDStep] = fStepFunction;;
+		this.stepMap[tmpStep.GUIDStep] = tmpStep;
 
-		this.stepMap[tmpStep.GUIDStep];
+		this.stepFunctions[tmpStep.GUIDStep] = typeof(fStepFunction) == 'function' ? fStepFunction : function (fDone) { return fDone(); };
 
 		this.state.Status.StepCount++;
 
 		return tmpStep;
 	}
 
-	/**
-	 * Retrieves a step from the step map based on the provided GUID.
-	 * @param {string} pGUIDStep - The GUID of the step to retrieve.
-	 * @returns {object|boolean} - The step object if found, otherwise false.
-	 */
-	getStep(pGUIDStep)
+	setStepTotalOperations(pGUIDStep, pTotalOperationCount)
 	{
-		if (this.stepMap.hasOwnProperty(pGUIDStep))
+		if (!this.stepMap.hasOwnProperty(pGUIDStep))
 		{
-			return this.stepMap[pGUIDStep];
+			return new Error(`Step [${pGUIDStep}] does not exist in operation [${this.state.Metadata.UUID}] ${this.state.Metadata.Name} when attempting to set total operations to ${pTotalOperationCount}.`);
 		}
 
-		return false;
-	}
-
-	/**
-	 * Begins a step in the Fable service operation.
-	 * @param {string} pGUIDStep - The GUID of the step to begin.
-	 * @returns {object|boolean} - The step object if found, or `false` if not found.
-	 */
-	beginStep(pGUIDStep)
-	{
-		let tmpStep = this.getStep(pGUIDStep);
-
-		if (tmpStep === false)
-		{
-			return false;
-		}
-
-		tmpStep.TimeStart = +new Date();
-
-		return tmpStep;
-	}
-
-	endStep(pGUIDStep)
-	{
-		let tmpStep = this.getStep(pGUIDStep);
-
-		if (tmpStep === false)
-		{
-			return false;
-		}
-
-		tmpStep.TimeEnd = +new Date();
-
-		return tmpStep;
+		this.progressTrackers.setProgressTrackerTotalOperations(this.stepMap[pGUIDStep].ProgressTracker.Hash, pTotalOperationCount);
 	}
 
 	writeOperationLog(pLogLevel, pLogText, pLogObject)
