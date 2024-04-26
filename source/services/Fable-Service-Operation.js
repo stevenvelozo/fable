@@ -63,6 +63,8 @@ class FableOperation extends libFableServiceBase
 				{
 					log:this,
 					fable:this.fable,
+					options:this.state.Steps[i].Metadata,
+					metadata:this.state.Steps[i].Metadata,
 					ProgressTracker:this.progressTrackers.getProgressTracker(this.state.Steps[i].ProgressTracker.Hash),
 					updateProgressTracker: function(pProgressAmount)
 						{
