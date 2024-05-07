@@ -13,7 +13,7 @@ var Expect = Chai.expect;
 
 suite
 (
-	'Progress Tracker Tests',
+	'Progress Tracker Set Tests',
 	function()
 	{
 		suite
@@ -28,7 +28,7 @@ suite
 					{
 						let testFable = new libFable();
 
-						let tmpProgressTracker = testFable.instantiateServiceProvider('ProgressTracker');
+						let tmpProgressTracker = testFable.instantiateServiceProvider('ProgressTrackerSet');
 
 						Expect(tmpProgressTracker).to.be.an('object');
 						Expect(tmpProgressTracker).to.have.property('incrementProgressTracker');

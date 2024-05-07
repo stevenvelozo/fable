@@ -115,7 +115,7 @@ suite
 												() =>
 												{
 													this.log.info(`Work done for iteration ${i}.`);
-													this.incrementProgressTracker(1);
+													this.ProgressTracker.incrementProgressTracker(1);
 													this.logProgressTrackerStatus();
 													return fWorkComplete();
 												}, tmpDelay);
@@ -131,7 +131,7 @@ suite
 							{
 								let tmpShortOperationCount = 300;
 
-								this.setProgressTrackerTotalOperations(tmpShortOperationCount);
+								this.ProgressTracker.setProgressTrackerTotalOperations(tmpShortOperationCount);
 								this.logProgressTrackerStatus();
 
 								let tmpAnticipate = testFable.newAnticipate();
@@ -146,7 +146,7 @@ suite
 												() =>
 												{
 													this.log.info(`Leetle work done for iteration ${i}.`);
-													this.incrementProgressTracker(1);
+													this.ProgressTracker.incrementProgressTracker(1);
 													this.logProgressTrackerStatus();
 													return fWorkComplete();
 												}, tmpDelay);

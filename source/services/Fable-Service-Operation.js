@@ -27,9 +27,9 @@ class FableOperation extends libFableServiceBase
 		this.state.Metadata.Name = (typeof(this.options.Name) == 'string') ? this.options.Name : `Unnamed Operation ${this.state.Metadata.UUID}`;
 		this.name = this.state.Metadata.Name;
 
-		this.progressTrackers = this.fable.instantiateServiceProviderWithoutRegistration('ProgressTracker');
+		this.progressTrackerSet = this.fable.instantiateServiceProviderWithoutRegistration('ProgressTrackerSet');
 
-		this.state.OverallProgressTracker = this.progressTrackers.createProgressTracker(`Overall-${this.state.Metadata.UUID}`);
+		this.state.OverallProgressTracker = this.progressTrackerSet.createProgressTracker(`Overall-${this.state.Metadata.UUID}`);
 
 		// This is here to use the pass-through logging functions in the operation itself.
 		this.log = this;
@@ -45,8 +45,8 @@ class FableOperation extends libFableServiceBase
 
 		let tmpAnticipate = this.fable.instantiateServiceProviderWithoutRegistration('Anticipate');
 		
-		this.progressTrackers.setProgressTrackerTotalOperations(this.state.OverallProgressTracker.Hash, this.state.Status.StepCount);
-		this.progressTrackers.startProgressTracker(this.state.OverallProgressTracker.Hash);
+		this.progressTrackerSet.setProgressTrackerTotalOperations(this.state.OverallProgressTracker.Hash, this.state.Status.StepCount);
+		this.progressTrackerSet.startProgressTracker(this.state.OverallProgressTracker.Hash);
 		this.info(`Operation [${this.state.Metadata.UUID}] ${this.state.Metadata.Name} starting...`);
 
 		for (let i = 0; i < this.state.Steps.length; i++)
@@ -55,7 +55,7 @@ class FableOperation extends libFableServiceBase
 				function(fNext)
 				{
 					this.fable.log.info(`Step #${i} [${this.state.Steps[i].GUIDStep}] ${this.state.Steps[i].Name} starting...`);
-					this.progressTrackers.startProgressTracker(this.state.Steps[i].ProgressTracker.Hash);
+					this.progressTrackerSet.startProgressTracker(this.state.Steps[i].ProgressTracker.Hash);
 					return fNext();
 				}.bind(this));
 			// Steps are executed in a custom context with 
@@ -65,26 +65,10 @@ class FableOperation extends libFableServiceBase
 					fable:this.fable,
 					options:this.state.Steps[i].Metadata,
 					metadata:this.state.Steps[i].Metadata,
-					ProgressTracker:this.progressTrackers.getProgressTracker(this.state.Steps[i].ProgressTracker.Hash),
-					updateProgressTracker: function(pProgressAmount)
-						{
-							return this.progressTrackers.updateProgressTracker(this.state.Steps[i].ProgressTracker.Hash, pProgressAmount);
-						}.bind(this),
-					incrementProgressTracker: function(pProgressIncrementAmount)
-						{
-							return this.progressTrackers.incrementProgressTracker(this.state.Steps[i].ProgressTracker.Hash, pProgressIncrementAmount);
-						}.bind(this),
-					setProgressTrackerTotalOperations: function(pTotalOperationCount)
-						{
-							return this.progressTrackers.setProgressTrackerTotalOperations(this.state.Steps[i].ProgressTracker.Hash, pTotalOperationCount);
-						}.bind(this),
-					getProgressTrackerStatusString: function() 
-						{
-							return this.progressTrackers.getProgressTrackerStatusString(this.state.Steps[i].ProgressTracker.Hash);
-						}.bind(this),
+					ProgressTracker:this.progressTrackerSet.getProgressTracker(this.state.Steps[i].ProgressTracker.Hash),
 					logProgressTrackerStatus: function() 
 						{
-							return this.log.info(`Step #${i} [${this.state.Steps[i].GUIDStep}]: ${this.progressTrackers.getProgressTrackerStatusString(this.state.Steps[i].ProgressTracker.Hash)}`);
+							return this.log.info(`Step #${i} [${this.state.Steps[i].GUIDStep}]: ${this.progressTrackerSet.getProgressTrackerStatusString(this.state.Steps[i].ProgressTracker.Hash)}`);
 						}.bind(this),
 					OperationState:this.state,
 					StepState:this.state.Steps[i]
@@ -92,13 +76,13 @@ class FableOperation extends libFableServiceBase
 			tmpAnticipate.anticipate(
 				function(fNext)
 				{
-					this.progressTrackers.endProgressTracker(this.state.Steps[i].ProgressTracker.Hash);
-					let tmpStepTimingMessage = this.progressTrackers.getProgressTrackerStatusString(this.state.Steps[i].ProgressTracker.Hash);
+					this.progressTrackerSet.endProgressTracker(this.state.Steps[i].ProgressTracker.Hash);
+					let tmpStepTimingMessage = this.progressTrackerSet.getProgressTrackerStatusString(this.state.Steps[i].ProgressTracker.Hash);
 					this.fable.log.info(`Step #${i} [${this.state.Steps[i].GUIDStep}] ${this.state.Steps[i].Name} complete.`);
 					this.fable.log.info(`Step #${i} [${this.state.Steps[i].GUIDStep}] ${this.state.Steps[i].Name} ${tmpStepTimingMessage}.`);
 			
-					this.progressTrackers.incrementProgressTracker(this.state.OverallProgressTracker.Hash, 1);
-					let tmpOperationTimingMessage = this.progressTrackers.getProgressTrackerStatusString(this.state.OverallProgressTracker.Hash);
+					this.progressTrackerSet.incrementProgressTracker(this.state.OverallProgressTracker.Hash, 1);
+					let tmpOperationTimingMessage = this.progressTrackerSet.getProgressTrackerStatusString(this.state.OverallProgressTracker.Hash);
 					this.fable.log.info(`Operation [${this.state.Metadata.UUID}] ${tmpOperationTimingMessage}.`);
 					return fNext();
 				}.bind(this));
@@ -114,12 +98,19 @@ class FableOperation extends libFableServiceBase
 					return fExecutionCompleteCallback(pError);
 				}
 				this.info(`Operation [${this.state.Metadata.UUID}] ${this.state.Metadata.Name} complete.`);
-				let tmpOperationTimingMessage = this.progressTrackers.getProgressTrackerStatusString(this.state.OverallProgressTracker.Hash);
-				this.progressTrackers.endProgressTracker(this.state.OverallProgressTracker.Hash);
+				let tmpOperationTimingMessage = this.progressTrackerSet.getProgressTrackerStatusString(this.state.OverallProgressTracker.Hash);
+				this.progressTrackerSet.endProgressTracker(this.state.OverallProgressTracker.Hash);
 				this.fable.log.info(`Operation [${this.state.Metadata.UUID}] ${tmpOperationTimingMessage}.`);
 				return fExecutionCompleteCallback();
 			});
 	}
+
+	// There are three ways to add steps:
+	// 1. As a basic javascript function
+	//    --
+	//    This is the most basic, java"script" way to add a step.  It will
+	//    setup a "this" context that has the following properties:
+	//    - log: A reference to the operation's log object
 
 	addStep(fStepFunction, pStepMetadata, pStepName, pStepDescription, pGUIDStep)
 	{
@@ -133,7 +124,7 @@ class FableOperation extends libFableServiceBase
 		tmpStep.Name = (typeof(pStepName) !== 'undefined') ? pStepName : `Step [${tmpStep.GUIDStep}]`;
 		tmpStep.Description = (typeof(pStepDescription) !== 'undefined') ? pStepDescription : `Step execution of ${tmpStep.Name}.`;
 
-		tmpStep.ProgressTracker = this.progressTrackers.createProgressTracker(tmpStep.GUIDStep);
+		tmpStep.ProgressTracker = this.progressTrackerSet.createProgressTracker(tmpStep.GUIDStep);
 
 		tmpStep.Metadata = (typeof(pStepMetadata) === 'object') ? pStepMetadata : {};
 
@@ -156,7 +147,7 @@ class FableOperation extends libFableServiceBase
 			return new Error(`Step [${pGUIDStep}] does not exist in operation [${this.state.Metadata.UUID}] ${this.state.Metadata.Name} when attempting to set total operations to ${pTotalOperationCount}.`);
 		}
 
-		this.progressTrackers.setProgressTrackerTotalOperations(this.stepMap[pGUIDStep].ProgressTracker.Hash, pTotalOperationCount);
+		this.progressTrackerSet.setProgressTrackerTotalOperations(this.stepMap[pGUIDStep].ProgressTracker.Hash, pTotalOperationCount);
 	}
 
 	writeOperationLog(pLogLevel, pLogText, pLogObject)

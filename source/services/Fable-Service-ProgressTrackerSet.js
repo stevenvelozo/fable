@@ -1,12 +1,14 @@
 const libFableServiceBase = require('fable-serviceproviderbase');
 
-class FableServiceProgressTracker extends libFableServiceBase
+const libProgressTrackerClass = require('./Fable-Service-ProgressTracker/ProgressTracker.js');
+
+class FableServiceProgressTrackerSet extends libFableServiceBase
 {
 	constructor(pFable, pOptions, pServiceHash)
 	{
 		super(pFable, pOptions, pServiceHash);
 
-		this.serviceType = 'ProgressTracker';
+		this.serviceType = 'ProgressTrackerSet';
 
 		this.progressTrackers = {};
 
@@ -18,6 +20,19 @@ class FableServiceProgressTracker extends libFableServiceBase
 	}
 
 	getProgressTracker(pProgressTrackerHash)
+	{
+		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'Default';
+
+		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
+		{
+			this.fable.log.warn(`ProgressTracker ${tmpProgressTrackerHash} does not exist!  Creating a new tracker...`);
+			this.createProgressTracker(tmpProgressTrackerHash, 100);
+		}
+
+		return new libProgressTrackerClass(this, pProgressTrackerHash);
+	}
+
+	getProgressTrackerData(pProgressTrackerHash)
 	{
 		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'Default';
 
@@ -348,4 +363,4 @@ class FableServiceProgressTracker extends libFableServiceBase
 	}
 }
 
-module.exports = FableServiceProgressTracker;
+module.exports = FableServiceProgressTrackerSet;
