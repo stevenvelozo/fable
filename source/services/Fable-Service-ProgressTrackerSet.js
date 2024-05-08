@@ -352,7 +352,7 @@ class FableServiceProgressTrackerSet extends libFableServiceBase
 			// 4. Done
 			else
 			{
-				return `ProgressTracker ${tmpProgressTracker.Hash} is done. It completed ${tmpProgressTracker.CurrentCount} / ${tmpProgressTracker.TotalCount} operations in ${this.progressTimes.formatTimeDuration(tmpProgressTracker.ElapsedTime)} (median ${this.progressTimes.formatTimeDuration(tmpProgressTracker.AverageOperationTime)} per).`;
+				return `ProgressTracker ${tmpProgressTracker.Hash} is done.  ${tmpProgressTracker.CurrentCount} / ${tmpProgressTracker.TotalCount} operations were completed in ${this.progressTimes.formatTimeDuration(tmpProgressTracker.ElapsedTime)} (median ${this.progressTimes.formatTimeDuration(tmpProgressTracker.AverageOperationTime)} per).`;
 			}
 		}
 	}

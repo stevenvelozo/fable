@@ -4,6 +4,8 @@ class ProgressTracker
 	{
 		this.progressTrackerSet = pProgressTrackerSet;
 		this.progressTrackerHash = pProgressTrackerHash;
+
+		this.data = this.progressTrackerSet.getProgressTrackerData(this.progressTrackerHash);
 	}
 
 	updateProgressTracker(pProgressAmount)
