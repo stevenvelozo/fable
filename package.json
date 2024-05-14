@@ -64,7 +64,7 @@
         "fable-serviceproviderbase": "^3.0.13",
         "fable-settings": "^3.0.9",
         "fable-uuid": "^3.0.6",
-        "manyfest": "^1.0.29",
+        "manyfest": "^1.0.30",
         "simple-get": "^4.0.1"
     }
 }

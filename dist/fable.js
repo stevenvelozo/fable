@@ -839,8 +839,7 @@ removeTranslation(pTranslation){if(typeof pTranslation=='string'){this.removeTra
 *
 *
 * @class ManyfestObjectAddressResolverCheckAddressExists
-*/class ManyfestObjectAddressResolverCheckAddressExists{constructor(pInfoLog,pErrorLog){// Wire in logging
-this.logInfo=typeof pInfoLog=='function'?pInfoLog:libSimpleLog;this.logError=typeof pErrorLog=='function'?pErrorLog:libSimpleLog;}// Check if an address exists.
+*/class ManyfestObjectAddressResolverCheckAddressExists{constructor(){}// Check if an address exists.
 //
 // This is necessary because the getValueAtAddress function is ambiguous on
 // whether the element/property is actually there or not (it returns
@@ -942,7 +941,7 @@ pObject[tmpSubObjectName]={};return this.checkAddressExists(pObject[tmpSubObject
 * @class ManyfestObjectAddressResolverDeleteValue
 */class ManyfestObjectAddressResolverDeleteValue{constructor(pInfoLog,pErrorLog){// Wire in logging
 this.logInfo=typeof pInfoLog=='function'?pInfoLog:libSimpleLog;this.logError=typeof pErrorLog=='function'?pErrorLog:libSimpleLog;this.cleanWrapCharacters=fCleanWrapCharacters;}// TODO: Dry me
-checkFilters(pAddress,pRecord){return fParseConditionals(this,pAddress,pRecord);}// Delete the value of an element at an address
+checkRecordFilters(pAddress,pRecord){return fParseConditionals(this,pAddress,pRecord);}// Delete the value of an element at an address
 deleteValueAtAddress(pObject,pAddress,pParentAddress){// Make sure pObject (the object we are meant to be recursing) is an object (which could be an array or object)
 if(typeof pObject!='object')return undefined;// Make sure pAddress (the address we are resolving) is a string
 if(typeof pAddress!='string')return undefined;// Stash the parent address for later resolution
@@ -984,7 +983,7 @@ else if(tmpBracketStartIndex>0//    2) The end bracket is after the start bracke
 &&tmpBracketStopIndex-tmpBracketStartIndex==1){let tmpBoxedPropertyName=pAddress.substring(0,tmpBracketStartIndex).trim();if(!Array.isArray(pObject[tmpBoxedPropertyName])){// We asked for a set from an array but it isnt' an array.
 return false;}let tmpInputArray=pObject[tmpBoxedPropertyName];// Count from the end to the beginning so splice doesn't %&%#$ up the array
 for(let i=tmpInputArray.length-1;i>=0;i--){// The filtering is complex but allows config-based metaprogramming directly from schema
-let tmpKeepRecord=this.checkFilters(pAddress,tmpInputArray[i]);if(tmpKeepRecord){// Delete elements end to beginning
+let tmpKeepRecord=this.checkRecordFilters(pAddress,tmpInputArray[i]);if(tmpKeepRecord){// Delete elements end to beginning
 tmpInputArray.splice(i,1);}}return true;}// The object has been flagged as an object set, so treat it as such
 else if(tmpObjectTypeMarkerIndex>0){let tmpObjectPropertyName=pAddress.substring(0,tmpObjectTypeMarkerIndex).trim();if(typeof pObject[tmpObjectPropertyName]!='object'){// We asked for a set from an array but it isnt' an array.
 return false;}delete pObject[tmpObjectPropertyName];return true;}else{// Now is the point in recursion to return the value in the address
@@ -1040,7 +1039,7 @@ return false;}// We need to enumerate the Object and grab the addresses from the
 let tmpObjectProperty=pObject[tmpObjectPropertyName];let tmpObjectPropertyKeys=Object.keys(tmpObjectProperty);// Managing the parent address is a bit more complex here -- the box will be added for each element.
 tmpParentAddress="".concat(tmpParentAddress).concat(tmpParentAddress.length>0?'.':'').concat(tmpObjectPropertyName);// The container object is where we have the "Address":SOMEVALUE pairs
 let tmpContainerObject={};for(let i=0;i<tmpObjectPropertyKeys.length;i++){let tmpPropertyParentAddress="".concat(tmpParentAddress,".").concat(tmpObjectPropertyKeys[i]);let tmpValue=this.deleteValueAtAddress(pObject[tmpObjectPropertyName][tmpObjectPropertyKeys[i]],tmpNewAddress,tmpPropertyParentAddress);// The filtering is complex but allows config-based metaprogramming directly from schema
-let tmpKeepRecord=this.checkFilters(pAddress,tmpValue);if(tmpKeepRecord){tmpContainerObject["".concat(tmpPropertyParentAddress,".").concat(tmpNewAddress)]=tmpValue;}}return tmpContainerObject;}// If there is an object property already named for the sub object, but it isn't an object
+let tmpKeepRecord=this.checkRecordFilters(pAddress,tmpValue);if(tmpKeepRecord){tmpContainerObject["".concat(tmpPropertyParentAddress,".").concat(tmpNewAddress)]=tmpValue;}}return tmpContainerObject;}// If there is an object property already named for the sub object, but it isn't an object
 // then the system can't set the value in there.  Error and abort!
 if(pObject.hasOwnProperty(tmpSubObjectName)&&typeof pObject[tmpSubObjectName]!=='object'){return undefined;}else if(pObject.hasOwnProperty(tmpSubObjectName)){// If there is already a subobject pass that to the recursive thingy
 // Continue to manage the parent address for recursion
@@ -1068,7 +1067,7 @@ tmpParentAddress="".concat(tmpParentAddress).concat(tmpParentAddress.length>0?'.
 *
 * @class ManyfestObjectAddressResolverGetValue
 */class ManyfestObjectAddressResolverGetValue{constructor(pInfoLog,pErrorLog){// Wire in logging
-this.logInfo=typeof pInfoLog=='function'?pInfoLog:libSimpleLog;this.logError=typeof pErrorLog=='function'?pErrorLog:libSimpleLog;this.cleanWrapCharacters=fCleanWrapCharacters;}checkFilters(pAddress,pRecord){return fParseConditionals(this,pAddress,pRecord);}// Get the value of an element at an address
+this.logInfo=typeof pInfoLog=='function'?pInfoLog:libSimpleLog;this.logError=typeof pErrorLog=='function'?pErrorLog:libSimpleLog;this.cleanWrapCharacters=fCleanWrapCharacters;}checkRecordFilters(pAddress,pRecord){return fParseConditionals(this,pAddress,pRecord);}// Get the value of an element at an address
 getValueAtAddress(pObject,pAddress,pParentAddress,pRootObject){// Make sure pObject (the object we are meant to be recursing) is an object (which could be an array or object)
 if(typeof pObject!='object')return undefined;// Make sure pAddress (the address we are resolving) is a string
 if(typeof pAddress!='string')return undefined;// Stash the parent address for later resolution
@@ -1119,7 +1118,7 @@ else if(tmpBracketStartIndex>0//    2) The end bracket is after the start bracke
 &&tmpBracketStopIndex>tmpBracketStartIndex//    3) There is nothing in the brackets
 &&tmpBracketStopIndex-tmpBracketStartIndex==1){let tmpBoxedPropertyName=pAddress.substring(0,tmpBracketStartIndex).trim();if(!Array.isArray(pObject[tmpBoxedPropertyName])){// We asked for a set from an array but it isnt' an array.
 return false;}let tmpInputArray=pObject[tmpBoxedPropertyName];let tmpOutputArray=[];for(let i=0;i<tmpInputArray.length;i++){// The filtering is complex but allows config-based metaprogramming directly from schema
-let tmpKeepRecord=this.checkFilters(pAddress,tmpInputArray[i]);if(tmpKeepRecord){tmpOutputArray.push(tmpInputArray[i]);}}return tmpOutputArray;}// The object has been flagged as an object set, so treat it as such
+let tmpKeepRecord=this.checkRecordFilters(pAddress,tmpInputArray[i]);if(tmpKeepRecord){tmpOutputArray.push(tmpInputArray[i]);}}return tmpOutputArray;}// The object has been flagged as an object set, so treat it as such
 else if(tmpObjectTypeMarkerIndex>0){let tmpObjectPropertyName=pAddress.substring(0,tmpObjectTypeMarkerIndex).trim();if(typeof pObject[tmpObjectPropertyName]!='object'){// We asked for a set from an array but it isnt' an array.
 return false;}return pObject[tmpObjectPropertyName];}else{// Now is the point in recursion to return the value in the address
 if(typeof pObject[pAddress]!=null){return pObject[pAddress];}else{return undefined;}}}else{let tmpSubObjectName=pAddress.substring(0,tmpSeparatorIndex);let tmpNewAddress=pAddress.substring(tmpSeparatorIndex+1);// BOXED ELEMENTS
@@ -1174,7 +1173,7 @@ return false;}// We need to enumerate the Object and grab the addresses from the
 let tmpObjectProperty=pObject[tmpObjectPropertyName];let tmpObjectPropertyKeys=Object.keys(tmpObjectProperty);// Managing the parent address is a bit more complex here -- the box will be added for each element.
 tmpParentAddress="".concat(tmpParentAddress).concat(tmpParentAddress.length>0?'.':'').concat(tmpObjectPropertyName);// The container object is where we have the "Address":SOMEVALUE pairs
 let tmpContainerObject={};for(let i=0;i<tmpObjectPropertyKeys.length;i++){let tmpPropertyParentAddress="".concat(tmpParentAddress,".").concat(tmpObjectPropertyKeys[i]);let tmpValue=this.getValueAtAddress(pObject[tmpObjectPropertyName][tmpObjectPropertyKeys[i]],tmpNewAddress,tmpPropertyParentAddress,tmpRootObject);// The filtering is complex but allows config-based metaprogramming directly from schema
-let tmpKeepRecord=this.checkFilters(pAddress,tmpValue);if(tmpKeepRecord){tmpContainerObject["".concat(tmpPropertyParentAddress,".").concat(tmpNewAddress)]=tmpValue;}}return tmpContainerObject;}// If there is an object property already named for the sub object, but it isn't an object
+let tmpKeepRecord=this.checkRecordFilters(pAddress,tmpValue);if(tmpKeepRecord){tmpContainerObject["".concat(tmpPropertyParentAddress,".").concat(tmpNewAddress)]=tmpValue;}}return tmpContainerObject;}// If there is an object property already named for the sub object, but it isn't an object
 // then the system can't set the value in there.  Error and abort!
 if(pObject.hasOwnProperty(tmpSubObjectName)&&typeof pObject[tmpSubObjectName]!=='object'){return undefined;}else if(pObject.hasOwnProperty(tmpSubObjectName)){// If there is already a subobject pass that to the recursive thingy
 // Continue to manage the parent address for recursion
@@ -1316,16 +1315,19 @@ break;}return tmpSchema;}};module.exports=ManyfestObjectAddressGeneration;},{"./
 // The function does not need to alter the string -- just check the conditionals within.
 // TODO: Consider making this an es6 class
 // Let's use indexOf since it is apparently the fastest.
-const _ConditionalStanzaStart='<<~?';const _ConditionalStanzaStartLength=_ConditionalStanzaStart.length;const _ConditionalStanzaEnd='?~>>';const _ConditionalStanzaEndLength=_ConditionalStanzaEnd.length;// Test the condition of a value in a record
-const testCondition=(pManyfest,pRecord,pSearchAddress,pSearchComparator,pValue)=>{switch(pSearchComparator){case'!=':return pManyfest.getValueAtAddress(pRecord,pSearchAddress)!=pValue;break;case'<':return pManyfest.getValueAtAddress(pRecord,pSearchAddress)<pValue;break;case'>':return pManyfest.getValueAtAddress(pRecord,pSearchAddress)>pValue;break;case'<=':return pManyfest.getValueAtAddress(pRecord,pSearchAddress)<=pValue;break;case'>=':return pManyfest.getValueAtAddress(pRecord,pSearchAddress)>=pValue;break;case'===':return pManyfest.getValueAtAddress(pRecord,pSearchAddress)===pValue;break;case'==':default:return pManyfest.getValueAtAddress(pRecord,pSearchAddress)==pValue;break;}};const parseConditionals=(pManyfest,pAddress,pRecord)=>{let tmpKeepRecord=true;/*
+const _ConditionalStanzaStart='<<~?';const _ConditionalStanzaStartLength=_ConditionalStanzaStart.length;const _ConditionalStanzaEnd='?~>>';const _ConditionalStanzaEndLength=_ConditionalStanzaEnd.length;// Ugh dependency injection.  Can't wait to make these all fable services.
+let libObjectAddressCheckAddressExists=new(require('./Manyfest-ObjectAddress-CheckAddressExists.js'))();// Test the condition of a value in a record
+const testCondition=(pManyfest,pRecord,pSearchAddress,pSearchComparator,pValue)=>{switch(pSearchComparator){case'TRUE':return pManyfest.getValueAtAddress(pRecord,pSearchAddress)===true;break;case'FALSE':return pManyfest.getValueAtAddress(pRecord,pSearchAddress)===false;break;case'LNGT':case'LENGTH_GREATER_THAN':switch(typeof pManyfest.getValueAtAddress(pRecord,pSearchAddress)){case'string':return pManyfest.getValueAtAddress(pRecord,pSearchAddress).length>pValue;break;case'object':return pManyfest.getValueAtAddress(pRecord,pSearchAddress).length>pValue;break;default:return false;break;}break;case'LNLT':case'LENGTH_LESS_THAN':switch(typeof pManyfest.getValueAtAddress(pRecord,pSearchAddress)){case'string':return pManyfest.getValueAtAddress(pRecord,pSearchAddress).length<pValue;break;case'object':return pManyfest.getValueAtAddress(pRecord,pSearchAddress).length<pValue;break;default:return false;break;}break;case'FALSE':return pManyfest.getValueAtAddress(pRecord,pSearchAddress)===false;break;case'EX':case'EXISTS':return libObjectAddressCheckAddressExists.checkAddressExists(pRecord,pSearchAddress);break;case'DNEX':case'DOES_NOT_EXIST':return!libObjectAddressCheckAddressExists.checkAddressExists(pRecord,pSearchAddress);break;case'!=':return pManyfest.getValueAtAddress(pRecord,pSearchAddress)!=pValue;break;case'<':return pManyfest.getValueAtAddress(pRecord,pSearchAddress)<pValue;break;case'>':return pManyfest.getValueAtAddress(pRecord,pSearchAddress)>pValue;break;case'<=':return pManyfest.getValueAtAddress(pRecord,pSearchAddress)<=pValue;break;case'>=':return pManyfest.getValueAtAddress(pRecord,pSearchAddress)>=pValue;break;case'===':return pManyfest.getValueAtAddress(pRecord,pSearchAddress)===pValue;break;case'==':default:return pManyfest.getValueAtAddress(pRecord,pSearchAddress)==pValue;break;}};const parseConditionals=(pManyfest,pAddress,pRecord)=>{let tmpKeepRecord=true;/*
 		Algorithm is simple:
 
 		1.  Enuerate start points
-
 		2.  Find stop points within each start point
 		3. Check the conditional
-	*/let tmpStartIndex=pAddress.indexOf(_ConditionalStanzaStart);while(tmpStartIndex!=-1){let tmpStopIndex=pAddress.indexOf(_ConditionalStanzaEnd,tmpStartIndex+_ConditionalStanzaStartLength);if(tmpStopIndex!=-1){let tmpMagicComparisonPatternSet=pAddress.substring(tmpStartIndex+_ConditionalStanzaStartLength,tmpStopIndex).split(',');let tmpSearchAddress=tmpMagicComparisonPatternSet[0];let tmpSearchComparator=tmpMagicComparisonPatternSet[1];let tmpSearchValue=tmpMagicComparisonPatternSet[2];// Process the piece
-tmpKeepRecord=tmpKeepRecord&&testCondition(pManyfest,pRecord,tmpSearchAddress,tmpSearchComparator,tmpSearchValue);tmpStartIndex=pAddress.indexOf(_ConditionalStanzaStart,tmpStopIndex+_ConditionalStanzaEndLength);}else{tmpStartIndex=-1;}}return tmpKeepRecord;};module.exports=parseConditionals;},{}],78:[function(require,module,exports){/**
+	*/let tmpStartIndex=pAddress.indexOf(_ConditionalStanzaStart);while(tmpStartIndex!=-1){let tmpStopIndex=pAddress.indexOf(_ConditionalStanzaEnd,tmpStartIndex+_ConditionalStanzaStartLength);if(tmpStopIndex!=-1){let tmpMagicComparisonPatternSet=pAddress.substring(tmpStartIndex+_ConditionalStanzaStartLength,tmpStopIndex).split(',');// The address to search for
+let tmpSearchAddress=tmpMagicComparisonPatternSet[0];// The copmparison expression (EXISTS as default)
+let tmpSearchComparator='EXISTS';if(tmpMagicComparisonPatternSet.length>1){tmpSearchComparator=tmpMagicComparisonPatternSet[1];}// The value to search for
+let tmpSearchValue=false;if(tmpMagicComparisonPatternSet.length>2){tmpSearchValue=tmpMagicComparisonPatternSet[2];}// Process the piece
+tmpKeepRecord=tmpKeepRecord&&testCondition(pManyfest,pRecord,tmpSearchAddress,tmpSearchComparator,tmpSearchValue);tmpStartIndex=pAddress.indexOf(_ConditionalStanzaStart,tmpStopIndex+_ConditionalStanzaEndLength);}else{tmpStartIndex=-1;}}return tmpKeepRecord;};module.exports=parseConditionals;},{"./Manyfest-ObjectAddress-CheckAddressExists.js":72}],78:[function(require,module,exports){/**
 * @author <steven@velozo.com>
 */let libSimpleLog=require('./Manyfest-LogToConsole.js');/**
 * Schema Manipulation Functions
