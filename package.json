@@ -1,6 +1,6 @@
 {
     "name": "fable",
-    "version": "3.0.121",
+    "version": "3.0.123",
     "description": "Anentity behavior management and API bundling library.",
     "main": "source/Fable.js",
     "scripts": {
@@ -64,7 +64,7 @@
         "fable-serviceproviderbase": "^3.0.13",
         "fable-settings": "^3.0.9",
         "fable-uuid": "^3.0.6",
-        "manyfest": "^1.0.30",
+        "manyfest": "^1.0.31",
         "simple-get": "^4.0.1"
     }
 }

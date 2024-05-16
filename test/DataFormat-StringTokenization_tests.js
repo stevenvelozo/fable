@@ -126,6 +126,9 @@ suite
 						Expect(_DataFormat
 							.stringGetEnclosureValueByIndex('There [are (many) of these (things)', 0, '[', ']'))
 							.to.equal('are (many) of these (things)');
+						Expect(_DataFormat
+							.stringGetEnclosureValueByIndex('There (are (many) of these (things))', 0))
+							.to.equal('are (many) of these (things)');
 						return fTestComplete();
 					}
 				);
@@ -158,6 +161,84 @@ suite
 						Expect(_DataFormat
 							.stringRemoveEnclosureByIndex('There [are (many) of these (things)', 0, '[', ']'))
 							.to.equal('There ');
+						return fTestComplete();
+					}
+				);
+				test
+				(
+					'Test counting segments and respecting enclosures',
+					(fTestComplete)=>
+					{
+						let testFable = new libFable({LogStreams: false});
+						let _DataFormat = testFable.services.DataFormat;
+						Expect(_DataFormat
+							.stringCountSegments('Dogs.are.cool'))
+							.to.equal(3);
+						Expect(_DataFormat
+							.stringCountSegments('Dogs.are.cool'))
+							.to.equal(3);
+						Expect(_DataFormat
+							.stringCountSegments('Dogs.are(.)cool'))
+							.to.equal(2);
+						Expect(_DataFormat
+							.stringCountSegments('Dogs.are(.[....])co.(.)ol'))
+							.to.equal(3);
+						Expect(_DataFormat
+							.stringCountSegments('Dogs.are(.[....]),co.(.)ol', ','))
+							.to.equal(2);
+						return fTestComplete();
+					}
+				);
+				test
+				(
+					'Get the first segment of a string',
+					(fTestComplete)=>
+					{
+						let testFable = new libFable({LogStreams: false});
+						let _DataFormat = testFable.services.DataFormat;
+						Expect(_DataFormat
+							.stringGetFirstSegment('Dogs.are.cool'))
+							.to.equal('Dogs');
+						Expect(_DataFormat
+							.stringGetFirstSegment('Dogs().are.cool'))
+							.to.equal('Dogs()');
+						Expect(_DataFormat
+							.stringGetFirstSegment('Dogs[This.That(),Equals(THEM)].are(.)cool'))
+							.to.equal('Dogs[This.That(),Equals(THEM)]');
+						Expect(_DataFormat
+							.stringGetFirstSegment('Dogs(.are(.[....])co.(.)ol'))
+							.to.equal('Dogs(.are(.[....])co.(.)ol');
+						Expect(_DataFormat
+							.stringGetFirstSegment('Dogs(.are(,[....])co.(.)ol', ','))
+							.to.equal('Dogs(.are(,[....])co.(.)ol');
+						Expect(_DataFormat
+							.stringGetFirstSegment('Dogs.are(,[....]),co.(.)ol', ','))
+							.to.equal('Dogs.are(,[....])');
+						return fTestComplete();
+					}
+				);
+				test
+				(
+					'Get all segments of a string',
+					(fTestComplete)=>
+					{
+						let testFable = new libFable({LogStreams: false});
+						let _DataFormat = testFable.services.DataFormat;
+						Expect(_DataFormat
+							.stringGetSegments('Dogs.are.cool')[1])
+							.to.equal('are');
+						Expect(_DataFormat
+							.stringGetSegments('Dogs().are.cool'))
+							.to.deep.equal(['Dogs()', 'are', 'cool']);
+						Expect(_DataFormat
+							.stringGetSegments('Dogs[This.That(),Equals(THEM)].are(.)cool'))
+							.to.deep.equal(['Dogs[This.That(),Equals(THEM)]', 'are(.)cool']);
+						Expect(_DataFormat
+							.stringGetSegments('Dogs(.are(.[....])co.(.)ol')[0])
+							.to.equal('Dogs(.are(.[....])co.(.)ol');
+						Expect(_DataFormat
+							.stringGetSegments('..Dogs.are(,[....]),co.(.)ol'))
+							.to.deep.equal(['','','Dogs','are(,[....]),co','(.)ol']);
 						return fTestComplete();
 					}
 				);

@@ -482,6 +482,178 @@ class DataFormat extends libFableServiceProviderBase
 	}
 
 	/**
+	 * Count the number of segments in a string, respecting enclosures
+	 * 
+	 * @param {string} pString 
+	 * @param {string} pSeparator 
+	 * @param {object} pEnclosureStartSymbolMap 
+	 * @param {object} pEnclosureEndSymbolMap 
+	 * @returns the count of segments in the string as a number
+	 */
+	stringCountSegments(pString, pSeparator, pEnclosureStartSymbolMap, pEnclosureEndSymbolMap)
+	{
+		let tmpString = (typeof(pString) == 'string') ? pString : '';
+
+		let tmpSeparator = (typeof(pSeparator) == 'string') ? pSeparator : '.';
+
+		let tmpEnclosureStartSymbolMap = (typeof(pEnclosureStartSymbolMap) == 'object') ? pEnclosureStart : { '{': 0, '[': 1, '(': 2 };
+		let tmpEnclosureEndSymbolMap = (typeof(pEnclosureEndSymbolMap) == 'object') ? pEnclosureEnd : { '}': 0, ']': 1, ')': 2 };
+
+		if (pString.length < 1)
+		{
+			return 0;
+		}
+
+		let tmpSegmentCount = 1;
+		let tmpEnclosureStack = [];
+
+		for (let i = 0; i < tmpString.length; i++)
+		{
+			// IF This is the start of a segment
+			if ((tmpString[i] == tmpSeparator)
+				// AND we are not in a nested portion of the string
+				&& (tmpEnclosureStack.length == 0))
+			{
+				// Increment the segment count
+				tmpSegmentCount++;
+			}
+			// IF This is the start of an enclosure
+			else if (tmpEnclosureStartSymbolMap.hasOwnProperty(tmpString[i]))
+			{
+				// Add it to the stack!
+				tmpEnclosureStack.push(tmpEnclosureStartSymbolMap[tmpString[i]]);
+			}
+			// IF This is the end of an enclosure
+			else if (tmpEnclosureEndSymbolMap.hasOwnProperty(tmpString[i])
+				// AND it matches the current nest level symbol
+				&& tmpEnclosureEndSymbolMap[tmpString[i]] == tmpEnclosureStack[tmpEnclosureStack.length - 1])
+			{
+				// Pop it off the stack!
+				tmpEnclosureStack.pop();
+			}
+		}
+
+		return tmpSegmentCount;
+	}
+
+	/**
+	 * Get all segments in a string, respecting enclosures
+	 * 
+	 * @param {string} pString 
+	 * @param {string} pSeparator 
+	 * @param {object} pEnclosureStartSymbolMap 
+	 * @param {object} pEnclosureEndSymbolMap 
+	 * @returns the first segment in the string as a string
+	 */
+	stringGetSegments(pString, pSeparator, pEnclosureStartSymbolMap, pEnclosureEndSymbolMap)
+	{
+		let tmpString = (typeof(pString) == 'string') ? pString : '';
+
+		let tmpSeparator = (typeof(pSeparator) == 'string') ? pSeparator : '.';
+
+		let tmpEnclosureStartSymbolMap = (typeof(pEnclosureStartSymbolMap) == 'object') ? pEnclosureStart : { '{': 0, '[': 1, '(': 2 };
+		let tmpEnclosureEndSymbolMap = (typeof(pEnclosureEndSymbolMap) == 'object') ? pEnclosureEnd : { '}': 0, ']': 1, ')': 2 };
+
+		let tmpCurrentSegmentStart = 0;
+		let tmpSegmentList = [];
+
+		if (pString.length < 1)
+		{
+			return tmpSegmentList;
+		}
+
+		let tmpEnclosureStack = [];
+
+		for (let i = 0; i < tmpString.length; i++)
+		{
+			// IF This is the start of a segment
+			if ((tmpString[i] == tmpSeparator)
+				// AND we are not in a nested portion of the string
+				&& (tmpEnclosureStack.length == 0))
+			{
+				// Return the segment
+				tmpSegmentList.push(tmpString.substring(tmpCurrentSegmentStart, i));
+				tmpCurrentSegmentStart = i+1;
+			}
+			// IF This is the start of an enclosure
+			else if (tmpEnclosureStartSymbolMap.hasOwnProperty(tmpString[i]))
+			{
+				// Add it to the stack!
+				tmpEnclosureStack.push(tmpEnclosureStartSymbolMap[tmpString[i]]);
+			}
+			// IF This is the end of an enclosure
+			else if (tmpEnclosureEndSymbolMap.hasOwnProperty(tmpString[i])
+				// AND it matches the current nest level symbol
+				&& tmpEnclosureEndSymbolMap[tmpString[i]] == tmpEnclosureStack[tmpEnclosureStack.length - 1])
+			{
+				// Pop it off the stack!
+				tmpEnclosureStack.pop();
+			}
+		}
+
+		if (tmpCurrentSegmentStart < tmpString.length)
+		{
+			tmpSegmentList.push(tmpString.substring(tmpCurrentSegmentStart));
+		}
+
+		return tmpSegmentList;
+	}
+
+	/**
+	 * Get the first segment in a string, respecting enclosures
+	 * 
+	 * @param {string} pString 
+	 * @param {string} pSeparator 
+	 * @param {object} pEnclosureStartSymbolMap 
+	 * @param {object} pEnclosureEndSymbolMap 
+	 * @returns the first segment in the string as a string
+	 */
+	stringGetFirstSegment(pString, pSeparator, pEnclosureStartSymbolMap, pEnclosureEndSymbolMap)
+	{
+		let tmpString = (typeof(pString) == 'string') ? pString : '';
+
+		let tmpSeparator = (typeof(pSeparator) == 'string') ? pSeparator : '.';
+
+		let tmpEnclosureStartSymbolMap = (typeof(pEnclosureStartSymbolMap) == 'object') ? pEnclosureStart : { '{': 0, '[': 1, '(': 2 };
+		let tmpEnclosureEndSymbolMap = (typeof(pEnclosureEndSymbolMap) == 'object') ? pEnclosureEnd : { '}': 0, ']': 1, ')': 2 };
+
+		if (pString.length < 1)
+		{
+			return 0;
+		}
+
+		let tmpEnclosureStack = [];
+
+		for (let i = 0; i < tmpString.length; i++)
+		{
+			// IF This is the start of a segment
+			if ((tmpString[i] == tmpSeparator)
+				// AND we are not in a nested portion of the string
+				&& (tmpEnclosureStack.length == 0))
+			{
+				// Return the segment
+				return tmpString.substring(0, i);
+			}
+			// IF This is the start of an enclosure
+			else if (tmpEnclosureStartSymbolMap.hasOwnProperty(tmpString[i]))
+			{
+				// Add it to the stack!
+				tmpEnclosureStack.push(tmpEnclosureStartSymbolMap[tmpString[i]]);
+			}
+			// IF This is the end of an enclosure
+			else if (tmpEnclosureEndSymbolMap.hasOwnProperty(tmpString[i])
+				// AND it matches the current nest level symbol
+				&& tmpEnclosureEndSymbolMap[tmpString[i]] == tmpEnclosureStack[tmpEnclosureStack.length - 1])
+			{
+				// Pop it off the stack!
+				tmpEnclosureStack.pop();
+			}
+		}
+
+		return tmpString;
+	}
+
+	/**
 	 * Count the number of enclosures in a string based on the start and end characters.
 	 *
 	 * If no start or end characters are specified, it will default to parentheses.  If the string is not a string, it will return 0.
