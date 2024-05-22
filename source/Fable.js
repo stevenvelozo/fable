@@ -115,7 +115,7 @@ class Fable extends libFableServiceBase.CoreServiceProviderBase
 		if (this.servicesMap.hasOwnProperty(pServiceType))
 		{
 			// TODO: Check if any services are running?
-			this.log.warn(`Adding a service type [${pServiceType}] that already exists.`);
+			this.log.warn(`Adding a service type [${pServiceType}] that already exists.  This will change the default class prototype for this service.`);
 		}
 		else
 		{
@@ -137,6 +137,20 @@ class Fable extends libFableServiceBase.CoreServiceProviderBase
 			// Add the base class to the list of classes
 			this.log.error(`Attempted to add service type [${pServiceType}] with an invalid class.  Using base service class, which will not crash but won't provide meaningful services.`);
 			this.serviceClasses[pServiceType] = libFableServiceBase;
+		}
+
+		return this.serviceClasses[pServiceType];
+	}
+
+	addServiceTypeIfNotExists(pServiceType, pServiceClass)
+	{
+		if (!this.servicesMap.hasOwnProperty(pServiceType))
+		{
+			return this.addServiceType(pServiceType, pServiceClass);
+		}
+		else
+		{
+			return this.serviceClasses[pServiceType];
 		}
 	}
 
@@ -185,6 +199,18 @@ class Fable extends libFableServiceBase.CoreServiceProviderBase
 		}
 
 		return tmpService;
+	}
+
+	instantiateServiceProviderIfNotExists(pServiceType, pOptions, pCustomServiceHash)
+	{
+		if (this.services.hasOwnProperty(pServiceType))
+		{
+			return this.services[pServiceType];
+		}
+		else
+		{
+			return this.instantiateServiceProvider(pServiceType, pOptions, pCustomServiceHash);
+		}
 	}
 
 	// Create a service provider but don't register it to live forever in fable.services
