@@ -1,24 +1,63 @@
+//let libBookstore = require('../retold-harness/bookstore-serve-meadow-endpoint-apis-run.js');
+const libFable = require('../source/Fable.js');
+
+let testFable = new libFable({"Product": "ProgressTrackerExample"});
 
 
-testFable.addServiceType('SimpleService', SimpleService);
+let tmpTestArray = [
+	{Name:'Jimbo', Age: 12},
+    {Name:'Susan', Age: 17},
+    {Name:'Chris', Age: 15},
+    {Name:'Reginald', Age: 19},
+    {Name:'Wendy', Age: 14},
+    {Name:'Dwight', Age: 16},
+    {Name:'Jimbo2', Age: 18},
+    {Name:'Susan2', Age: 13},
+    {Name:'Chris2', Age: 15},
+    {Name:'Reginald2', Age: 19}
+];
 
-testFable.instantiateServiceProvider('SimpleService', {SomeOption: true}, 'SimpleService-123');
+let tmpProgressTracker = testFable.instantiateServiceProvider('ProgressTrackerSet');
 
+let tmpTestIterations = 50000000;
+// How many interstitial messages we want.
+let tmpMessageChunkSize = tmpTestIterations / 5;
 
-testFable.servicesMap['SimpleService']['SimpleService-123'].doSomething();
+tmpProgressTracker.createProgressTracker('ArrayFromPerformance', tmpTestIterations);
+tmpProgressTracker.logProgressTrackerStatus('ArrayFromPerformance');
+for (let i = 0; i < tmpTestIterations; i++)
+{
+    let tmpArray = Array.from(tmpTestArray);
+    tmpArray.push({Name:'NewGuy', Age: 21});
 
-testFable.SimpleService.doSomething();
+    tmpProgressTracker.incrementProgressTracker('ArrayFromPerformance', 1);
 
-console.log(`Initialized Service ${testFable.servicesMap['SimpleService']['SimpleService-123'].serviceType} as UUID ${testFable.servicesMap['SimpleService']['SimpleService-123'].UUID} with hash ${testFable.servicesMap['SimpleService']['SimpleService-123'].Hash}`);
-
-testFable.servicesMap['SimpleService']['SimpleService-123'].doSomething();
-
-// Instantiate the RestClient Service Provider
-let tmpRestClient = testFable.instantiateServiceProvider('RestClient', {TraceLog: true}, 'RestClient-99');
-
-// Download the wiktionary entry for dog!
-tmpRestClient.getJSON('https://en.wiktionary.org/w/api.php?action=parse&prop=wikitext&format=json&page=dog',
-    (pError, pResponse, pBody)=>
+    if (i % tmpMessageChunkSize == 0)
     {
-        testFable.log.info('Response received~', pBody);
-    });
+        tmpProgressTracker.logProgressTrackerStatus('ArrayFromPerformance');
+    }
+}
+tmpProgressTracker.endProgressTracker('ArrayFromPerformance');
+tmpProgressTracker.logProgressTrackerStatus('ArrayFromPerformance');
+
+tmpProgressTracker.createProgressTracker('ForLoopPerformance', tmpTestIterations);
+tmpProgressTracker.logProgressTrackerStatus('ForLoopPerformance');
+for (let i = 0; i < tmpTestIterations; i++)
+{
+    let tmpArray = [];
+    for (let j = 0; j < tmpTestArray.length; j++)
+    {
+        tmpArray.push(tmpTestArray[j]);
+    }
+    tmpArray.push({Name:'NewGuy', Age: 21});
+
+    tmpProgressTracker.incrementProgressTracker('ForLoopPerformance', 1);
+
+    if (i % tmpMessageChunkSize == 0)
+    {
+        tmpProgressTracker.logProgressTrackerStatus('ForLoopPerformance');
+    }
+}
+tmpProgressTracker.endProgressTracker('ForLoopPerformance');
+tmpProgressTracker.logProgressTrackerStatus('ForLoopPerformance');
+

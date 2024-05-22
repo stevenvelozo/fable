@@ -1,7 +1,7 @@
 {
     "name": "fable",
-    "version": "3.0.124",
-    "description": "Anentity behavior management and API bundling library.",
+    "version": "3.0.125",
+    "description": "A service dependency injection, configuration and logging library.",
     "main": "source/Fable.js",
     "scripts": {
         "start": "node source/Fable.js",

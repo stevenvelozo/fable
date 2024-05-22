@@ -48,6 +48,17 @@ const configMetaTemplate = (pModule) =>
 			return fCallback(null, `Async Jellyfish called for pData which is [${pData}] with a hash of [${pHash}]`);
 		});
 
+	// Exercise the history a bit
+	pModule.addPatternBoth('{~', '~}',
+		(pHash, pData, pContext) =>
+		{
+			return `Non-AsyncJF with a hash of [${pHash}] with a Context size of [${pContext.length}] and a Context[0] of [${JSON.stringify(pContext[0])}]`
+		},
+		(pHash, pData, fCallback, pContext)=>
+		{
+			return fCallback(null, `AsyncJF with a hash of [${pHash}] with a Context size of [${pContext.length}] and a Context[0] of [${JSON.stringify(pContext[0])}]`);
+		});
+
 };
 
 suite
@@ -113,7 +124,7 @@ suite
 
 						Expect(Object.keys(testMetaTemplate.ParseTree).length).to.equal(0, 'There should be an empty tree on initialization.');
 						configMetaTemplate(testMetaTemplate);
-						Expect(Object.keys(testMetaTemplate.ParseTree).length).to.equal(2, 'The tree should grow properly.');
+						Expect(Object.keys(testMetaTemplate.ParseTree).length).to.equal(3, 'The tree should grow properly.');
 
 						//console.log(JSON.stringify(testMetaTemplate.tree,null,4));
 
@@ -328,6 +339,35 @@ suite
 						fDone();
 					}
 				);
+				test
+				(
+					'Passing both Async and Non-async Function with history expectations...',
+					(fDone) =>
+					{
+						let tmpTestString = 'A {~SomeValue~} B';
+						let tmpExpectedResultAsync = 'A AsyncJF with a hash of [SomeValue] with a Context size of [1] and a Context[0] of [{\"SomeValue\":\"AirbornLight\"}] B';
+						let tmpExpectedResult = 'A Non-AsyncJF with a hash of [SomeValue] with a Context size of [1] and a Context[0] of [{\"SomeValue\":\"AirbornLight\"}] B';
+
+						let tmpCustomHistory = [{YouTheMan:'NowDog'}];
+						let tmpExpectedResultCustomHistory = 'A Non-AsyncJF with a hash of [SomeValue] with a Context size of [2] and a Context[0] of [{\"YouTheMan\":\"NowDog\"}] B';
+
+						let testMetaTemplate = loadMetaTemplateModule();
+						configMetaTemplate(testMetaTemplate);
+
+						let tmpNonAsyncResult = testMetaTemplate.parseString(tmpTestString, {SomeValue:'AirbornLight'});
+						Expect(tmpNonAsyncResult).to.equal(tmpExpectedResult);
+
+						let tmpNonAsyncCustomResult = testMetaTemplate.parseString(tmpTestString, {SomeValue:'AirbornLight'}, null, tmpCustomHistory);
+						Expect(tmpNonAsyncCustomResult).to.equal(tmpExpectedResultCustomHistory);
+
+						let	tmpResult = testMetaTemplate.parseString(tmpTestString, {SomeValue:'AirbornLight'},
+							(pError, pValue) =>
+							{
+								Expect(pValue).to.equal(tmpExpectedResultAsync);
+								return fDone();
+							});
+					}
+				);		
 			}
 		);
 	}

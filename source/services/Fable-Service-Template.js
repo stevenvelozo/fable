@@ -57,7 +57,7 @@ class FableServiceTemplate extends libFableServiceBase
 		return this.renderFunction(pData);
 	}
 
-	templateFunction(pData)
+	templateFunction()
 	{
 		let fRenderTemplateBound = this.renderTemplate.bind(this);
 		return fRenderTemplateBound;
