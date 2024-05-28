@@ -72,6 +72,7 @@ class Fable extends libFableServiceBase.CoreServiceProviderBase
 		this.addAndInstantiateServiceType('DataGeneration', require('./services/Fable-Service-DataGeneration.js'));
 		this.addAndInstantiateServiceType('Utility', require('./services/Fable-Service-Utility.js'));
 		this.addAndInstantiateServiceType('Math', require('./services/Fable-Service-Math.js'));
+		this.addServiceType('ExpressionParser', require('./services/Fable-Service-ExpressionParser.js'));
 		this.addServiceType('RestClient', require('./services/Fable-Service-RestClient.js'));
 		this.addServiceType('Manifest', require('manyfest'));
 		this.addServiceType('ObjectCache', require('cachetrax'));
@@ -107,6 +108,11 @@ class Fable extends libFableServiceBase.CoreServiceProviderBase
 	newAnticipate()
 	{
 		return this.instantiateServiceProviderWithoutRegistration('Anticipate');
+	}
+
+	newManyfest(pManifestDefinition)
+	{
+		return this.instantiateServiceProviderWithoutRegistration('Manifest', pManifestDefinition);
 	}
 
 	/* Service Manager Methods */
@@ -159,6 +165,18 @@ class Fable extends libFableServiceBase.CoreServiceProviderBase
 	{
 		this.addServiceType(pServiceType, pServiceClass);
 		return this.instantiateServiceProvider(pServiceType, {}, `${pServiceType}-Default`);
+	}
+
+	addAndInstantiateServiceTypeIfNotExists(pServiceType, pServiceClass)
+	{
+		if (!this.servicesMap.hasOwnProperty(pServiceType))
+		{
+			return this.instantiateServiceProvider(pServiceType, {}, `${pServiceType}-Default`);
+		}
+		else
+		{
+			return this.serviceClasses[pServiceType];
+		}
 	}
 
 	// Some services expect to be overloaded / customized class.

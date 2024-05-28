@@ -107,10 +107,11 @@ class FableServiceMath extends libFableServiceBase
 		return tmpResult.toString();
 	}
 
+	// Bignumber does not use precision values for power -- only javascript decimals
 	powerPrecise(pLeftValue, pRightValue)
 	{
 		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;
-		let tmpRightValue = isNaN(pRightValue) ? 0 : pRightValue;
+		let tmpRightValue = isNaN(pRightValue) ? 0 : parseInt(pRightValue);
 
 		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
 		let tmpResult = tmpLeftArbitraryValue.pow(tmpRightValue);
@@ -208,6 +209,34 @@ class FableServiceMath extends libFableServiceBase
 
 		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
 		return tmpLeftArbitraryValue.lt(tmpRightValue);
+	}
+
+	radPrecise(pDegrees)
+	{
+		let tmpDegrees = isNaN(pDegrees) ? 0 : pDegrees;
+
+		let tmpDegreesArbitraryValue = new this.fable.Utility.bigNumber(tmpDegrees);
+		// TODO: Const for pi in arbitrary precision?
+		let tmpResult = tmpDegreesArbitraryValue.times(Math.PI).div(180);
+		return tmpResult.toString();
+	}
+
+	sin(pRadians)
+	{
+		let tmpRadians = isNaN(pRadians) ? 0 : pRadians;
+		return Math.sin(tmpRadians);
+	}
+
+	cos(pRadians)
+	{
+		let tmpRadians = isNaN(pRadians) ? 0 : pRadians;
+		return Math.cos(tmpRadians);
+	}
+
+	tan(pRadians)
+	{
+		let tmpRadians = isNaN(pRadians) ? 0 : pRadians;
+		return Math.tan(tmpRadians);
 	}
 }
 

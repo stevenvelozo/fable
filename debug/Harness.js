@@ -1,63 +1,48 @@
 //let libBookstore = require('../retold-harness/bookstore-serve-meadow-endpoint-apis-run.js');
 const libFable = require('../source/Fable.js');
 
-let testFable = new libFable({"Product": "ProgressTrackerExample"});
+let testFable = new libFable({"Product": "Ti"});
 
+testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
 
-let tmpTestArray = [
-	{Name:'Jimbo', Age: 12},
-    {Name:'Susan', Age: 17},
-    {Name:'Chris', Age: 15},
-    {Name:'Reginald', Age: 19},
-    {Name:'Wendy', Age: 14},
-    {Name:'Dwight', Age: 16},
-    {Name:'Jimbo2', Age: 18},
-    {Name:'Susan2', Age: 13},
-    {Name:'Chris2', Age: 15},
-    {Name:'Reginald2', Age: 19}
-];
+let tmpExpression = '';
+//tmpExpression = 'Result = 5+3 - sqrt(75 / (3 + {Depth}) * Width)^ 3';
+//tmpExpression = 'Result = (160 * PR * Z) / (C / 100) * PR * Z + (160 * (1 - C / 100))';
+tmpExpression = "Result = (160 * PR * Z) / (C / 100) * PR * Z + (160 * (1 - C / 100))";
 
-let tmpProgressTracker = testFable.instantiateServiceProvider('ProgressTrackerSet');
+let tmpSimpleDataObject = { "PR": 1.5, "Z": "20.036237", "C": -13 };
 
-let tmpTestIterations = 50000000;
-// How many interstitial messages we want.
-let tmpMessageChunkSize = tmpTestIterations / 5;
+testFable.log.info(`tmpExpression: ${tmpExpression}`);
 
-tmpProgressTracker.createProgressTracker('ArrayFromPerformance', tmpTestIterations);
-tmpProgressTracker.logProgressTrackerStatus('ArrayFromPerformance');
-for (let i = 0; i < tmpTestIterations; i++)
+let tmpResultsObject = {};
+
+let complexTokenizedResults = testFable.ExpressionParser.tokenize(tmpExpression, tmpResultsObject);
+let complexLintedResults = testFable.ExpressionParser.lintTokenizedExpression(complexTokenizedResults, tmpResultsObject);
+let complexPostfixedResults = testFable.ExpressionParser.buildPostfixedSolveList(complexTokenizedResults, tmpResultsObject);
+testFable.ExpressionParser.substituteValuesInTokenizedObjects(tmpResultsObject.PostfixTokenObjects, tmpSimpleDataObject);
+
+//testFable.log.info(`Full Results:\n--\n${JSON.stringify(tmpResultsObject,null,4)}\n--\n`);
+//testFable.log.info(`Postfix: ${JSON.stringify(complexPostfixedResults,null,4)}`);
+getTokenString = (pToken) =>
 {
-    let tmpArray = Array.from(tmpTestArray);
-    tmpArray.push({Name:'NewGuy', Age: 21});
+	switch (pToken.Type)
+	{
+		case 'Token.Symbol':
+			return `(${pToken.Token} = ${pToken.Value})`;
+		case 'Token.StateAddress':
+			return `({${pToken.Token}} = ${pToken.Value})`;
+		case 'Token.Constant':
+			default:
+			return pToken.Token;
+	}
 
-    tmpProgressTracker.incrementProgressTracker('ArrayFromPerformance', 1);
-
-    if (i % tmpMessageChunkSize == 0)
-    {
-        tmpProgressTracker.logProgressTrackerStatus('ArrayFromPerformance');
-    }
 }
-tmpProgressTracker.endProgressTracker('ArrayFromPerformance');
-tmpProgressTracker.logProgressTrackerStatus('ArrayFromPerformance');
-
-tmpProgressTracker.createProgressTracker('ForLoopPerformance', tmpTestIterations);
-tmpProgressTracker.logProgressTrackerStatus('ForLoopPerformance');
-for (let i = 0; i < tmpTestIterations; i++)
+for (let i = 0; i < tmpResultsObject.PostfixSolveList.length; i++)
 {
-    let tmpArray = [];
-    for (let j = 0; j < tmpTestArray.length; j++)
-    {
-        tmpArray.push(tmpTestArray[j]);
-    }
-    tmpArray.push({Name:'NewGuy', Age: 21});
-
-    tmpProgressTracker.incrementProgressTracker('ForLoopPerformance', 1);
-
-    if (i % tmpMessageChunkSize == 0)
-    {
-        tmpProgressTracker.logProgressTrackerStatus('ForLoopPerformance');
-    }
+	let tmpToken = tmpResultsObject.PostfixSolveList[i];
+	console.log(`${i}: ${tmpToken.VirtualSymbolName} = ${getTokenString(tmpToken.LeftValue)}  ${tmpToken.Operation.Token}  ${getTokenString(tmpToken.RightValue)}`)
 }
-tmpProgressTracker.endProgressTracker('ForLoopPerformance');
-tmpProgressTracker.logProgressTrackerStatus('ForLoopPerformance');
 
+let tmpResultValue = testFable.ExpressionParser.solvePostfixedExpression(tmpResultsObject.PostfixSolveList, tmpSimpleDataObject, tmpResultsObject);
+console.log(`Result: ${tmpResultValue}`);
+console.log('QED');

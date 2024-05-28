@@ -1,0 +1,22 @@
+{
+	"sqrt":
+		{
+			"Name": "Square Root",
+			"Address": "fable.Math.sqrtPrecise"
+		},
+	"abs":
+		{
+			"Name": "Absolute Value",
+			"Address": "fable.Math.absPrecise"
+		},
+	"rad":
+		{
+			"Name": "Degrees to Radians",
+			"Address": "fable.Math.radPrecise"
+		},
+	"sin":
+		{
+			"Name": "Sine",
+			"Address": "fable.Math.sin"
+		}
+}

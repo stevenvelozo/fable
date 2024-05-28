@@ -1,0 +1,75 @@
+{
+	"=":
+		{
+			"Name": "Equals",
+			"Token": "=",
+			"Precedence": 0,
+			"Type": "Assignment"
+		},
+
+	"(":
+		{
+			"Name": "Left Parenthesis",
+			"Token": "(",
+			"Precedence": 0,
+			"Type": "Parenthesis"
+		},
+	")":
+		{
+			"Name": "Right Parenthesis",
+			"Token": ")",
+			"Precedence": 0,
+			"Type": "Parenthesis"
+		},
+
+	"*":
+		{
+			"Name": "Multiply",
+			"Token": "*",
+			"Function": "fable.Math.multiplyPrecise",
+			"Precedence": 3,
+			"Type": "Operator"
+		},
+	"/":
+		{
+			"Name": "Divide",
+			"Token": "/",
+			"Function": "fable.Math.dividePrecise",
+			"Precedence": 3,
+			"Type": "Operator"
+		},
+
+	"^":
+		{
+			"Name": "Exponent",
+			"Token": "^",
+			"Function": "fable.Math.powerPrecise",
+			"Precedence": 1,
+			"Type": "Operator"
+		},
+	"%":
+		{
+			"Name": "Modulus",
+			"Token": "%",
+			"Function": "fable.Math.modPrecise",
+			"Precedence": 3,
+			"Type": "Operator"
+		},
+
+	"+":
+		{
+			"Name": "Add",
+			"Token": "+",
+			"Function": "fable.Math.addPrecise",
+			"Precedence": 4,
+			"Type": "Operator"
+		},
+	"-":
+		{
+			"Name": "Subtract",
+			"Token": "-",
+			"Function": "fable.Math.subtractPrecise",
+			"Precedence": 4,
+			"Type": "Operator"
+		}
+}
