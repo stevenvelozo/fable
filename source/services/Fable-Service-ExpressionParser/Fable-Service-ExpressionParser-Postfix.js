@@ -446,10 +446,12 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 
 							if (i > 1)
 							{
+								// Todo: This needs to be enhanced to deal with negations
 								let tmpTokenBeforeFunction = tmpResults.PostfixTokenObjects[i-2];
 								if (tmpTokenBeforeFunction.Type === 'Token.Operator')
 								{
 									tmpPostfixTokenObject.PreviousVirtualSymbolName = tmpResults.PostfixTokenObjects[i-2].VirtualSymbolName;
+									tmpPostfixTokenObject.PreviousPrecedence = tmpResults.PostfixTokenObjects[i-2].Descriptor.Precedence;
 								}
 							}
 						}
@@ -478,7 +480,7 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 					}
 					else
 					{
-						// Get the next token
+						// The next token is an operator and we're a function
 						let tmpPeekedNextToken = tmpResults.PostfixTokenObjects[i+1];
 						if (tmpPeekedNextToken.Type == 'Token.Operator' && tmpOpenParenthesis.IsFunction)
 						{
@@ -486,19 +488,22 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 							// The following is just pointer math.
 							// If the operater is at the same precedence or higher than the open parenthesis previous operator, use the previous operator's identifier
 							// NOTE: This line of code is insanely complex
-							tmpPostfixTokenObject.VirtualSymbolName = tmpOpenParenthesis.PreviousVirtualSymbolName;
 
-							// if (tmpPeekedNextToken.Descriptor.Precedence <= tmpOpenParenthesis.PreviousPrecedence)
-							// {
-							// 	tmpPostfixTokenObject.VirtualSymbolName = tmpOpenParenthesis.PreviousVirtualSymbolName;
-							// }
-							// // Otherwise use this one -- it is the higher precedence.  And update the previous parenthesis operator's virtual symbol to be the peeked token's virtual symbol.
-							// else
-							// {
-							// 	tmpPostfixTokenObject.VirtualSymbolName = tmpResults.PostfixLayerstackMap[tmpPostfixTokenObject.VirtualSymbolName];
-							// 	tmpOpenParenthesis.VirtualSymbolName = tmpPeekedNextToken.VirtualSymbolName;
-							// }
+							//tmpPostfixTokenObject.VirtualSymbolName = tmpOpenParenthesis.PreviousVirtualSymbolName;
+
+							// If the next token has higher precedence than what's before the open parenthesis, use it for the open as well
+							if (tmpPeekedNextToken.Descriptor.Precedence < tmpOpenParenthesis.PreviousPrecedence)
+							{
+								tmpOpenParenthesis.VirtualSymbolName = tmpPeekedNextToken.VirtualSymbolName;
+								tmpPostfixTokenObject.VirtualSymbolName = tmpResults.PostfixLayerstackMap[tmpPostfixTokenObject.VirtualSymbolName];
+							}
+							// Otherwise use this one -- it is the higher precedence.  And update the previous parenthesis operator's virtual symbol to be the peeked token's virtual symbol.
+							else
+							{
+								tmpPostfixTokenObject.VirtualSymbolName = tmpOpenParenthesis.PreviousVirtualSymbolName;
+							}
 						}
+						// The next token is an operator and it isn't a function
 						else if (tmpPeekedNextToken.Type == 'Token.Operator' && tmpOpenParenthesis.hasOwnProperty('PreviousPrecedence'))
 						{
 							// This is the second most complex case -- the next token is an operator.
