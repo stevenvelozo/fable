@@ -56,7 +56,7 @@ class FableServiceExpressionParser extends libFableServiceBase
 		this.Solver.connectExpressionParser(this);
 	}
 
-	substituteValuesInTokenizedObjects(pTokenizedObjects, pDataSource, pResultObject, pManifestDefinition)
+	substituteValuesInTokenizedObjects(pTokenizedObjects, pDataSource, pResultObject, pManifest)
 	{
 		let tmpResults = (typeof(pResultObject) === 'object') ? pResultObject : { ExpressionParserLog: [] };
 
@@ -75,8 +75,7 @@ class FableServiceExpressionParser extends libFableServiceBase
 
 		let tmpDataSource = pDataSource;
 
-		// TODO: Allow the calling API to pass in an already constructed manifest.
-		let tmpManifest = this.fable.newManyfest(pManifestDefinition);
+		let tmpManifest = (typeof(pManifest) == 'object') ? pManifest : this.fable.newManyfest(pManifest);
 
 		for (let i = 0; i < pTokenizedObjects.length; i++)
 		{
@@ -191,7 +190,7 @@ class FableServiceExpressionParser extends libFableServiceBase
 		return this.Solver.solvePostfixedExpression(pPostfixedExpression, pDataDestinationObject, pResultObject, pManifest);
 	}
 
-	solve(pExpression, pDataSourceObject, pResultObject, pManifestDefinition, pDataDestinationObject)
+	solve(pExpression, pDataSourceObject, pResultObject, pManifest, pDataDestinationObject)
 	{
 		let tmpResultsObject = (typeof(pResultObject) === 'object') ? pResultObject : {};
 		let tmpDataSourceObject = (typeof(pDataSourceObject) === 'object') ? pDataSourceObject : {};
@@ -201,9 +200,8 @@ class FableServiceExpressionParser extends libFableServiceBase
 		this.lintTokenizedExpression(tmpResultsObject.RawTokens, tmpResultsObject);
 		this.buildPostfixedSolveList(tmpResultsObject.RawTokens, tmpResultsObject);
 		
-		this.substituteValuesInTokenizedObjects(tmpResultsObject.PostfixTokenObjects, tmpDataSourceObject, tmpResultsObject, pManifestDefinition);
-
-		return this.solvePostfixedExpression(tmpResultsObject.PostfixSolveList, tmpDataDestinationObject, tmpResultsObject, pManifestDefinition);
+		this.substituteValuesInTokenizedObjects(tmpResultsObject.PostfixTokenObjects, tmpDataSourceObject, tmpResultsObject, pManifest);
+		return this.solvePostfixedExpression(tmpResultsObject.PostfixSolveList, tmpDataDestinationObject, tmpResultsObject, pManifest);
 	}
 }
 
