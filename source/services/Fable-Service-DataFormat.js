@@ -551,8 +551,8 @@ class DataFormat extends libFableServiceProviderBase
 
 		let tmpSeparator = (typeof(pSeparator) == 'string') ? pSeparator : '.';
 
-		let tmpEnclosureStartSymbolMap = (typeof(pEnclosureStartSymbolMap) == 'object') ? pEnclosureStart : { '{': 0, '[': 1, '(': 2 };
-		let tmpEnclosureEndSymbolMap = (typeof(pEnclosureEndSymbolMap) == 'object') ? pEnclosureEnd : { '}': 0, ']': 1, ')': 2 };
+		let tmpEnclosureStartSymbolMap = (typeof(pEnclosureStartSymbolMap) == 'object') ? pEnclosureStart : { '{': 0, '[': 1, '(': 2, '"':3, "'":4 };
+		let tmpEnclosureEndSymbolMap = (typeof(pEnclosureEndSymbolMap) == 'object') ? pEnclosureEnd : { '}': 0, ']': 1, ')': 2, '"':3, "'":4 };
 
 		let tmpCurrentSegmentStart = 0;
 		let tmpSegmentList = [];

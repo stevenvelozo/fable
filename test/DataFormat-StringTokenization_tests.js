@@ -242,6 +242,31 @@ suite
 						return fTestComplete();
 					}
 				);
+				test
+				(
+					'Get Enclosures',
+					(fTestComplete)=>
+					{
+						let testFable = new libFable({LogStreams: false});
+						let _DataFormat = testFable.services.DataFormat;
+						Expect(_DataFormat
+							.stringGetSegments('Dogs.are.cool')[1])
+							.to.equal('are');
+						Expect(_DataFormat
+							.stringGetSegments('Dogs().are.cool'))
+							.to.deep.equal(['Dogs()', 'are', 'cool']);
+						Expect(_DataFormat
+							.stringGetSegments('Dogs[This.That(),Equals(THEM)].are(.)cool'))
+							.to.deep.equal(['Dogs[This.That(),Equals(THEM)]', 'are(.)cool']);
+						Expect(_DataFormat
+							.stringGetSegments('Dogs(.are(.[....])co.(.)ol')[0])
+							.to.equal('Dogs(.are(.[....])co.(.)ol');
+						Expect(_DataFormat
+							.stringGetSegments('..Dogs.are(,[....]),co.(.)ol'))
+							.to.deep.equal(['','','Dogs','are(,[....]),co','(.)ol']);
+						return fTestComplete();
+					}
+				);
 			}
 		);
 	}

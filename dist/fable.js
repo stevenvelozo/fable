@@ -1148,8 +1148,7 @@ return false;}// Now see if the function has arguments.
 // Implementation notes: * ARGUMENTS MUST SHARE THE SAME ROOT OBJECT CONTEXT *
 let tmpFunctionArguments=_MockFable.DataFormat.stringGetSegments(_MockFable.DataFormat.stringGetEnclosureValueByIndex(pAddress.substring(tmpFunctionAddress.length),0),',');if(tmpFunctionArguments.length==0||tmpFunctionArguments[0]==''){// No arguments... just call the function (bound to the scope of the object it is contained withing)
 return pObject[tmpFunctionAddress].apply(pObject);}else{let tmpArgumentValues=[];let tmpRootObject=typeof pRootObject=='undefined'?pObject:pRootObject;// Now get the value for each argument
-for(let i=0;i<tmpFunctionArguments.length;i++){// Resolve the values for each subsequent entry
-tmpArgumentValues.push(this.getValueAtAddress(tmpRootObject,tmpFunctionArguments[i]));}return pObject[tmpFunctionAddress].apply(pObject,tmpArgumentValues);}}// Boxed elements look like this:
+for(let i=0;i<tmpFunctionArguments.length;i++){if(tmpFunctionArguments[i][0]=="'"&&tmpFunctionArguments[i][tmpFunctionArguments[i].length-1]=="'"){tmpArgumentValues.push(tmpFunctionArguments[i].substring(1,tmpFunctionArguments[i].length-1));}else if(tmpFunctionArguments[i][0]=='"'&&tmpFunctionArguments[i][tmpFunctionArguments[i].length-1]=='"'){tmpArgumentValues.push(tmpFunctionArguments[i].substring(1,tmpFunctionArguments[i].length-1));}else if(tmpFunctionArguments[i][0]=="`"&&tmpFunctionArguments[i][tmpFunctionArguments[i].length-1]=="`"){tmpArgumentValues.push(tmpFunctionArguments[i].substring(1,tmpFunctionArguments[i].length-1));}else{tmpArgumentValues.push(this.getValueAtAddress(tmpRootObject,tmpFunctionArguments[i]));}}return pObject[tmpFunctionAddress].apply(pObject,tmpArgumentValues);}}// Boxed elements look like this:
 // 		MyValues[10]
 // 		MyValues['Name']
 // 		MyValues["Age"]
@@ -3263,7 +3262,7 @@ tmpEnclosureStack.pop();}}return tmpSegmentCount;}/**
 	 * @param {object} pEnclosureStartSymbolMap 
 	 * @param {object} pEnclosureEndSymbolMap 
 	 * @returns the first segment in the string as a string
-	 */stringGetSegments(pString,pSeparator,pEnclosureStartSymbolMap,pEnclosureEndSymbolMap){let tmpString=typeof pString=='string'?pString:'';let tmpSeparator=typeof pSeparator=='string'?pSeparator:'.';let tmpEnclosureStartSymbolMap=typeof pEnclosureStartSymbolMap=='object'?pEnclosureStart:{'{':0,'[':1,'(':2};let tmpEnclosureEndSymbolMap=typeof pEnclosureEndSymbolMap=='object'?pEnclosureEnd:{'}':0,']':1,')':2};let tmpCurrentSegmentStart=0;let tmpSegmentList=[];if(pString.length<1){return tmpSegmentList;}let tmpEnclosureStack=[];for(let i=0;i<tmpString.length;i++){// IF This is the start of a segment
+	 */stringGetSegments(pString,pSeparator,pEnclosureStartSymbolMap,pEnclosureEndSymbolMap){let tmpString=typeof pString=='string'?pString:'';let tmpSeparator=typeof pSeparator=='string'?pSeparator:'.';let tmpEnclosureStartSymbolMap=typeof pEnclosureStartSymbolMap=='object'?pEnclosureStart:{'{':0,'[':1,'(':2,'"':3,"'":4};let tmpEnclosureEndSymbolMap=typeof pEnclosureEndSymbolMap=='object'?pEnclosureEnd:{'}':0,']':1,')':2,'"':3,"'":4};let tmpCurrentSegmentStart=0;let tmpSegmentList=[];if(pString.length<1){return tmpSegmentList;}let tmpEnclosureStack=[];for(let i=0;i<tmpString.length;i++){// IF This is the start of a segment
 if(tmpString[i]==tmpSeparator// AND we are not in a nested portion of the string
 &&tmpEnclosureStack.length==0){// Return the segment
 tmpSegmentList.push(tmpString.substring(tmpCurrentSegmentStart,i));tmpCurrentSegmentStart=i+1;}// IF This is the start of an enclosure
