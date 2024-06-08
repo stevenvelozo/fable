@@ -20,7 +20,7 @@ class ExpressionParserOperationBase extends libFableServiceProviderBase
 
 	getTokenType(pToken)
 	{
-		if (this.ExpressionParser.tokenMap.hasOwnProperty(pToken))
+		if (pToken in this.ExpressionParser.tokenMap)
 		{
 			return `Token.${this.ExpressionParser.tokenMap[pToken].Type}`;
 		}
@@ -47,7 +47,7 @@ class ExpressionParserOperationBase extends libFableServiceProviderBase
 			{
 				Token: pToken,
 				Type: (typeof(pTokenType) === 'undefined') ? this.getTokenType(pToken) : pTokenType,
-				Descriptor: this.ExpressionParser.tokenMap.hasOwnProperty(pToken) ? this.ExpressionParser.tokenMap[pToken] : false
+				Descriptor: (pToken in this.ExpressionParser.tokenMap) ? this.ExpressionParser.tokenMap[pToken] : false
 			});
 	}
 }

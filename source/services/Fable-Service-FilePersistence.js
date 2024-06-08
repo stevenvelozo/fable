@@ -13,7 +13,7 @@ class FableServiceFilePersistence extends libFableServiceBase
 
 		this.serviceType = 'FilePersistence';
 
-		if (!this.options.hasOwnProperty('Mode'))
+		if (!('Mode' in this.options))
 		{
 			this.options.Mode = parseInt('0777', 8) & ~process.umask();
 		}
@@ -152,7 +152,7 @@ class FableServiceFilePersistence extends libFableServiceBase
 			return false;
 		}
 
-		if (!tmpParameters.hasOwnProperty('Mode'))
+		if (!('Mode' in tmpParameters))
 		{
 			tmpParameters.Mode = this.options.Mode;
 		}

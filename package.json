@@ -60,11 +60,11 @@
         "cookie": "^0.6.0",
         "data-arithmatic": "^1.0.7",
         "dayjs": "^1.11.11",
-        "fable-log": "^3.0.13",
+        "fable-log": "^3.0.14",
         "fable-serviceproviderbase": "^3.0.13",
-        "fable-settings": "^3.0.9",
-        "fable-uuid": "^3.0.6",
-        "manyfest": "^1.0.32",
+        "fable-settings": "^3.0.10",
+        "fable-uuid": "^3.0.7",
+        "manyfest": "^1.0.33",
         "simple-get": "^4.0.1"
     }
 }

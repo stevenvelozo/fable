@@ -142,7 +142,7 @@ class FableOperation extends libFableServiceBase
 
 	setStepTotalOperations(pGUIDStep, pTotalOperationCount)
 	{
-		if (!this.stepMap.hasOwnProperty(pGUIDStep))
+		if (!(pGUIDStep in this.stepMap))
 		{
 			return new Error(`Step [${pGUIDStep}] does not exist in operation [${this.state.Metadata.UUID}] ${this.state.Metadata.Name} when attempting to set total operations to ${pTotalOperationCount}.`);
 		}

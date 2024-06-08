@@ -18,7 +18,7 @@ class ExpressionParserSolver extends libExpressionParserOperationBase
 		let tmpDataDestinationObject = (typeof(pDataDestinationObject) === 'object') ? pDataDestinationObject : {};
 
 		// If there was a fable passed in (e.g. the results object was a service or such), we won't decorate
-		let tmpPassedInFable = tmpResults.hasOwnProperty('fable');
+		let tmpPassedInFable = ('fable' in tmpResults);
 		if (!tmpPassedInFable)
 		{
 			tmpResults.fable = this.fable;
@@ -73,11 +73,11 @@ class ExpressionParserSolver extends libExpressionParserOperationBase
 				// TODO: This can be optimized.   A lot.  If necessary.  Seems pretty fast honestly for even thousands of operations.  Slowest part is arbitrary precision.
 				// An operator always has a left and right value.
 				let tmpFunctionAddress = false;
-				if (this.ExpressionParser.tokenMap.hasOwnProperty(tmpStepResultObject.ExpressionStep.Operation.Token))
+				if (tmpStepResultObject.ExpressionStep.Operation.Token in this.ExpressionParser.tokenMap)
 				{
 					tmpFunctionAddress = `ResultsObject.${tmpStepResultObject.ExpressionStep.Operation.Descriptor.Function}`;
 				}
-				else if (this.ExpressionParser.functionMap.hasOwnProperty(tmpStepResultObject.ExpressionStep.Operation.Token.toLowerCase()))
+				else if (tmpStepResultObject.ExpressionStep.Operation.Token.toLowerCase() in this.ExpressionParser.functionMap)
 				{
 					tmpFunctionAddress = `ResultsObject.${this.ExpressionParser.functionMap[tmpStepResultObject.ExpressionStep.Operation.Token.toLowerCase()].Address}`;
 				}

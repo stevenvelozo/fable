@@ -24,7 +24,7 @@ class WordTree
 	 */
 	addChild (pTree, pPattern)
 	{
-		if (!pTree.hasOwnProperty(pPattern))
+		if (!(pPattern in pTree))
 		{
 			pTree[pPattern] = {};
 		}
@@ -42,7 +42,7 @@ class WordTree
 	 */
 	addEndChild (pTree, pPattern)
 	{
-		if (!pTree.hasOwnProperty('PatternEnd'))
+		if (!('PatternEnd' in pTree))
 		{
 			pTree.PatternEnd = {};
 		}
@@ -79,7 +79,7 @@ class WordTree
 			tmpLeaf = this.addChild(tmpLeaf, pPatternStart[i], i);
 		}
 
-		if (!tmpLeaf.hasOwnProperty('PatternEnd'))
+		if (!('PatternEnd' in tmpLeaf))
 		{
 			tmpLeaf.PatternEnd = {};
 		}

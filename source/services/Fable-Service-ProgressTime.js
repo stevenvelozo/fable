@@ -51,7 +51,7 @@ class FableServiceProgressTime extends libFableServiceBase
 	getTimeStampValue(pTimeStampHash)
 	{
 		let tmpTimeStampHash = (typeof(pTimeStampHash) == 'string') ? pTimeStampHash : 'Default';
-		return this.timeStamps.hasOwnProperty(tmpTimeStampHash) ? this.timeStamps[tmpTimeStampHash] : -1;
+		return (tmpTimeStampHash in this.timeStamps) ? this.timeStamps[tmpTimeStampHash] : -1;
 	}
 
 	updateTimeStampValue(pTimeStampHash, pReferenceTime)
@@ -62,7 +62,7 @@ class FableServiceProgressTime extends libFableServiceBase
 		// This function allows the user to pass in either a reference time in ms, or, a hash of a timestamp.
 		if (typeof(pReferenceTime) == 'string')
 		{
-			tmpReferenceTime = this.timeStamps.hasOwnProperty(tmpReference) ? this.timeStamps[tmpReference] : false;
+			tmpReferenceTime = (tmpReference in this.timeStamps) ? this.timeStamps[tmpReference] : false;
 		}
 		else if (typeof(pReferenceTime) == 'number')
 		{
@@ -73,7 +73,7 @@ class FableServiceProgressTime extends libFableServiceBase
 			tmpReferenceTime = +new Date();
 		}
 
-		if (this.timeStamps.hasOwnProperty(tmpTimeStampHash) && tmpReferenceTime)
+		if ((tmpTimeStampHash in this.timeStamps) && tmpReferenceTime)
 		{
 			this.timeStamps[tmpTimeStampHash] = tmpReferenceTime;
 			return this.timeStamps[tmpTimeStampHash];
@@ -87,7 +87,7 @@ class FableServiceProgressTime extends libFableServiceBase
 	removeTimeStamp(pTimeStampHash)
 	{
 		let tmpTimeStampHash = (typeof(pTimeStampHash) == 'string') ? pTimeStampHash : 'Default';
-		if (this.timeStamps.hasOwnProperty(tmpTimeStampHash))
+		if (tmpTimeStampHash in this.timeStamps)
 		{
 			delete this.timeStamps[tmpTimeStampHash];
 			return true;
@@ -106,7 +106,7 @@ class FableServiceProgressTime extends libFableServiceBase
 		// This function allows the user to pass in either a reference time in ms, or, a hash of a timestamp.
 		if (typeof(pReferenceTime) == 'string')
 		{
-			tmpReferenceTime = this.timeStamps.hasOwnProperty(tmpReference) ? this.timeStamps[tmpReference] : false;
+			tmpReferenceTime = (tmpReference in this.timeStamps) ? this.timeStamps[tmpReference] : false;
 		}
 		else if (typeof(pReferenceTime) == 'number')
 		{
@@ -117,7 +117,7 @@ class FableServiceProgressTime extends libFableServiceBase
 			tmpReferenceTime = +new Date();
 		}
 
-		if (this.timeStamps.hasOwnProperty(tmpTimeStampHash) && tmpReferenceTime)
+		if ((tmpTimeStampHash in this.timeStamps) && tmpReferenceTime)
 		{
 			return tmpReferenceTime-this.timeStamps[tmpTimeStampHash];
 		}
@@ -131,7 +131,7 @@ class FableServiceProgressTime extends libFableServiceBase
 	{
 		let tmpTimeStampHashStart = (typeof(pTimeStampHashStart) == 'string') ? pTimeStampHashStart : 'Default';
 		let tmpTimeStampHashEnd = (typeof(pTimeStampHashEnd) == 'string') ? pTimeStampHashEnd : 'Default';
-		if (this.timeStamps.hasOwnProperty(tmpTimeStampHashStart) && this.timeStamps.hasOwnProperty(tmpTimeStampHashEnd))
+		if ((tmpTimeStampHashStart in this.timeStamps) && (tmpTimeStampHashEnd in this.timeStamps))
 		{
 			return this.timeStamps[tmpTimeStampHashEnd]-this.timeStamps[tmpTimeStampHashStart];
 		}

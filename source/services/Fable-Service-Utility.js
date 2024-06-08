@@ -105,7 +105,7 @@ class FableServiceUtility extends libFableServiceBase
 	// with ultra limited JS capabilities where those don't work.
 	isoStringToDate (pISOString)
 	{
-		if (!this.fable.hasOwnProperty('Dates'))
+		if (!('Dates' in this.fable))
 		{
 			this.fable.instantiateServiceProvider('Dates');
 		}

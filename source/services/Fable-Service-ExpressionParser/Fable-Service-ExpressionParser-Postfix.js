@@ -64,7 +64,7 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 				{
 					if ((tmpDepthSolveList[i].Type === 'Token.Operator') && (!tmpDepthSolveList[i].Parsed) && 
 						// When walking backward, we only want to mutate if the .
-						tmpDepthSolveList[i].hasOwnProperty('Descriptor') && tmpOperation.Operation.hasOwnProperty('Descriptor') &&
+						('Descriptor' in tmpDepthSolveList[i]) && ('Descriptor' in tmpOperation.Operation) &&
 						// Anything >3 does not have commutative properties
 						(tmpDepthSolveList[i].Descriptor.Precedence > 3))
 					{
@@ -94,7 +94,7 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 				{
 					if ((tmpDepthSolveList[i].Type === 'Token.Operator') && (!tmpDepthSolveList[i].Parsed) && 
 						// When walking forward, we only want to mutate if the precedence hasn't been solved.
-						tmpDepthSolveList[i].hasOwnProperty('Descriptor') && tmpOperation.Operation.hasOwnProperty('Descriptor') &&
+						('Descriptor' in tmpDepthSolveList[i]) && ('Descriptor' in tmpOperation.Operation) &&
 						// Anything >3 does not have commutative properties
 						(tmpDepthSolveList[i].Descriptor.Precedence > 3))
 					{
@@ -273,7 +273,7 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 		let tmpSolveLayerMaxDepth = 0;
 		for (let i = 0; i < tmpResults.PostfixTokenObjects.length; i++)
 		{
-			if (!tmpSolveLayerMap.hasOwnProperty(tmpResults.PostfixTokenObjects[i].SolveLayerStack))
+			if (!(tmpResults.PostfixTokenObjects[i].SolveLayerStack in tmpSolveLayerMap))
 			{
 				tmpSolveLayerMap[tmpResults.PostfixTokenObjects[i].SolveLayerStack] = [];
 			}
@@ -504,7 +504,7 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 							}
 						}
 						// The next token is an operator and it isn't a function
-						else if (tmpPeekedNextToken.Type == 'Token.Operator' && tmpOpenParenthesis.hasOwnProperty('PreviousPrecedence'))
+						else if (tmpPeekedNextToken.Type == 'Token.Operator' && ('PreviousPrecedence' in tmpOpenParenthesis))
 						{
 							// This is the second most complex case -- the next token is an operator.
 							// If the operater is at the same precedence or higher than the open parenthesis previous operator, use the previous operator's identifier

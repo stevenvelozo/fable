@@ -100,7 +100,7 @@ class ExpressionTokenizer extends libExpressionParserOperationBase
 			}
 
 			// [ TOKENS ]
-			if (this.ExpressionParser.tokenMap.hasOwnProperty(tmpCharacter))
+			if (tmpCharacter in this.ExpressionParser.tokenMap)
 			{
 				if (tmpCurrentToken.length > 0)
 				{

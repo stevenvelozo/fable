@@ -36,7 +36,7 @@ class FableServiceRestClient extends libFableServiceBase
 		if (this.cookie)
 		{
 			let tmpCookieObject = this.cookie;
-			if (!pRequestOptions.hasOwnProperty('headers'))
+			if (!('headers' in pRequestOptions))
 			{
 				pRequestOptions.headers = {};
 			}
@@ -56,7 +56,7 @@ class FableServiceRestClient extends libFableServiceBase
 		let tmpOptions = this.prepareCookies(pOptions);
 
 		// Prepend a string to the URL if it exists in the Fable Config
-		if (this.fable.settings.hasOwnProperty('RestClientURLPrefix'))
+		if ('RestClientURLPrefix' in this.fable.settings)
 		{
 			tmpOptions.url = this.fable.settings.RestClientURLPrefix + tmpOptions.url;
 		}
@@ -181,12 +181,12 @@ class FableServiceRestClient extends libFableServiceBase
 
 		let tmpOptions = this.preRequest(pOptions);
 
-		if (!tmpOptions.hasOwnProperty('headers'))
+		if (!('headers' in tmpOptions))
 		{
 			tmpOptions.headers = {};
 		}
 		/* Automated headers break some APIs
-		if (!tmpOptions.headers.hasOwnProperty('Content-Type'))
+		if (!('Content-Type' in tmpOptions.headers))
 		{
 			tmpOptions.headers['Content-Type'] = 'application/json';
 		}

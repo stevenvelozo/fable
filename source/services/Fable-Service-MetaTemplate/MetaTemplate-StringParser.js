@@ -91,21 +91,21 @@ class StringParser
 		if (pParserState.PatternMatch)
 		{
 			// If the pattern is still matching the start and we haven't passed the buffer
-			if (!pParserState.StartPatternMatchComplete && pParserState.Pattern.hasOwnProperty(pCharacter))
+			if (!pParserState.StartPatternMatchComplete && (pCharacter in pParserState.Pattern))
 			{
 				pParserState.Pattern = pParserState.Pattern[pCharacter];
 				this.appendOutputBuffer(pCharacter, pParserState);
 			}
 			else if (pParserState.EndPatternMatchBegan)
 			{
-				if (pParserState.Pattern.PatternEnd.hasOwnProperty(pCharacter))
+				if (pCharacter in pParserState.Pattern.PatternEnd)
 				{
 					// This leaf has a PatternEnd tree, so we will wait until that end is met.
 					pParserState.Pattern = pParserState.Pattern.PatternEnd[pCharacter];
 					// Flush the output buffer.
 					this.appendOutputBuffer(pCharacter, pParserState);
 					// If this last character is the end of the pattern, parse it.
-					if (pParserState.Pattern.hasOwnProperty('Parse') && (!pParserState.Pattern.isAsync || pParserState.Pattern.isBoth))
+					if (('Parse' in pParserState.Pattern) && (!pParserState.Pattern.isAsync || pParserState.Pattern.isBoth))
 					{
 						// Run the function
 						pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
@@ -117,7 +117,7 @@ class StringParser
 						return this.resetOutputBuffer(pParserState);
 					}
 				}
-				else if (pParserState.PatternStartNode.PatternEnd.hasOwnProperty(pCharacter))
+				else if (pCharacter in pParserState.PatternStartNode.PatternEnd)
 				{
 					// We broke out of the end -- see if this is a new start of the end.
 					pParserState.Pattern = pParserState.PatternStartNode.PatternEnd[pCharacter];
@@ -129,7 +129,7 @@ class StringParser
 					this.appendOutputBuffer(pCharacter, pParserState);
 				}
 			}
-			else if (pParserState.Pattern.hasOwnProperty('PatternEnd'))
+			else if ('PatternEnd' in pParserState.Pattern)
 			{
 				if (!pParserState.StartPatternMatchComplete)
 				{
@@ -139,14 +139,14 @@ class StringParser
 
 				this.appendOutputBuffer(pCharacter, pParserState);
 
-				if (pParserState.Pattern.PatternEnd.hasOwnProperty(pCharacter))
+				if (pCharacter in pParserState.Pattern.PatternEnd)
 				{
 					// This is the first character of the end pattern.
 					pParserState.EndPatternMatchBegan = true;
 					// This leaf has a PatternEnd tree, so we will wait until that end is met.
 					pParserState.Pattern = pParserState.Pattern.PatternEnd[pCharacter];
 					// If this last character is the end of the pattern, parse it.
-					if (pParserState.Pattern.hasOwnProperty('Parse'))
+					if ('Parse' in pParserState.Pattern)
 					{
 						if (pParserState.Pattern.isAsync && !pParserState.Pattern.isBoth)
 						{
@@ -172,7 +172,7 @@ class StringParser
 		if (!pParserState.PatternMatch)
 		{
 			// This may be the start of a new pattern....
-			if (pParserState.ParseTree.hasOwnProperty(pCharacter))
+			if (pCharacter in pParserState.ParseTree)
 			{
 				// ... assign the root node as the matched node.
 				this.resetOutputBuffer(pParserState);
@@ -251,26 +251,26 @@ class StringParser
 		if (pParserState.PatternMatch)
 		{
 			// If the pattern is still matching the start and we haven't passed the buffer
-			if (!pParserState.StartPatternMatchComplete && pParserState.Pattern.hasOwnProperty(pCharacter))
+			if (!pParserState.StartPatternMatchComplete && (pCharacter in pParserState.Pattern))
 			{
 				pParserState.Pattern = pParserState.Pattern[pCharacter];
 				this.appendOutputBuffer(pCharacter, pParserState);
 			}
 			else if (pParserState.EndPatternMatchBegan)
 			{
-				if (pParserState.Pattern.PatternEnd.hasOwnProperty(pCharacter))
+				if (pCharacter in pParserState.Pattern.PatternEnd)
 				{
 					// This leaf has a PatternEnd tree, so we will wait until that end is met.
 					pParserState.Pattern = pParserState.Pattern.PatternEnd[pCharacter];
 					// Flush the output buffer.
 					this.appendOutputBuffer(pCharacter, pParserState);
 					// If this last character is the end of the pattern, parse it.
-					if (pParserState.Pattern.hasOwnProperty('Parse'))
+					if ('Parse' in pParserState.Pattern)
 					{
 						return this.executePatternAsync(pParserState, pData, fCallback, pDataContext);
 					}
 				}
-				else if (pParserState.PatternStartNode.PatternEnd.hasOwnProperty(pCharacter))
+				else if (pCharacter in pParserState.PatternStartNode.PatternEnd)
 				{
 					// We broke out of the end -- see if this is a new start of the end.
 					pParserState.Pattern = pParserState.PatternStartNode.PatternEnd[pCharacter];
@@ -282,7 +282,7 @@ class StringParser
 					this.appendOutputBuffer(pCharacter, pParserState);
 				}
 			}
-			else if (pParserState.Pattern.hasOwnProperty('PatternEnd'))
+			else if ('PatternEnd' in pParserState.Pattern)
 			{
 				if (!pParserState.StartPatternMatchComplete)
 				{
@@ -292,14 +292,14 @@ class StringParser
 
 				this.appendOutputBuffer(pCharacter, pParserState);
 
-				if (pParserState.Pattern.PatternEnd.hasOwnProperty(pCharacter))
+				if (pCharacter in pParserState.Pattern.PatternEnd)
 				{
 					// This is the first character of the end pattern.
 					pParserState.EndPatternMatchBegan = true;
 					// This leaf has a PatternEnd tree, so we will wait until that end is met.
 					pParserState.Pattern = pParserState.Pattern.PatternEnd[pCharacter];
 					// If this last character is the end of the pattern, parse it.
-					if (pParserState.Pattern.hasOwnProperty('Parse'))
+					if ('Parse' in pParserState.Pattern)
 					{
 						return this.executePatternAsync(pParserState, pData, fCallback, pDataContext);
 					}
@@ -315,7 +315,7 @@ class StringParser
 		else
 		{
 			// This may be the start of a new pattern....
-			if (pParserState.ParseTree.hasOwnProperty(pCharacter))
+			if (pCharacter in pParserState.ParseTree)
 			{
 				// ... assign the root node as the matched node.
 				this.resetOutputBuffer(pParserState);

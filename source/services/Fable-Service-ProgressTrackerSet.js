@@ -23,7 +23,7 @@ class FableServiceProgressTrackerSet extends libFableServiceBase
 	{
 		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'Default';
 
-		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
+		if (!(tmpProgressTrackerHash in this.progressTrackers))
 		{
 			this.fable.log.warn(`ProgressTracker ${tmpProgressTrackerHash} does not exist!  Creating a new tracker...`);
 			this.createProgressTracker(tmpProgressTrackerHash, 100);
@@ -36,7 +36,7 @@ class FableServiceProgressTrackerSet extends libFableServiceBase
 	{
 		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'Default';
 
-		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
+		if (!(tmpProgressTrackerHash in this.progressTrackers))
 		{
 			this.fable.log.warn(`ProgressTracker ${tmpProgressTrackerHash} does not exist!  Creating a new tracker...`);
 			this.createProgressTracker(tmpProgressTrackerHash, 100);
@@ -73,7 +73,7 @@ class FableServiceProgressTrackerSet extends libFableServiceBase
 				CurrentCount:-1
 			});
 
-		if (this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
+		if (tmpProgressTrackerHash in this.progressTrackers)
 		{
 			this.fable.log.warn(`ProgressTracker ${tmpProgressTrackerHash} already exists!  Overwriting with a new tracker...`);
 			this.progressTimes.removeTimeStamp(tmpProgressTracker.StartTimeHash);
@@ -90,7 +90,7 @@ class FableServiceProgressTrackerSet extends libFableServiceBase
 		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'Default';
 		let tmpTotalOperations = (typeof(pTotalOperations) == 'number') ? pTotalOperations : 100;
 
-		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
+		if (!(tmpProgressTrackerHash in this.progressTrackers))
 		{
 			this.fable.log.warn(`Attempted to set the total operations of ProgressTracker ${tmpProgressTrackerHash} but it does not exist!  Creating a new tracker...`);
 			this.createProgressTracker(tmpProgressTrackerHash, tmpTotalOperations);
@@ -106,7 +106,7 @@ class FableServiceProgressTrackerSet extends libFableServiceBase
 		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'Default';
 
 		// This is the only method to lazily create ProgressTrackers now
-		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
+		if (!(tmpProgressTrackerHash in this.progressTrackers))
 		{
 			this.createProgressTracker(tmpProgressTrackerHash, 100);
 		}
@@ -127,7 +127,7 @@ class FableServiceProgressTrackerSet extends libFableServiceBase
 	{
 		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'Default';
 
-		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
+		if (!(tmpProgressTrackerHash in this.progressTrackers))
 		{
 			this.fable.log.error(`Attempted to end ProgressTracker ${tmpProgressTrackerHash} that does not exist!`);
 			return false;
@@ -145,7 +145,7 @@ class FableServiceProgressTrackerSet extends libFableServiceBase
 	{
 		let tmpProgressTrackerHash = (typeof(pProgressTrackerHash) == 'string') ? pProgressTrackerHash : 'Default';
 
-		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
+		if (!(tmpProgressTrackerHash in this.progressTrackers))
 		{
 			this.fable.log.error(`Attempted to solve ProgressTracker ${tmpProgressTrackerHash} that does not exist!`);
 			return false;
@@ -217,7 +217,7 @@ class FableServiceProgressTrackerSet extends libFableServiceBase
 			return false;
 		}
 
-		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
+		if (!(tmpProgressTrackerHash in this.progressTrackers))
 		{
 			this.createProgressTracker(100, tmpProgressTrackerHash);
 		}
@@ -237,7 +237,7 @@ class FableServiceProgressTrackerSet extends libFableServiceBase
 			tmpOperationIncrementAmount = 1;
 		}
 
-		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
+		if (!(tmpProgressTrackerHash in this.progressTrackers))
 		{
 			this.fable.log.warn(`Attempted to increment ProgressTracker ${tmpProgressTrackerHash} but it did not exist.`);
 			return false;
@@ -284,7 +284,7 @@ class FableServiceProgressTrackerSet extends libFableServiceBase
 		// TODO: Is there a pattern to avoid this double call that's worth putting in?
 		this.solveProgressTrackerStatus(tmpProgressTrackerHash);
 
-		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
+		if (!(tmpProgressTrackerHash in this.progressTrackers))
 		{
 			return `ProgressTracker ${tmpProgressTrackerHash} does not exist!  No stats to display.`;
 		}
@@ -325,7 +325,7 @@ class FableServiceProgressTrackerSet extends libFableServiceBase
 		// TODO: Is there a pattern to avoid this double call that's worth putting in?
 		this.solveProgressTrackerStatus(tmpProgressTrackerHash);
 
-		if (!this.progressTrackers.hasOwnProperty(tmpProgressTrackerHash))
+		if (!(tmpProgressTrackerHash in this.progressTrackers))
 		{
 			return `ProgressTracker ${tmpProgressTrackerHash} does not exist!  No stats to display.`;
 		}

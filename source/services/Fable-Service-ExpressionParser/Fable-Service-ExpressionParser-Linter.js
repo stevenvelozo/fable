@@ -153,11 +153,11 @@ class ExpressionParserLinter extends libExpressionParserOperationBase
 		let tmpTokenPrevious = false;
 		for (let i = 0; i < pTokenizedExpression.length - 1; i++)
 		{
-			if ((this.ExpressionParser.tokenMap.hasOwnProperty(pTokenizedExpression[i])) && (this.ExpressionParser.tokenMap[pTokenizedExpression[i]].Type != 'Parenthesis') && !tmpTokenPrevious)
+			if ((pTokenizedExpression[i] in this.ExpressionParser.tokenMap) && (this.ExpressionParser.tokenMap[pTokenizedExpression[i]].Type != 'Parenthesis') && !tmpTokenPrevious)
 			{
 				tmpTokenPrevious = true;
 			}
-			else if (this.ExpressionParser.tokenMap.hasOwnProperty(pTokenizedExpression[i]) && (this.ExpressionParser.tokenMap[pTokenizedExpression[i]].Type != 'Parenthesis'))
+			else if ((pTokenizedExpression[i] in this.ExpressionParser.tokenMap) && (this.ExpressionParser.tokenMap[pTokenizedExpression[i]].Type != 'Parenthesis'))
 			{
 				// If this isn't a + or - positivity/negativity multiplier, it's an error.
 				if ((pTokenizedExpression[i] !== '+') && (pTokenizedExpression[i] !== '-'))
