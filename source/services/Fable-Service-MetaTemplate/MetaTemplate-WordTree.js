@@ -59,7 +59,7 @@ class WordTree
 	 * @param {function} fParser - The function to parse if this is the matched pattern, once the Pattern End is met.  If this is a string, a simple replacement occurs.
 	 * @return {bool} True if adding the pattern was successful
 	 */
-	addPattern (pPatternStart, pPatternEnd, fParser)
+	addPattern (pPatternStart, pPatternEnd, fParser, pParserContext)
 	{
 		if (pPatternStart.length < 1)
 		{
@@ -96,6 +96,12 @@ class WordTree
 						(typeof(fParser) === 'string') ? () => { return fParser; } :
 						(pData) => { return pData; };
 
+		// A "this" for every object
+		if (pParserContext)
+		{
+			tmpLeaf.ParserContext = pParserContext;
+		}
+
 		return tmpLeaf;
 	}
 
@@ -107,9 +113,9 @@ class WordTree
 	 * @param {function} fParserAsync - The function to parse if this is the matched pattern, once the Pattern End is met.  If this is a string, a simple replacement occurs.
 	 * @return {bool} True if adding the pattern was successful
 	 */
-	addPatternAsync (pPatternStart, pPatternEnd, fParserAsync)
+	addPatternAsync (pPatternStart, pPatternEnd, fParserAsync, pParserContext)
 	{
-		let tmpLeaf = this.addPattern(pPatternStart, pPatternEnd, fParserAsync);
+		let tmpLeaf = this.addPattern(pPatternStart, pPatternEnd, fParserAsync, pParserContext);
 		if (tmpLeaf)
 		{
 			tmpLeaf.isAsync = true;
@@ -123,9 +129,9 @@ class WordTree
 	 * @param {function} fParser - The function to parse if this is the matched pattern, once the Pattern End is met.  If this is a string, a simple replacement occurs.
 	 * @return {bool} True if adding the pattern was successful
 	 */
-	addPatternBoth (pPatternStart, pPatternEnd, fParser, fParserAsync)
+	addPatternBoth (pPatternStart, pPatternEnd, fParser, fParserAsync, pParserContext)
 	{
-		let tmpLeaf = this.addPattern(pPatternStart, pPatternEnd, fParser);
+		let tmpLeaf = this.addPattern(pPatternStart, pPatternEnd, fParser, pParserContext);
 		if (tmpLeaf)
 		{
 			tmpLeaf.isAsync = true;

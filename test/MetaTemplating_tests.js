@@ -21,7 +21,6 @@ const loadMetaTemplateModule = () =>
 const configMetaTemplate = (pModule) =>
 {
 
-
 	pModule.addPattern('<%', '%>', 'JUNKED_THIS_DATA');
 	// This one gets the count of the inner string...
 	pModule.addPattern('<%#', '%>', (pData)=>{return pData.length});
@@ -145,6 +144,27 @@ suite
 						let testMetaTemplate = loadMetaTemplateModule();
 						configMetaTemplate(testMetaTemplate);
 						let	tmpResult = testMetaTemplate.parseString(tmpTestString, 'Yikes');
+						Expect(tmpResult).to.equal(tmpExpectedResult);
+						fDone();
+					}
+				);
+				test
+				(
+					'Custom this',
+					(fDone) =>
+					{
+						let tmpTestString = 'The [^objective^] pData up in here and a $comment$ as well.';
+						let tmpExpectedResult = 'The This objective is like {\"BigData\":\"is here\"} pData up in here and a comment as well.';
+						let testMetaTemplate = loadMetaTemplateModule();
+						configMetaTemplate(testMetaTemplate);
+
+						testMetaTemplate.addPattern('[^', '^]', 
+							function (pData)
+							{
+								return `This ${pData} is like ${JSON.stringify(this)}`;
+							}, {BigData:'is here'});
+
+						let	tmpResult = testMetaTemplate.parseString(tmpTestString, 'where my big data at');
 						Expect(tmpResult).to.equal(tmpExpectedResult);
 						fDone();
 					}

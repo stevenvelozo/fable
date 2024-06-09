@@ -25,27 +25,19 @@ class FableServiceMetaTemplate extends libFableServiceBase
 	}
 
 
-	/**
-	 * Add a Pattern to the Parse Tree
-	 * @method addPattern
-	 * @param {Object} pTree - A node on the parse tree to push the characters into
-	 * @param {string} pPattern - The string to add to the tree
-	 * @param {number} pIndex - callback function
-	 * @return {bool} True if adding the pattern was successful
-	 */
-	addPattern(pPatternStart, pPatternEnd, pParser)
+	addPattern(pPatternStart, pPatternEnd, pParser, pParserContext)
 	{
-		return this.WordTree.addPattern(pPatternStart, pPatternEnd, pParser);
+		return this.WordTree.addPattern(pPatternStart, pPatternEnd, pParser, pParserContext);
 	}
 
-	addPatternAsync(pPatternStart, pPatternEnd, pParserPromise)
+	addPatternAsync(pPatternStart, pPatternEnd, pParserPromise, pParserContext)
 	{
-		return this.WordTree.addPatternAsync(pPatternStart, pPatternEnd, pParserPromise);
+		return this.WordTree.addPatternAsync(pPatternStart, pPatternEnd, pParserPromise, pParserContext);
 	}
 
-	addPatternBoth(pPatternStart, pPatternEnd, pParser, pParserPromise)
+	addPatternBoth(pPatternStart, pPatternEnd, pParser, pParserPromise, pParserContext)
 	{
-		return this.WordTree.addPatternBoth(pPatternStart, pPatternEnd, pParser, pParserPromise);
+		return this.WordTree.addPatternBoth(pPatternStart, pPatternEnd, pParser, pParserPromise, pParserContext);
 	}
 
 	/**

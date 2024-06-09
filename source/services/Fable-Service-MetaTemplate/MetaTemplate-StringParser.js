@@ -108,7 +108,15 @@ class StringParser
 					if (('Parse' in pParserState.Pattern) && (!pParserState.Pattern.isAsync || pParserState.Pattern.isBoth))
 					{
 						// Run the function
-						pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
+						let tmpFunctionContext = ('ParserContext' in pParserState.Pattern) ? pParserState.Pattern.ParserContext : false;
+						if (tmpFunctionContext)
+						{
+							pParserState.OutputBuffer = pParserState.Pattern.Parse.call(tmpFunctionContext, pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
+						}
+						else
+						{
+							pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
+						}
 						return this.resetOutputBuffer(pParserState);
 					}
 					else
@@ -156,7 +164,15 @@ class StringParser
 						else
 						{
 							// Run the t*mplate function
-							pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
+							let tmpFunctionContext = ('ParserContext' in pParserState.Pattern) ? pParserState.Pattern.ParserContext : false;
+							if (tmpFunctionContext)
+							{
+								pParserState.OutputBuffer = pParserState.Pattern.Parse.call(tmpFunctionContext, pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
+							}
+							else
+							{
+								pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
+							}
 							return this.resetOutputBuffer(pParserState);
 						}
 					}
@@ -196,39 +212,85 @@ class StringParser
 		if (pParserState.Pattern.isAsync && !pParserState.Pattern.isBoth)
 		{
 			// Run the function
-			return pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData,
-				(pError, pAsyncOutput) =>
-				{
-					if (pError)
+			let tmpFunctionContext = ('ParserContext' in pParserState.Pattern) ? pParserState.Pattern.ParserContext : false;
+			if (tmpFunctionContext)
+			{
+				return pParserState.Pattern.Parse.call(tmpFunctionContext, pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData,
+					(pError, pAsyncOutput) =>
 					{
-						this.fable.log.info(`Precedent ERROR: Async template error happened parsing ${pParserState.Pattern.PatternStart} ... ${pParserState.Pattern.PatternEnd}: ${pError}`);
-					}
+						if (pError)
+						{
+							this.fable.log.info(`Precedent ERROR: Async template error happened parsing ${pParserState.Pattern.PatternStart} ... ${pParserState.Pattern.PatternEnd}: ${pError}`);
+						}
 
-					pParserState.OutputBuffer = pAsyncOutput;
-					this.resetOutputBuffer(pParserState);
-					return fCallback();
-				}, pDataContext);
+						pParserState.OutputBuffer = pAsyncOutput;
+						this.resetOutputBuffer(pParserState);
+						return fCallback();
+					}, pDataContext);
+			}
+			else
+			{
+				return pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData,
+					(pError, pAsyncOutput) =>
+					{
+						if (pError)
+						{
+							this.fable.log.info(`Precedent ERROR: Async template error happened parsing ${pParserState.Pattern.PatternStart} ... ${pParserState.Pattern.PatternEnd}: ${pError}`);
+						}
+
+						pParserState.OutputBuffer = pAsyncOutput;
+						this.resetOutputBuffer(pParserState);
+						return fCallback();
+					}, pDataContext);
+			}
 		}
 		else if (pParserState.Pattern.isAsync && pParserState.Pattern.isBoth)
 		{
 			// Run the function when both async and non async were provided with the pattern
-			return pParserState.Pattern.ParseAsync(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData,
-				(pError, pAsyncOutput) =>
-				{
-					if (pError)
+			let tmpFunctionContext = ('ParserContext' in pParserState.Pattern) ? pParserState.Pattern.ParserContext : false;
+			if (tmpFunctionContext)
+			{
+				return pParserState.Pattern.ParseAsync.call(tmpFunctionContext, pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData,
+					(pError, pAsyncOutput) =>
 					{
-						this.fable.log.info(`Precedent ERROR: Async template error happened parsing ${pParserState.Pattern.PatternStart} ... ${pParserState.Pattern.PatternEnd}: ${pError}`);
-					}
+						if (pError)
+						{
+							this.fable.log.info(`Precedent ERROR: Async template error happened parsing ${pParserState.Pattern.PatternStart} ... ${pParserState.Pattern.PatternEnd}: ${pError}`);
+						}
 
-					pParserState.OutputBuffer = pAsyncOutput;
-					this.resetOutputBuffer(pParserState);
-					return fCallback();
-				}, pDataContext);
+						pParserState.OutputBuffer = pAsyncOutput;
+						this.resetOutputBuffer(pParserState);
+						return fCallback();
+					}, pDataContext);
+			}
+			else
+			{
+				return pParserState.Pattern.ParseAsync(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData,
+					(pError, pAsyncOutput) =>
+					{
+						if (pError)
+						{
+							this.fable.log.info(`Precedent ERROR: Async template error happened parsing ${pParserState.Pattern.PatternStart} ... ${pParserState.Pattern.PatternEnd}: ${pError}`);
+						}
+
+						pParserState.OutputBuffer = pAsyncOutput;
+						this.resetOutputBuffer(pParserState);
+						return fCallback();
+					}, pDataContext);
+			}
 		}
 		else
 		{
 			// Run the t*mplate function
-			pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
+			let tmpFunctionContext = ('ParserContext' in pParserState.Pattern) ? pParserState.Pattern.ParserContext : false;
+			if (tmpFunctionContext)
+			{
+				pParserState.OutputBuffer = pParserState.Pattern.Parse.call(tmpFunctionContext, pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
+			}
+			else
+			{
+				pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
+			}
 			this.resetOutputBuffer(pParserState);
 			return fCallback();
 		}
