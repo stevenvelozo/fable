@@ -1,6 +1,6 @@
 {
     "name": "fable",
-    "version": "3.0.130",
+    "version": "3.0.131",
     "description": "A service dependency injection, configuration and logging library.",
     "main": "source/Fable.js",
     "scripts": {
