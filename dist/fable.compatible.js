@@ -1149,7 +1149,10 @@ return false;}// Now see if the function has arguments.
 var tmpFunctionArguments=_MockFable.DataFormat.stringGetSegments(_MockFable.DataFormat.stringGetEnclosureValueByIndex(pAddress.substring(tmpFunctionAddress.length),0),',');if(tmpFunctionArguments.length==0||tmpFunctionArguments[0]==''){// No arguments... just call the function (bound to the scope of the object it is contained withing)
 return pObject[tmpFunctionAddress].apply(pObject);}else{var tmpArgumentValues=[];var _tmpRootObject2=typeof pRootObject=='undefined'?pObject:pRootObject;// Now get the value for each argument
 for(var _i4=0;_i4<tmpFunctionArguments.length;_i4++){// Resolve the values for each subsequent entry
-tmpArgumentValues.push(this.getValueAtAddress(_tmpRootObject2,tmpFunctionArguments[_i4]));}return pObject[tmpFunctionAddress].apply(pObject,tmpArgumentValues);}}// Boxed elements look like this:
+// Check if the argument value is a string literal or a reference to an address
+if(tmpFunctionArguments[_i4].length>=2&&(tmpFunctionArguments[_i4].charAt(0)=='"'||tmpFunctionArguments[_i4].charAt(0)=="'"||tmpFunctionArguments[_i4].charAt(0)=="`")&&(tmpFunctionArguments[_i4].charAt(tmpFunctionArguments[_i4].length-1)=='"'||tmpFunctionArguments[_i4].charAt(tmpFunctionArguments[_i4].length-1)=="'"||tmpFunctionArguments[_i4].charAt(tmpFunctionArguments[_i4].length-1)=="`")){// This is a string literal
+tmpArgumentValues.push(tmpFunctionArguments[_i4].substring(1,tmpFunctionArguments[_i4].length-1));}else{// This is a hash address
+tmpArgumentValues.push(this.getValueAtAddress(_tmpRootObject2,tmpFunctionArguments[_i4]));}}return pObject[tmpFunctionAddress].apply(pObject,tmpArgumentValues);}}// Boxed elements look like this:
 // 		MyValues[10]
 // 		MyValues['Name']
 // 		MyValues["Age"]
@@ -1209,7 +1212,10 @@ return false;}// Now see if the function has arguments.
 var _tmpFunctionArguments=_MockFable.DataFormat.stringGetSegments(_MockFable.DataFormat.stringGetEnclosureValueByIndex(tmpSubObjectName.substring(_tmpFunctionAddress2.length),0),',');if(_tmpFunctionArguments.length==0||_tmpFunctionArguments[0]==''){// No arguments... just call the function (bound to the scope of the object it is contained withing)
 return this.getValueAtAddress(pObject[_tmpFunctionAddress2].apply(pObject),tmpNewAddress,tmpParentAddress,tmpRootObject);}else{var _tmpArgumentValues=[];var _tmpRootObject3=typeof pRootObject=='undefined'?pObject:pRootObject;// Now get the value for each argument
 for(var _i6=0;_i6<_tmpFunctionArguments.length;_i6++){// Resolve the values for each subsequent entry
-_tmpArgumentValues.push(this.getValueAtAddress(_tmpRootObject3,_tmpFunctionArguments[_i6]));}return this.getValueAtAddress(pObject[_tmpFunctionAddress2].apply(pObject,_tmpArgumentValues),tmpNewAddress,tmpParentAddress,_tmpRootObject3);}}// Boxed elements look like this:
+// Check if the argument value is a string literal or a reference to an address
+if(_tmpFunctionArguments[_i6].length>=2&&(_tmpFunctionArguments[_i6].charAt(0)=='"'||_tmpFunctionArguments[_i6].charAt(0)=="'"||_tmpFunctionArguments[_i6].charAt(0)=="`")&&(_tmpFunctionArguments[_i6].charAt(_tmpFunctionArguments[_i6].length-1)=='"'||_tmpFunctionArguments[_i6].charAt(_tmpFunctionArguments[_i6].length-1)=="'"||_tmpFunctionArguments[_i6].charAt(_tmpFunctionArguments[_i6].length-1)=="`")){// This is a string literal
+_tmpArgumentValues.push(_tmpFunctionArguments[_i6].substring(1,_tmpFunctionArguments[_i6].length-1));}else{// This is a hash address
+_tmpArgumentValues.push(this.getValueAtAddress(_tmpRootObject3,_tmpFunctionArguments[_i6]));}}return this.getValueAtAddress(pObject[_tmpFunctionAddress2].apply(pObject,_tmpArgumentValues),tmpNewAddress,tmpParentAddress,_tmpRootObject3);}}// Boxed elements look like this:
 // 		MyValues[42]
 // 		MyValues['Color']
 // 		MyValues["Weight"]
