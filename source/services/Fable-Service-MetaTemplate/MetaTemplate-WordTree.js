@@ -52,14 +52,16 @@ class WordTree
 		return pTree.PatternEnd[pPattern];
 	}
 
-	/** Add a Pattern to the Parse Tree
-	 * @method addPattern
+	/** Add a Pattern to the Parse Tree with both function parameter types
+	 * @method addPatternAll
 	 * @param {Object} pPatternStart - The starting string for the pattern (e.g. "${")
 	 * @param {string} pPatternEnd - The ending string for the pattern (e.g. "}")
 	 * @param {function} fParser - The function to parse if this is the matched pattern, once the Pattern End is met.  If this is a string, a simple replacement occurs.
-	 * @return {bool} True if adding the pattern was successful
+	 * @param {function} fParserAsync - The function to parse if this is the matched pattern, once the Pattern End is met.  If this is a string, a simple replacement occurs.
+	 * @param {Object} pParserContext - The context to pass to the parser function
+	 * @return {Object} The leaf parser from the tree
 	 */
-	addPattern (pPatternStart, pPatternEnd, fParser, pParserContext)
+	addPatternBoth (pPatternStart, pPatternEnd, fParser, fParserAsync, pParserContext)
 	{
 		if (pPatternStart.length < 1)
 		{
@@ -93,8 +95,12 @@ class WordTree
 		tmpLeaf.PatternStartString = pPatternStart;
 		tmpLeaf.PatternEndString = tmpPatternEnd;
 		tmpLeaf.Parse = (typeof(fParser) === 'function') ? fParser :
-						(typeof(fParser) === 'string') ? () => { return fParser; } :
-						(pData) => { return pData; };
+						(typeof(fParser) === 'string') ? (pHash, pData) => { return fParser; } :
+						(pHash, pData) => { return pHash; };
+
+		tmpLeaf.ParseAsync = (typeof(fParserAsync) === 'function') ? fParserAsync :
+						(typeof(fParserAsync) === 'string') ? (pHash, pData, fCallback) => { return fCallback(null, fParserAsync); } :
+						(pHash, pData, fCallback) => { return fCallback(null, tmpLeaf.Parse(pHash, pData)); }
 
 		// A "this" for every object
 		if (pParserContext)
@@ -102,43 +108,21 @@ class WordTree
 			tmpLeaf.ParserContext = pParserContext;
 		}
 
+		tmpLeaf.isAsync = true;
+
 		return tmpLeaf;
 	}
 
-
-	/** Add a Pattern to the Parse Tree
-	 * @method addPatternAsync
-	 * @param {Object} pPatternStart - The starting string for the pattern (e.g. "${")
-	 * @param {string} pPatternEnd - The ending string for the pattern (e.g. "}")
-	 * @param {function} fParserAsync - The function to parse if this is the matched pattern, once the Pattern End is met.  If this is a string, a simple replacement occurs.
-	 * @return {bool} True if adding the pattern was successful
-	 */
-	addPatternAsync (pPatternStart, pPatternEnd, fParserAsync, pParserContext)
-	{
-		let tmpLeaf = this.addPattern(pPatternStart, pPatternEnd, fParserAsync, pParserContext);
-		if (tmpLeaf)
-		{
-			tmpLeaf.isAsync = true;
-		}
-	}
-
-	/** Add a Pattern to the Parse Tree
-	 * @method addPatternBoth
+	/** Add a Pattern to the Parse Tree with both function parameter types
+	 * @method addPatternAll
 	 * @param {Object} pPatternStart - The starting string for the pattern (e.g. "${")
 	 * @param {string} pPatternEnd - The ending string for the pattern (e.g. "}")
 	 * @param {function} fParser - The function to parse if this is the matched pattern, once the Pattern End is met.  If this is a string, a simple replacement occurs.
-	 * @return {bool} True if adding the pattern was successful
+	 * @param {Object} pParserContext - The context to pass to the parser function
 	 */
-	addPatternBoth (pPatternStart, pPatternEnd, fParser, fParserAsync, pParserContext)
+	addPattern (pPatternStart, pPatternEnd, fParser, pParserContext)
 	{
-		let tmpLeaf = this.addPattern(pPatternStart, pPatternEnd, fParser, pParserContext);
-		if (tmpLeaf)
-		{
-			tmpLeaf.isAsync = true;
-			tmpLeaf.isBoth = true;
-			// When a leaf has both async and non-async versions of the functions, we store the async in fParserAsync.
-			tmpLeaf.ParseAsync = fParserAsync;
-		}
+		return this.addPatternBoth(pPatternStart, pPatternEnd, fParser, null, pParserContext);
 	}
 }
 

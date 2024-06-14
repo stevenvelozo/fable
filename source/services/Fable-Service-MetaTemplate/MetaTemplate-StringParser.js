@@ -105,25 +105,17 @@ class StringParser
 					// Flush the output buffer.
 					this.appendOutputBuffer(pCharacter, pParserState);
 					// If this last character is the end of the pattern, parse it.
-					if (('Parse' in pParserState.Pattern) && (!pParserState.Pattern.isAsync || pParserState.Pattern.isBoth))
+					// Run the function
+					let tmpFunctionContext = ('ParserContext' in pParserState.Pattern) ? pParserState.Pattern.ParserContext : false;
+					if (tmpFunctionContext)
 					{
-						// Run the function
-						let tmpFunctionContext = ('ParserContext' in pParserState.Pattern) ? pParserState.Pattern.ParserContext : false;
-						if (tmpFunctionContext)
-						{
-							pParserState.OutputBuffer = pParserState.Pattern.Parse.call(tmpFunctionContext, pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
-						}
-						else
-						{
-							pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
-						}
-						return this.resetOutputBuffer(pParserState);
+						pParserState.OutputBuffer = pParserState.Pattern.Parse.call(tmpFunctionContext, pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
 					}
 					else
 					{
-						this.fable.log.info(`MetaTemplate: The pattern ${pParserState.Pattern.PatternStartString} is asynchronous and cannot be used in a synchronous parser.`);
-						return this.resetOutputBuffer(pParserState);
+						pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
 					}
+					return this.resetOutputBuffer(pParserState);
 				}
 				else if (pCharacter in pParserState.PatternStartNode.PatternEnd)
 				{
@@ -156,25 +148,17 @@ class StringParser
 					// If this last character is the end of the pattern, parse it.
 					if ('Parse' in pParserState.Pattern)
 					{
-						if (pParserState.Pattern.isAsync && !pParserState.Pattern.isBoth)
+						// Run the t*mplate function
+						let tmpFunctionContext = ('ParserContext' in pParserState.Pattern) ? pParserState.Pattern.ParserContext : false;
+						if (tmpFunctionContext)
 						{
-							this.fable.log.info(`MetaTemplate: The pattern ${pParserState.Pattern.PatternStartString} is asynchronous and cannot be used in a synchronous parser.`);
-							this.resetOutputBuffer(pParserState);
+							pParserState.OutputBuffer = pParserState.Pattern.Parse.call(tmpFunctionContext, pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
 						}
 						else
 						{
-							// Run the t*mplate function
-							let tmpFunctionContext = ('ParserContext' in pParserState.Pattern) ? pParserState.Pattern.ParserContext : false;
-							if (tmpFunctionContext)
-							{
-								pParserState.OutputBuffer = pParserState.Pattern.Parse.call(tmpFunctionContext, pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
-							}
-							else
-							{
-								pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
-							}
-							return this.resetOutputBuffer(pParserState);
+							pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
 						}
+						return this.resetOutputBuffer(pParserState);
 					}
 				}
 			}
@@ -209,44 +193,9 @@ class StringParser
 	{
 		// ... this is the end of a pattern, cut off the end tag and parse it.
 		// Trim the start and end tags off the output buffer now
-		if (pParserState.Pattern.isAsync && !pParserState.Pattern.isBoth)
+		if (pParserState.Pattern.isAsync)
 		{
 			// Run the function
-			let tmpFunctionContext = ('ParserContext' in pParserState.Pattern) ? pParserState.Pattern.ParserContext : false;
-			if (tmpFunctionContext)
-			{
-				return pParserState.Pattern.Parse.call(tmpFunctionContext, pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData,
-					(pError, pAsyncOutput) =>
-					{
-						if (pError)
-						{
-							this.fable.log.info(`Precedent ERROR: Async template error happened parsing ${pParserState.Pattern.PatternStart} ... ${pParserState.Pattern.PatternEnd}: ${pError}`);
-						}
-
-						pParserState.OutputBuffer = pAsyncOutput;
-						this.resetOutputBuffer(pParserState);
-						return fCallback();
-					}, pDataContext);
-			}
-			else
-			{
-				return pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData,
-					(pError, pAsyncOutput) =>
-					{
-						if (pError)
-						{
-							this.fable.log.info(`Precedent ERROR: Async template error happened parsing ${pParserState.Pattern.PatternStart} ... ${pParserState.Pattern.PatternEnd}: ${pError}`);
-						}
-
-						pParserState.OutputBuffer = pAsyncOutput;
-						this.resetOutputBuffer(pParserState);
-						return fCallback();
-					}, pDataContext);
-			}
-		}
-		else if (pParserState.Pattern.isAsync && pParserState.Pattern.isBoth)
-		{
-			// Run the function when both async and non async were provided with the pattern
 			let tmpFunctionContext = ('ParserContext' in pParserState.Pattern) ? pParserState.Pattern.ParserContext : false;
 			if (tmpFunctionContext)
 			{

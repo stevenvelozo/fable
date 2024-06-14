@@ -31,7 +31,11 @@ const configMetaTemplate = (pModule) =>
 	pModule.addPattern('<^', '^>', (pHash, pData)=>{return `hash of [${pHash}] from pData is ${pData[pHash]}`});
 	// This just escapes out pairs of $
 	pModule.addPattern('$');
-	pModule.addPatternAsync('<%Async', '%>',
+	pModule.addPatternBoth('<%Async', '%>',
+		(pHash, pData) =>
+		{
+			return `NONASYNC DATA IS [${pHash}]`;
+		},
 		(pHash, pData, fCallback)=>
 		{
 			return fCallback(null, `ASYNC DATA IS [${pHash}]`);
@@ -207,7 +211,7 @@ suite
 					{
 						let tmpTestString = 'The <^SomeValue^> and <~JELLY FISH~> pData and Async <%AsyncThe Funny String%> up in here and a $comment$ as well.';
 						let tmpExpectedResultAsync = 'The hash of [SomeValue] from pData is AirbornLight and Async Jellyfish called for pData which is [[object Object]] with a hash of [JELLY FISH] pData and Async ASYNC DATA IS [The Funny String] up in here and a comment as well.';
-						let tmpExpectedResult = 'The hash of [SomeValue] from pData is AirbornLight and Non-Async Jellyfish called for pData which is [[object Object]] with a hash of [JELLY FISH] pData and Async <%AsyncThe Funny String%> up in here and a comment as well.';
+						let tmpExpectedResult = 'The hash of [SomeValue] from pData is AirbornLight and Non-Async Jellyfish called for pData which is [[object Object]] with a hash of [JELLY FISH] pData and Async NONASYNC DATA IS [The Funny String] up in here and a comment as well.';
 						let testMetaTemplate = loadMetaTemplateModule();
 						configMetaTemplate(testMetaTemplate);
 						let tmpNonAsyncResult = testMetaTemplate.parseString(tmpTestString, {SomeValue:'AirbornLight'});
