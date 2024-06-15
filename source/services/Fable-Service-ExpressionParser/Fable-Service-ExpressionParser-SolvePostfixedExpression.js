@@ -68,6 +68,16 @@ class ExpressionParserSolver extends libExpressionParserOperationBase
 				tmpStepResultObject.ExpressionStep.RightValue.Value = tmpManifest.getValueAtAddress(tmpResults.VirtualSymbols, tmpStepResultObject.ExpressionStep.RightValue.VirtualSymbolName);
 			}
 
+			// Virtual Constants
+			if (tmpStepResultObject.ExpressionStep.LeftValue.Type === 'Token.Constant' && !('Value' in tmpStepResultObject.ExpressionStep.LeftValue))
+			{
+				tmpStepResultObject.ExpressionStep.LeftValue.Value = tmpStepResultObject.ExpressionStep.LeftValue.Token;
+			}
+			if (tmpStepResultObject.ExpressionStep.RightValue.Type === 'Token.Constant' && !('Value' in tmpStepResultObject.ExpressionStep.RightValue))
+			{
+				tmpStepResultObject.ExpressionStep.RightValue.Value = tmpStepResultObject.ExpressionStep.RightValue.Token;
+			}
+
 			if (tmpStepResultObject.ExpressionStep.Operation.Type = 'Operator')
 			{
 				// TODO: This can be optimized.   A lot.  If necessary.  Seems pretty fast honestly for even thousands of operations.  Slowest part is arbitrary precision.

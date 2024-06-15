@@ -162,6 +162,8 @@ suite
 
 						Expect(_Parser.solve('5 ^ 2')).to.equal('25');
 
+						Expect(_Parser.solve('Result = sqrt(100 * (C + 30)) + sin(Depth - Width) / 10', { "PR": 1.5, "Z": "20.036237", "C": -13, Depth: 100.203, Width: 10.5})).to.equal('41.32965489638783839821');
+
 						Expect(_Parser.solve('((15000 * 2) / 4)^2 + 100 - 10 * (35 + 5)')).to.equal("56249700");
 
 						Expect(_Parser.solve('1.5 * sqrt(8 * 2.423782342^2) / 10')).to.equal('1.02832375808904701855')
@@ -170,7 +172,7 @@ suite
 						Expect(_Parser.solve('sin(rad(60))')).to.equal('0.8660254037844386');
 
 						Expect(_Parser.solve('Result = 5+3 - sqrt(75 / (3 + Depth) * Width)^ 3', { "PR": 1.5, "Z": "20.036237", "C": -13, Depth: 100.203, Width: 10.5}))
-							.to.equal('-436.298371634749698156043404501049817281022489463053365091209703125')
+							.to.equal('-13.078386362213538715906797395732300153182132216343566001917247')
 
 						let tmpResult = _Parser.solve('Result = (160 * PR * Z) / (C / 100) * PR * Z + (160 * (1 - C / 100))', {C:-13,PR:1.5,Z:20.03})
 						Expect(tmpResult).to.equal("-1110837.0769230769230769230307");
