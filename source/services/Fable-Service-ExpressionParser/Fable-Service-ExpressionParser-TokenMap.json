@@ -3,6 +3,7 @@
 		{
 			"Name": "Equals",
 			"Token": "=",
+			"Function": "fable.Math.assignValue",
 			"Precedence": 0,
 			"Type": "Assignment"
 		},

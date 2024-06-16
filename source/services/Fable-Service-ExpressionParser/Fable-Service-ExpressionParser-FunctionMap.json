@@ -1,22 +1,82 @@
 {
-	"sqrt":
-		{
-			"Name": "Square Root",
-			"Address": "fable.Math.sqrtPrecise"
-		},
-	"abs":
-		{
-			"Name": "Absolute Value",
-			"Address": "fable.Math.absPrecise"
-		},
-	"rad":
-		{
-			"Name": "Degrees to Radians",
-			"Address": "fable.Math.radPrecise"
-		},
-	"sin":
-		{
-			"Name": "Sine",
-			"Address": "fable.Math.sin"
-		}
+	"sqrt": {
+		"Name": "Square Root",
+		"Address": "fable.Math.sqrtPrecise"
+	},
+
+	"abs": {
+		"Name": "Absolute Value",
+		"Address": "fable.Math.absPrecise"
+	},
+
+	"rad": {
+		"Name": "Degrees to Radians",
+		"Address": "fable.Math.radPrecise"
+	},
+
+	"pi": {
+		"Name": "Pi",
+		"Address": "fable.Math.piPrecise"
+	},
+	"sin": {
+		"Name": "Sine",
+		"Address": "fable.Math.sin"
+	},
+	"cos": {
+		"Name": "Cosine",
+		"Address": "fable.Math.cos"
+	},
+	"tan": {
+		"Name": "Tangent",
+		"Address": "fable.Math.tan"
+	},
+
+	"count": {
+		"Name": "Count Set Elements",
+		"Address": "fable.Math.countSetElements"
+	},
+
+	"sortset": {
+		"Name": "Sort Set",
+		"Address": "fable.Math.sortSetPrecise"
+	},
+	"bucketset": {
+		"Name": "Bucket Set",
+		"Address": "fable.Math.bucketSetPrecise"
+	},
+	"sorthistogram": {
+		"Name": "Sort Histogram",
+		"Address": "fable.Math.sortHistogramPrecise"
+	},
+
+	"max": {
+		"Name": "Maximum",
+		"Address": "fable.Math.maxPrecise"
+	},
+	"min": {
+		"Name": "Minimum",
+		"Address": "fable.Math.minPrecise"
+	},
+
+	"sum": {
+		"Name": "Sum",
+		"Address": "fable.Math.sumPrecise"
+	},
+
+	"avg": {
+		"Name": "Average",
+		"Address": "fable.Math.averagePrecise"
+	},
+	"mean": {
+		"Name": "Mean",
+		"Address": "fable.Math.meanPrecise"
+	},
+	"median": {
+		"Name": "Median",
+		"Address": "fable.Math.medianPrecise"
+	},
+	"mode": {
+		"Name": "Mode",
+		"Address": "fable.Math.modePrecise"
+	}
 }

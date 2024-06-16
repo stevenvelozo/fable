@@ -6,10 +6,12 @@
 * @author      Steven Velozo <steven@velozo.com>
 */
 
-var libFable = require('../source/Fable.js');
+const libFable = require('../source/Fable.js');
 
-var Chai = require("chai");
-var Expect = Chai.expect;
+const Chai = require("chai");
+const Expect = Chai.expect;
+
+const _ChocoData = require(`./data/chocodata.json`);
 
 suite
 (
@@ -115,6 +117,55 @@ suite
 						return fDone();
 					}
 				);
+				test
+				(
+					'Set Math Operations',
+					function(fDone)
+					{
+						let testFable = new libFable();
+						let testManyfest = testFable.newManyfest();
+
+						let tmpChocoSizes = testManyfest.getValueAtAddress(_ChocoData, 'files[].size');
+
+						Expect(testFable.Math.maxPrecise(tmpChocoSizes)).to.equal("31625216");
+						Expect(testFable.Math.minPrecise(tmpChocoSizes)).to.equal("620");
+						Expect(testFable.Math.sumPrecise(tmpChocoSizes)).to.equal("36431778");
+						Expect(testFable.Math.countSetElements(tmpChocoSizes)).to.equal(17);
+						Expect(testFable.Math.meanPrecise(tmpChocoSizes)).to.equal("2143045.76470588235294117647");
+						Expect(testFable.Math.medianPrecise(tmpChocoSizes)).to.equal("5993");
+						// Since the file sizes are all different, this is just the whole list.
+						Expect(testFable.Math.modePrecise(tmpChocoSizes)).to.deep.equal(["620","838","1371","3383","3503","4093","4951","5993","6843","7481","8388","31141","101114","2248166","2378677","31625216","NaN"]);
+
+						Expect(testFable.Math.maxPrecise([100, 101, 400, "20", "dog"])).to.equal("400");
+						Expect(testFable.Math.modePrecise([100, 20, 101, 400, "20", "dog"])).to.deep.equal(["20"]);
+						Expect(testFable.Math.modePrecise([100, 20, 101, 400, "20", "dog", 101])).to.deep.equal(["20", "101"]);
+
+						Expect(testFable.Math.maxPrecise([100, 101, 400, "20", "dog"])).to.equal("400");
+						Expect(testFable.Math.modePrecise([100, 20, 101, 400, "20", "dog"])).to.deep.equal(["20"]);
+						Expect(testFable.Math.modePrecise([100, 20, 101, 400, "20", "dog", 101])).to.deep.equal(["20", "101"]);
+
+						Expect(testFable.Math.sumPrecise([])).to.equal('0.0');
+						Expect(testFable.Math.countSetElements([])).to.equal(0);
+						Expect(testFable.Math.meanPrecise([])).to.equal('0.0');
+						Expect(testFable.Math.medianPrecise([])).to.equal('0.0');
+						Expect(testFable.Math.modePrecise([])).to.deep.equal([]);
+
+						Expect(testFable.Math.sumPrecise([1,2,3,4,5,6,7,8,9,10])).to.equal('55');
+						Expect(testFable.Math.countSetElements([1,2,3,4,5,6,7,8,9,10])).to.equal(10);
+						Expect(testFable.Math.meanPrecise([1,2,3,4,5,6,7,8,9,10])).to.equal('5.5');
+						Expect(testFable.Math.meanPrecise([0,1,2,3,4,5,6,7,8,9,10])).to.equal('5');
+						Expect(testFable.Math.medianPrecise([1,2,3,4,5,6,7,8,9,10])).to.equal('5.5');
+						Expect(testFable.Math.modePrecise([1,2,3,4,5,6,7,8,9,10])).to.deep.equal(['1','2','3','4','5','6','7','8','9','10']);
+
+						Expect(testFable.Math.sumPrecise([1,2,3,4,5,6,7,8,9,10,11])).to.equal('66');
+						Expect(testFable.Math.countSetElements([1,2,3,4,5,6,7,8,9,10,11])).to.equal(11);
+						Expect(testFable.Math.meanPrecise([1,2,3,4,5,6,7,8,9,10,11])).to.equal('6');
+						Expect(testFable.Math.medianPrecise([1,2,3,4,5,6,7,8,9,10,11])).to.equal('6');
+						Expect(testFable.Math.modePrecise([1,2,3,4,5,6,7,8,9,10,11])).to.deep.equal(['1','2','3','4','5','6','7','8','9','10','11']);
+
+						return fDone();
+					}
+				)
 				test
 				(
 					'Cast To Fixed Numbers',

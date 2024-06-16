@@ -183,6 +183,23 @@ suite
 						return fDone();
 					}
 				);
+				test
+				(
+					'Exercise End-to-End Expression Parsing with Sets',
+					(fDone)=>
+					{
+						let _Parser = getExpressionParser();
+
+						Expect(_Parser.solve('1 + 1')).to.equal("2");
+						Expect(_Parser.solve("Volume = Width * Height * Depth", {"Width": 73.5, "Height": 28.8, "Depth": 200.5})).to.equal("424418.4");
+						Expect(_Parser.solve("TotalCost = SUM(ItemCosts)", {"ItemCosts": [100,200,50,45,5]})).to.equal("400");
+						Expect(_Parser.solve("TotalCost = MEAN(ItemCosts)", {"ItemCosts": [100,200,50,45,5]})).to.equal("80");
+						Expect(_Parser.solve("TotalCost = MEDIAN(ItemCosts)", {"ItemCosts": [100,200,50,45,5]})).to.equal("50");
+						Expect(_Parser.solve("TotalCost = COUNT(ItemCosts)", {"ItemCosts": [100,200,50,45,5]})).to.equal("5");
+
+						return fDone();
+					}
+				);
 			}
 		);
 	}

@@ -1,0 +1,56 @@
+{
+	"Scope": "FruitsOfTheWorld",
+	"Descriptors":
+	{
+		"FruityVice[].name":
+		{
+			"Name": "Fruit Name",
+			"Hash": "Name",
+			"DataType": "String",
+			"Default": "(unnamed fruit)"
+		},
+		"FruityVice[].family":
+		{
+			"Name": "Family",
+			"Hash": "Family",
+			"DataType": "String"
+		},
+		"FruityVice[].order":
+		{
+			"Name": "Order",
+			"Hash": "Order",
+			"DataType": "String"
+		},
+		"FruityVice[].genus":
+		{
+			"Name": "Genus",
+			"Hash": "Genus",
+			"DataType": "String"
+		},
+		"FruityVice[].nutritions.calories":
+		{
+			"Name": "Calories",
+			"Hash": "Calories"
+		},
+		"FruityVice[].nutritions.fat":
+		{
+			"Name": "Fat",
+			"Hash": "Fat"
+		},
+		"FruityVice[].nutritions.protein":
+		{
+			"Name": "Protein",
+			"Hash": "Protein"
+		},
+		"FruityVice[].nutritions.carbohydrates":
+		{
+			"Name": "Carbohydrates",
+			"Hash": "Carbohydrates"
+		},
+		"FruityVice[].nutritions.sugar":
+		{
+			"Name": "Sugar",
+			"Hash": "Sugar"
+		}
+	}
+}

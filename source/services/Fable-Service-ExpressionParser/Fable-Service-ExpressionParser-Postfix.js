@@ -564,21 +564,21 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 			// If this is a layer with one value, presume it's an assignment.
 			if (tmpSolveLayerTokens.length === 1)
 			{
-				let tmpAbstractMultiplyToken = this.getTokenContainerObject('*');
-				tmpAbstractMultiplyToken.VirtualSymbolName = tmpResults.PostfixLayerstackMap[tmpSolveLayerTokens[0].SolveLayerStack];
+				let tmpAbstractAssignToken = this.getTokenContainerObject('=');
+				tmpAbstractAssignToken.VirtualSymbolName = tmpResults.PostfixLayerstackMap[tmpSolveLayerTokens[0].SolveLayerStack];
 				// If this doesn't have a matching solvelayerstack, get the virtual symbol name from the parenthesis group it's in
-				if (!tmpAbstractMultiplyToken.VirtualSymbolName)
+				if (!tmpAbstractAssignToken.VirtualSymbolName)
 				{
 					for (let i = 0; i < tmpResults.PostfixTokenObjects.length; i++)
 					{
 						if (tmpResults.PostfixTokenObjects[i].ParenthesisStack === tmpSolveLayerTokens[0].SolveLayerStack)
 						{
-							tmpAbstractMultiplyToken.VirtualSymbolName = tmpResults.PostfixTokenObjects[i].VirtualSymbolName;
+							tmpAbstractAssignToken.VirtualSymbolName = tmpResults.PostfixTokenObjects[i].VirtualSymbolName;
 							break;
 						}
 					}
 				}
-				tmpResults.PostfixSolveList.push(this.getPosfixSolveListOperation(tmpAbstractMultiplyToken, this.getTokenContainerObject('1.0'), tmpSolveLayerTokens[0]));
+				tmpResults.PostfixSolveList.push(this.getPosfixSolveListOperation(tmpAbstractAssignToken, tmpSolveLayerTokens[0], this.getTokenContainerObject('0.0')));
 				continue;
 			}
 

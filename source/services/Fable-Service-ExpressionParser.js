@@ -113,9 +113,18 @@ class FableServiceExpressionParser extends libFableServiceBase
 					}
 					catch(pError)
 					{
-						tmpResults.ExpressionParserLog.push(`ERROR: ExpressionParser.substituteValuesInTokenizedObjects found a non-numeric value for the state address ${tmpToken.Token} at index ${i}`);
-						this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
-						tmpToken.Resolved = false;
+						// TODO: Should we allow this to be a function?  Good god the complexity and beauty of that...
+						if (Array.isArray(tmpValue) || (typeof(tmpValue) === 'object'))
+						{
+							tmpToken.Resolved = true;
+							tmpToken.Value = tmpValue;
+						}
+						else
+						{
+							tmpResults.ExpressionParserLog.push(`INFO: ExpressionParser.substituteValuesInTokenizedObjects found a non-numeric, non-set value for the state address ${tmpToken.Token} at index ${i}`);
+							this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
+							tmpToken.Resolved = false;
+						}
 					}
 				}
 			}
@@ -190,6 +199,16 @@ class FableServiceExpressionParser extends libFableServiceBase
 		return this.Solver.solvePostfixedExpression(pPostfixedExpression, pDataDestinationObject, pResultObject, pManifest);
 	}
 
+	/**
+	 * Solves the given expression using the provided data and manifest.
+	 * 
+	 * @param {string} pExpression - The expression to solve.
+	 * @param {object} pDataSourceObject - (optional) The data source object (e.g. AppData).
+	 * @param {object} pResultObject - (optional) The result object containing the full postfix expression list, internal variables and solver history.
+	 * @param {object} pManifest - (optional) The manifest object for dereferencing variables.
+	 * @param {object} pDataDestinationObject - (optional) The data destination object for where to marshal the result into.
+	 * @returns {any} - The result of solving the expression.
+	 */
 	solve(pExpression, pDataSourceObject, pResultObject, pManifest, pDataDestinationObject)
 	{
 		let tmpResultsObject = (typeof(pResultObject) === 'object') ? pResultObject : {};
