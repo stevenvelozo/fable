@@ -5,7 +5,6 @@ class ExpressionParserSolver extends libExpressionParserOperationBase
 	constructor(pFable, pOptions, pServiceHash)
 	{
 		super(pFable, pOptions, pServiceHash);
-
 		this.serviceType = 'ExpressionParser-Solver';
 	}
 
@@ -48,7 +47,15 @@ class ExpressionParserSolver extends libExpressionParserOperationBase
 			}
 			let tmpStepResultObject = { ExpressionStep: pPostfixedExpression[i], ExpressionStepIndex: i, ResultsObject: tmpResults, Manifest: tmpManifest};
 
-			// Resolve the virtual symbols to their actual values
+			if (tmpStepResultObject.ExpressionStep.LeftValue.Type === 'Token.LastResult')
+			{
+				tmpStepResultObject.ExpressionStep.LeftValue.Value = tmpResults.LastResult;
+			}
+			if (tmpStepResultObject.ExpressionStep.RightValue.Type === 'Token.LastResult')
+			{
+				tmpStepResultObject.ExpressionStep.RightValue.Value = tmpResults.LastResult;
+			}
+
 			if (tmpStepResultObject.ExpressionStep.LeftValue.Type === 'Token.VirtualSymbol')
 			{
 				tmpStepResultObject.ExpressionStep.LeftValue.Value = tmpManifest.getValueAtAddress(tmpResults.VirtualSymbols, tmpStepResultObject.ExpressionStep.LeftValue.Token);
@@ -95,7 +102,8 @@ class ExpressionParserSolver extends libExpressionParserOperationBase
 				try
 				{
 					//this.log.trace(`Solving Step ${i} [${tmpStepResultObject.ExpressionStep.VirtualSymbolName}] --> [${tmpStepResultObject.ExpressionStep.Operation.Token}]: ( ${tmpStepResultObject.ExpressionStep.LeftValue.Value} , ${tmpStepResultObject.ExpressionStep.RightValue.Value} )`);
-					tmpResults.VirtualSymbols[tmpStepResultObject.ExpressionStep.VirtualSymbolName] = tmpManifest.getValueAtAddress(tmpStepResultObject, `${tmpFunctionAddress}(ExpressionStep.LeftValue.Value,ExpressionStep.RightValue.Value)`);
+					tmpManifest.setValueAtAddress(tmpResults.VirtualSymbols, tmpStepResultObject.ExpressionStep.VirtualSymbolName, tmpManifest.getValueAtAddress(tmpStepResultObject, `${tmpFunctionAddress}(ExpressionStep.LeftValue.Value,ExpressionStep.RightValue.Value)`));
+					tmpResults.LastResult = tmpManifest.getValueAtAddress(tmpResults.VirtualSymbols, tmpStepResultObject.ExpressionStep.VirtualSymbolName);
 					//this.log.trace(`   ---> Step ${i}: ${tmpResults.VirtualSymbols[tmpStepResultObject.ExpressionStep.VirtualSymbolName]}`)
 				}
 				catch (pError)
@@ -112,17 +120,18 @@ class ExpressionParserSolver extends libExpressionParserOperationBase
 
 		let tmpSolverResultValue = tmpManifest.getValueAtAddress(tmpResults, `VirtualSymbols.${tmpResults.SolverFinalVirtualSymbol}`);
 
-		// Now deal with final assignment
+		// Now deal with final assignment(s)
 		for (let i = 0; i < pPostfixedExpression.length; i++)
 		{
-			if ((pPostfixedExpression[i].Operation.Type === 'Token.SolverInstruction') && (pPostfixedExpression[i].Operation.Token == 'Assign'))
+			if (pPostfixedExpression[i].RightValue.Type === 'Token.SolverMarshal')
 			{
 				tmpManifest.setValueAtAddress(tmpResults.VirtualSymbols, pPostfixedExpression[i].VirtualSymbolName, tmpSolverResultValue);
 				tmpManifest.setValueByHash(tmpDataDestinationObject, pPostfixedExpression[i].VirtualSymbolName, tmpSolverResultValue);
 			}
-
 		}
-		// Clean up the reference if we added it to the object.
+		tmpResults.RawResult = tmpSolverResultValue;
+
+		// Clean up the fable reference if we added it to the object.
 		if (!tmpPassedInFable)
 		{
 			delete tmpResults.fable;

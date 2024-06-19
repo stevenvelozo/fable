@@ -5,7 +5,6 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 	constructor(pFable, pOptions, pServiceHash)
 	{
 		super(pFable, pOptions, pServiceHash);
-
 		this.serviceType = 'ExpressionParser-Postfix';
 	}
 
@@ -638,9 +637,13 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 		}
 
 		// 7. Lastly set the assignment address.
-		let tmpAssignmentInstruction = this.getPosfixSolveListOperation(this.getTokenContainerObject('Assign', 'Token.SolverInstruction'), this.getTokenContainerObject('DestinationHash', 'Token.SolverInstruction'), this.getTokenContainerObject('Resulting', 'Token.SolverInstruction'));
-		tmpAssignmentInstruction.VirtualSymbolName = tmpResults.PostfixedAssignmentAddress;
-		tmpResults.PostfixSolveList.push(tmpAssignmentInstruction);
+		let tmpAbstractAssignToken = this.getTokenContainerObject('=');
+		// The address we are assigning to
+		tmpAbstractAssignToken.VirtualSymbolName = tmpResults.PostfixedAssignmentAddress;
+		// The address it's coming from
+		let tmpSolveResultToken = this.getTokenContainerObject('Result', 'Token.LastResult');
+		let tmpFinalAssignmentInstruction = this.getPosfixSolveListOperation(tmpAbstractAssignToken, tmpSolveResultToken, this.getTokenContainerObject('SolverMarshal', 'Token.SolverMarshal'));
+		tmpResults.PostfixSolveList.push(tmpFinalAssignmentInstruction);
 
 		return tmpResults.PostfixSolveList;
 	}

@@ -5,7 +5,6 @@ class ExpressionParserLinter extends libExpressionParserOperationBase
 	constructor(pFable, pOptions, pServiceHash)
 	{
 		super(pFable, pOptions, pServiceHash);
-
 		this.serviceType = 'ExpressionParser-Linter';
 	}
 

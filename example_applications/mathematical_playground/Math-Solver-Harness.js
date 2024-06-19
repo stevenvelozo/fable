@@ -15,35 +15,35 @@ _Fable.log.info(`One-liner solve is: ${_Fable.ExpressionParser.solve("Result = 7
 // Let's put it in a variable for easier exercises
 const _ExpressionParser = _Fable.ExpressionParser;
 // Look up somoe variables in an object
-_Fable.log.info(`One-liner solve with variables is: ${_ExpressionParser.solve("Volume = Width * Height * Depth", {"Width": 73.5, "Height": 28.8, "Depth": 200.5})}`);
+// _Fable.log.info(`One-liner solve with variables is: ${_ExpressionParser.solve("Volume = Width * Height * Depth", {"Width": 73.5, "Height": 28.8, "Depth": 200.5})}`);
 
 
-/* * * * * * * * * * * * * * * * *
- *
- * A simple run through of some mathematical expressions
- * 
- */
-_Fable.log.info(`Beginning Run-through for Set of Test Expressions....`);
-// An array of equations with expected values
-let _Equations = require(`./Equations.json`);
-// The application state is a plain javascript object we pass into the solver to pull variables from
-let _AppData = require(`./AppData.json`);
-// The manifest is a Manyfest which describes hashes for complex addresses in the application state object
-// For example you can't use "Student[0].Age" as a variable in the expression
-// ...but you can use "Student[0].Age" as an address in the manifest with a hash of "StudentAge"
-// ...and then reference "StudentAge" in the expression.
-let tmpManifestConfiguration = { "Scope":"None", "Descriptors":[] };
-let tmpManifest = _Fable.newManyfest(tmpManifestConfiguration);
-// Run each expression in the Equations.json file through the expression parser.
-for (let i = 0; i < _Equations.Expressions.length; i++)
-{
-	let tmpResultValue = _ExpressionParser.solve(_Equations.Expressions[i].Equation, _AppData, {}, tmpManifest);
-	console.log(`Expression [${i}]: [${_Equations.Expressions[i].Equation}] ==> ${tmpResultValue}`);
-	if (tmpResultValue !== _Equations.Expressions[i].ExpectedResult)
-	{
-		console.log(`Error: Equation ${_Equations.Expressions[i].Equation} expected [${_Equations.Expressions[i].ExpectedResult}] but got [${tmpResultValue}]`);
-	}
-}
+// /* * * * * * * * * * * * * * * * *
+//  *
+//  * A simple run through of some mathematical expressions
+//  * 
+//  */
+// _Fable.log.info(`Beginning Run-through for Set of Test Expressions....`);
+// // An array of equations with expected values
+// let _Equations = require(`./Equations.json`);
+// // The application state is a plain javascript object we pass into the solver to pull variables from
+// let _AppData = require(`./AppData.json`);
+// // The manifest is a Manyfest which describes hashes for complex addresses in the application state object
+// // For example you can't use "Student[0].Age" as a variable in the expression
+// // ...but you can use "Student[0].Age" as an address in the manifest with a hash of "StudentAge"
+// // ...and then reference "StudentAge" in the expression.
+// let tmpManifestConfiguration = { "Scope":"None", "Descriptors":[] };
+// let tmpManifest = _Fable.newManyfest(tmpManifestConfiguration);
+// // Run each expression in the Equations.json file through the expression parser.
+// for (let i = 0; i < _Equations.Expressions.length; i++)
+// {
+// 	let tmpResultValue = _ExpressionParser.solve(_Equations.Expressions[i].Equation, _AppData, {}, tmpManifest);
+// 	console.log(`Expression [${i}]: [${_Equations.Expressions[i].Equation}] ==> ${tmpResultValue}`);
+// 	if (tmpResultValue !== _Equations.Expressions[i].ExpectedResult)
+// 	{
+// 		console.log(`Error: Equation ${_Equations.Expressions[i].Equation} expected [${_Equations.Expressions[i].ExpectedResult}] but got [${tmpResultValue}]`);
+// 	}
+// }
 
 
 /* * * * * * * * * * * * * * * * *
@@ -59,7 +59,7 @@ let _FruitManifest = _Fable.newManyfest(_FruitManifestDescription);
 _Fable.log.info(`Beginning Manual Solve with Embedded Fruit Data....`);
 
 // The expression we pass into the solver is just a string
-let tmpExpression = 'HyperMax.HealthIndex = (SUM(Calories) / SUM(Sugar)) * MEDIAN(Fat) + (SQRT(AVG(Protein)) - (PI() + 99)';
+let tmpExpression = 'HyperMax.HealthIndex = (SUM(Calories) / SUM(Sugar)) * MEDIAN(Fat) + (SQRT(AVG(Protein)) - (PI() + 99))';
 _Fable.log.info(`Solving tmpExpression: [${tmpExpression}]`);
 
 // This is an object where the parser will write out the results of each phase of the compiler/parser/solver
@@ -74,14 +74,11 @@ let complexLintedResults = _ExpressionParser.lintTokenizedExpression(complexToke
 let complexPostfixedResults = _ExpressionParser.buildPostfixedSolveList(complexTokenizedResults, tmpExpressionParseOutcome);
 // Step 4: Substitute the values references in the tokenized objects representing data within the postfixed expression
 _ExpressionParser.substituteValuesInTokenizedObjects(tmpExpressionParseOutcome.PostfixTokenObjects, _FruitData, tmpExpressionParseOutcome, _FruitManifest);
-// Now that we have a postfixed expression and the mapped-in values, show the user what the solution steps look like
-for (let i = 0; i < tmpExpressionParseOutcome.PostfixSolveList.length; i++)
-{
-	let tmpToken = tmpExpressionParseOutcome.PostfixSolveList[i];
-	console.log(`${i}: ${tmpToken.VirtualSymbolName} = (${tmpToken.LeftValue.Token}::${tmpToken.LeftValue.Value})  ${tmpToken.Operation.Token}  (${tmpToken.RightValue.Token}::${tmpToken.RightValue.Value}) `)
-}
 // Step 5: Solve the postfixed expression
 let tmpResultValue = _ExpressionParser.solvePostfixedExpression(tmpExpressionParseOutcome.PostfixSolveList, tmpSolverResultsObject, tmpExpressionParseOutcome, _FruitManifest);
+
+// Now that we have a solved expression and the mapped-in values, show the user the solution
+_Fable.ExpressionParser.Messaging.logFunctionOutcome(tmpExpressionParseOutcome);
 
 // Step 6: Look at the results.
 console.log(`Outcome object: ${JSON.stringify(tmpSolverResultsObject)}`);

@@ -14,7 +14,7 @@ const libFableServiceBase = require('fable-serviceproviderbase');
  * Learned a lot from this npm package: https://www.npmjs.com/package/math-expression-evaluator
  * And its related code at github: https://github.com/bugwheels94/math-expression-evaluator
  * 
- * There were two problems with the codebase...
+ * There were two problems with the codebase above...
  * 
  * First, the code was very unreadable and determining it was correct or extending it
  * was out of the question.
@@ -22,178 +22,124 @@ const libFableServiceBase = require('fable-serviceproviderbase');
  * Second, and this is a larger issue, is that we need the expressions to be parsed as
  * arbitrary precision.  When I determined that extending the library to use string-based
  * numbers and an arbitrary precision library as the back-end would have taken a significantly
- * longer amount of time than just writing the parser from scratch, et voila.
+ * longer amount of time than just writing the parser from scratch... et voila.
  */
 
 class FableServiceExpressionParser extends libFableServiceBase
 {
+	/**
+	 * Constructs a new instance of the ExpressionParser service.
+	 * @param {Object} pFable - The Fable object.
+	 * @param {Object} pOptions - The options for the service.
+	 * @param {string} pServiceHash - The hash of the service.
+	 */
 	constructor(pFable, pOptions, pServiceHash)
 	{
 		super(pFable, pOptions, pServiceHash);
 
+		// The configuration for tokens that the solver recognizes, with precedence and friendly names.
 		this.tokenMap = require('./Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-TokenMap.json');
-		// This precedence is higher than defined in our token map
-		this.tokenMaxPrecedence = 5;
+		// This precedence is higher than defined in our token map.  We could make this value dynamic
+		this.tokenMaxPrecedence = 10;
 
+		// The configuration for which functions are available to the solver.
 		this.functionMap = require('./Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-FunctionMap.json');
 
 		this.serviceType = 'ExpressionParser';
 
+		// These are sub-services for the tokenizer, linter, compiler, marshaler and solver.
 		this.fable.addServiceTypeIfNotExists('ExpressionParser-Tokenizer', require('./Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-ExpressionTokenizer.js'));
 		this.fable.addServiceTypeIfNotExists('ExpressionParser-Linter', require('./Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-Linter.js'));
 		this.fable.addServiceTypeIfNotExists('ExpressionParser-Postfix', require('./Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-Postfix.js'));
+		this.fable.addServiceTypeIfNotExists('ExpressionParser-ValueMarshal', require('./Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-ValueMarshal.js'));
 		this.fable.addServiceTypeIfNotExists('ExpressionParser-Solver', require('./Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-SolvePostfixedExpression.js'));
+		// And the sub-service for the friendly user messaging
+		this.fable.addServiceTypeIfNotExists('ExpressionParser-Messaging', require('./Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-Messaging.js'));
 
+
+		// This code instantitates these fable services to child objects of this service, but does not pollute the main fable with them.
 		this.Tokenizer = this.fable.instantiateServiceProviderWithoutRegistration('ExpressionParser-Tokenizer');
 		this.Linter = this.fable.instantiateServiceProviderWithoutRegistration('ExpressionParser-Linter');
 		this.Postfix = this.fable.instantiateServiceProviderWithoutRegistration('ExpressionParser-Postfix');
+		this.ValueMarshal = this.fable.instantiateServiceProviderWithoutRegistration('ExpressionParser-ValueMarshal');
 		this.Solver = this.fable.instantiateServiceProviderWithoutRegistration('ExpressionParser-Solver');
+		this.Messaging = this.fable.instantiateServiceProviderWithoutRegistration('ExpressionParser-Messaging');
 
-		// Now wire each of these up.  Not in love with this pattern but better than a giant file here.
+		// Wire each sub service into this instance of the solver.
 		this.Tokenizer.connectExpressionParser(this);
 		this.Linter.connectExpressionParser(this);
 		this.Postfix.connectExpressionParser(this);
+		this.ValueMarshal.connectExpressionParser(this);
 		this.Solver.connectExpressionParser(this);
+		this.Messaging.connectExpressionParser(this);
+
+		this.GenericManifest = this.fable.newManyfest();
+		
+		// This will look for a LogNoisiness on fable (or one that falls in from pict) and if it doesn't exist, set one for this service.
+		this.LogNoisiness = ('LogNoisiness' in this.fable) ? this.fable.LogNoisiness : 0;
 	}
 
-	substituteValuesInTokenizedObjects(pTokenizedObjects, pDataSource, pResultObject, pManifest)
-	{
-		let tmpResults = (typeof(pResultObject) === 'object') ? pResultObject : { ExpressionParserLog: [] };
-
-		if (!Array.isArray(pTokenizedObjects))
-		{
-			tmpResults.ExpressionParserLog.push(`ERROR: ExpressionParser.substituteValuesInTokenizedObjects was passed a non-array tokenized object list.`);
-			this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
-			return pTokenizedObjects;
-		}
-		if (typeof(pDataSource) !== 'object')
-		{
-			tmpResults.ExpressionParserLog.push(`ERROR: ExpressionParser.substituteValuesInTokenizedObjects either was passed no data source, or was passed a non-object data source.`);
-			this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
-			return pTokenizedObjects;
-		}
-
-		let tmpDataSource = pDataSource;
-
-		let tmpManifest = (typeof(pManifest) == 'object') ? pManifest : this.fable.newManyfest(pManifest);
-
-		for (let i = 0; i < pTokenizedObjects.length; i++)
-		{
-			if (typeof(pTokenizedObjects[i]) !== 'object')
-			{
-				tmpResults.ExpressionParserLog.push(`WARNING: ExpressionParser.substituteValuesInTokenizedObjects found a non-object tokenized object at index ${i}`);
-				this.log.warn(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
-				continue;
-			}
-			let tmpToken = pTokenizedObjects[i];
-			if ((pTokenizedObjects[i].Type === 'Token.Symbol') && !tmpToken.Resolved)
-			{
-				// Symbols always look up values by hash first
-				let tmpValue = tmpManifest.getValueByHash(tmpDataSource, tmpToken.Token);
-				// if (!tmpValue)
-				// {
-				// 	// If no hash resolves, try by address.
-				// 	tmpValue = tmpManifest.getValueAtAddress(tmpToken.Token, tmpDataSource);
-				// }
-				if (!tmpValue)
-				{
-					tmpResults.ExpressionParserLog.push(`WARNING: ExpressionParser.substituteValuesInTokenizedObjects found no value for the symbol hash or address ${tmpToken.Token} at index ${i}`);
-					this.log.warn(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
-					continue;
-				}
-				else
-				{
-					tmpResults.ExpressionParserLog.push(`INFO: ExpressionParser.substituteValuesInTokenizedObjects found a value [${tmpValue}] for the state address ${tmpToken.Token} at index ${i}`);
-					this.log.info(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
-					try
-					{
-						let tmpValueParsed = new this.fable.Utility.bigNumber(tmpValue);
-						tmpToken.Resolved = true;
-						tmpToken.Value = tmpValueParsed.toString();
-					}
-					catch(pError)
-					{
-						// TODO: Should we allow this to be a function?  Good god the complexity and beauty of that...
-						if (Array.isArray(tmpValue) || (typeof(tmpValue) === 'object'))
-						{
-							tmpToken.Resolved = true;
-							tmpToken.Value = tmpValue;
-						}
-						else
-						{
-							tmpResults.ExpressionParserLog.push(`INFO: ExpressionParser.substituteValuesInTokenizedObjects found a non-numeric, non-set value for the state address ${tmpToken.Token} at index ${i}`);
-							this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
-							tmpToken.Resolved = false;
-						}
-					}
-				}
-			}
-			if ((pTokenizedObjects[i].Type === 'Token.StateAddress') && !tmpToken.Resolved)
-			{
-				// Symbols are always hashes.  This gracefully works for simple shallow objects because hashes default to the address in Manyfest.
-				let tmpValue = tmpManifest.getValueAtAddress(tmpDataSource, tmpToken.Token);
-				if (!tmpValue)
-				{
-					tmpResults.ExpressionParserLog.push(`WARNING: ExpressionParser.substituteValuesInTokenizedObjects found no value for the state address ${tmpToken.Token} at index ${i}`);
-					this.log.warn(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
-					continue;
-				}
-				else
-				{
-					//tmpResults.ExpressionParserLog.push(`INFO: ExpressionParser.substituteValuesInTokenizedObjects found a value [${tmpValue}] for the state address ${tmpToken.Token} at index ${i}`);
-					this.log.info(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
-					try
-					{
-						let tmpValueParsed = new this.fable.Utility.bigNumber(tmpValue);
-						tmpToken.Resolved = true;
-						tmpToken.Value = tmpValueParsed.toString();
-					}
-					catch(pError)
-					{
-						tmpResults.ExpressionParserLog.push(`ERROR: ExpressionParser.substituteValuesInTokenizedObjects found a non-numeric value for the state address ${tmpToken.Token} at index ${i}`);
-						this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
-						tmpToken.Resolved = false;
-					}
-				}
-			}
-			if ((pTokenizedObjects[i].Type === 'Token.Constant') && !tmpToken.Resolved)
-			{
-				tmpResults.ExpressionParserLog.push(`INFO: ExpressionParser.substituteValuesInTokenizedObjects found a value [${tmpToken.Token}] for the constant ${tmpToken.Token} at index ${i}`);
-				this.log.info(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
-				try
-				{
-					let tmpValueParsed = new this.fable.Utility.bigNumber(tmpToken.Token);
-					tmpToken.Resolved = true;
-					tmpToken.Value = tmpValueParsed.toString();
-				}
-				catch(pError)
-				{
-					// This constant has the right symbols but apparently isn't a parsable number.
-					tmpResults.ExpressionParserLog.push(`ERROR: ExpressionParser.substituteValuesInTokenizedObjects found a non-numeric value for the state address ${tmpToken.Token} at index ${i}`);
-					this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
-					tmpToken.Resolved = false;
-				}
-			}
-		}
-
-		return pTokenizedObjects;
-	}
-
+	/**
+	 * Tokenizes the given mathematical expression string.
+	 *
+	 * @param {string} pExpression - The expression to tokenize.
+	 * @param {object} pResultObject - The result object to store the tokenized expression.
+	 * @returns {object} - The tokenized expression.
+	 */
 	tokenize(pExpression, pResultObject)
 	{
 		return this.Tokenizer.tokenize(pExpression, pResultObject);
 	}
 
+	/**
+	 * Lints a tokenized expression.
+	 *
+	 * @param {Array} pTokenizedExpression - The tokenized expression to lint.
+	 * @param {Object} pResultObject - The result object where we store the linting result.
+	 * @returns {Object} - The linting result object.
+	 */
 	lintTokenizedExpression(pTokenizedExpression, pResultObject)
 	{
 		return this.Linter.lintTokenizedExpression(pTokenizedExpression, pResultObject);
 	}
 
+	/**
+	 * Builds a postfix solve list for the given tokenized expression and result object.
+	 *
+	 * @param {Array} pTokenizedExpression - The tokenized expression.
+	 * @param {Object} pResultObject - The result object where the algorithm "shows its work".
+	 * @returns {Array} The postfix solve list.
+	 */
 	buildPostfixedSolveList(pTokenizedExpression, pResultObject)
 	{
 		return this.Postfix.buildPostfixedSolveList(pTokenizedExpression, pResultObject);
 	}
 
+	/**
+	 * Substitutes values in tokenized objects.
+	 * 
+	 * This means marshaling data from pDataSource into the array of objects with the passed in Manifest (or a generic manifest) to prepare for solving.
+	 *
+	 * @param {Array} pTokenizedObjects - The array of tokenized objects.
+	 * @param {Object} pDataSource - The data source object.
+	 * @param {Object} pResultObject - The result object.
+	 * @param {Object} pManifest - The manifest object.
+	 * @returns {Object} - The updated result object.
+	 */
+	substituteValuesInTokenizedObjects(pTokenizedObjects, pDataSource, pResultObject, pManifest)
+	{
+		return this.ValueMarshal.substituteValuesInTokenizedObjects(pTokenizedObjects, pDataSource, pResultObject, pManifest);
+	}
+
+	/**
+	 * Solves a postfixed expression Array.
+	 *
+	 * @param {Array} pPostfixedExpression - The postfixed expression to solve.
+	 * @param {object} pDataDestinationObject - The data destination object where data gets marshaled to after solving.
+	 * @param {object} pResultObject - The result object where the algorithm "shows its work".
+	 * @param {object} pManifest - The manifest object.
+	 * @returns {any} The result of the solved expression.
+	 */
 	solvePostfixedExpression(pPostfixedExpression, pDataDestinationObject, pResultObject, pManifest)
 	{
 		return this.Solver.solvePostfixedExpression(pPostfixedExpression, pDataDestinationObject, pResultObject, pManifest);
@@ -215,11 +161,15 @@ class FableServiceExpressionParser extends libFableServiceBase
 		let tmpDataSourceObject = (typeof(pDataSourceObject) === 'object') ? pDataSourceObject : {};
 		let tmpDataDestinationObject = (typeof(pDataDestinationObject) === 'object') ? pDataDestinationObject : {};
 
+		// This is technically a "pre-compile" and we can keep this Results Object around to reuse for better performance.  Not required.
 		this.tokenize(pExpression, tmpResultsObject);
 		this.lintTokenizedExpression(tmpResultsObject.RawTokens, tmpResultsObject);
 		this.buildPostfixedSolveList(tmpResultsObject.RawTokens, tmpResultsObject);
 		
+		// This is where the data from variables gets marshaled into their symbols (from AppData or the like)
 		this.substituteValuesInTokenizedObjects(tmpResultsObject.PostfixTokenObjects, tmpDataSourceObject, tmpResultsObject, pManifest);
+		
+		// Finally this is the expr solving method, which returns a string and also marshals it into tmpDataDestinationObject
 		return this.solvePostfixedExpression(tmpResultsObject.PostfixSolveList, tmpDataDestinationObject, tmpResultsObject, pManifest);
 	}
 }
