@@ -94,9 +94,9 @@ class ExpressionParserSolver extends libExpressionParserOperationBase
 
 				try
 				{
-					this.log.trace(`Solving Step ${i} [${tmpStepResultObject.ExpressionStep.VirtualSymbolName}] --> [${tmpStepResultObject.ExpressionStep.Operation.Token}]: ( ${tmpStepResultObject.ExpressionStep.LeftValue.Value} , ${tmpStepResultObject.ExpressionStep.RightValue.Value} )`);
+					//this.log.trace(`Solving Step ${i} [${tmpStepResultObject.ExpressionStep.VirtualSymbolName}] --> [${tmpStepResultObject.ExpressionStep.Operation.Token}]: ( ${tmpStepResultObject.ExpressionStep.LeftValue.Value} , ${tmpStepResultObject.ExpressionStep.RightValue.Value} )`);
 					tmpResults.VirtualSymbols[tmpStepResultObject.ExpressionStep.VirtualSymbolName] = tmpManifest.getValueAtAddress(tmpStepResultObject, `${tmpFunctionAddress}(ExpressionStep.LeftValue.Value,ExpressionStep.RightValue.Value)`);
-					this.log.trace(`   ---> Step ${i}: ${tmpResults.VirtualSymbols[tmpStepResultObject.ExpressionStep.VirtualSymbolName]}`)
+					//this.log.trace(`   ---> Step ${i}: ${tmpResults.VirtualSymbols[tmpStepResultObject.ExpressionStep.VirtualSymbolName]}`)
 				}
 				catch (pError)
 				{

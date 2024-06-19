@@ -140,7 +140,7 @@ class FableServiceExpressionParser extends libFableServiceBase
 				}
 				else
 				{
-					tmpResults.ExpressionParserLog.push(`INFO: ExpressionParser.substituteValuesInTokenizedObjects found a value [${tmpValue}] for the state address ${tmpToken.Token} at index ${i}`);
+					//tmpResults.ExpressionParserLog.push(`INFO: ExpressionParser.substituteValuesInTokenizedObjects found a value [${tmpValue}] for the state address ${tmpToken.Token} at index ${i}`);
 					this.log.info(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
 					try
 					{
