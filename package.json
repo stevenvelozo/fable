@@ -1,6 +1,6 @@
 {
     "name": "fable",
-    "version": "3.0.136",
+    "version": "3.0.137",
     "description": "A service dependency injection, configuration and logging library.",
     "main": "source/Fable.js",
     "scripts": {
@@ -64,7 +64,7 @@
         "fable-serviceproviderbase": "^3.0.13",
         "fable-settings": "^3.0.10",
         "fable-uuid": "^3.0.7",
-        "manyfest": "^1.0.35",
+        "manyfest": "^1.0.36",
         "simple-get": "^4.0.1"
     }
 }

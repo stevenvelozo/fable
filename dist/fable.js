@@ -919,10 +919,15 @@ if(!typeof pObject[tmpFunctionAddress]=='function'){// The address suggests it i
 return false;}// Now see if the function has arguments.
 // Implementation notes: * ARGUMENTS MUST SHARE THE SAME ROOT OBJECT CONTEXT *
 let tmpFunctionArguments=_MockFable.DataFormat.stringGetSegments(_MockFable.DataFormat.stringGetEnclosureValueByIndex(tmpSubObjectName.substring(tmpFunctionAddress.length),0),',');if(tmpFunctionArguments.length==0||tmpFunctionArguments[0]==''){// No arguments... just call the function (bound to the scope of the object it is contained withing)
-return this.checkAddressExists(pObject[tmpFunctionAddress].apply(pObject),tmpNewAddress,tmpRootObject);}else{let tmpArgumentValues=[];let tmpRootObject=typeof pRootObject=='undefined'?pObject:pRootObject;// Now get the value for each argument
+if(tmpFunctionAddress in pObject){try{return this.checkAddressExists(pObject[tmpFunctionAddress].apply(pObject),tmpNewAddress,tmpRootObject);}catch(pError){// The function call failed, so the address doesn't exist
+libSimpleLog.log("Error calling function ".concat(tmpFunctionAddress," (address [").concat(pAddress,"]): ").concat(pError.message));return false;}}else{// The function doesn't exist, so the address doesn't exist
+libSimpleLog.log("Function ".concat(tmpFunctionAddress," does not exist (address [").concat(pAddress,"])"));return false;}}else{let tmpArgumentValues=[];let tmpRootObject=typeof pRootObject=='undefined'?pObject:pRootObject;// Now get the value for each argument
 for(let i=0;i<tmpFunctionArguments.length;i++){// Resolve the values for each subsequent entry
 // NOTE: This is where the resolves get really tricky.  Recursion within recursion.  Programming gom jabbar, yo.
-tmpArgumentValues.push(this.getObjectValueClass.getValueAtAddress(tmpRootObject,tmpFunctionArguments[i]));}return this.checkAddressExists(pObject[tmpFunctionAddress].apply(pObject,tmpArgumentValues),tmpNewAddress,tmpRootObject);}}// Boxed elements look like this:
+tmpArgumentValues.push(this.getObjectValueClass.getValueAtAddress(tmpRootObject,tmpFunctionArguments[i]));}//return this.checkAddressExists(pObject[tmpFunctionAddress].apply(pObject, tmpArgumentValues), tmpNewAddress, tmpRootObject);
+if(tmpFunctionAddress in pObject){try{return this.checkAddressExists(pObject[tmpFunctionAddress].apply(pObject,tmpArgumentValues),tmpNewAddress,tmpRootObject);}catch(pError){// The function call failed, so the address doesn't exist
+libSimpleLog.log("Error calling function ".concat(tmpFunctionAddress," (address [").concat(pAddress,"]): ").concat(pError.message));return false;}}else{// The function doesn't exist, so the address doesn't exist
+libSimpleLog.log("Function ".concat(tmpFunctionAddress," does not exist (address [").concat(pAddress,"])"));return false;}}}// Boxed elements look like this:
 // 		MyValues[42]
 // 		MyValues['Color']
 // 		MyValues["Weight"]
@@ -1147,12 +1152,16 @@ if(tmpFunctionStartIndex>0//    2) The end bracket is after the start bracket
 return false;}// Now see if the function has arguments.
 // Implementation notes: * ARGUMENTS MUST SHARE THE SAME ROOT OBJECT CONTEXT *
 let tmpFunctionArguments=_MockFable.DataFormat.stringGetSegments(_MockFable.DataFormat.stringGetEnclosureValueByIndex(pAddress.substring(tmpFunctionAddress.length),0),',');if(tmpFunctionArguments.length==0||tmpFunctionArguments[0]==''){// No arguments... just call the function (bound to the scope of the object it is contained withing)
-return pObject[tmpFunctionAddress].apply(pObject);}else{let tmpArgumentValues=[];let tmpRootObject=typeof pRootObject=='undefined'?pObject:pRootObject;// Now get the value for each argument
+if(tmpFunctionAddress in pObject){try{return pObject[tmpFunctionAddress].apply(pObject);}catch(pError){// The function call failed, so the address doesn't exist
+console.log("Error in getValueAtAddress calling function ".concat(tmpFunctionAddress," (address [").concat(pAddress,"]): ").concat(pError.message));return false;}}else{// The function doesn't exist, so the address doesn't exist
+console.log("Function ".concat(tmpFunctionAddress," does not exist (address [").concat(pAddress,"])"));return false;}}else{let tmpArgumentValues=[];let tmpRootObject=typeof pRootObject=='undefined'?pObject:pRootObject;// Now get the value for each argument
 for(let i=0;i<tmpFunctionArguments.length;i++){// Resolve the values for each subsequent entry
 // Check if the argument value is a string literal or a reference to an address
 if(tmpFunctionArguments[i].length>=2&&(tmpFunctionArguments[i].charAt(0)=='"'||tmpFunctionArguments[i].charAt(0)=="'"||tmpFunctionArguments[i].charAt(0)=="`")&&(tmpFunctionArguments[i].charAt(tmpFunctionArguments[i].length-1)=='"'||tmpFunctionArguments[i].charAt(tmpFunctionArguments[i].length-1)=="'"||tmpFunctionArguments[i].charAt(tmpFunctionArguments[i].length-1)=="`")){// This is a string literal
 tmpArgumentValues.push(tmpFunctionArguments[i].substring(1,tmpFunctionArguments[i].length-1));}else{// This is a hash address
-tmpArgumentValues.push(this.getValueAtAddress(tmpRootObject,tmpFunctionArguments[i]));}}return pObject[tmpFunctionAddress].apply(pObject,tmpArgumentValues);}}// Boxed elements look like this:
+tmpArgumentValues.push(this.getValueAtAddress(tmpRootObject,tmpFunctionArguments[i]));}}if(tmpFunctionAddress in pObject){try{return pObject[tmpFunctionAddress].apply(pObject,tmpArgumentValues);}catch(pError){// The function call failed, so the address doesn't exist
+console.log("Error in getValueAtAddress calling function ".concat(tmpFunctionAddress," (address [").concat(pAddress,"]): ").concat(pError.message));return false;}}else{// The function doesn't exist, so the address doesn't exist
+console.log("Function ".concat(tmpFunctionAddress," does not exist (address [").concat(pAddress,"])"));return false;}}}// Boxed elements look like this:
 // 		MyValues[10]
 // 		MyValues['Name']
 // 		MyValues["Age"]
@@ -1210,12 +1219,16 @@ if(tmpFunctionStartIndex>0//    2) The end bracket is after the start bracket
 return false;}// Now see if the function has arguments.
 // Implementation notes: * ARGUMENTS MUST SHARE THE SAME ROOT OBJECT CONTEXT *
 let tmpFunctionArguments=_MockFable.DataFormat.stringGetSegments(_MockFable.DataFormat.stringGetEnclosureValueByIndex(tmpSubObjectName.substring(tmpFunctionAddress.length),0),',');if(tmpFunctionArguments.length==0||tmpFunctionArguments[0]==''){// No arguments... just call the function (bound to the scope of the object it is contained withing)
-return this.getValueAtAddress(pObject[tmpFunctionAddress].apply(pObject),tmpNewAddress,tmpParentAddress,tmpRootObject);}else{let tmpArgumentValues=[];let tmpRootObject=typeof pRootObject=='undefined'?pObject:pRootObject;// Now get the value for each argument
+if(tmpFunctionAddress in pObject){try{return this.getValueAtAddress(pObject[tmpFunctionAddress].apply(pObject),tmpNewAddress,tmpParentAddress,tmpRootObject);}catch(pError){// The function call failed, so the address doesn't exist
+console.log("Error in getValueAtAddress calling function ".concat(tmpFunctionAddress," (address [").concat(pAddress,"]): ").concat(pError.message));return false;}}else{// The function doesn't exist, so the address doesn't exist
+console.log("Function ".concat(tmpFunctionAddress," does not exist (address [").concat(pAddress,"])"));return false;}}else{let tmpArgumentValues=[];let tmpRootObject=typeof pRootObject=='undefined'?pObject:pRootObject;// Now get the value for each argument
 for(let i=0;i<tmpFunctionArguments.length;i++){// Resolve the values for each subsequent entry
 // Check if the argument value is a string literal or a reference to an address
 if(tmpFunctionArguments[i].length>=2&&(tmpFunctionArguments[i].charAt(0)=='"'||tmpFunctionArguments[i].charAt(0)=="'"||tmpFunctionArguments[i].charAt(0)=="`")&&(tmpFunctionArguments[i].charAt(tmpFunctionArguments[i].length-1)=='"'||tmpFunctionArguments[i].charAt(tmpFunctionArguments[i].length-1)=="'"||tmpFunctionArguments[i].charAt(tmpFunctionArguments[i].length-1)=="`")){// This is a string literal
 tmpArgumentValues.push(tmpFunctionArguments[i].substring(1,tmpFunctionArguments[i].length-1));}else{// This is a hash address
-tmpArgumentValues.push(this.getValueAtAddress(tmpRootObject,tmpFunctionArguments[i]));}}return this.getValueAtAddress(pObject[tmpFunctionAddress].apply(pObject,tmpArgumentValues),tmpNewAddress,tmpParentAddress,tmpRootObject);}}// Boxed elements look like this:
+tmpArgumentValues.push(this.getValueAtAddress(tmpRootObject,tmpFunctionArguments[i]));}}if(tmpFunctionAddress in pObject){try{return this.getValueAtAddress(pObject[tmpFunctionAddress].apply(pObject,tmpArgumentValues),tmpNewAddress,tmpParentAddress,tmpRootObject);}catch(pError){// The function call failed, so the address doesn't exist
+console.log("Error in getValueAtAddress calling function ".concat(tmpFunctionAddress," (address [").concat(pAddress,"]): ").concat(pError.message));return false;}}else{// The function doesn't exist, so the address doesn't exist
+console.log("Function ".concat(tmpFunctionAddress," does not exist (address [").concat(pAddress,"])"));return false;}}}// Boxed elements look like this:
 // 		MyValues[42]
 // 		MyValues['Color']
 // 		MyValues["Weight"]
