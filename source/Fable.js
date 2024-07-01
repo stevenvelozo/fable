@@ -169,6 +169,8 @@ class Fable extends libFableServiceBase.CoreServiceProviderBase
 
 	addAndInstantiateServiceTypeIfNotExists(pServiceType, pServiceClass)
 	{
+		this.addServiceTypeIfNotExists(pServiceType, pServiceClass);
+
 		if (!(pServiceType in this.servicesMap))
 		{
 			return this.instantiateServiceProvider(pServiceType, {}, `${pServiceType}-Default`);
