@@ -24,8 +24,14 @@ class ExpressionParserMessaging extends libExpressionParserOperationBase
 	getVirtualTokenValue(pToken, pOperationResults)
 	{
 		let tmpVirtualSymbol = this.getOperationVirtualSymbolName(pToken);
+
+		if ((pToken.Type == 'Token.Constant') && (pToken.Value))
+		{
+			return pToken.Value.toString();
+		}
+
 		let tmpVirtualSymbolData = ('VirtualSymbols' in pOperationResults) ? pOperationResults.VirtualSymbols : {};
-		
+
 		if (this.ExpressionParser.GenericManifest.checkAddressExists(tmpVirtualSymbolData, tmpVirtualSymbol))
 		{
 			let tmpValue = this.ExpressionParser.GenericManifest.getValueAtAddress(tmpVirtualSymbolData, tmpVirtualSymbol);
@@ -76,7 +82,7 @@ class ExpressionParserMessaging extends libExpressionParserOperationBase
 		if (tmpVirtualSymbolPrefix === 'VFE')
 		{
 			// Virtual Function Expression
-			return `${tmpOperationVirtualSymbol} = ${tmpOperationSymbol}(${tmpOperationRightValue})`;
+			return `${tmpOperationVirtualSymbol} = ${tmpOperationSymbol}(${tmpOperationLeftValue})`;
 		}
 
 		return `${tmpOperationVirtualSymbol} = ${tmpOperationLeftValue} ${tmpOperationSymbol} ${tmpOperationRightValue}`;
@@ -110,6 +116,18 @@ class ExpressionParserMessaging extends libExpressionParserOperationBase
 		return `${tmpOperationVirtualSymbol} = ${tmpOperationLeftValue} ${tmpOperationSymbol} ${tmpOperationRightValue}`;
 	}
 
+	getOperationOutcomeMessage(pToken, pOperationResults)
+	{
+		if (!pToken)
+		{
+			return 'INVALID_TOKEN';
+		}
+		let tmpOperationVirtualSymbol = this.getOperationVirtualSymbolName(pToken);
+		let tmpOperationOutcomeValue = this.getVirtualTokenValue(pToken, pOperationResults);
+
+		return `${tmpOperationVirtualSymbol} = ${tmpOperationOutcomeValue}`;
+	}
+
 	logFunctionOutcome(pResultObject)
 	{
 		if (typeof(pResultObject) !== 'object')
@@ -129,6 +147,8 @@ class ExpressionParserMessaging extends libExpressionParserOperationBase
 			this.log.info(`${i} Symbols: ${tmpTokenSymbolMessage}`);
 			let tmpTokenValueMessage = this.getOperationValueMessage(tmpToken, pResultObject);
 			this.log.info(`${i}  Values: ${tmpTokenValueMessage}`);
+			let tmpTokenOutcome = this.getOperationOutcomeMessage(tmpToken, pResultObject);
+			this.log.info(`${i} Outcome: ${tmpTokenOutcome}`);
 		}
 		this.log.info(`{${tmpRawExpression}} = ${tmpRawResult}`);
 	}

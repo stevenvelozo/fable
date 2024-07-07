@@ -1,8 +1,8 @@
 {
 	"Expressions":
 		[
-			{ "Equation":"Result = 5+3 - sqrt(75 / (3 + Depth) * Width)^ 3", "ExpectedResult":"-13.078386362213538715906797395732300153182132216343566001917247" },
 			{ "Equation":"Result = (160 * PR * Z) / (C / 100) * PR * Z + (160 * (1 - C / 100))", "ExpectedResult":"-1111529.088640468" },
+			{ "Equation":"Result = 5+3 - sqrt(75 / (3 + Depth) * Width)^ 3", "ExpectedResult":"-13.078386362213538715906797395732300153182132216343566001917247" },
 			{ "Equation":"1.5 * sqrt(8 * 2.423782342^2) / 10", "ExpectedResult":"1.02832375808904701855" },
 			{ "Equation":"Result = ((15000 * 2) / 4)^2 + 100 - 10 * (35 + 5)", "ExpectedResult":"562500" },
 			{ "Equation":"Result = 1 * sqrt(16)", "ExpectedResult":"4" },

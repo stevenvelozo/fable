@@ -18,32 +18,35 @@ const _ExpressionParser = _Fable.ExpressionParser;
 // _Fable.log.info(`One-liner solve with variables is: ${_ExpressionParser.solve("Volume = Width * Height * Depth", {"Width": 73.5, "Height": 28.8, "Depth": 200.5})}`);
 
 
-// /* * * * * * * * * * * * * * * * *
-//  *
-//  * A simple run through of some mathematical expressions
-//  * 
-//  */
-// _Fable.log.info(`Beginning Run-through for Set of Test Expressions....`);
-// // An array of equations with expected values
-// let _Equations = require(`./Equations.json`);
-// // The application state is a plain javascript object we pass into the solver to pull variables from
-// let _AppData = require(`./AppData.json`);
-// // The manifest is a Manyfest which describes hashes for complex addresses in the application state object
-// // For example you can't use "Student[0].Age" as a variable in the expression
-// // ...but you can use "Student[0].Age" as an address in the manifest with a hash of "StudentAge"
-// // ...and then reference "StudentAge" in the expression.
-// let tmpManifestConfiguration = { "Scope":"None", "Descriptors":[] };
-// let tmpManifest = _Fable.newManyfest(tmpManifestConfiguration);
-// // Run each expression in the Equations.json file through the expression parser.
-// for (let i = 0; i < _Equations.Expressions.length; i++)
-// {
-// 	let tmpResultValue = _ExpressionParser.solve(_Equations.Expressions[i].Equation, _AppData, {}, tmpManifest);
-// 	console.log(`Expression [${i}]: [${_Equations.Expressions[i].Equation}] ==> ${tmpResultValue}`);
-// 	if (tmpResultValue !== _Equations.Expressions[i].ExpectedResult)
-// 	{
-// 		console.log(`Error: Equation ${_Equations.Expressions[i].Equation} expected [${_Equations.Expressions[i].ExpectedResult}] but got [${tmpResultValue}]`);
-// 	}
-// }
+/* * * * * * * * * * * * * * * * *
+ *
+ * A simple run through of some mathematical expressions
+ * 
+ */
+_Fable.log.info(`Beginning Run-through for Set of Test Expressions....`);
+// An array of equations with expected values
+let _Equations = require(`./Equations.json`);
+// The application state is a plain javascript object we pass into the solver to pull variables from
+let _AppData = require(`./AppData.json`);
+// The manifest is a Manyfest which describes hashes for complex addresses in the application state object
+// For example you can't use "Student[0].Age" as a variable in the expression
+// ...but you can use "Student[0].Age" as an address in the manifest with a hash of "StudentAge"
+// ...and then reference "StudentAge" in the expression.
+let tmpManifestConfiguration = { "Scope":"None", "Descriptors":[] };
+let tmpManifest = _Fable.newManyfest(tmpManifestConfiguration);
+// Run each expression in the Equations.json file through the expression parser.
+for (let i = 0; i < _Equations.Expressions.length; i++)
+{
+	let tmpResultObject = {};
+	let tmpResultValue = _ExpressionParser.solve(_Equations.Expressions[i].Equation, _AppData, tmpResultObject, tmpManifest);
+	console.log(`Expression [${i}]: [${_Equations.Expressions[i].Equation}] ==> ${tmpResultValue}`);
+	_Fable.ExpressionParser.Messaging.logFunctionOutcome(tmpResultObject);
+
+	if (tmpResultValue !== _Equations.Expressions[i].ExpectedResult)
+	{
+		console.log(`Error: Equation ${_Equations.Expressions[i].Equation} expected [${_Equations.Expressions[i].ExpectedResult}] but got [${tmpResultValue}]`);
+	}
+}
 
 
 /* * * * * * * * * * * * * * * * *
