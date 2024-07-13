@@ -78,5 +78,9 @@
 	"mode": {
 		"Name": "Mode",
 		"Address": "fable.Math.modePrecise"
+	},
+	"round": {
+		"Name": "Round",
+		"Address": "fable.Math.roundPrecise"
 	}
 }

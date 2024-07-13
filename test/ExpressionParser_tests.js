@@ -200,6 +200,23 @@ suite
 						return fDone();
 					}
 				);
+				test
+				(
+					'Exercise Rounding',
+					(fDone)=>
+					{
+						let _Parser = getExpressionParser();
+
+						let tmpSolveResults = {};
+						let tmpDataObject = {X: 5.867, Y: 3.1, Z: 75, Depth: 3, Width: 2};
+						// 1364.0775
+						let tmpResult = _Parser.solve('Area = ROUND(X * Y  * Z)', tmpDataObject, tmpSolveResults);
+						Expect(tmpResult).to.equal("1364");
+						tmpResult = _Parser.solve('Area = ROUND(X * Y  * Z, 2)', tmpDataObject, tmpSolveResults);
+						Expect(tmpResult).to.equal("1364.08");
+						return fDone();
+					}
+				);
 			}
 		);
 	}

@@ -15,7 +15,7 @@ _Fable.log.info(`One-liner solve is: ${_Fable.ExpressionParser.solve("Result = 7
 // Let's put it in a variable for easier exercises
 const _ExpressionParser = _Fable.ExpressionParser;
 // Look up somoe variables in an object
-// _Fable.log.info(`One-liner solve with variables is: ${_ExpressionParser.solve("Volume = Width * Height * Depth", {"Width": 73.5, "Height": 28.8, "Depth": 200.5})}`);
+_Fable.log.info(`One-liner solve with variables is: ${_ExpressionParser.solve("Volume = Width * Height * Depth", {"Width": 73.5, "Height": 28.8, "Depth": 200.5})}`);
 
 
 /* * * * * * * * * * * * * * * * *

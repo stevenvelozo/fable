@@ -385,7 +385,7 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 					}
 					tmpFunctionCacheLIFOStack.push(tmpPostfixTokenObject);
 				}
-				if (tmpPostfixTokenObject.Token === ')')
+				else if (tmpPostfixTokenObject.Token === ')')
 				{
 					let tmpOpenParenthesis = tmpFunctionCacheLIFOStack.pop();
 					if (tmpOpenParenthesis.IsFunction)

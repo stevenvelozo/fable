@@ -97,6 +97,22 @@ class FableServiceMath extends libFableServiceBase
 	}
 
 	/**
+	 * Concatenates two value sets and returns the result as a string.
+	 * 
+	 * Value sets are comma separated.
+	 * 
+	 * Used for arbitrary precision set generation.
+	 *
+	 * @param {any} pLeftValue - The left value to append.
+	 * @param {any} pRightValue - The right value to append.
+	 * @returns {string} The concatenated string of the left and right values.
+	 */
+	setConcatenate(pLeftValue, pRightValue)
+	{
+		return `${pLeftValue},${pRightValue}`;
+	}
+
+	/**
 	 * Rounds a value to a specified number of decimal places using a specified rounding method.
 	 *
 	 * @param {number} pValue - The value to be rounded.
@@ -107,7 +123,7 @@ class FableServiceMath extends libFableServiceBase
 	roundPrecise(pValue, pDecimals, pRoundingMethod)
 	{
 		let tmpValue = isNaN(pValue) ? 0 : pValue;
-		let tmpDecimals = isNaN(pDecimals) ? 0 : pDecimals;
+		let tmpDecimals = isNaN(pDecimals) ? 0 : parseInt(pDecimals, 10);
 		let tmpRoundingMethod = (typeof (pRoundingMethod) === 'undefined') ? this.roundHalfUp : pRoundingMethod;
 
 		let tmpArbitraryValue = new this.fable.Utility.bigNumber(tmpValue);

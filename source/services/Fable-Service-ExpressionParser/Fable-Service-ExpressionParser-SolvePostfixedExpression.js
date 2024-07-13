@@ -90,27 +90,80 @@ class ExpressionParserSolver extends libExpressionParserOperationBase
 				// TODO: This can be optimized.   A lot.  If necessary.  Seems pretty fast honestly for even thousands of operations.  Slowest part is arbitrary precision.
 				// An operator always has a left and right value.
 				let tmpFunctionAddress = false;
+				// Note: There are easier, passive ways of managing this state.  But this is complex.
+				let tmpIsFunction = false;
 				if (tmpStepResultObject.ExpressionStep.Operation.Token in this.ExpressionParser.tokenMap)
 				{
 					tmpFunctionAddress = `ResultsObject.${tmpStepResultObject.ExpressionStep.Operation.Descriptor.Function}`;
 				}
 				else if (tmpStepResultObject.ExpressionStep.Operation.Token.toLowerCase() in this.ExpressionParser.functionMap)
 				{
+					tmpIsFunction = true;
 					tmpFunctionAddress = `ResultsObject.${this.ExpressionParser.functionMap[tmpStepResultObject.ExpressionStep.Operation.Token.toLowerCase()].Address}`;
 				}
 
-				try
+				if (tmpIsFunction)
 				{
-					//this.log.trace(`Solving Step ${i} [${tmpStepResultObject.ExpressionStep.VirtualSymbolName}] --> [${tmpStepResultObject.ExpressionStep.Operation.Token}]: ( ${tmpStepResultObject.ExpressionStep.LeftValue.Value} , ${tmpStepResultObject.ExpressionStep.RightValue.Value} )`);
-					tmpManifest.setValueAtAddress(tmpResults.VirtualSymbols, tmpStepResultObject.ExpressionStep.VirtualSymbolName, tmpManifest.getValueAtAddress(tmpStepResultObject, `${tmpFunctionAddress}(ExpressionStep.LeftValue.Value,ExpressionStep.RightValue.Value)`));
-					tmpResults.LastResult = tmpManifest.getValueAtAddress(tmpResults.VirtualSymbols, tmpStepResultObject.ExpressionStep.VirtualSymbolName);
-					//this.log.trace(`   ---> Step ${i}: ${tmpResults.VirtualSymbols[tmpStepResultObject.ExpressionStep.VirtualSymbolName]}`)
+					try
+					{
+						this.log.trace(`Solving Function Step ${i} [${tmpStepResultObject.ExpressionStep.VirtualSymbolName}] --> [${tmpStepResultObject.ExpressionStep.Operation.Token}]: ( ${tmpStepResultObject.ExpressionStep.LeftValue.Value} , ${tmpStepResultObject.ExpressionStep.RightValue.Value} )`);
+						// Build the set of arguments to send to the functions.
+						tmpStepResultObject.ExpressionStep.LeftValue.ArgumentString = '';
+						if (typeof(tmpStepResultObject.ExpressionStep.LeftValue.Value) === 'undefined')
+						{
+							tmpStepResultObject.ExpressionStep.LeftValue.Arguments = [];
+						}
+						else if (Array.isArray(tmpStepResultObject.ExpressionStep.LeftValue.Value))
+						{
+							// Allow for array-based math sets to just be pased through
+							tmpStepResultObject.ExpressionStep.LeftValue.Arguments = tmpStepResultObject.ExpressionStep.LeftValue.Value;
+							tmpStepResultObject.ExpressionStep.LeftValue.ArgumentString = 'ExpressionStep.LeftValue.Arguments';
+						}
+						else if (typeof(tmpStepResultObject.ExpressionStep.LeftValue.Value) === 'object')
+						{
+							// Allow for array-based math sets to just be pased through
+							tmpStepResultObject.ExpressionStep.LeftValue.Arguments = tmpStepResultObject.ExpressionStep.LeftValue.Value;
+							tmpStepResultObject.ExpressionStep.LeftValue.ArgumentString = 'ExpressionStep.LeftValue.Arguments';
+						}
+						else
+						{
+							// Allow for string-based math sets.
+							tmpStepResultObject.ExpressionStep.LeftValue.Arguments = tmpStepResultObject.ExpressionStep.LeftValue.Value.toString().split(',');
+							for (let j = 0; j < tmpStepResultObject.ExpressionStep.LeftValue.Arguments.length; j++)
+							{
+								if (tmpStepResultObject.ExpressionStep.LeftValue.ArgumentString !== '')
+								{
+									tmpStepResultObject.ExpressionStep.LeftValue.ArgumentString += ',';
+								}
+								tmpStepResultObject.ExpressionStep.LeftValue.ArgumentString += `ExpressionStep.LeftValue.Arguments[${j}]`;
+							}
+						}
+						tmpManifest.setValueAtAddress(tmpResults.VirtualSymbols, tmpStepResultObject.ExpressionStep.VirtualSymbolName, tmpManifest.getValueAtAddress(tmpStepResultObject, `${tmpFunctionAddress}(${tmpStepResultObject.ExpressionStep.LeftValue.ArgumentString})`));
+						tmpResults.LastResult = tmpManifest.getValueAtAddress(tmpResults.VirtualSymbols, tmpStepResultObject.ExpressionStep.VirtualSymbolName);
+						//this.log.trace(`   ---> Step ${i}: ${tmpResults.VirtualSymbols[tmpStepResultObject.ExpressionStep.VirtualSymbolName]}`)
+					}
+					catch (pError)
+					{
+						tmpResults.ExpressionParserLog.push(`ERROR: ExpressionParser.solvePostfixedExpression failed to solve step ${i} with function ${tmpStepResultObject.ExpressionStep.Operation.Token}: ${pError}`);
+						this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
+						return false;
+					}
 				}
-				catch (pError)
+				else
 				{
-					tmpResults.ExpressionParserLog.push(`ERROR: ExpressionParser.solvePostfixedExpression failed to solve step ${i} with function ${tmpStepResultObject.ExpressionStep.Operation.Token}: ${pError}`);
-					this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
-					return false;
+					try
+					{
+						this.log.trace(`Solving Step ${i} [${tmpStepResultObject.ExpressionStep.VirtualSymbolName}] --> [${tmpStepResultObject.ExpressionStep.Operation.Token}]: ( ${tmpStepResultObject.ExpressionStep.LeftValue.Value} , ${tmpStepResultObject.ExpressionStep.RightValue.Value} )`);
+						tmpManifest.setValueAtAddress(tmpResults.VirtualSymbols, tmpStepResultObject.ExpressionStep.VirtualSymbolName, tmpManifest.getValueAtAddress(tmpStepResultObject, `${tmpFunctionAddress}(ExpressionStep.LeftValue.Value,ExpressionStep.RightValue.Value)`));
+						tmpResults.LastResult = tmpManifest.getValueAtAddress(tmpResults.VirtualSymbols, tmpStepResultObject.ExpressionStep.VirtualSymbolName);
+						//this.log.trace(`   ---> Step ${i}: ${tmpResults.VirtualSymbols[tmpStepResultObject.ExpressionStep.VirtualSymbolName]}`)
+					}
+					catch (pError)
+					{
+						tmpResults.ExpressionParserLog.push(`ERROR: ExpressionParser.solvePostfixedExpression failed to solve step ${i} with function ${tmpStepResultObject.ExpressionStep.Operation.Token}: ${pError}`);
+						this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
+						return false;
+					}
 				}
 
 				// Equations don't always solve in virtual symbol order.

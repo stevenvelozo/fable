@@ -22,6 +22,14 @@
 			"Precedence": 0,
 			"Type": "Parenthesis"
 		},
+	",":
+		{
+			"Name": "Set Concatenate",
+			"Token": ",",
+			"Function": "fable.Math.setConcatenate",
+			"Precedence": 4,
+			"Type": "Operator"
+		},
 
 	"*":
 		{
