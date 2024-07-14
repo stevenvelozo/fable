@@ -106,7 +106,7 @@ class ExpressionParserSolver extends libExpressionParserOperationBase
 				{
 					try
 					{
-						this.log.trace(`Solving Function Step ${i} [${tmpStepResultObject.ExpressionStep.VirtualSymbolName}] --> [${tmpStepResultObject.ExpressionStep.Operation.Token}]: ( ${tmpStepResultObject.ExpressionStep.LeftValue.Value} , ${tmpStepResultObject.ExpressionStep.RightValue.Value} )`);
+						//this.log.trace(`Solving Function Step ${i} [${tmpStepResultObject.ExpressionStep.VirtualSymbolName}] --> [${tmpStepResultObject.ExpressionStep.Operation.Token}]: ( ${tmpStepResultObject.ExpressionStep.LeftValue.Value} , ${tmpStepResultObject.ExpressionStep.RightValue.Value} )`);
 						// Build the set of arguments to send to the functions.
 						tmpStepResultObject.ExpressionStep.LeftValue.ArgumentString = '';
 						if (typeof(tmpStepResultObject.ExpressionStep.LeftValue.Value) === 'undefined')
@@ -153,7 +153,7 @@ class ExpressionParserSolver extends libExpressionParserOperationBase
 				{
 					try
 					{
-						this.log.trace(`Solving Step ${i} [${tmpStepResultObject.ExpressionStep.VirtualSymbolName}] --> [${tmpStepResultObject.ExpressionStep.Operation.Token}]: ( ${tmpStepResultObject.ExpressionStep.LeftValue.Value} , ${tmpStepResultObject.ExpressionStep.RightValue.Value} )`);
+						//this.log.trace(`Solving Step ${i} [${tmpStepResultObject.ExpressionStep.VirtualSymbolName}] --> [${tmpStepResultObject.ExpressionStep.Operation.Token}]: ( ${tmpStepResultObject.ExpressionStep.LeftValue.Value} , ${tmpStepResultObject.ExpressionStep.RightValue.Value} )`);
 						tmpManifest.setValueAtAddress(tmpResults.VirtualSymbols, tmpStepResultObject.ExpressionStep.VirtualSymbolName, tmpManifest.getValueAtAddress(tmpStepResultObject, `${tmpFunctionAddress}(ExpressionStep.LeftValue.Value,ExpressionStep.RightValue.Value)`));
 						tmpResults.LastResult = tmpManifest.getValueAtAddress(tmpResults.VirtualSymbols, tmpStepResultObject.ExpressionStep.VirtualSymbolName);
 						//this.log.trace(`   ---> Step ${i}: ${tmpResults.VirtualSymbols[tmpStepResultObject.ExpressionStep.VirtualSymbolName]}`)
