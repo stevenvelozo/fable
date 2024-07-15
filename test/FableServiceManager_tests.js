@@ -166,7 +166,24 @@ suite
 									Expect(tmpService).to.be.an('object');
 								}
 							);
+						test
+							(
+								'Add and instantiate a singleton service',
+								function ()
+								{
+									let testFable = new libFable({});
 
+									let tmpService = testFable.addAndInstantiateSingletonService('SimpleService', {}, SimpleService);
+
+									Expect(testFable.SimpleService).to.be.an('object');
+									Expect(tmpService).to.be.an('object');
+
+									let tmpService2 = testFable.addAndInstantiateSingletonService('SimpleService', {}, SimpleService);
+
+									// A second call should not construct another one.
+									Expect(tmpService2.Hash).to.equal(tmpService.Hash);
+								}
+							);
 						test
 							(
 								'Change the default service provider',
