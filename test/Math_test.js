@@ -53,7 +53,21 @@ suite
 
 						Expect(testFable.Math.gtPrecise(4, 5)).to.equal(false);
 						Expect(testFable.Math.gtePrecise(1000, 5)).to.equal(true);
+						Expect(testFable.Math.gtePrecise('0.00', '0.0')).to.equal(true);
+						Expect(testFable.Math.gtePrecise('0.00', '0.0000000000000000000000000000000001')).to.equal(false);
+						Expect(testFable.Math.gtePrecise('0.00', 0.01)).to.equal(false);
+						Expect(testFable.Math.gtePrecise('0.00', '-0.0000000000000000000000000000000001')).to.equal(true);
+						Expect(testFable.Math.gtePrecise('0.00', -0.01)).to.equal(true);
+						Expect(testFable.Math.gtePrecise('0.00000000000000000000000000000000099', '0.000000000000000000000000000000001')).to.equal(false);
+						Expect(testFable.Math.gtePrecise('0.000000000000000000000000000000001', '0.00000000000000000000000000000000099')).to.equal(true);
 						Expect(testFable.Math.ltePrecise(1000, 5)).to.equal(false);
+						Expect(testFable.Math.ltePrecise('0.00', '0.0')).to.equal(true);
+						Expect(testFable.Math.ltePrecise('0.00', '0.0000000000000000000000000000000001')).to.equal(true);
+						Expect(testFable.Math.ltePrecise('0.00', 0.01)).to.equal(true);
+						Expect(testFable.Math.ltePrecise('0.00', '-0.0000000000000000000000000000000001')).to.equal(false);
+						Expect(testFable.Math.ltePrecise('0.00', -0.01)).to.equal(false);
+						Expect(testFable.Math.ltePrecise('0.00000000000000000000000000000000099', '0.000000000000000000000000000000001')).to.equal(true);
+						Expect(testFable.Math.ltePrecise('0.000000000000000000000000000000001', '0.00000000000000000000000000000000099')).to.equal(false);
 						Expect(testFable.Math.ltPrecise(4, 5)).to.equal(true);
 
 						Expect(testFable.Math.comparePrecise(4, 5)).to.equal(-1);

@@ -360,7 +360,7 @@ class FableServiceMath extends libFableServiceBase
 		let tmpRightValue = isNaN(pRightValue) ? 0 : pRightValue;
 
 		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
-		return tmpLeftArbitraryValue.lt(tmpRightValue);
+		return tmpLeftArbitraryValue.lte(tmpRightValue);
 	}
 
 	/**
