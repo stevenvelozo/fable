@@ -36,14 +36,16 @@ suite
 						let testFable = new libFable({LogStreams: false});
 						// Instantiate the logger
 						Expect(testFable).to.be.an('object', 'Fable should initialize as an object directly from the require statement.');
-						Expect(testFable).to.have.a.property('log')
-							.that.is.a('object');
-						Expect(testFable).to.have.a.property('settings')
-							.that.is.a('object');
-						Expect(testFable).to.have.a.property('fable')
-							.that.is.a('object');
-						Expect(testFable.settings.Product)
-							.to.equal('ApplicationNameHere')
+						Expect(testFable).to.have.a.property('log').that.is.a('object');
+						Expect(testFable).to.have.a.property('settings').that.is.a('object');
+						Expect(testFable).to.have.a.property('fable').that.is.a('object');
+						Expect(testFable.settings.Product).to.equal('ApplicationNameHere');
+
+						// Test package anthropology
+						Expect(testFable._PackageFableServiceProvider).to.be.an('object', 'Fable should have a _PackageFableServiceProvider object.');
+						Expect(testFable._PackageFableServiceProvider.name).equal('fable-serviceproviderbase', 'Fable _PackageFableServiceProvider.package.name should be set.');
+						Expect(testFable._Package).to.be.an('object', 'Fable should have a _Package object.');
+						Expect(testFable._Package.name).to.equal('fable', 'Fable _Package.package.name should be set.');
 					}
 				);
 				test

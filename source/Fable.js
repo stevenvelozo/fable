@@ -17,6 +17,7 @@ class Fable extends libFableServiceBase.CoreServiceProviderBase
 
 		// Initialization Phase 0: Set up the lowest level state (fable is a utility service manager at heart)
 		this.serviceType = 'ServiceManager';
+		this._Package = require('../package.json');
 
 		// An array of the types of services available
 		this.serviceTypes = [];
