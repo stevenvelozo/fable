@@ -7,6 +7,8 @@ const libFableSettings = require('fable-settings');
 const libFableUUID = require('fable-uuid');
 const libFableLog = require('fable-log');
 
+const libPackage = require('../package.json');
+
 const libFableServiceBase = require('fable-serviceproviderbase');
 
 class Fable extends libFableServiceBase.CoreServiceProviderBase
@@ -17,7 +19,8 @@ class Fable extends libFableServiceBase.CoreServiceProviderBase
 
 		// Initialization Phase 0: Set up the lowest level state (fable is a utility service manager at heart)
 		this.serviceType = 'ServiceManager';
-		this._Package = require('../package.json');
+		/** @type {Object} */
+		this._Package = libPackage;
 
 		// An array of the types of services available
 		this.serviceTypes = [];
