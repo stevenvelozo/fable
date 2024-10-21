@@ -119,6 +119,14 @@ class ExpressionParserValueMarshal extends libExpressionParserOperationBase
 					}
 				}
 			}
+			if ((pTokenizedObjects[i].Type === 'Token.String') && !tmpToken.Resolved)
+			{
+				tmpResults.ExpressionParserLog.push(`INFO: ExpressionParser.substituteValuesInTokenizedObjects found a value [${tmpToken.Token}] for the string ${tmpToken.Token} at index ${i}`);
+				if (this.LogNoisiness > 1) this.log.info(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
+				tmpToken.Resolved = true;
+				// Take the quotes off the string
+				tmpToken.Value = tmpToken.Token.substring(1, tmpToken.Token.length-1);
+			}
 			if ((pTokenizedObjects[i].Type === 'Token.Constant') && !tmpToken.Resolved)
 			{
 				tmpResults.ExpressionParserLog.push(`INFO: ExpressionParser.substituteValuesInTokenizedObjects found a value [${tmpToken.Token}] for the constant ${tmpToken.Token} at index ${i}`);

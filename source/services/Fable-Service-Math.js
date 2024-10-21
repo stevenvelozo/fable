@@ -22,6 +22,8 @@ class FableServiceMath extends libFableServiceBase
 		this.serviceType = 'Math';
 
 		this.pi = '3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679';
+
+//		this.manifest = this.fable.newManyfest();
 	}
 
 	/*
@@ -558,6 +560,27 @@ class FableServiceMath extends libFableServiceBase
 	{
 		return this.bucketSetPrecise(pValueSet);
 	}
+
+	/**
+	 * 
+	 * @param {Array<Object>} pValueSet - An array of objects
+	 * @param {string} pValueMapAddress - The address in each object to find the value to count in the histogram.  Undefined will be 'Unknown'.
+	 */
+	valueMapCountPrecise(pValueSet, pValueMapAddress)
+	{
+		let tmpHistogram = {};
+
+		this.log.info(`ValueSet is a ${typeof(pValueSet)}`);
+		this.log.info(`ValueMapAddress is ${pValueMapAddress}`);
+
+		return tmpHistogram;
+	}
+
+	valueMapSumPrecise(pValueSet, pValueMapAddress, pValueMapAmount)
+	{
+
+	}
+
 
 	/**
 	 * Sorts the histogram object in ascending order based on the frequencies of the buckets.

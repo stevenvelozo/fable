@@ -2,6 +2,12 @@
 	"Scope": "FruitsOfTheWorld",
 	"Descriptors":
 	{
+		"FruityVice[]":
+		{
+			"Name": "List of Fruits",
+			"Hash": "FruitSet",
+			"DataType": "Array"
+		},
 		"FruityVice[].name":
 		{
 			"Name": "Fruit Name",

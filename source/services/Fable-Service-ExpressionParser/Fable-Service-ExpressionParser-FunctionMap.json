@@ -82,5 +82,9 @@
 	"round": {
 		"Name": "Round",
 		"Address": "fable.Math.roundPrecise"
+	},
+	"valuemapcount": {
+		"Name": "Histogram Count Value Map",
+		"Address": "fable.Math.valueMapCountPrecise"
 	}
 }

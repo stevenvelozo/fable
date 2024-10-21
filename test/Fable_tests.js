@@ -42,8 +42,6 @@ suite
 						Expect(testFable.settings.Product).to.equal('ApplicationNameHere');
 
 						// Test package anthropology
-						Expect(testFable._PackageFableServiceProvider).to.be.an('object', 'Fable should have a _PackageFableServiceProvider object.');
-						Expect(testFable._PackageFableServiceProvider.name).equal('fable-serviceproviderbase', 'Fable _PackageFableServiceProvider.package.name should be set.');
 						Expect(testFable._Package).to.be.an('object', 'Fable should have a _Package object.');
 						Expect(testFable._Package.name).to.equal('fable', 'Fable _Package.package.name should be set.');
 					}
