@@ -310,7 +310,27 @@ class Fable extends libFableServiceBase.CoreServiceProviderBase
 		}
 
 		return false;
-	}	
+	}
+
+	
+	/**
+	 * Generate a safe string to use in filenames for a date.  Useful for log file uniqueness and temporary outputs.
+	 *
+	 * @static
+	 * @param {Date} pDate - An optional javascript Date object to generate a datestamp for.
+	 * @returns {string} - A string formatted as YYYY-MM-DD-HH-MM-SS
+	 */
+	static generateFileNameDateStamp(pDate)
+	{
+		const tmpDate = pDate || new Date();
+		const tmpYear = tmpDate.getFullYear();
+		const tmpMonth = String(tmpDate.getMonth() + 1).padStart(2, '0');
+		const tmpDay = String(tmpDate.getDate()).padStart(2, '0');
+		const tmpHour = String(tmpDate.getHours()).padStart(2, '0');
+		const tmpMinute = String(tmpDate.getMinutes()).padStart(2, '0');
+		const tmpSecond = String(tmpDate.getSeconds()).padStart(2, '0');
+		return `${tmpYear}-${tmpMonth}-${tmpDay}-${tmpHour}-${tmpMinute}-${tmpSecond}`;
+	}
 }
 
 // This is for backwards compatibility

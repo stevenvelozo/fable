@@ -68,6 +68,17 @@ suite
 				);
 				test
 				(
+					'The static date stamp should work.',
+					function()
+					{
+						let tmpDateStamp = libFable.generateFileNameDateStamp();
+						Expect(tmpDateStamp).to.be.a('string');
+						Expect(tmpDateStamp.length).to.equal(19);
+						Expect(tmpDateStamp).to.match(/^\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}$/);
+					}
+				);
+				test
+				(
 					'Logging should happen...',
 					function(fDone)
 					{
