@@ -582,6 +582,45 @@ class FableServiceMath extends libFableServiceBase
 		return tmpSortedHistogram;
 	}
 
+	cleanValueArray(pValueArray)
+	{
+		if (!Array.isArray(pValueArray))
+		{
+			return [];
+		}
+
+		let tmpCleanedArray = [];
+		for (let i = 0; i < pValueArray.length; i++)
+		{
+			let tmpValue = this.parsePrecise(pValueArray[i], NaN);
+			if (!isNaN(tmpValue))
+			{
+				tmpCleanedArray.push(tmpValue);
+			}
+		}
+		return tmpCleanedArray;
+	}
+
+	cleanValueObject(pValueObject)
+	{
+		if (typeof (pValueObject) !== 'object')
+		{
+			return {};
+		}
+
+		let tmpCleanedObject = {};
+		let tmpKeys = Object.keys(pValueObject);
+		for (let i = 0; i < tmpKeys.length; i++)
+		{
+			let tmpValue = this.parsePrecise(pValueObject[tmpKeys[i]], NaN);
+			if (!isNaN(tmpValue))
+			{
+				tmpCleanedObject[tmpKeys[i]] = tmpValue;
+			}
+		}
+		return tmpCleanedObject;
+	}
+
 	/**
 	 * Finds the maximum value from a set of precise values.
 	 * 

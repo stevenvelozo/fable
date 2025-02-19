@@ -97,18 +97,148 @@ class FableServiceUtility extends libFableServiceBase
 	 * Get a value from fable/pict by hash/address
 	 * @param {string} pValueAddress - The manyfest hash/address of the value to get
 	 */
-	getValue(pValueAddress)
+	getInternalValueByHash(pValueAddress)
 	{
-		// Lazily create a manifest if it doesn't exist
-		if (!this.manifest)
+		// Get the value from the internal manifest and return it
+		return this.getValueByHash(this.fable, pValueAddress);
+	}
+
+	/**
+	 * Get a value from an object by hash/address
+	 * @param {object} pObject - The object to get the value from
+	 * @param {string} pValueAddress - The manyfest hash/address of the value to get
+	 * @param {object} [pManifest] - The manyfest object to use; constructs one inline if not provided
+	 * @returns {object} - The value from the object
+	 */
+	getValueByHash(pObject, pValueAddress, pManifest)
+	{
+		let tmpManifest = pManifest;
+
+		if (typeof(tmpManifest) == 'undefined')
 		{
-			this.manifest = this.fable.newManyfest();
+			// Lazily create a manifest if it doesn't exist
+			if (!this.manifest)
+			{
+				this.manifest = this.fable.newManyfest();
+			}
+			tmpManifest = this.manifest;
 		}
 
 		// Get the value from the internal manifest and return it
-		return this.manifest.getValueByHash(this.fable, pValueAddress);
+		return tmpManifest.getValueByHash(pObject, pValueAddress);
 	}
-	
+
+	/**
+	 * Get a value array from an object by hash/address list
+	 * @param {object} pObject - The object to get the value from
+	 * @param {string} pValueAddress - The manyfest hash/address of the value to get
+	 * @param {object} [pManifest] - The manyfest object to use; constructs one inline if not provided
+	 * @returns {Array} - The value array built from the hash list
+	 */
+	createValueArrayByHashes(pObject, pValueHashes, pManifest)
+	{
+		let tmpManifest = pManifest;
+
+		if (typeof(tmpManifest) == 'undefined')
+		{
+			// Lazily create a manifest if it doesn't exist
+			if (!this.manifest)
+			{
+				this.manifest = this.fable.newManyfest();
+			}
+			tmpManifest = this.manifest;
+		}
+
+		if (!Array.isArray(pValueHashes))
+		{
+			return [];
+		}
+
+		let tmpValueArray = [];
+		for (let i = 0; i < pValueHashes.length; i++)
+		{
+			tmpValueArray.push(tmpManifest.getValueByHash(pObject, pValueHashes[i]));
+		}
+
+		// Get the value from the internal manifest and return it
+		return tmpValueArray;
+	}
+
+	/**
+	 * Get a value array by hash/address list from the internal fable/pict state
+	 * @param {string} pValueAddress - The manyfest hash/address of the value to get
+	 * @param {object} [pManifest] - The manyfest object to use; constructs one inline if not provided
+	 * @returns {Array} - The value array built from the hash list
+	 */
+	createValueArrayByHashesFromInternal(pValueHashes, pManifest)
+	{
+		return this.createValueArrayByHashes(this.fable, pValueHashes, pManifest);
+	}
+
+	createValueArrayByHashParametersFromInternal()
+	{
+		let tmpValueHashes = Array.prototype.slice.call(arguments);
+		return this.createValueArrayByHashes(this.fable, tmpValueHashes);
+	}
+
+	/**
+	 * Get a value object from a list of hash/addressese
+	 * @param {object} pObject - The object to get the value from
+	 * @param {string} pValueAddress - The manyfest hash/address of the value to get
+	 * @param {object} [pManifest] - The manyfest object to use; constructs one inline if not provided
+	 * @returns {Array} - The value object built from the hash list
+	 */
+	createValueObjectByHashes(pObject, pValueHashes, pManifest)
+	{
+		let tmpManifest = pManifest;
+
+		if (typeof(tmpManifest) == 'undefined')
+		{
+			// Lazily create a manifest if it doesn't exist
+			if (!this.manifest)
+			{
+				this.manifest = this.fable.newManyfest();
+			}
+			tmpManifest = this.manifest;
+		}
+
+		if (!Array.isArray(pValueHashes))
+		{
+			return {};
+		}
+
+		let tmpValueObject = {};
+		for (let i = 0; i < pValueHashes.length; i++)
+		{
+			tmpValueObject[pValueHashes[i]] = tmpManifest.getValueByHash(pObject, pValueHashes[i]);
+		}
+
+		// Get the value from the internal manifest and return it
+		return tmpValueObject;
+	}
+
+	/**
+	 * Get a value object by hash/address list from the internal fable/pict state
+	 * @param {string} pValueAddress - The manyfest hash/address of the value to get
+	 * @param {object} [pManifest] - The manyfest object to use; constructs one inline if not provided
+	 * @returns {object} - The value object built from the hash list
+	 */
+	createValueObjectByHashesFromInternal(pValueHashes, pManifest)
+	{
+		return this.createValueObjectByHashes(this.fable, pValueHashes, pManifest);
+	}
+
+	/**
+	 * Get a value object by hash/address list as parameters from the internal fable/pict state
+	 * @returns {Array} - The value array built from the hash list
+	 */
+	createValueObjectByHashParametersFromInternal()
+	{
+		let tmpValueHashes = Array.prototype.slice.call(arguments);
+		return this.createValueObjectByHashes(this.fable, tmpValueHashes);
+	}
+
+
 	/**
 	 * Check if a value is null or empty
 	 * @param {object} pObject - The object to check

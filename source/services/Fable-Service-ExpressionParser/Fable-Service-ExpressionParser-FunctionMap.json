@@ -90,7 +90,25 @@
 
 	"getvalue": {
 		"Name": "Get Value from Application State or Services (AppData, etc.)",
-		"Address": "fable.Utility.getValue"
+		"Address": "fable.Utility.getInternalValueByHash"
+	},
+
+	"getvaluearray": {
+		"Name": "Get Value Array from Application State or Services (AppData, etc.)",
+		"Address": "fable.Utility.createValueArrayByHashParametersFromInternal"
+	},
+	"getvalueobject": {
+		"Name": "Get Value Object from Application State or Services (AppData, etc.)",
+		"Address": "fable.Utility.createValueObjectByHashParametersFromInternal"
+	},
+
+	"cleanvaluearray": {
+		"Name": "Clean Value Array",
+		"Address": "fable.Math.cleanValueArray"
+	},
+	"cleanvalueobject": {
+		"Name": "Clean Value Object",
+		"Address": "fable.Math.cleanValueObject"
 	},
 
 	"randominteger": {

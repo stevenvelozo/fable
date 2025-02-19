@@ -32,6 +32,83 @@ suite
 			{
 				test
 				(
+					'Get values and sets by hash from objects or from fable',
+					function()
+					{
+						testFable = new libFable();
+						testFable.AppData = {Name:'Thee Tortoise and the Hare'};
+						Expect(testFable.services.Utility.getValueByHash(testFable.AppData, 'Name')).to.equal('Thee Tortoise and the Hare');
+						Expect(testFable.services.Utility.getInternalValueByHash('AppData.Name')).to.equal('Thee Tortoise and the Hare');
+
+						let tmpDataObject = (
+							{
+								Name:'Thee Tortoise and the Hare',
+								Age: 100,
+								Colors:['Red','Green','Blue'],
+								Details:
+								{
+									ShoeSize: 12,
+									Height: 6.75,
+									Weight: "180.9"
+								}
+							});
+
+						let tmpValueArray = testFable.services.Utility.createValueArrayByHashes(tmpDataObject, ['Name', 'Age', 'Colors[2]', 'Nonce', 'Details.Height']);
+						Expect(tmpValueArray[0]).to.equal('Thee Tortoise and the Hare');
+						Expect(tmpValueArray[1]).to.equal(100);
+						Expect(tmpValueArray[2]).to.equal('Blue');
+						Expect(tmpValueArray[3]).to.equal(undefined);
+						Expect(tmpValueArray[4]).to.equal(6.75);
+
+						testFable.CustomDataLocation = tmpDataObject;
+						Expect(testFable.services.Utility.getInternalValueByHash('CustomDataLocation.Name')).to.equal('Thee Tortoise and the Hare');
+
+						let tmpInternalValueArray = testFable.services.Utility.createValueArrayByHashesFromInternal(['CustomDataLocation.Name', 'CustomDataLocation.Age', 'CustomDataLocation.Colors[1]', 'CustomDataLocation.Nonce', 'CustomDataLocation.Details.Height']);
+						Expect(tmpInternalValueArray[0]).to.equal('Thee Tortoise and the Hare');
+						Expect(tmpInternalValueArray[1]).to.equal(100);
+						Expect(tmpInternalValueArray[2]).to.equal('Green');
+						Expect(tmpInternalValueArray[3]).to.equal(undefined);
+						Expect(tmpInternalValueArray[4]).to.equal(6.75);
+
+						let tmpValueObject = testFable.services.Utility.createValueObjectByHashes(tmpDataObject, ['Name', 'Age', 'Colors[2]', 'Nonce', 'Details.Height']);
+						Expect(tmpValueObject.Name).to.equal('Thee Tortoise and the Hare');
+						Expect(tmpValueObject.Age).to.equal(100);
+						Expect(tmpValueObject['Colors[2]']).to.equal('Blue');
+						Expect(tmpValueObject.Nonce).to.equal(undefined);
+						Expect(tmpValueObject['Details.Height']).to.equal(6.75);
+
+						let tmpInternalValueObject = testFable.services.Utility.createValueObjectByHashesFromInternal(['CustomDataLocation.Name', 'CustomDataLocation.Age', 'CustomDataLocation.Colors[1]', 'CustomDataLocation.Nonce', 'CustomDataLocation.Details.Height']);
+						Expect(tmpInternalValueObject['CustomDataLocation.Name']).to.equal('Thee Tortoise and the Hare');
+						Expect(tmpInternalValueObject['CustomDataLocation.Age']).to.equal(100);
+						Expect(tmpInternalValueObject['CustomDataLocation.Colors[1]']).to.equal('Green');
+						Expect(tmpInternalValueObject['CustomDataLocation.Nonce']).to.equal(undefined);
+						Expect(tmpInternalValueObject['CustomDataLocation.Details.Height']).to.equal(6.75);
+
+						let tmpInternalValueArrayImplicit = testFable.services.Utility.createValueArrayByHashParametersFromInternal('CustomDataLocation.Name', 'CustomDataLocation.Age', 'CustomDataLocation.Colors[1]', 'CustomDataLocation.Nonce', 'CustomDataLocation.Details.Height');
+						Expect(tmpInternalValueArrayImplicit[0]).to.equal('Thee Tortoise and the Hare');
+						Expect(tmpInternalValueArrayImplicit[1]).to.equal(100);
+						Expect(tmpInternalValueArrayImplicit[2]).to.equal('Green');
+						Expect(tmpInternalValueArrayImplicit[3]).to.equal(undefined);
+						Expect(tmpInternalValueArrayImplicit[4]).to.equal(6.75);
+
+						let tmpInternalValueObjectImplicit = testFable.services.Utility.createValueObjectByHashParametersFromInternal('CustomDataLocation.Name', 'CustomDataLocation.Age', 'CustomDataLocation.Colors[1]', 'CustomDataLocation.Nonce', 'CustomDataLocation.Details.Height');
+						Expect(tmpInternalValueObjectImplicit['CustomDataLocation.Name']).to.equal('Thee Tortoise and the Hare');
+						Expect(tmpInternalValueObjectImplicit['CustomDataLocation.Age']).to.equal(100);
+						Expect(tmpInternalValueObjectImplicit['CustomDataLocation.Colors[1]']).to.equal('Green');
+						Expect(tmpInternalValueObjectImplicit['CustomDataLocation.Nonce']).to.equal(undefined);
+						Expect(tmpInternalValueObjectImplicit['CustomDataLocation.Details.Height']).to.equal(6.75);
+
+						let tmpCleanedValueArray = testFable.Math.cleanValueArray(tmpInternalValueArrayImplicit);
+						Expect(tmpCleanedValueArray[0]).to.equal('100');
+						Expect(tmpCleanedValueArray[1]).to.equal('6.75');
+
+						let tmpCleanedValueObject = testFable.Math.cleanValueObject(tmpInternalValueObjectImplicit);
+						Expect(tmpCleanedValueObject['CustomDataLocation.Age']).to.equal('100');
+						Expect(tmpCleanedValueObject['CustomDataLocation.Details.Height']).to.equal('6.75');
+					}
+				);
+				test
+				(
 					'Process Template like Underscore',
 					function()
 					{
