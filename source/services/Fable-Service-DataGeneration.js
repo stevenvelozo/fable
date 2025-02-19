@@ -27,6 +27,20 @@ class FableServiceDataGeneration extends libFableServiceBase
 		return Math.floor(Math.random()*this.defaultData.DefaultIntegerMaximum);
 	}
 
+	// Return a random float between pMinimum and pMaximum
+	randomFloatBetween(pMinimum, pMaximum)
+	{
+		return this.fable.Math.addPrecise(this.fable.Math.multiplyPrecise(Math.random(), this.fable.Math.subtractPrecise(pMaximum,pMinimum)), pMinimum);
+	}
+	// Return a random float up to the passed-in maximum
+	randomFloatUpTo(pMaximum)
+	{
+		return this.randomFloatBetween(0, pMaximum);
+	}
+	randomFloat()
+	{
+		return Math.random();
+	}
 
 	randomNumericString(pLength, pMaxNumber)
 	{

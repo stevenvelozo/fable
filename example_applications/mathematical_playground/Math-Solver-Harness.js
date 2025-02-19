@@ -40,7 +40,8 @@ for (let i = 0; i < _Equations.Expressions.length; i++)
 	let tmpResultObject = {};
 	let tmpResultValue = _ExpressionParser.solve(_Equations.Expressions[i].Equation, _AppData, tmpResultObject, tmpManifest);
 	console.log(`Expression [${i}]: [${_Equations.Expressions[i].Equation}] ==> ${tmpResultValue}`);
-	_Fable.ExpressionParser.Messaging.logFunctionOutcome(tmpResultObject);
+	console.log(`           Expected: ${_Equations.Expressions[i].ExpectedResult}`);
+	//_Fable.ExpressionParser.Messaging.logFunctionOutcome(tmpResultObject);
 
 	if (tmpResultValue !== _Equations.Expressions[i].ExpectedResult)
 	{
@@ -81,7 +82,7 @@ _ExpressionParser.substituteValuesInTokenizedObjects(tmpExpressionParseOutcome.P
 let tmpResultValue = _ExpressionParser.solvePostfixedExpression(tmpExpressionParseOutcome.PostfixSolveList, tmpSolverResultsObject, tmpExpressionParseOutcome, _FruitManifest);
 
 // Now that we have a solved expression and the mapped-in values, show the user the solution
-_Fable.ExpressionParser.Messaging.logFunctionOutcome(tmpExpressionParseOutcome);
+//_Fable.ExpressionParser.Messaging.logFunctionOutcome(tmpExpressionParseOutcome);
 
 // Step 6: Look at the results.
 console.log(`Outcome object: ${JSON.stringify(tmpSolverResultsObject)}`);

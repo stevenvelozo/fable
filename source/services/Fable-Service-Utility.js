@@ -92,6 +92,51 @@ class FableServiceUtility extends libFableServiceBase
 
 		return tmpChunkCache;
 	}
+	
+	/**
+	 * Get a value from fable/pict by hash/address
+	 * @param {string} pValueAddress - The manyfest hash/address of the value to get
+	 */
+	getValue(pValueAddress)
+	{
+		// Lazily create a manifest if it doesn't exist
+		if (!this.manifest)
+		{
+			this.manifest = this.fable.newManyfest();
+		}
+
+		// Get the value from the internal manifest and return it
+		return this.manifest.getValueByHash(this.fable, pValueAddress);
+	}
+	
+	/**
+	 * Check if a value is null or empty
+	 * @param {object} pObject - The object to check
+	 * @param {string} pValueAddress - The manyfest hash/address to check
+	 */
+	addressIsNullOrEmpty(pObject, pValueAddress)
+	{
+		// Lazily create a manifest if it doesn't exist
+		if (!this.manifest)
+		{
+			this.manifest = this.fable.newManyfest();
+		}
+
+		// If it doesn't exist, it is null or empty.
+		if (!this.manifest.checkAddressExists(pObject, pValueAddress))
+		{
+			return true;
+		}
+
+		// Get the value from the internal manifest and return it
+		let tmpValue = this.manifest.getValueByHash(pObject, pValueAddress);
+		if (tmpValue === null || tmpValue === '')
+		{
+			return true;
+		}
+
+		return false;
+	}
 
 	// Convert an ISO string to a javascript date object
 	// Adapted from https://stackoverflow.com/a/54751179

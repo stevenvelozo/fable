@@ -99,16 +99,43 @@ class ExpressionTokenizer extends libExpressionParserOperationBase
 			}
 
 			// [ TOKENS ]
-			if (tmpCharacter in this.ExpressionParser.tokenMap)
+			if (tmpCharacter in this.ExpressionParser.tokenRadix)
 			{
-				if (tmpCurrentToken.length > 0)
+				let tmpTokenRadix = this.ExpressionParser.tokenRadix[tmpCharacter];
+				// If the token is a literal and has only one entry, it is a single character token and we can just safely add it.
+				if (tmpTokenRadix.TokenCount == 1 && tmpTokenRadix.Literal)
 				{
-					tmpResults.RawTokens.push(tmpCurrentToken);
+					if (tmpCurrentToken.length > 0)
+					{
+						tmpResults.RawTokens.push(tmpCurrentToken);
+					}
+					tmpCurrentToken = '';
+					tmpCurrentTokenType = false;
+					tmpResults.RawTokens.push(tmpCharacter);
+					continue;
 				}
-				tmpCurrentToken = '';
-				tmpCurrentTokenType = false;
-				tmpResults.RawTokens.push(tmpCharacter);
-				continue;
+				else
+				{
+					// This one has multiple options, so literals don't matter.  We need to check the token map.
+					// The token radix TokenKeys array is sorted longest to shortest
+					for (let j = 0; j < tmpTokenRadix.TokenKeys.length; j++)
+					{
+						let tmpTokenKey = tmpTokenRadix.TokenKeys[j];
+						if (pExpression.substr(i, tmpTokenKey.length) == tmpTokenKey)
+						{
+							if (tmpCurrentToken.length > 0)
+							{
+								tmpResults.RawTokens.push(tmpTokenKey);
+							}
+							tmpCurrentToken = '';
+							tmpCurrentTokenType = false;
+							tmpResults.RawTokens.push(tmpTokenKey);
+							i += tmpTokenKey.length - 1;
+							break;
+						}
+					}
+					continue;
+				}
 			}
 
 			// If it's not an operator, it's a number or address.

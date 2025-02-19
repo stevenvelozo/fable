@@ -39,8 +39,47 @@ class FableServiceExpressionParser extends libFableServiceBase
 
 		// The configuration for tokens that the solver recognizes, with precedence and friendly names.
 		this.tokenMap = require('./Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-TokenMap.json');
-		// This precedence is higher than defined in our token map.  We could make this value dynamic
-		this.tokenMaxPrecedence = 10;
+
+		// Keep track of maximum token precedence
+		this.tokenMaxPrecedence = 4;
+		// This isn't exactly a radix tree but close enough.  It's a map of the first character of the token to the token.
+		this.tokenRadix = {};
+		let tmpTokenKeys = Object.keys(this.tokenMap);
+		for (let i = 0; i < tmpTokenKeys.length; i++)
+		{
+			let tmpTokenKey = tmpTokenKeys[i];
+			let tmpToken = this.tokenMap[tmpTokenKey];
+
+			tmpToken.Token = tmpTokenKey;
+			tmpToken.Length = tmpTokenKey.length;
+
+			let tmpTokenStartCharacter = tmpToken.Token[0];
+			if (!(tmpTokenStartCharacter in this.tokenRadix))
+			{
+				// With a token count of 1 and a literal of true, we can assume it being in the radix is the token.
+				this.tokenRadix[tmpTokenStartCharacter] = (
+					{
+						TokenCount: 0,
+						Literal: false,
+						TokenKeys: [],
+						TokenMap: {}
+					});
+			}
+
+			this.tokenRadix[tmpTokenStartCharacter].TokenCount++;
+			if (tmpTokenKey == tmpTokenStartCharacter)
+			{
+				this.tokenRadix[tmpTokenStartCharacter].Literal = true;
+			}
+			this.tokenRadix[tmpTokenStartCharacter].TokenMap[tmpToken.Token] = tmpToken;
+			this.tokenRadix[tmpTokenStartCharacter].TokenKeys.push(tmpTokenKey);
+			this.tokenRadix[tmpTokenStartCharacter].TokenKeys.sort((pLeft, pRight) => pRight.length - pLeft.length);
+
+			if (this.tokenMaxPrecedence < tmpToken.Precedence)
+			{
+				this.tokenMaxPrecedence = tmpToken.Precedence;
+			}
+		}
 
 		// The configuration for which functions are available to the solver.
 		this.functionMap = require('./Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-FunctionMap.json');

@@ -178,8 +178,22 @@ class ExpressionParserSolver extends libExpressionParserOperationBase
 		{
 			if (pPostfixedExpression[i].RightValue.Type === 'Token.SolverMarshal')
 			{
+				// Set the result in the virtual symbols
 				tmpManifest.setValueAtAddress(tmpResults.VirtualSymbols, pPostfixedExpression[i].VirtualSymbolName, tmpSolverResultValue);
-				tmpManifest.setValueByHash(tmpDataDestinationObject, pPostfixedExpression[i].VirtualSymbolName, tmpSolverResultValue);
+				// Set the value in the destination object
+				if (pPostfixedExpression[i].Operation.Descriptor.OnlyEmpty)
+				{
+					// If it is only on "empty" values, check if the value is empty before assigning
+					if (this.fable.Utility.addressIsNullOrEmpty(tmpDataDestinationObject, pPostfixedExpression[i].VirtualSymbolName))
+					{
+						tmpManifest.setValueByHash(tmpDataDestinationObject, pPostfixedExpression[i].VirtualSymbolName, tmpSolverResultValue);
+					}
+				}
+				else
+				{
+					// Otherwise, just assign it.
+					tmpManifest.setValueByHash(tmpDataDestinationObject, pPostfixedExpression[i].VirtualSymbolName, tmpSolverResultValue);
+				}
 			}
 		}
 		tmpResults.RawResult = tmpSolverResultValue;
@@ -190,7 +204,14 @@ class ExpressionParserSolver extends libExpressionParserOperationBase
 			delete tmpResults.fable;
 		}
 
-		return tmpSolverResultValue.toString();
+		if (typeof(tmpSolverResultValue) !== 'undefined')
+		{
+			return tmpSolverResultValue.toString();
+		}
+		else
+		{
+			return tmpSolverResultValue;
+		}
 	}
 }
 

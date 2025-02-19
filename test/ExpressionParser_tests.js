@@ -42,6 +42,9 @@ suite
 						let complexTokenizedResults = _Parser.tokenize('5+3 - sqrt(75 / (3 + {Depth}) * Width)^ 3');
 						Expect(complexTokenizedResults.length).to.equal(18);
 						Expect(complexTokenizedResults).to.deep.equal(['5', '+', '3', '-', 'sqrt', '(', '75', '/', '(', '3', '+', '{Depth}', ')', '*', 'Width', ')', '^', '3']);
+						let complexTokenizedResultsDoubleWidthOperators = _Parser.tokenize('SpecialValue ?= 5+3 - sqrt(75 / (3 + {Depth}) * Width)^ 3');
+						Expect(complexTokenizedResultsDoubleWidthOperators.length).to.equal(20);
+						Expect(complexTokenizedResultsDoubleWidthOperators).to.deep.equal(['SpecialValue', '?=', '5', '+', '3', '-', 'sqrt', '(', '75', '/', '(', '3', '+', '{Depth}', ')', '*', 'Width', ')', '^', '3']);
 						return fDone();
 					}
 				);
@@ -116,15 +119,20 @@ suite
 					'Exercise Marshaling to Value at a Hashed Address',
 					(fDone)=>
 					{
-						let _Parser = getExpressionParser();
 
-						let tmpResultObject = {};
+						let testFable = new libFable();
+						testFable.AppData = {Pit: "Bottomless" };
+						let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
 						let tmpDataObject = {X: 5.867, Y: 3.1, Z: 75, Depth: 3, Width: 2};
+						let tmpResultObject = {};
 						let tmpDestinationObject = {};
 
 						_Parser.solve('Area = X * Y  * Z', tmpDataObject, tmpResultObject, false, tmpDestinationObject);
-
 						Expect(tmpDestinationObject.Area).to.equal("1364.0775");
+
+						_Parser.solve('PitSize = getvalue("AppData.Pit")', tmpDataObject, tmpResultObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.PitSize).to.equal("Bottomless");
 
 						return fDone();
 					}
@@ -202,6 +210,23 @@ suite
 				);
 				test
 				(
+					'Exercise Value Marshaling',
+					(fDone)=>
+					{
+						let _Parser = getExpressionParser();
+
+						Expect(_Parser.solve('1 + 1')).to.equal("2");
+						Expect(_Parser.solve("Volume = Width * Height * Depth", {"Width": 73.5, "Height": 28.8, "Depth": 200.5})).to.equal("424418.4");
+						Expect(_Parser.solve("TotalCost = SUM(ItemCosts)", {"ItemCosts": [100,200,50,45,5]})).to.equal("400");
+						Expect(_Parser.solve("TotalCost = MEAN(ItemCosts)", {"ItemCosts": [100,200,50,45,5]})).to.equal("80");
+						Expect(_Parser.solve("TotalCost = MEDIAN(ItemCosts)", {"ItemCosts": [100,200,50,45,5]})).to.equal("50");
+						Expect(_Parser.solve("TotalCost = COUNT(ItemCosts)", {"ItemCosts": [100,200,50,45,5]})).to.equal("5");
+
+						return fDone();
+					}
+				);
+				test
+				(
 					'Exercise Rounding',
 					(fDone)=>
 					{
@@ -214,6 +239,98 @@ suite
 						Expect(tmpResult).to.equal("1364");
 						tmpResult = _Parser.solve('Area = ROUND(X * Y  * Z, 2)', tmpDataObject, tmpSolveResults);
 						Expect(tmpResult).to.equal("1364.08");
+						return fDone();
+					}
+				);
+				test
+				(
+					'Exercise Multi-parameter Functions',
+					(fDone)=>
+					{
+						let _Parser = getExpressionParser();
+
+						let tmpSolveResults = {};
+						let tmpDataObject = {X: 5.867, Y: 3.5, Z: 75.248923423, Depth: 3, Width: 2};
+						// 1364.0775
+						let tmpResult = _Parser.solve('Area = ROUND(X * Y  * Z)', tmpDataObject, tmpSolveResults);
+						Expect(tmpResult).to.equal("1545");
+						tmpResult = _Parser.solve('Area = ROUND(X * Y  * Z, 3, 3)', tmpDataObject, tmpSolveResults);
+						Expect(tmpResult).to.equal("1545.2");
+						return fDone();
+					}
+				);
+				test
+				(
+					'Exercise Complex Assignments',
+					(fDone)=>
+					{
+						let testFable = new libFable();
+
+						testFable.AppData = {Students: ["Kim","Jim", "Joan Jett", "Tank Girl"] };
+
+						let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+						let tmpResultObject = {};
+
+						let tmpSolveResults = {};
+						let tmpDataObject = {X: 5.867, Y: 3.5, Z: 75.248923423, Depth: 3, Width: 2, Name: "Jerry"};
+
+						_Parser.solve('Area = ROUND(X * Y  * Z, 3, 3)', tmpDataObject, tmpSolveResults, false, tmpResultObject);
+
+						// Because the results object doesn't have a name in it, the null coalescence assignment operator should just work
+						let tmpResult = _Parser.solve('Name ?= GETVALUE("AppData.Students[0]")', tmpDataObject, tmpSolveResults, false, tmpResultObject);
+						Expect(tmpResultObject.Name).to.equal("Kim");
+
+						tmpResult = _Parser.solve('Area = ROUND(X * Y  * Z, 3, 3)', tmpDataObject, tmpSolveResults, false, tmpResultObject);
+						Expect(tmpResult).to.equal("1545.2");
+
+						// Now that name is set, it shouldn't change.
+						tmpResult = _Parser.solve('Name ?= GETVALUE("AppData.Students[1]")', tmpDataObject, tmpSolveResults, false, tmpResultObject);
+						Expect(tmpResultObject.Name).to.equal("Kim");
+
+						// Regular assignment should change it.
+						tmpResult = _Parser.solve('Name = GETVALUE("AppData.Students[1]")', tmpDataObject, tmpSolveResults, false, tmpResultObject);
+						Expect(tmpResultObject.Name).to.equal("Jim");
+
+						// Regular assignment should change it.
+						tmpResult = _Parser.solve('Name = GETVALUE("AppData.Students[3]")', tmpDataObject, tmpSolveResults, false, tmpResultObject);
+						Expect(tmpResultObject.Name).to.equal("Tank Girl");
+
+						// Regular assignment should change it (with an array out of bounds problem...)
+						tmpResult = _Parser.solve('Name = GETVALUE("AppData.Students[4]")', tmpDataObject, tmpSolveResults, false, tmpResultObject);
+						Expect(tmpResultObject.Name).to.equal(undefined);
+
+						return fDone();
+					}
+				);
+				test
+				(
+					'Exercise Data Generation',
+					(fDone)=>
+					{
+						let testFable = new libFable();
+						let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+						let tmpDataObject = {};
+						let tmpSolveResults = {};
+						let tmpResultObject = {};
+
+						let tmpResult;
+						tmpResult = _Parser.solve('RandomIntValue = RANDOMINTEGER()', tmpDataObject, tmpSolveResults, false, tmpResultObject);
+						Expect(tmpResult).to.not.be.NaN;
+
+						tmpResult = _Parser.solve('RandomIntValueBetween = RANDOMINTEGERBETWEEN(10, 13)', tmpDataObject, tmpSolveResults, false, tmpResultObject);
+						Expect(parseInt(tmpResult)).to.be.at.least(10);
+						Expect(parseInt(tmpResult)).to.be.at.most(13);
+
+						tmpResult = _Parser.solve('RandomFloatValue = randomFloat()', tmpDataObject, tmpSolveResults, false, tmpResultObject);
+						Expect(tmpResult).to.not.be.NaN;
+
+						tmpResult = _Parser.solve('RandomFloatValueBetween = randomFloatBetween(10.5, 13.78)', tmpDataObject, tmpSolveResults, false, tmpResultObject);
+						Expect(parseFloat(tmpResult)).to.be.at.least(10.5);
+						Expect(parseFloat(tmpResult)).to.be.at.most(13.78);
+
+
 						return fDone();
 					}
 				);

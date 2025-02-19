@@ -103,14 +103,14 @@ class ExpressionParserLinter extends libExpressionParserOperationBase
 		let tmpEqualityAssignmentIndex = false;
 		for (let i = 0; i < pTokenizedExpression.length; i++)
 		{
-			if (pTokenizedExpression[i] === '=')
+			if ((this.ExpressionParser.tokenMap[pTokenizedExpression[i]]) && (this.ExpressionParser.tokenMap[pTokenizedExpression[i]].Type === 'Assignment'))
 			{
 				tmpEqualityAssignmentCount++;
 				tmpEqualityAssignmentIndex = i;
 
 				if (tmpEqualityAssignmentCount > 1)
 				{
-					tmpResults.ExpressionParserLog.push(`ERROR: ExpressionParser.lintTokenizedExpression found multiple equality assignments in the tokenized expression; equality assignment #${tmpEqualityAssignmentCount} at token index ${i}.`);
+					tmpResults.ExpressionParserLog.push(`ERROR: ExpressionParser.lintTokenizedExpression found multiple equality assignments in the tokenized expression; equality assignment #${tmpEqualityAssignmentCount} operator '${pTokenizedExpression[i]}' at token index ${i}.`);
 					tmpResults.LinterResults.push(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
 					this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
 				}

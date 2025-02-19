@@ -1,9 +1,19 @@
 {
 	"=":
 		{
-			"Name": "Equals",
+			"Name": "Assign Value",
 			"Token": "=",
 			"Function": "fable.Math.assignValue",
+			"Precedence": 0,
+			"Type": "Assignment"
+		},
+
+	"?=":
+		{
+			"Name": "Null or Empty Coalescing Assign Value",
+			"Token": "?=",
+			"Function": "fable.Math.assignValue",
+			"OnlyEmpty": true,
 			"Precedence": 0,
 			"Type": "Assignment"
 		},

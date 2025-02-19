@@ -83,8 +83,38 @@
 		"Name": "Round",
 		"Address": "fable.Math.roundPrecise"
 	},
-	"valuemapcount": {
-		"Name": "Histogram Count Value Map",
-		"Address": "fable.Math.valueMapCountPrecise"
+	"countSetElements": {
+		"Name": "Count Set Elements in a Histogram or Value Map",
+		"Address": "fable.Math.countSetElements"
+	},
+
+	"getvalue": {
+		"Name": "Get Value from Application State or Services (AppData, etc.)",
+		"Address": "fable.Utility.getValue"
+	},
+
+	"randominteger": {
+		"Name": "Random Integer",
+		"Address": "fable.DataGeneration.randomInteger"
+	},
+	"randomintegerbetween": {
+		"Name": "Random Integer Between Two Numbers",
+		"Address": "fable.DataGeneration.randomIntegerBetween"
+	},
+	"randomintegerupto": {
+		"Name": "Random Integer",
+		"Address": "fable.DataGeneration.randomIntegerUpTo"
+	},
+	"randomfloat": {
+		"Name": "Random Float",
+		"Address": "fable.DataGeneration.randomFloat"
+	},
+	"randomfloatbetween": {
+		"Name": "Random Float",
+		"Address": "fable.DataGeneration.randomFloatBetween"
+	},
+	"randomfloatupto": {
+		"Name": "Random Float",
+		"Address": "fable.DataGeneration.randomFloatUpTo"
 	}
 }

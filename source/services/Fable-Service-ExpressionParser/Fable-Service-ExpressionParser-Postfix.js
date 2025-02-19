@@ -70,6 +70,7 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 		let tmpResults = (typeof(pResultObject) === 'object') ? pResultObject : { ExpressionParserLog: [] };
 
 		tmpResults.PostfixedAssignmentAddress = 'Result'
+		tmpResults.PostfixedAssignmentOperator = this.ExpressionParser.tokenMap['=']; // This is the default assignment operator
 		tmpResults.PostfixTokenObjects = [];
 		tmpResults.PostfixSolveList = [];
 
@@ -84,16 +85,19 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 		let tmpEqualsIndex = -1;
 		for (let i = 0; i < pTokenizedExpression.length; i++)
 		{
-			if ((pTokenizedExpression[i] === '=') && (tmpEqualsIndex < 0))
+			if ((this.ExpressionParser.tokenMap[pTokenizedExpression[i]]) && (this.ExpressionParser.tokenMap[pTokenizedExpression[i]].Type === 'Assignment'))
 			{
-				tmpEqualsIndex = i;
-			}
-			// If there are two equality assignments, error and bail out.
-			else if (pTokenizedExpression[i] === '=')
-			{
-				tmpResults.ExpressionParserLog.push(`ERROR: ExpressionParser.buildPostfixedSolveList found multiple equality assignments in the tokenized expression; equality assignment #${tmpEqualsIndex} at token index ${i}.`);
-				this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
-				return tmpResults.PostfixTokenObjects;
+				if (tmpEqualsIndex < 0)
+				{
+					tmpEqualsIndex = i;
+					tmpResults.PostfixedAssignmentOperator = this.ExpressionParser.tokenMap[pTokenizedExpression[i]];
+				}
+				else
+				{
+					tmpResults.ExpressionParserLog.push(`ERROR: ExpressionParser.buildPostfixedSolveList found multiple assignment operators in the tokenized expression; assignment operator '${pTokenizedExpression[i]}' #${tmpEqualsIndex} at token index ${i}.`);
+					this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
+					return tmpResults.PostfixTokenObjects;
+				}
 			}
 		}
 
@@ -563,6 +567,7 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 			// If this is a layer with one value, presume it's an assignment.
 			if (tmpSolveLayerTokens.length === 1)
 			{
+				// TODO: I think this is correct but with the addition of multiple assignment operators it's less clear.
 				let tmpAbstractAssignToken = this.getTokenContainerObject('=');
 				tmpAbstractAssignToken.VirtualSymbolName = tmpResults.PostfixLayerstackMap[tmpSolveLayerTokens[0].SolveLayerStack];
 				// If this doesn't have a matching solvelayerstack, get the virtual symbol name from the parenthesis group it's in
@@ -637,7 +642,7 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 		}
 
 		// 7. Lastly set the assignment address.
-		let tmpAbstractAssignToken = this.getTokenContainerObject('=');
+		let tmpAbstractAssignToken = ('PostfixedAssignmentOperator' in tmpResults) ? this.getTokenContainerObject(tmpResults.PostfixedAssignmentOperator.Token) : this.getTokenContainerObject('=');
 		// The address we are assigning to
 		tmpAbstractAssignToken.VirtualSymbolName = tmpResults.PostfixedAssignmentAddress;
 		// The address it's coming from

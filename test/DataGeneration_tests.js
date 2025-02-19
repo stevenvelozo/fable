@@ -33,6 +33,20 @@ suite
 							);
 						test
 							(
+								'Just get me a random floating point number',
+								function (fTestComplete)
+								{
+									let testFable = new libFable();
+									let tmpDataGeneration = testFable.instantiateServiceProvider('DataGeneration');
+									Expect(tmpDataGeneration.randomFloat()).to.not.be.NaN;
+									Expect(parseFloat(tmpDataGeneration.randomFloatBetween(0, 100))).to.be.within(0, 100);
+									Expect(parseFloat(tmpDataGeneration.randomFloatBetween(4.3, 5.1))).to.be.within(4.3, 5.1);
+									Expect(parseFloat(tmpDataGeneration.randomFloatUpTo(7.65))).to.be.within(0, 7.65);
+									return fTestComplete();
+								}
+							);
+						test
+							(
 								'How about a random number string!',
 								function (fTestComplete)
 								{

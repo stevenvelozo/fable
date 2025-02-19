@@ -126,7 +126,7 @@ class FableServiceMath extends libFableServiceBase
 	{
 		let tmpValue = isNaN(pValue) ? 0 : pValue;
 		let tmpDecimals = isNaN(pDecimals) ? 0 : parseInt(pDecimals, 10);
-		let tmpRoundingMethod = (typeof (pRoundingMethod) === 'undefined') ? this.roundHalfUp : pRoundingMethod;
+		let tmpRoundingMethod = (typeof (pRoundingMethod) === 'undefined') ? this.roundHalfUp : parseInt(pRoundingMethod, 10);
 
 		let tmpArbitraryValue = new this.fable.Utility.bigNumber(tmpValue);
 		let tmpResult = tmpArbitraryValue.round(tmpDecimals, tmpRoundingMethod);
@@ -562,27 +562,6 @@ class FableServiceMath extends libFableServiceBase
 	}
 
 	/**
-	 * 
-	 * @param {Array<Object>} pValueSet - An array of objects
-	 * @param {string} pValueMapAddress - The address in each object to find the value to count in the histogram.  Undefined will be 'Unknown'.
-	 */
-	valueMapCountPrecise(pValueSet, pValueMapAddress)
-	{
-		let tmpHistogram = {};
-
-		this.log.info(`ValueSet is a ${typeof(pValueSet)}`);
-		this.log.info(`ValueMapAddress is ${pValueMapAddress}`);
-
-		return tmpHistogram;
-	}
-
-	valueMapSumPrecise(pValueSet, pValueMapAddress, pValueMapAmount)
-	{
-
-	}
-
-
-	/**
 	 * Sorts the histogram object in ascending order based on the frequencies of the buckets.
 	 * 
 	 * @param {Object} pHistogram - The histogram object to be sorted.
@@ -601,7 +580,6 @@ class FableServiceMath extends libFableServiceBase
 		}
 
 		return tmpSortedHistogram;
-
 	}
 
 	/**
