@@ -622,6 +622,171 @@ class FableServiceMath extends libFableServiceBase
 	}
 
 	/**
+	 * Make a histogram of representative counts for exact values (.tostring() is the keys to count)
+	 * @param {Array} pValueSet 
+	 * @param {string} pValueAddress 
+	 */
+	histogramDistributionByExactValue(pValueObjectSet, pValueAddress, pManifest)
+	{
+		if (!Array.isArray(pValueObjectSet))
+		{
+			return pValueObjectSet;
+		}
+
+		if (!pValueAddress)
+		{
+			return {};
+		}
+
+		let tmpHistogram = {};
+		for (let i = 0; i < pValueObjectSet.length; i++)
+		{
+			let tmpValue = this.fable.Utility.getValueByHash(pValueObjectSet[i], pValueAddress, pManifest).toString();
+
+			if (!(tmpValue in tmpHistogram))
+			{
+				tmpHistogram[tmpValue] = 0;
+			}
+			tmpHistogram[tmpValue] = tmpHistogram[tmpValue] + 1;
+		}
+
+		return tmpHistogram;
+	}
+
+	histogramDistributionByExactValueFromInternalState(pValueObjectSetAddress, pValueAddress)
+	{
+		if (!pValueObjectSetAddress)
+		{
+			return {};
+		}
+
+		let tmpValueObjectSet = this.fable.Utility.getInternalValueByHash(pValueObjectSetAddress);
+		return this.histogramDistributionByExactValue(tmpValueObjectSet, pValueAddress);
+	}
+
+	/**
+	 * Make a histogram of representative counts for exact values (.tostring() is the keys to count)
+	 * @param {Array} pValueSet 
+	 * @param {string} pValueAddress 
+	 */
+	histogramAggregationByExactValue(pValueObjectSet, pValueAddress, pValueAmountAddress, pManifest)
+	{
+		if (!Array.isArray(pValueObjectSet))
+		{
+			return pValueObjectSet;
+		}
+
+		if (!pValueAddress || !pValueAmountAddress)
+		{
+			return {};
+		}
+
+		let tmpHistogram = {};
+		for (let i = 0; i < pValueObjectSet.length; i++)
+		{
+			let tmpValue = this.fable.Utility.getValueByHash(pValueObjectSet[i], pValueAddress, pManifest).toString();
+			let tmpAmount = this.parsePrecise(this.fable.Utility.getValueByHash(pValueObjectSet[i], pValueAmountAddress, pManifest), NaN);
+
+			if (!(tmpValue in tmpHistogram))
+			{
+				tmpHistogram[tmpValue] = 0;
+			}
+
+			if (!isNaN(tmpAmount))
+			{
+				tmpHistogram[tmpValue] = this.addPrecise(tmpHistogram[tmpValue], tmpAmount);
+			}
+		}
+
+		return tmpHistogram;
+	}
+
+	histogramAggregationByExactValueFromInternalState(pValueObjectSetAddress, pValueAddress, pValueAmountAddress)
+	{
+		if (!pValueObjectSetAddress)
+		{
+			return {};
+		}
+
+		let tmpValueObjectSet = this.fable.Utility.getInternalValueByHash(pValueObjectSetAddress);
+		return this.histogramAggregationByExactValue(tmpValueObjectSet, pValueAddress, pValueAmountAddress);
+	}
+
+	/**
+	 * Given a value object set (an array of objects), find a specific entry when 
+	 * sorted by a specific value address.  Supports -1 syntax for last entry.
+	 * @param {Array} pValueObjectSet 
+	 * @param {string} pValueAddress 
+	 * @param {Object} pManifest 
+	 */
+	entryInSet(pValueObjectSet, pValueAddress, pEntryIndex)
+	{
+		if (!Array.isArray(pValueObjectSet))
+		{
+			return pValueObjectSet;
+		}
+
+		if (!pValueAddress)
+		{
+			return false;
+		}
+
+		if (isNaN(pEntryIndex) || pEntryIndex >= pValueObjectSet.length)
+		{
+			return false;
+		}
+
+		let tmpValueArray = pValueObjectSet.toSorted((pLeft, pRight) => { return this.comparePrecise(pLeft, pRight); });
+		let tmpIndex = (pEntryIndex === -1) ? tmpValueArray.length - 1 : pEntryIndex;
+		return tmpValueArray[tmpIndex];
+	}
+
+	smallestInSet(pValueObjectSet, pValueAddress)
+	{
+		return this.entryInSet(pValueObjectSet, pValueAddress, 0);
+	}
+
+	largestInSet(pValueObjectSet, pValueAddress)
+	{
+		return this.entryInSet(pValueObjectSet, pValueAddress, -1);
+	}
+
+	/**
+	 * Expects an array of objects, and an address in each object to sum.  Expects 
+	 * an address to put the cumulative summation as well.
+	 * @param {Array} pValueObjectSet 
+	 */
+	cumulativeSummation(pValueObjectSet, pValueAddress, pCumulationResultAddress, pManifest)
+	{
+		if (!Array.isArray(pValueObjectSet))
+		{
+			return pValueObjectSet;
+		}
+
+		if (!pValueAddress || !pCumulationResultAddress)
+		{
+			return pValueObjectSet;
+		}
+
+		let tmpSummationValue = '0.0';
+		for (let i = 0; i < pValueObjectSet.length; i++)
+		{
+			let tmpValue = this.parsePrecise(this.fable.Utility.getValueByHash(pValueObjectSet[i], pValueAddress, pManifest));
+
+			if (isNaN(tmpValue))
+			{
+				this.fable.Utility.setValueByHash(pValueObjectSet[i], pCumulationResultAddress, tmpSummationValue, pManifest);
+				continue;
+			}
+
+			tmpSummationValue = this.addPrecise(tmpValue, tmpSummationValue);
+			this.fable.Utility.setValueByHash(pValueObjectSet[i], pCumulationResultAddress, tmpSummationValue, pManifest);
+		}
+
+		return pValueObjectSet;
+	}
+
+	/**
 	 * Finds the maximum value from a set of precise values.
 	 * 
 	 * @param {Array|Object} pValueSet - The set of values to find the maximum from.

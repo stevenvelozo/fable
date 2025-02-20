@@ -81,6 +81,37 @@ suite
 				);
 				test
 				(
+					'Cumulative Summation',
+					function(fDone)
+					{
+						let testFable = new libFable();
+
+						let tmpTestValueSet = (
+							[
+								{ Item: 'Lettuce', Quantity: 2, Price: "7.99" },
+								{ Item: 'Tomato', Quantity: 3, Price: "3.99" },
+								{ Item: 'Onion', Quantity: 1, Price: "1.99" },
+								{ Item: 'Cucumber', Quantity: 4, Price: "2.99" },
+								{ Item: 'Carrot', Quantity: 3, Price: "1.99" },
+								{ Item: 'Radish', Quantity: 2, Price: "1.49" },
+								{ Item: 'Celery', Quantity: 1, Price: "0.99" },
+								{ Item: 'Parsley', Quantity: 2, Price: "0.49" }
+							]);
+
+						testFable.Math.cumulativeSummation(tmpTestValueSet, 'Price', 'RunningTotal');
+
+						Expect(tmpTestValueSet[0].RunningTotal).to.equal('7.99');
+						Expect(tmpTestValueSet[1].RunningTotal).to.equal('11.98');
+						Expect(tmpTestValueSet[2].RunningTotal).to.equal('13.97');
+						Expect(tmpTestValueSet[3].RunningTotal).to.equal('16.96');
+						Expect(tmpTestValueSet[4].RunningTotal).to.equal('18.95');
+						Expect(tmpTestValueSet[5].RunningTotal).to.equal('20.44');
+
+						return fDone();
+					}
+				);
+				test
+				(
 					'Parse Numbers',
 					function(fDone)
 					{
@@ -91,6 +122,35 @@ suite
 						Expect(testFable.Math.parsePrecise('4.3333333333333333333333333333333')).to.equal('4.3333333333333333333333333333333');
 						Expect(testFable.Math.parsePrecise(undefined)).to.equal('0.0');
 						
+						return fDone();
+					}
+				);
+
+				test
+				(
+					'Histograms by Count',
+					function(fDone)
+					{
+
+						let testFable = new libFable();
+
+						let tmpTestValueSet = (
+							[
+								{ City: 'New York', State: 'NY', GDP: 1000000 },
+								{ City: 'Seattle', State: 'WA', GDP: 500000 },
+								{ City: 'Portland', State: 'OR', GDP: 250000 },
+								{ City: 'San Francisco', State: 'CA', GDP: 750000 },
+								{ City: 'Los Angeles', State: 'CA', GDP: 500000 },
+								{ City: 'San Diego', State: 'CA', GDP: 250000 },
+								{ City: 'Atlanta', State: 'GA', GDP: 100000 },
+								{ City: 'Savannah', State: 'GA', GDP: 50000 },
+								{ City: 'Athens', State: 'GA', GDP: 25000 }
+							]);
+
+						let tmpHistogramByDistribution = testFable.Math.histogramDistributionByExactValue(tmpTestValueSet, 'State');
+						Expect(tmpHistogramByDistribution).to.deep.equal({ CA: 3, GA: 3, NY: 1, OR: 1, WA: 1 });
+						let tmpHistogramByAggregation = testFable.Math.histogramAggregationByExactValue(tmpTestValueSet, 'State', 'GDP');
+						Expect(tmpHistogramByAggregation).to.deep.equal({ CA: "1500000", GA: "175000", NY: "1000000", OR: "250000", WA: "500000" });
 						return fDone();
 					}
 				);

@@ -334,6 +334,40 @@ suite
 						return fDone();
 					}
 				);
+				test
+				(
+					'Complex Histogram Arithmatic',
+					(fDone)=>
+					{
+						let testFable = new libFable();
+
+						let testCityData = require('./data/cities.json');
+						testFable.AppData = { Cities: testCityData };
+
+						// let tmpDistribution = testFable.Math.histogramDistributionByExactValue(testFable.AppData.Cities, 'state');
+
+						// Expect(tmpDistribution.Alabama).to.equal(12);
+						// Expect(tmpDistribution.Colorado).to.equal(21);
+						// Expect(tmpDistribution.Florida).to.equal(73);
+						// Expect(tmpDistribution.Georgia).to.equal(18);
+
+						// Now through the solver
+
+						let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+						let tmpResultsObject = {};
+						let tmpDestinationObject = {};
+						
+						_Parser.solve('DistributionResult = distributionhistogram("AppData.Cities", "state")', this.fable, tmpResultsObject, false, tmpDestinationObject);
+						_Parser.solve('AggregationResult = aggregationHistogram("AppData.Cities", "state", "population")', this.fable, tmpResultsObject, false, tmpDestinationObject);
+
+						Expect(tmpDestinationObject.DistributionResult.Alabama).to.equal(12);
+						Expect(tmpDestinationObject.DistributionResult.Colorado).to.equal(21);
+
+						Expect(tmpDestinationObject.AggregationResult.Alabama).to.equal('1279813');
+
+						return fDone();
+					}
+				);
 			}
 		);
 	}

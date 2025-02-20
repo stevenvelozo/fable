@@ -83,7 +83,13 @@
 		"Name": "Round",
 		"Address": "fable.Math.roundPrecise"
 	},
-	"countSetElements": {
+
+	"cumulativesummation": {
+		"Name": "Count Set Elements in a Histogram or Value Map",
+		"Address": "fable.Math.cumulativeSummation"
+	},
+
+	"countsetelements": {
 		"Name": "Count Set Elements in a Histogram or Value Map",
 		"Address": "fable.Math.countSetElements"
 	},
@@ -91,6 +97,15 @@
 	"getvalue": {
 		"Name": "Get Value from Application State or Services (AppData, etc.)",
 		"Address": "fable.Utility.getInternalValueByHash"
+	},
+
+	"aggregationhistogram": {
+		"Name": "Generate a Histogram by Exact Value Aggregation",
+		"Address": "fable.Math.histogramAggregationByExactValueFromInternalState"
+	},
+	"distributionhistogram": {
+		"Name": "Generate a Histogram Based on Value Distribution",
+		"Address": "fable.Math.histogramDistributionByExactValueFromInternalState"
 	},
 
 	"getvaluearray": {

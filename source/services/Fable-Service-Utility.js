@@ -129,6 +129,32 @@ class FableServiceUtility extends libFableServiceBase
 	}
 
 	/**
+	 * Set a value to an object by hash/address
+	 * @param {object} pObject - The object to get the value from
+	 * @param {string} pValueAddress - The manyfest hash/address of the value to get
+	 * @param {object} pValue - The value to set
+	 * @param {object} [pManifest] - The manyfest object to use; constructs one inline if not provided
+	 * @returns {object} - The value from the object
+	 */
+	setValueByHash(pObject, pValueAddress, pValue, pManifest)
+	{
+		let tmpManifest = pManifest;
+
+		if (typeof(tmpManifest) == 'undefined')
+		{
+			// Lazily create a manifest if it doesn't exist
+			if (!this.manifest)
+			{
+				this.manifest = this.fable.newManyfest();
+			}
+			tmpManifest = this.manifest;
+		}
+
+		// Get the value from the internal manifest and return it
+		return tmpManifest.setValueByHash(pObject, pValueAddress, pValue);
+	}
+
+	/**
 	 * Get a value array from an object by hash/address list
 	 * @param {object} pObject - The object to get the value from
 	 * @param {string} pValueAddress - The manyfest hash/address of the value to get
@@ -177,6 +203,11 @@ class FableServiceUtility extends libFableServiceBase
 
 	createValueArrayByHashParametersFromInternal()
 	{
+		if (arguments.length < 2)
+		{
+			return [];
+		}
+		
 		let tmpValueHashes = Array.prototype.slice.call(arguments);
 		return this.createValueArrayByHashes(this.fable, tmpValueHashes);
 	}

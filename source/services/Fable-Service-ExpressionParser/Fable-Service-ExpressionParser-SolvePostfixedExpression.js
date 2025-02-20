@@ -204,7 +204,11 @@ class ExpressionParserSolver extends libExpressionParserOperationBase
 			delete tmpResults.fable;
 		}
 
-		if (typeof(tmpSolverResultValue) !== 'undefined')
+		if (typeof(tmpSolverResultValue) === 'object')
+		{
+			return tmpSolverResultValue;
+		}
+		else if (typeof(tmpSolverResultValue) !== 'undefined')
 		{
 			return tmpSolverResultValue.toString();
 		}
