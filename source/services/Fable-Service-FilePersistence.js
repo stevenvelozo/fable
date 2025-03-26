@@ -25,6 +25,13 @@ class FableServiceFilePersistence extends libFableServiceBase
 
 	joinPath(...pPathArray)
 	{
+		// TODO: Fix anything that's using this before changing this to the new true node join
+		// return libPath.join(...pPathArray);
+		return libPath.resolve(...pPathArray);
+	}
+
+	resolvePath(...pPathArray)
+	{
 		return libPath.resolve(...pPathArray);
 	}
 
@@ -35,8 +42,7 @@ class FableServiceFilePersistence extends libFableServiceBase
 
 	exists(pPath, fCallback)
 	{
-		let tmpFileExists = this.existsSync(pPath);;
-
+		let tmpFileExists = this.existsSync(pPath);
 		return fCallback(null, tmpFileExists);
 	}
 

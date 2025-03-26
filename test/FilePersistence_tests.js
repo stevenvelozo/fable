@@ -117,6 +117,20 @@ suite
 				);
 				test
 				(
+					'Resolve a path.',
+					function(fTestComplete)
+					{
+						let testFable = new libFable();
+						let tmpFilePersistence = testFable.instantiateServiceProvider('FilePersistence');
+
+						Expect(tmpFilePersistence.resolvePath('tmp/tests/../othertests/names/'))
+							.to.equal(process.cwd()+'/tmp/othertests/names');
+
+						return fTestComplete();
+					}
+				);
+				test
+				(
 					'Create a recursive folder.',
 					function(fTestComplete)
 					{
