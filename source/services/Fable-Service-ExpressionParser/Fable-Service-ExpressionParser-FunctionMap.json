@@ -8,6 +8,14 @@
 		"Name": "Absolute Value",
 		"Address": "fable.Math.absPrecise"
 	},
+	"floor": {
+		"Name": "Floor Value",
+		"Address": "fable.Math.floorPrecise"
+	},
+	"ceil": {
+		"Name": "Ceiling Value",
+		"Address": "fable.Math.ceilPrecise"
+	},
 
 	"rad": {
 		"Name": "Degrees to Radians",

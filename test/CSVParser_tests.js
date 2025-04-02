@@ -60,6 +60,26 @@ suite
 
 					}
 				);
+				test
+				(
+					'Pull CSV Data with the Wrapped reader',
+					function(fDone)
+					{
+						let testFable = new libFable();
+						testFable.instantiateServiceProvider('FilePersistence');
+						let tmpRowCount = 0;
+						testFable.FilePersistence.readFileCSV(`${__dirname}/data/books.csv`, {},
+							(pRecord) =>
+							{
+								if (pRecord)
+								{
+									Expect(pRecord).to.be.an('object');
+									Expect(pRecord).to.have.property('authors');
+								}
+							}, fDone);
+
+					}
+				);
 			}
 		);
 	}

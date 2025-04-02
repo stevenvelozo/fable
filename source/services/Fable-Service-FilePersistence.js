@@ -46,12 +46,6 @@ class FableServiceFilePersistence extends libFableServiceBase
 		return fCallback(null, tmpFileExists);
 	}
 
-	appendFileSync(pFileName, pAppendContent, pOptions)
-	{
-		let tmpOptions = (typeof(pOptions) === 'undefined') ? 'utf8' : pOptions;
-		return libFS.appendFileSync(pFileName, pAppendContent, tmpOptions);
-	}
-
 	deleteFileSync(pFileName)
 	{
 		return libFS.unlinkSync(pFileName);
@@ -72,6 +66,42 @@ class FableServiceFilePersistence extends libFableServiceBase
 	{
 		let tmpOptions = (typeof(pOptions) === 'undefined') ? 'utf8' : pOptions;
 		return libFS.readFile(pFilePath, tmpOptions, fCallback);
+	}
+
+	readFileCSV(pFilePath, pOptions, fRecordFunction, fCompleteFunction, fErrorFunction)
+	{
+		let tmpCSVParser = this.fable.instantiateServiceProviderWithoutRegistration('CSVParser', pOptions);
+		let tmpRecordFunction = (typeof(fRecordFunction) === 'function') ? fRecordFunction :
+			(pRecord) =>
+			{
+				this.fable.log(`CSV Reader received line ${pRecord}`);
+			};
+		let tmpCompleteFunction = (typeof(fCompleteFunction) === 'function') ? fCompleteFunction :
+			() =>
+			{
+				this.fable.log(`CSV Read of ${pFilePath} complete.`);
+			};
+		let tmpErrorFunction = (typeof(fErrorFunction) === 'function') ? fErrorFunction :
+			(pError) =>
+			{
+				this.fable.log(`CSV Read of ${pFilePath} Error: ${pError}`, pError);
+			};
+		
+		return this.lineReaderFactory(pFilePath,
+			(pLine) =>
+			{
+				let tmpRecord = tmpCSVParser.parseCSVLine(pLine);
+				if (tmpRecord)
+				{
+					tmpRecordFunction(tmpRecord, pLine);
+				}
+			}, tmpCompleteFunction, tmpErrorFunction);
+	}
+
+	appendFileSync(pFileName, pAppendContent, pOptions)
+	{
+		let tmpOptions = (typeof(pOptions) === 'undefined') ? 'utf8' : pOptions;
+		return libFS.appendFileSync(pFileName, pAppendContent, tmpOptions);
 	}
 
 	writeFileSync(pFileName, pFileContent, pOptions)

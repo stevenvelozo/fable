@@ -285,6 +285,34 @@ class FableServiceMath extends libFableServiceBase
 	}
 
 	/**
+	 * Calculates the floor of a number precisely.
+	 *
+	 * @param {number} pValue - The number to calculate the floor value of.
+	 * @returns {string} The floor value of the input number as a string.
+	 */
+	floorPrecise(pValue)
+	{
+		let tmpValue = isNaN(pValue) ? 0 : pValue;
+
+		let tmpResult = Math.floor(tmpValue);
+		return tmpResult.toString();
+	}
+
+	/**
+	 * Calculates the ceiling of a number precisely.
+	 *
+	 * @param {number} pValue - The number to calculate the ceiling value of.
+	 * @returns {string} The ceiling value of the input number as a string.
+	 */
+	ceilPrecise(pValue)
+	{
+		let tmpValue = isNaN(pValue) ? 0 : pValue;
+
+		let tmpResult = Math.ceil(tmpValue);
+		return tmpResult.toString();
+	}
+
+	/**
 	 * Compares two values precisely.
 	 *
 	 * @param {number} pLeftValue - The left value to compare.

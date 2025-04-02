@@ -70,6 +70,12 @@ suite
 						Expect(testFable.Math.ltePrecise('0.000000000000000000000000000000001', '0.00000000000000000000000000000000099')).to.equal(false);
 						Expect(testFable.Math.ltPrecise(4, 5)).to.equal(true);
 
+						Expect(testFable.Math.floorPrecise(4.939323)).to.equal('4');
+						Expect(testFable.Math.ceilPrecise(-4.939323)).to.equal('-4');
+						Expect(testFable.Math.ceilPrecise(4.939323)).to.equal('5');
+						Expect(testFable.Math.ceilPrecise('BARF')).to.equal('0');
+						Expect(testFable.Math.ceilPrecise(undefined)).to.equal('0');
+						
 						Expect(testFable.Math.comparePrecise(4, 5)).to.equal(-1);
 						
 						Expect(testFable.Math.modPrecise(4.939323, 4)).to.equal('0.939323');
