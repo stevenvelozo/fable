@@ -11,7 +11,7 @@ module.exports = (
 		},
 		"Status": {
 			"Completed": false,
-			"StepCount": 0
+			"StepCount": 1
 		},
 		"Steps": [],
 		"Errors": [],
