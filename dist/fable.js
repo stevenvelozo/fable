@@ -3962,13 +3962,32 @@ return 1;}return 0;}/**
 	 * Make a histogram of representative counts for exact values (.tostring() is the keys to count)
 	 * @param {Array} pValueSet 
 	 * @param {string} pValueAddress 
-	 */histogramAggregationByExactValue(pValueObjectSet,pValueAddress,pValueAmountAddress,pManifest){if(!Array.isArray(pValueObjectSet)){return pValueObjectSet;}if(!pValueAddress||!pValueAmountAddress){return{};}let tmpHistogram={};for(let i=0;i<pValueObjectSet.length;i++){let tmpValue=this.fable.Utility.getValueByHash(pValueObjectSet[i],pValueAddress,pManifest).toString();let tmpAmount=this.parsePrecise(this.fable.Utility.getValueByHash(pValueObjectSet[i],pValueAmountAddress,pManifest),NaN);if(!(tmpValue in tmpHistogram)){tmpHistogram[tmpValue]=0;}if(!isNaN(tmpAmount)){tmpHistogram[tmpValue]=this.addPrecise(tmpHistogram[tmpValue],tmpAmount);}}return tmpHistogram;}histogramAggregationByExactValueFromInternalState(pValueObjectSetAddress,pValueAddress,pValueAmountAddress){if(!pValueObjectSetAddress){return{};}let tmpValueObjectSet=this.fable.Utility.getInternalValueByHash(pValueObjectSetAddress);return this.histogramAggregationByExactValue(tmpValueObjectSet,pValueAddress,pValueAmountAddress);}/**
+	 */histogramAggregationByExactValue(pValueObjectSet,pValueAddress,pValueAmountAddress,pManifest){if(!Array.isArray(pValueObjectSet)){return pValueObjectSet;}if(!pValueAddress||!pValueAmountAddress){return{};}let tmpHistogram={};for(let i=0;i<pValueObjectSet.length;i++){let tmpValue=this.fable.Utility.getValueByHash(pValueObjectSet[i],pValueAddress,pManifest).toString();let tmpAmount=this.parsePrecise(this.fable.Utility.getValueByHash(pValueObjectSet[i],pValueAmountAddress,pManifest),NaN);if(!(tmpValue in tmpHistogram)){tmpHistogram[tmpValue]=0;}if(!isNaN(tmpAmount)){tmpHistogram[tmpValue]=this.addPrecise(tmpHistogram[tmpValue],tmpAmount);}}return tmpHistogram;}/**
+	 * Aggregates a histogram by exact value from an internal state object.
+	 *
+	 * @param {string} pValueObjectSetAddress - The address of the internal value object set.
+	 * @param {string} pValueAddress - The address of the value to aggregate by.
+	 * @param {string} pValueAmountAddress - The address of the amount to aggregate.
+	 * @returns {Object} The aggregated histogram object. Returns an empty object if the value object set address is not provided.
+	 */histogramAggregationByExactValueFromInternalState(pValueObjectSetAddress,pValueAddress,pValueAmountAddress){if(!pValueObjectSetAddress){return{};}let tmpValueObjectSet=this.fable.Utility.getInternalValueByHash(pValueObjectSetAddress);return this.histogramAggregationByExactValue(tmpValueObjectSet,pValueAddress,pValueAmountAddress);}/**
 	 * Given a value object set (an array of objects), find a specific entry when 
 	 * sorted by a specific value address.  Supports -1 syntax for last entry.
 	 * @param {Array} pValueObjectSet 
 	 * @param {string} pValueAddress 
 	 * @param {Object} pManifest 
-	 */entryInSet(pValueObjectSet,pValueAddress,pEntryIndex){if(!Array.isArray(pValueObjectSet)){return pValueObjectSet;}if(!pValueAddress){return false;}if(isNaN(pEntryIndex)||pEntryIndex>=pValueObjectSet.length){return false;}let tmpValueArray=pValueObjectSet.toSorted((pLeft,pRight)=>{return this.comparePrecise(pLeft,pRight);});let tmpIndex=pEntryIndex===-1?tmpValueArray.length-1:pEntryIndex;return tmpValueArray[tmpIndex];}smallestInSet(pValueObjectSet,pValueAddress){return this.entryInSet(pValueObjectSet,pValueAddress,0);}largestInSet(pValueObjectSet,pValueAddress){return this.entryInSet(pValueObjectSet,pValueAddress,-1);}/**
+	 */entryInSet(pValueObjectSet,pValueAddress,pEntryIndex){if(!Array.isArray(pValueObjectSet)){return pValueObjectSet;}if(!pValueAddress){return false;}if(isNaN(pEntryIndex)||pEntryIndex>=pValueObjectSet.length){return false;}let tmpValueArray=pValueObjectSet.toSorted((pLeft,pRight)=>{return this.comparePrecise(pLeft,pRight);});let tmpIndex=pEntryIndex===-1?tmpValueArray.length-1:pEntryIndex;return tmpValueArray[tmpIndex];}/**
+	 * Finds the smallest value in a set of objects based on a specified value address.
+	 *
+	 * @param {Object[]} pValueObjectSet - An array of objects to search through.
+	 * @param {string} pValueAddress - The key or path used to access the value within each object.
+	 * @returns {*} The smallest value found in the set at the specified value address.
+	 */smallestInSet(pValueObjectSet,pValueAddress){return this.entryInSet(pValueObjectSet,pValueAddress,0);}/**
+	 * Finds the largest value in a set of objects based on a specified value address.
+	 *
+	 * @param {Object[]} pValueObjectSet - An array of objects to search through.
+	 * @param {string} pValueAddress - The address (key or path) within each object to compare values.
+	 * @returns {*} The largest value found at the specified address in the set of objects.
+	 */largestInSet(pValueObjectSet,pValueAddress){return this.entryInSet(pValueObjectSet,pValueAddress,-1);}/**
 	 * Expects an array of objects, and an address in each object to sum.  Expects 
 	 * an address to put the cumulative summation as well.
 	 * @param {Array} pValueObjectSet 

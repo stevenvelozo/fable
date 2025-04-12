@@ -729,6 +729,14 @@ class FableServiceMath extends libFableServiceBase
 		return tmpHistogram;
 	}
 
+	/**
+	 * Aggregates a histogram by exact value from an internal state object.
+	 *
+	 * @param {string} pValueObjectSetAddress - The address of the internal value object set.
+	 * @param {string} pValueAddress - The address of the value to aggregate by.
+	 * @param {string} pValueAmountAddress - The address of the amount to aggregate.
+	 * @returns {Object} The aggregated histogram object. Returns an empty object if the value object set address is not provided.
+	 */
 	histogramAggregationByExactValueFromInternalState(pValueObjectSetAddress, pValueAddress, pValueAmountAddress)
 	{
 		if (!pValueObjectSetAddress)
@@ -769,11 +777,25 @@ class FableServiceMath extends libFableServiceBase
 		return tmpValueArray[tmpIndex];
 	}
 
+	/**
+	 * Finds the smallest value in a set of objects based on a specified value address.
+	 *
+	 * @param {Object[]} pValueObjectSet - An array of objects to search through.
+	 * @param {string} pValueAddress - The key or path used to access the value within each object.
+	 * @returns {*} The smallest value found in the set at the specified value address.
+	 */
 	smallestInSet(pValueObjectSet, pValueAddress)
 	{
 		return this.entryInSet(pValueObjectSet, pValueAddress, 0);
 	}
 
+	/**
+	 * Finds the largest value in a set of objects based on a specified value address.
+	 *
+	 * @param {Object[]} pValueObjectSet - An array of objects to search through.
+	 * @param {string} pValueAddress - The address (key or path) within each object to compare values.
+	 * @returns {*} The largest value found at the specified address in the set of objects.
+	 */
 	largestInSet(pValueObjectSet, pValueAddress)
 	{
 		return this.entryInSet(pValueObjectSet, pValueAddress, -1);
