@@ -1,6 +1,23 @@
-// const libFable = require('../source/Fable.js');
+const libFable = require('../source/Fable.js');
 
-// const _Fable = new libFable({"Product": "Hn"});
+const _Fable = new libFable({"Product": "Harness"});
+
+let tmpValue;
+
+tmpValue = _Fable.Dates.dateDayDifference("2023-10-01", "2023-09-01");
+console.log(`Difference in days: ${tmpValue}`);
+
+
+tmpValue = _Fable.Dates.dateWeekDifference("2023-10-01", "2023-09-01");
+console.log(`Difference in weeks: ${tmpValue}`);
+
+
+tmpValue = _Fable.Dates.dateMonthDifference("2016-10-01", "2023-09-01");
+console.log(`Difference in months: ${tmpValue}`);
+
+tmpValue = _Fable.Dates.dateYearDifference("1963-10-01", "2023-09-01");
+console.log(`Difference in years: ${tmpValue}`);
+
 // const _ExpressionParser = _Fable.instantiateServiceProviderIfNotExists('ExpressionParser');
 
 // const _Expression = "TotalCost = SUM(ItemCosts)";
@@ -32,4 +49,4 @@
 // }
 // console.log(`Result: ${tmpResult}`);
 
-const libMathHarness = require('../example_applications/mathematical_playground/Math-Solver-Harness.js');
+//const libMathHarness = require('../example_applications/mathematical_playground/Math-Solver-Harness.js');

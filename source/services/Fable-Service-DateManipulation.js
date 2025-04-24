@@ -41,6 +41,90 @@ class DateManipulation extends libFableServiceProviderBase
 		// const localeDE = require('dayjs/locale/de');
 		// _Fable.Dates.dayJS.locale('de');
 	}
+
+	/**
+	 * Calculates the difference in days between two dates.
+	 *
+	 * @param {string|Date|number} pDateStart - The start date. Can be a string, Date object, or timestamp.
+	 * @param {string|Date|number} pDateEnd - The end date. Can be a string, Date object, or timestamp. Defaults to the current date if not provided.
+	 * @returns {number} The difference in days between the start and end dates. Returns NaN if the start date is invalid.
+	 */
+	dateDayDifference(pDateStart, pDateEnd)
+	{
+		// If there is not a valid start date, return NaN
+		if ((pDateStart === undefined) || (pDateStart === null) || (pDateStart === ''))
+		{
+			return NaN;
+		}
+		let tmpStartDate = this.dayJS(pDateStart);
+		// Without a valid end date, dayJS defaults to the current date
+		let tmpEndDate = this.dayJS(pDateEnd);
+		// Returns the difference in days between two dates
+		return tmpEndDate.diff(tmpStartDate, 'day');
+	}
+
+	/**
+	 * Calculates the difference in weeks between two dates.
+	 *
+	 * @param {string|Date|number} pDateStart - The start date. Can be a string, Date object, or timestamp.
+	 * @param {string|Date|number} pDateEnd - The end date. Can be a string, Date object, or timestamp. Defaults to the current date if not provided.
+	 * @returns {number} The difference in weeks between the two dates. Returns NaN if the start date is invalid.
+	 */
+	dateWeekDifference(pDateStart, pDateEnd)
+	{
+		// If there is not a valid start date, return NaN
+		if ((pDateStart === undefined) || (pDateStart === null) || (pDateStart === ''))
+		{
+			return NaN;
+		}
+		let tmpStartDate = this.dayJS(pDateStart);
+		// Without a valid end date, dayJS defaults to the current date
+		let tmpEndDate = this.dayJS(pDateEnd);
+		// Returns the difference in weeks between two dates
+		return tmpEndDate.diff(tmpStartDate, 'week');
+	}
+
+	/**
+	 * Calculates the difference in months between two dates.
+	 *
+	 * @param {string|Date|number} pDateStart - The start date. Can be a string, Date object, or timestamp.
+	 * @param {string|Date|number} pDateEnd - The end date. Can be a string, Date object, or timestamp. Defaults to the current date if not provided.
+	 * @returns {number} The difference in months between the two dates. Returns NaN if the start date is invalid.
+	 */
+	dateMonthDifference(pDateStart, pDateEnd)
+	{
+		// If there is not a valid start date, return NaN
+		if ((pDateStart === undefined) || (pDateStart === null) || (pDateStart === ''))
+		{
+			return NaN;
+		}
+		let tmpStartDate = this.dayJS(pDateStart);
+		// Without a valid end date, dayJS defaults to the current date
+		let tmpEndDate = this.dayJS(pDateEnd);
+		// Returns the difference in months between two dates
+		return tmpEndDate.diff(tmpStartDate, 'month');
+	}
+
+	/**
+	 * Calculates the difference in years between two dates.
+	 *
+	 * @param {string|Date|number} pDateStart - The start date. Can be a string, Date object, or timestamp.
+	 * @param {string|Date|number} pDateEnd - The end date. Can be a string, Date object, or timestamp. Defaults to the current date if not provided.
+	 * @returns {number} The difference in years between the two dates. Returns NaN if the start date is invalid.
+	 */
+	dateYearDifference(pDateStart, pDateEnd)
+	{
+		// If there is not a valid start date, return NaN
+		if ((pDateStart === undefined) || (pDateStart === null) || (pDateStart === ''))
+		{
+			return NaN;
+		}
+		let tmpStartDate = this.dayJS(pDateStart);
+		// Without a valid end date, dayJS defaults to the current date
+		let tmpEndDate = this.dayJS(pDateEnd);
+		// Returns the difference in years between two dates
+		return tmpEndDate.diff(tmpStartDate, 'year');
+	}
 }
 
 module.exports = DateManipulation;

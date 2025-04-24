@@ -256,6 +256,11 @@ suite
 						Expect(tmpResult).to.equal("1545");
 						tmpResult = _Parser.solve('Area = ROUND(X * Y  * Z, 3, 3)', tmpDataObject, tmpSolveResults);
 						Expect(tmpResult).to.equal("1545.2");
+						// Test the getvaluarray function]
+						// TODO: Fix the return values for these expression return functions
+						//tmpResult = _Parser.solve('NewSet = GETVALUEARRAY(X, Y, Z)', tmpDataObject, tmpSolveResults);
+						//tmpResult = _Parser.solve('NewSetAverage = SUM(NewSet)', tmpDataObject, tmpSolveResults);
+						//Expect(tmpResult).to.equal("84.115923423");
 						return fDone();
 					}
 				);

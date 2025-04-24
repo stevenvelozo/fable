@@ -157,5 +157,22 @@
 	"randomfloatupto": {
 		"Name": "Random Float",
 		"Address": "fable.DataGeneration.randomFloatUpTo"
+	},
+
+	"datedaydifference": {
+		"Name": "Date Difference in Days",
+		"Address": "fable.Dates.dateDayDifference"
+	},
+	"dateweekdifference": {
+		"Name": "Date Difference in Weeks",
+		"Address": "fable.Dates.dateWeekDifference"
+	},
+	"datemonthdifference": {
+		"Name": "Date Difference in Months",
+		"Address": "fable.Dates.dateMonthDifference"
+	},
+	"dateyeardifference": {
+		"Name": "Date Difference in Years",
+		"Address": "fable.Dates.dateYearDifference"
 	}
 }

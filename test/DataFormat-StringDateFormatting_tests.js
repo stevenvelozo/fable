@@ -20,9 +20,65 @@ suite
 
 		suite
 		(
-			'Format Dates and Times',
+			'Format and Calculate Dates and Times',
 			()=>
 			{
+				test
+				(
+					'Calculate the difference in days between two dates',
+					(fTestComplete)=>
+					{
+						let testFable = new libFable({LogStreams: false});
+						Expect(testFable.Dates.dateDayDifference('2021-03-12', '2023-09-01'))
+							.to.equal(903);
+						Expect(testFable.Dates.dateDayDifference('2023-08-01', '2023-09-01'))
+							.to.equal(31);
+						Expect(testFable.Dates.dateDayDifference('2023-09-01', '2023-10-01'))
+							.to.equal(30);
+						Expect(testFable.Dates.dateDayDifference('2023-9-1', '2023-10-01'))
+							.to.equal(30);
+						Expect(testFable.Dates.dateWeekDifference('2023-9-1', '2023-10-01'))
+							.to.equal(4);
+						Expect(testFable.Dates.dateMonthDifference('1986-10-01', '2023-09-01'))
+							.to.equal(443);
+						Expect(testFable.Dates.dateYearDifference('1986-10-01', '2023-09-01'))
+							.to.equal(36);
+						Expect(testFable.Dates.dateYearDifference('1986-08-01', '2023-09-01'))
+							.to.equal(37);
+						Expect(testFable.Dates.dateYearDifference('1986-08-31', '2023-09-01'))
+							.to.equal(37);
+						let tmpValue = testFable.Dates.dateDayDifference('BadDatesIncoming', '2023-09-01');
+						Expect(tmpValue)
+							.to.be.NaN;
+
+						tmpValue = testFable.Dates.dateDayDifference();
+						Expect(tmpValue)
+							.to.be.NaN;
+						return fTestComplete();
+					}
+				);
+				test
+				(
+					'Format a time span in milliseconds to a human readable string',
+					(fTestComplete)=>
+					{
+						let testFable = new libFable({LogStreams: false});
+						let _DataFormat = testFable.services.DataFormat;
+						Expect(_DataFormat
+							.formatTimeSpan(1000))
+							.to.equal('00:00:01.000');
+						Expect(_DataFormat
+							.formatTimeSpan(100243231))
+							.to.equal('27:50:43.231');
+						Expect(_DataFormat
+							.formatTimeSpan(100299211))
+							.to.equal('27:51:39.211');
+						Expect(_DataFormat
+							.formatTimeSpan())
+							.to.equal('');
+						return fTestComplete();
+					}
+				);
 				test
 				(
 					'Format a time span in milliseconds to a human readable string',
