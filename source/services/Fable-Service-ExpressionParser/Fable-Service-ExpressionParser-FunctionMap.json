@@ -4,6 +4,16 @@
 		"Address": "fable.Math.sqrtPrecise"
 	},
 
+	"percent": {
+		"Name": "Compute Percent (in IS over OF format)",
+		"Address": "fable.Math.percentagePrecise"
+	},
+
+	"compare": {
+		"Name": "Compare",
+		"Address": "fable.Math.comparePrecise"
+	},
+
 	"abs": {
 		"Name": "Absolute Value",
 		"Address": "fable.Math.absPrecise"
@@ -26,6 +36,11 @@
 		"Name": "Pi",
 		"Address": "fable.Math.piPrecise"
 	},
+	"euler": {
+		"Name": "Euler",
+		"Address": "fable.Math.eulerPrecise"
+	},
+
 	"sin": {
 		"Name": "Sine",
 		"Address": "fable.Math.sin"
@@ -43,7 +58,10 @@
 		"Name": "Count Set Elements",
 		"Address": "fable.Math.countSetElements"
 	},
-
+	"countset": {
+		"Name": "Count Set Elements",
+		"Address": "fable.Math.countSetElements"
+	},
 	"sortset": {
 		"Name": "Sort Set",
 		"Address": "fable.Math.sortSetPrecise"
@@ -91,6 +109,10 @@
 		"Name": "Round",
 		"Address": "fable.Math.roundPrecise"
 	},
+	"tofixed": {
+		"Name": "To Fixed",
+		"Address": "fable.Math.toFixedPrecise"
+	},
 
 	"cumulativesummation": {
 		"Name": "Count Set Elements in a Histogram or Value Map",
@@ -107,6 +129,19 @@
 		"Address": "fable.Utility.getInternalValueByHash"
 	},
 
+	"entryinset": {
+		"Name": "Entry in Set",
+		"Address": "fable.Math.entryInSet"
+	},
+	"smallestInSet": {
+		"Name": "Smallest in Set",
+		"Address": "fable.Math.smallestInSet"
+	},
+	"largestInSet": {
+		"Name": "Largest in Set",
+		"Address": "fable.Math.largestInSet"
+	},
+
 	"aggregationhistogram": {
 		"Name": "Generate a Histogram by Exact Value Aggregation",
 		"Address": "fable.Math.histogramAggregationByExactValueFromInternalState"
@@ -114,6 +149,11 @@
 	"distributionhistogram": {
 		"Name": "Generate a Histogram Based on Value Distribution",
 		"Address": "fable.Math.histogramDistributionByExactValueFromInternalState"
+	},
+
+	"setconcatenate": {
+		"Name": "Set Concatenate",
+		"Address": "fable.Math.setConcatenate"
 	},
 
 	"getvaluearray": {
@@ -174,5 +214,10 @@
 	"dateyeardifference": {
 		"Name": "Date Difference in Years",
 		"Address": "fable.Dates.dateYearDifference"
+	},
+
+	"createValueObjectByHashes": {
+		"Name": "Create Value Object by Hashes",
+		"Address": "fable.Utility.createValueObjectByHashes"
 	}
 }

@@ -22,6 +22,8 @@ class FableServiceMath extends libFableServiceBase
 		this.serviceType = 'Math';
 
 		this.pi = '3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679';
+		// From NASA: https://apod.nasa.gov/htmltest/gifcity/e.2mil
+		this.euler = '2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664';
 
 //		this.manifest = this.fable.newManyfest();
 	}
@@ -425,6 +427,24 @@ class FableServiceMath extends libFableServiceBase
 		else
 		{
 			return this.roundPrecise(this.pi, pPrecision);
+		}
+	}
+
+	/**
+	 * Calculates the value of euler with the specified precision.
+	 *
+	 * @param {number} [pPrecision] - The precision to use for calculating E.
+	 * @returns {number} - The calculated value of E.
+	 */
+	eulerPrecise(pPrecision)
+	{
+		if (typeof (pPrecision) === 'undefined')
+		{
+			return this.euler;
+		}
+		else
+		{
+			return this.roundPrecise(this.euler, pPrecision);
 		}
 	}
 

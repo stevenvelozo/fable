@@ -343,6 +343,74 @@ suite
 							})
 					}
 				);
+				test
+				(
+					'findFirstValueByStringIncludes returns values from an array of objects',
+					function(fDone)
+					{
+						testFable = new libFable();
+
+						let tmpState = [
+							{ "Name":"The Pixies", "Type":"Band", "AlbumCount":5, "SongCount": 103, "MarketValue":"83500011.24", "Studios": { "Primary": { "Name":"Swamp Record Studios", "Location":"Boston"} } },
+							{ "Name":"The Beatles", "Type":"Band", "AlbumCount":35, "SongCount": 876, "MarketValue":"183942892.24", "Studios": { "Primary": { "Name":"Swamp Record Studios", "Location":"Boston"} } },
+							{ "Name":"Modest Mouse", "Type":"Band", "AlbumCount":9, "SongCount": 299, "MarketValue":"332432324.99", "Studios": { "Primary": { "Name":"Swamp Record Studios", "Location":"Boston"} } },
+							{ "Name":"The Doors", "Type":"Band", "AlbumCount":6, "SongCount": 133, "MarketValue":"324783294732.32", "Studios": { "Primary": { "Name":"Swamp Record Studios", "Location":"Boston"} } },
+							{ "Name":"The Who", "Type":"Band", "AlbumCount":7, "SongCount": 110, "MarketValue":"7500.30", "Studios": { "Primary": { "Name":"Swamp Record Studios", "Location":"Boston"} } },
+							{ "Name":"The Cure", "Type":"Band", "AlbumCount":13, "SongCount": 213, "MarketValue":"34230.10", "Studios": { "Primary": { "Name":"Swamp Record Studios", "Location":"Boston"} } }
+							];
+						let tmpResult = testFable.services.Utility.findFirstValueByStringIncludes(tmpState, 'Name', 'The', 'SongCount');
+						Expect(tmpResult).to.be.a('number');
+						Expect(tmpResult).to.equal(103);
+
+						tmpResult = testFable.services.Utility.findFirstValueByStringIncludes(tmpState, 'Name', 'The Cure', 'SongCount');
+						Expect(tmpResult).to.be.a('number');
+						Expect(tmpResult).to.equal(213);
+
+						// Missing Key
+						tmpResult = testFable.services.Utility.findFirstValueByStringIncludes(tmpState, 'Name', 'The Fleet Foxes', 'SongCount');
+						Expect(tmpResult).to.be.a('undefined');
+
+						// Missing Value
+						tmpResult = testFable.services.Utility.findFirstValueByStringIncludes(tmpState, 'Name', 'The Cure', 'No good Value');
+						Expect(tmpResult).to.be.a('undefined');
+
+						return fDone();
+					}
+				);
+				test
+				(
+					'findFirstValueByExactMatch returns values from an array of objects',
+					function(fDone)
+					{
+						testFable = new libFable();
+
+						let tmpState = [
+							{ "Name":"The Pixies", "Type":"Band", "AlbumCount":5, "SongCount": 103, "MarketValue":"83500011.24", "Studios": { "Primary": { "Name":"Swamp Record Studios", "Location":"Boston"} } },
+							{ "Name":"The Beatles", "Type":"Band", "AlbumCount":35, "SongCount": 876, "MarketValue":"183942892.24", "Studios": { "Primary": { "Name":"Swamp Record Studios", "Location":"Boston"} } },
+							{ "Name":"Modest Mouse", "Type":"Band", "AlbumCount":9, "SongCount": 299, "MarketValue":"332432324.99", "Studios": { "Primary": { "Name":"Swamp Record Studios", "Location":"Boston"} } },
+							{ "Name":"The Doors", "Type":"Band", "AlbumCount":6, "SongCount": 133, "MarketValue":"324783294732.32", "Studios": { "Primary": { "Name":"Swamp Record Studios", "Location":"Boston"} } },
+							{ "Name":"The Who", "Type":"Band", "AlbumCount":7, "SongCount": 110, "MarketValue":"7500.30", "Studios": { "Primary": { "Name":"Swamp Record Studios", "Location":"Boston"} } },
+							{ "Name":"The Cure", "Type":"Band", "AlbumCount":13, "SongCount": 213, "MarketValue":"34230.10", "Studios": { "Primary": { "Name":"Swamp Record Studios", "Location":"Boston"} } }
+							];
+						let tmpResult = testFable.services.Utility.findFirstValueByExactMatch(tmpState, 'Name', 'The Who', 'SongCount');
+						Expect(tmpResult).to.be.a('number');
+						Expect(tmpResult).to.equal(110);
+
+						tmpResult = testFable.services.Utility.findFirstValueByExactMatch(tmpState, 'SongCount', 133, 'MarketValue');
+						Expect(tmpResult).to.be.a('string');
+						Expect(tmpResult).to.equal('324783294732.32');
+
+						// Missing Key
+						tmpResult = testFable.services.Utility.findFirstValueByExactMatch(tmpState, 'Name', 'The Fleet Foxes', 'SongCount');
+						Expect(tmpResult).to.be.a('undefined');
+
+						// Missing Value
+						tmpResult = testFable.services.Utility.findFirstValueByExactMatch(tmpState, 'Name', 'The Cure', 'No good Value');
+						Expect(tmpResult).to.be.a('undefined');
+
+						return fDone();
+					}
+				);
 			}
 		);
 	}

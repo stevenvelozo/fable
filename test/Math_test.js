@@ -116,6 +116,7 @@ suite
 						return fDone();
 					}
 				);
+
 				test
 				(
 					'Parse Numbers',
@@ -128,6 +129,18 @@ suite
 						Expect(testFable.Math.parsePrecise('4.3333333333333333333333333333333')).to.equal('4.3333333333333333333333333333333');
 						Expect(testFable.Math.parsePrecise(undefined)).to.equal('0.0');
 						
+						return fDone();
+					}
+				);
+
+				test
+				(
+					'Eulers Number',
+					function(fDone)
+					{
+						let testFable = new libFable();
+
+						Expect(testFable.Math.eulerPrecise()).to.equal('2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664');
 						return fDone();
 					}
 				);

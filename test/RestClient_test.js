@@ -35,10 +35,10 @@ suite
 								{
 									let testFable = new libFable();
 									// Instantiate the RestClient Service Provider
-									let tmpRestClient = testFable.instantiateServiceProvider('RestClient', { TraceLog: true }, 'RestClient-99');
+									testFable.instantiateServiceProvider('RestClient', { TraceLog: true });
 
 									// Download the wiktionary entry for dog!
-									tmpRestClient.getJSON('http://localhost:8086/1.0/Author/1',
+									testFable.RestClient.getJSON('http://localhost:8086/1.0/Author/1',
 										(pError, pResponse, pBody) =>
 										{
 											Expect(pBody).to.be.an('object');

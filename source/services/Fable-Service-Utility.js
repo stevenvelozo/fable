@@ -217,7 +217,7 @@ class FableServiceUtility extends libFableServiceBase
 	 * @param {object} pObject - The object to get the value from
 	 * @param {string} pValueAddress - The manyfest hash/address of the value to get
 	 * @param {object} [pManifest] - The manyfest object to use; constructs one inline if not provided
-	 * @returns {Array} - The value object built from the hash list
+	 * @returns {object} - The value object built from the hash list
 	 */
 	createValueObjectByHashes(pObject, pValueHashes, pManifest)
 	{
@@ -337,6 +337,70 @@ class FableServiceUtility extends libFableServiceBase
 		{
 			return false;
 		}
+	}
+
+	/**
+	 * Find the first value in an object that contains a specific value
+	 * @param {array} pObjectArray - The array of objects to search
+	 * @param {string} pValueToMatchAddress - The manyfest hash/address of the value to match
+	 * @param {string} pValueToMatch - The value to match
+	 * @param {string} pValueAddress - The manyfest hash/address of the value to return
+	 * @returns {any} - The value from the object
+	 */
+	findFirstValueByStringIncludes(pObjectArray, pValueToMatchAddress, pValueToMatch, pValueAddress)
+	{
+		// Lazily create a manifest if it doesn't exist
+		if (!this.manifest)
+		{
+			this.manifest = this.fable.newManyfest();
+		}
+
+		if (!Array.isArray(pObjectArray))
+		{
+			return undefined;
+		}
+		for (let i = 0; i < pObjectArray.length; i++)
+		{
+			let tmpValueToMatch = this.manifest.getValueByHash(pObjectArray[i], pValueToMatchAddress);
+			if (tmpValueToMatch && (tmpValueToMatch.includes(pValueToMatch)))
+			{
+				return this.manifest.getValueByHash(pObjectArray[i], pValueAddress);
+			}
+		}
+
+		return undefined;
+	}
+
+	/**
+	 * Find the first value in an object that contains a specific value
+	 * @param {array} pObjectArray - The array of objects to search
+	 * @param {string} pValueToMatchAddress - The manyfest hash/address of the value to match
+	 * @param {string} pValueToMatch - The value to match
+	 * @param {string} pValueAddress - The manyfest hash/address of the value to return
+	 * @returns {any} - The value from the object
+	 */
+	findFirstValueByExactMatch(pObjectArray, pValueToMatchAddress, pValueToMatch, pValueAddress)
+	{
+		// Lazily create a manifest if it doesn't exist
+		if (!this.manifest)
+		{
+			this.manifest = this.fable.newManyfest();
+		}
+
+		if (!Array.isArray(pObjectArray))
+		{
+			return undefined;
+		}
+		for (let i = 0; i < pObjectArray.length; i++)
+		{
+			let tmpValueToMatch = this.manifest.getValueByHash(pObjectArray[i], pValueToMatchAddress);
+			if (tmpValueToMatch && (tmpValueToMatch == pValueToMatch))
+			{
+				return this.manifest.getValueByHash(pObjectArray[i], pValueAddress);
+			}
+		}
+
+		return undefined;
 	}
 }
 
