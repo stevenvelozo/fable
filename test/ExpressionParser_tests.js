@@ -45,6 +45,12 @@ suite
 						let complexTokenizedResultsDoubleWidthOperators = _Parser.tokenize('SpecialValue ?= 5+3 - sqrt(75 / (3 + {Depth}) * Width)^ 3');
 						Expect(complexTokenizedResultsDoubleWidthOperators.length).to.equal(20);
 						Expect(complexTokenizedResultsDoubleWidthOperators).to.deep.equal(['SpecialValue', '?=', '5', '+', '3', '-', 'sqrt', '(', '75', '/', '(', '3', '+', '{Depth}', ')', '*', 'Width', ')', '^', '3']);
+
+						let tokenizedWithSymbologyInQuotes = _Parser.tokenize('5 + 2 * "Hello World"');
+						Expect(tokenizedWithSymbologyInQuotes.length).to.equal(5);
+						Expect(tokenizedWithSymbologyInQuotes).to.deep.equal(['5', '+', '2', '*', '"Hello World"']);
+						// TODO: refresh on the tokenization process and see if this is a valid test
+						//Expect(tmpResultObject.RawExpression).to.equal('5 + 2');
 						return fDone();
 					}
 				);
@@ -399,13 +405,15 @@ suite
 						let tmpDestinationObject = {};
 						
 						_Parser.solve('Names = concat("AppData.CityNames")', this.fable, tmpResultsObject, false, tmpDestinationObject);
-						_Parser.solve('RawNames = concatRaw("AppData.CityNames")', this.fable, tmpResultsObject, false, tmpDestinationObject);
-						_Parser.solve('JoinedNames = join(" ", "AppData.CityNames")', this.fable, tmpResultsObject, false, tmpDestinationObject);
-						_Parser.solve('RawJoinedNames = joinRaw(" ", "AppData.CityNames")', this.fable, tmpResultsObject, false, tmpDestinationObject);
-
 						Expect(tmpDestinationObject.Names).to.equal('New YorkLos AngelesHouston');
+
+						_Parser.solve('RawNames = concatRaw("AppData.CityNames")', this.fable, tmpResultsObject, false, tmpDestinationObject);
 						Expect(tmpDestinationObject.RawNames).to.equal('New YorkLos Angeles[object Object]Houston');
-						Expect(tmpDestinationObject.JoinedNames).to.equal('New York Los Angeles Houston');
+
+						_Parser.solve('JoinedNames = join("&comma; ", "AppData.CityNames")', this.fable, tmpResultsObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.JoinedNames).to.equal('New York&comma; Los Angeles&comma; Houston');
+
+						_Parser.solve('RawJoinedNames = joinRaw(" ", "AppData.CityNames")', this.fable, tmpResultsObject, false, tmpDestinationObject);
 						Expect(tmpDestinationObject.RawJoinedNames).to.equal('New York Los Angeles [object Object] Houston');
 					}
 				);

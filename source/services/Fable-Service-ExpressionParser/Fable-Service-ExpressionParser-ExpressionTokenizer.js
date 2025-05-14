@@ -35,6 +35,8 @@ class ExpressionTokenizer extends libExpressionParserOperationBase
 		 *  - Token
 		 *    : could be an operator e.g. "+", "-", "*", "/"
 		 *    : could be a parenthesis e.g. "(", ")"
+		 *  - String
+		 *    : Wrapped in double quotes e.g. "Hello World", "This is a test", etc.
 		 */
 		let tmpCurrentTokenType = false;
 		let tmpCurrentToken = '';
@@ -44,7 +46,7 @@ class ExpressionTokenizer extends libExpressionParserOperationBase
 
 			// [ WHITESPACE ]
 			// 1. Space breaks tokens except when we're in an address that's been scoped by a {}
-			if ((tmpCharacter === ' ') && (tmpCurrentTokenType !== 'StateAddress'))
+			if ((tmpCharacter === ' ') && ((tmpCurrentTokenType !== 'StateAddress') && (tmpCurrentTokenType !== 'String')))
 			{
 				if (tmpCurrentToken.length > 0)
 				{
@@ -55,15 +57,28 @@ class ExpressionTokenizer extends libExpressionParserOperationBase
 				continue;
 			}
 
-			// [ STATE ADDRESS BLOCKS ]
+			// [ STATE ADDRESS AND STRING BLOCKS ]
 			// 2. If we're in an address, we keep going until we hit the closing brace
 			if ((tmpCurrentTokenType === 'StateAddress') && (tmpCharacter !== '}'))
 			{
 				tmpCurrentToken += tmpCharacter;
 				continue;
 			}
+			if ((tmpCurrentTokenType === 'String') && (tmpCharacter !== '"'))
+			{
+				tmpCurrentToken += tmpCharacter;
+				continue;
+			}
 			// 3. If we're in an address and we hit the closing brace, we close the token, push it and reset
 			if ((tmpCurrentTokenType === 'StateAddress') && (tmpCharacter === '}'))
+			{
+				tmpCurrentToken += tmpCharacter;
+				tmpResults.RawTokens.push(tmpCurrentToken);
+				tmpCurrentToken = '';
+				tmpCurrentTokenType = false;
+				continue;
+			}
+			if ((tmpCurrentTokenType === 'String') && (tmpCharacter === '"'))
 			{
 				tmpCurrentToken += tmpCharacter;
 				tmpResults.RawTokens.push(tmpCurrentToken);
@@ -94,6 +109,17 @@ class ExpressionTokenizer extends libExpressionParserOperationBase
 				}
 				tmpCurrentToken = '';
 				tmpCurrentTokenType = 'StateAddress';
+				tmpCurrentToken = tmpCharacter;
+				continue;
+			}
+			if ((tmpCurrentTokenType !== 'String') && (tmpCharacter == '"'))
+			{
+				if (tmpCurrentToken.length > 0)
+				{
+					tmpResults.RawTokens.push(tmpCurrentToken);
+				}
+				tmpCurrentToken = '';
+				tmpCurrentTokenType = 'String';
 				tmpCurrentToken = tmpCharacter;
 				continue;
 			}
