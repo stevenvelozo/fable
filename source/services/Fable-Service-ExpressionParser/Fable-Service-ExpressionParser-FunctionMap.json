@@ -129,6 +129,16 @@
 		"Address": "fable.Utility.getInternalValueByHash"
 	},
 
+	"findfirstvaluebyexactmatch": {
+		"Name": "find + map on array of objects?",
+		"Address": "fable.Utility.findFirstValueByExactMatch"
+	},
+
+	"findfirstvaluebystringincludes": {
+		"Name": "find + map on array of objects?",
+		"Address": "fable.Utility.findFirstValueByStringIncludes"
+	},
+
 	"entryinset": {
 		"Name": "Entry in Set",
 		"Address": "fable.Math.entryInSet"
