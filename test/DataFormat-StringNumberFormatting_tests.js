@@ -136,5 +136,72 @@ suite
 				);
 			}
 		);
+		suite
+		(
+			'String Manipulation',
+			()=>
+			{
+				test
+				(
+					'concatenateStrings concatenates an array of string-like objects',
+					() =>
+					{
+						let testFable = new libFable({LogStreams: false});
+						let _DataFormat = testFable.services.DataFormat;
+						Expect(_DataFormat
+							.concatenateStrings(undefined, 'test', 123))
+							.to.equal('test123');
+						Expect(_DataFormat
+							.concatenateStrings('waffle', { }, null))
+							.to.equal('waffle');
+					}
+				);
+				test
+				(
+					'concatenateStringsRaw stringifies then concatenates an array of anything',
+					() =>
+					{
+						let testFable = new libFable({LogStreams: false});
+						let _DataFormat = testFable.services.DataFormat;
+						Expect(_DataFormat
+							.concatenateStringsRaw(undefined, 'test', 123))
+							.to.equal('undefinedtest123');
+						Expect(_DataFormat
+							.concatenateStringsRaw('waffle', { }, null))
+							.to.equal('waffle[object Object]null');
+					}
+				);
+				test
+				(
+					'joinStrings joins an array of string-like objects',
+					() =>
+					{
+						let testFable = new libFable({LogStreams: false});
+						let _DataFormat = testFable.services.DataFormat;
+						Expect(_DataFormat
+							.joinStrings('/', undefined, 'test', 123))
+							.to.equal('test/123');
+						Expect(_DataFormat
+							.joinStrings('/', 'waffle', { }, null))
+							.to.equal('waffle');
+					}
+				);
+				test
+				(
+					'joinStringsRaw stringifies then joins an array of anything',
+					() =>
+					{
+						let testFable = new libFable({LogStreams: false});
+						let _DataFormat = testFable.services.DataFormat;
+						Expect(_DataFormat
+							.joinStringsRaw('/', undefined, 'test', 123))
+							.to.equal('undefined/test/123');
+						Expect(_DataFormat
+							.joinStringsRaw('/', 'waffle', { }, null))
+							.to.equal('waffle/[object Object]/null');
+					}
+				);
+			}
+		);
 	}
 );

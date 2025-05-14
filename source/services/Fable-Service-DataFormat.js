@@ -158,6 +158,139 @@ class DataFormat extends libFableServiceProviderBase
 	}
 
 	/**
+	 * Concatenate a list of strings together. Non-strings are excluded.
+	 *
+	 * @param {...string} pStrings - The strings to concatenate
+	 * @return {string}
+	 */
+	concatenateStrings (...pStrings)
+	{
+		return this.joinStrings('', ...pStrings);
+	}
+
+	/**
+	 * Concatenate a list of strings together. Non-strings are excluded.
+	 *
+	 * @param {string} pValueObjectSetAddress - The address of the array of strings to concatenate
+	 * @return {string}
+	 */
+	concatenateStringsInternal (pValueObjectSetAddress)
+	{
+		if (!pValueObjectSetAddress)
+		{
+			return {};
+		}
+
+		let tmpValueObjectSet = this.fable.Utility.getInternalValueByHash(pValueObjectSetAddress);
+		if (!Array.isArray(tmpValueObjectSet))
+		{
+			return tmpValueObjectSet || null;
+		}
+		return this.concatenateStrings(...tmpValueObjectSet);
+	}
+
+	/**
+	 * Join a list of strings together. Non-strings are excluded.
+	 *
+	 * @param {string} pJoin - The string to join with
+	 * @param {...string} pStrings - The strings to join
+	 * @return {string}
+	 */
+	joinStrings (pJoin, ...pStrings)
+	{
+		return pStrings.filter((v) => typeof v === 'string' || typeof v === 'number').join(pJoin);
+	}
+
+	/**
+	 * Joins a list of strings together. Non-strings are excluded.
+	 *
+	 * @param {string} pJoin - The string to join with
+	 * @param {string} pValueObjectSetAddress - The address of the array of values to join
+	 * @return {string}
+	 */
+	joinStringsInternal (pJoin, pValueObjectSetAddress)
+	{
+		if (!pValueObjectSetAddress)
+		{
+			return {};
+		}
+
+		let tmpValueObjectSet = this.fable.Utility.getInternalValueByHash(pValueObjectSetAddress);
+		if (!Array.isArray(tmpValueObjectSet))
+		{
+			return tmpValueObjectSet || null;
+		}
+		return this.joinStrings(pJoin, ...tmpValueObjectSet);
+	}
+
+
+	/**
+	 * Concatenate a list of values together into a string.
+	 *
+	 * @param {...any} pValues - The strings to concatenate
+	 * @return {string}
+	 */
+	concatenateStringsRaw (...pValues)
+	{
+		return this.joinStringsRaw('', ...pValues);
+	}
+
+	/**
+	 * Concatenate a list of values together into a string.
+	 *
+	 * @param {string} pValueObjectSetAddress - The address of the array of values to concatenate
+	 * @return {string}
+	 */
+	concatenateStringsRawInternal (pValueObjectSetAddress)
+	{
+		if (!pValueObjectSetAddress)
+		{
+			return {};
+		}
+
+		let tmpValueObjectSet = this.fable.Utility.getInternalValueByHash(pValueObjectSetAddress);
+		if (!Array.isArray(tmpValueObjectSet))
+		{
+			return tmpValueObjectSet || null;
+		}
+		return this.concatenateStringsRaw(...tmpValueObjectSet);
+	}
+
+	/**
+	 * Join a list of values together into a string.
+	 *
+	 * @param {string} pJoin - The string to join with
+	 * @param {...any} pValues - The strings to join
+	 * @return {string}
+	 */
+	joinStringsRaw (pJoin, ...pValues)
+	{
+		return pValues.map(String).join(pJoin);
+	}
+
+	/**
+	 * Joins a list of values together into a string.
+	 *
+	 * @param {string} pJoin - The string to join with
+	 * @param {string} pValueObjectSetAddress - The address of the array of values to join
+	 * @return {string}
+	 */
+	joinStringsRawInternal (pJoin, pValueObjectSetAddress)
+	{
+		if (!pValueObjectSetAddress)
+		{
+			return {};
+		}
+
+		let tmpValueObjectSet = this.fable.Utility.getInternalValueByHash(pValueObjectSetAddress);
+		if (!Array.isArray(tmpValueObjectSet))
+		{
+			return tmpValueObjectSet || null;
+		}
+		return this.joinStringsRaw(pJoin, ...tmpValueObjectSet);
+	}
+
+	/**
 	 * Clean wrapping characters if they exist consistently around the string.  If they do not, the string is returned unchanged.
 	 *
 	 * @param {string} pWrapCharacter - The character expected as the wrapping character

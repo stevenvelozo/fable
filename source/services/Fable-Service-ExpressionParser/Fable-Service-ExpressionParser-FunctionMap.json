@@ -139,6 +139,26 @@
 		"Address": "fable.Utility.findFirstValueByStringIncludesInternal"
 	},
 
+	"concat": {
+		"Name": "concatenate an array of values and output a string",
+		"Address": "fable.DataFormat.concatenateStringsInternal"
+	},
+
+	"concatraw": {
+		"Name": "concatenate an array of values and output a string",
+		"Address": "fable.DataFormat.concatenateStringsRawInternal"
+	},
+
+	"join": {
+		"Name": "join an array of values and output a string",
+		"Address": "fable.DataFormat.joinStringsInternal"
+	},
+
+	"joinraw": {
+		"Name": "join an array of values and output a string",
+		"Address": "fable.DataFormat.joinStringsRawInternal"
+	},
+
 	"entryinset": {
 		"Name": "Entry in Set",
 		"Address": "fable.Math.entryInSet"

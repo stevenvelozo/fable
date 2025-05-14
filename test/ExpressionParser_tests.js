@@ -375,5 +375,41 @@ suite
 				);
 			}
 		);
+		suite
+		(
+			'Data Expressions',
+			function()
+			{
+				test
+				(
+					'Concatenates Strings',
+					() =>
+					{
+						let testFable = new libFable();
+
+						//FIXME: would be nicer to have a way of transorming the city object via the solver
+						let testCityData = require('./data/cities.json');
+						testFable.AppData = { CityNames: testCityData.slice(0, 4).map((c) => c.city) };
+						testFable.AppData.CityNames[2] = { };
+
+						// Now through the solver
+
+						let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+						let tmpResultsObject = {};
+						let tmpDestinationObject = {};
+						
+						_Parser.solve('Names = concat("AppData.CityNames")', this.fable, tmpResultsObject, false, tmpDestinationObject);
+						_Parser.solve('RawNames = concatRaw("AppData.CityNames")', this.fable, tmpResultsObject, false, tmpDestinationObject);
+						_Parser.solve('JoinedNames = join(" ", "AppData.CityNames")', this.fable, tmpResultsObject, false, tmpDestinationObject);
+						_Parser.solve('RawJoinedNames = joinRaw(" ", "AppData.CityNames")', this.fable, tmpResultsObject, false, tmpDestinationObject);
+
+						Expect(tmpDestinationObject.Names).to.equal('New YorkLos AngelesHouston');
+						Expect(tmpDestinationObject.RawNames).to.equal('New YorkLos Angeles[object Object]Houston');
+						Expect(tmpDestinationObject.JoinedNames).to.equal('New York Los Angeles Houston');
+						Expect(tmpDestinationObject.RawJoinedNames).to.equal('New York Los Angeles [object Object] Houston');
+					}
+				);
+			}
+		);
 	}
 );
