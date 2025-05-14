@@ -373,6 +373,31 @@ class FableServiceUtility extends libFableServiceBase
 
 	/**
 	 * Find the first value in an object that contains a specific value
+	 * @param {string} pFableAddress - The address in the fable object to pull the value from
+	 * @param {string} pValueToMatchAddress - The manyfest hash/address of the value to match
+	 * @param {string} pValueToMatch - The value to match
+	 * @param {string} pValueAddress - The manyfest hash/address of the value to return
+	 * @returns {any} - The value from the object
+	 */
+	findFirstValueByStringIncludesInternal(pFableAddress, pValueToMatchAddress, pValueToMatch, pValueAddress)
+	{
+		// Lazily create a manifest if it doesn't exist
+		if (!this.manifest)
+		{
+			this.manifest = this.fable.newManyfest();
+		}
+
+		if (typeof(pFableAddress) != 'string')
+		{
+			return undefined;
+		}
+		let tmpObjectArray = this.manifest.getValueByHash(this.fable, pFableAddress);
+
+		return this.findFirstValueByStringIncludes(tmpObjectArray, pValueToMatchAddress, pValueToMatch, pValueAddress);
+	}
+
+	/**
+	 * Find the first value in an object that contains a specific value
 	 * @param {array} pObjectArray - The array of objects to search
 	 * @param {string} pValueToMatchAddress - The manyfest hash/address of the value to match
 	 * @param {string} pValueToMatch - The value to match
@@ -401,6 +426,31 @@ class FableServiceUtility extends libFableServiceBase
 		}
 
 		return undefined;
+	}
+
+	/**
+	 * Find the first value in an object that contains a specific value
+	 * @param {string} pFableAddress - The address in the fable object to pull the value from
+	 * @param {string} pValueToMatchAddress - The manyfest hash/address of the value to match
+	 * @param {string} pValueToMatch - The value to match
+	 * @param {string} pValueAddress - The manyfest hash/address of the value to return
+	 * @returns {any} - The value from the object
+	 */
+	findFirstValueByExactMatchInternal(pFableAddress, pValueToMatchAddress, pValueToMatch, pValueAddress)
+	{
+		// Lazily create a manifest if it doesn't exist
+		if (!this.manifest)
+		{
+			this.manifest = this.fable.newManyfest();
+		}
+
+		if (typeof(pFableAddress) != 'string')
+		{
+			return undefined;
+		}
+		let tmpObjectArray = this.manifest.getValueByHash(this.fable, pFableAddress);
+
+		return this.findFirstValueByExactMatch(tmpObjectArray, pValueToMatchAddress, pValueToMatch, pValueAddress);
 	}
 }
 

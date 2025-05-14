@@ -27,27 +27,27 @@ _Fable.log.info(`Beginning Run-through for Set of Test Expressions....`);
 // An array of equations with expected values
 let _Equations = require(`./Equations.json`);
 // The application state is a plain javascript object we pass into the solver to pull variables from
-let _AppData = require(`./AppData.json`);
-// The manifest is a Manyfest which describes hashes for complex addresses in the application state object
-// For example you can't use "Student[0].Age" as a variable in the expression
-// ...but you can use "Student[0].Age" as an address in the manifest with a hash of "StudentAge"
-// ...and then reference "StudentAge" in the expression.
-let tmpManifestConfiguration = { "Scope":"None", "Descriptors":[] };
-let tmpManifest = _Fable.newManyfest(tmpManifestConfiguration);
-// Run each expression in the Equations.json file through the expression parser.
-for (let i = 0; i < _Equations.Expressions.length; i++)
-{
-	let tmpResultObject = {};
-	let tmpResultValue = _ExpressionParser.solve(_Equations.Expressions[i].Equation, _AppData, tmpResultObject, tmpManifest);
-	console.log(`Expression [${i}]: [${_Equations.Expressions[i].Equation}] ==> ${tmpResultValue}`);
-	console.log(`           Expected: ${_Equations.Expressions[i].ExpectedResult}`);
-	//_Fable.ExpressionParser.Messaging.logFunctionOutcome(tmpResultObject);
+// let _AppData = require(`./AppData.json`);
+// // The manifest is a Manyfest which describes hashes for complex addresses in the application state object
+// // For example you can't use "Student[0].Age" as a variable in the expression
+// // ...but you can use "Student[0].Age" as an address in the manifest with a hash of "StudentAge"
+// // ...and then reference "StudentAge" in the expression.
+// let tmpManifestConfiguration = { "Scope":"None", "Descriptors":[] };
+// let tmpManifest = _Fable.newManyfest(tmpManifestConfiguration);
+// // Run each expression in the Equations.json file through the expression parser.
+// for (let i = 0; i < _Equations.Expressions.length; i++)
+// {
+// 	let tmpResultObject = {};
+// 	let tmpResultValue = _ExpressionParser.solve(_Equations.Expressions[i].Equation, _AppData, tmpResultObject, tmpManifest);
+// 	console.log(`Expression [${i}]: [${_Equations.Expressions[i].Equation}] ==> ${tmpResultValue}`);
+// 	console.log(`           Expected: ${_Equations.Expressions[i].ExpectedResult}`);
+// 	//_Fable.ExpressionParser.Messaging.logFunctionOutcome(tmpResultObject);
 
-	if (tmpResultValue !== _Equations.Expressions[i].ExpectedResult)
-	{
-		console.log(`Error: Equation ${_Equations.Expressions[i].Equation} expected [${_Equations.Expressions[i].ExpectedResult}] but got [${tmpResultValue}]`);
-	}
-}
+// 	if (tmpResultValue !== _Equations.Expressions[i].ExpectedResult)
+// 	{
+// 		console.log(`Error: Equation ${_Equations.Expressions[i].Equation} expected [${_Equations.Expressions[i].ExpectedResult}] but got [${tmpResultValue}]`);
+// 	}
+// }
 
 
 /* * * * * * * * * * * * * * * * *
@@ -60,13 +60,16 @@ let _FruitData = require(`../data/Fruit-Data.json`);
 let _FruitManifestDescription = require(`../data/Fruit-Manyfest.json`);
 let _FruitManifest = _Fable.newManyfest(_FruitManifestDescription);
 
+_Fable.AppData = _FruitData;
 _Fable.log.info(`Beginning Manual Solve with Embedded Fruit Data....`);
 
-// The expression we pass into the solver is just a string
+// // The expression we pass into the solver is just a string
 let tmpExpression = 'HyperMax.HealthIndex = (SUM(Calories) / SUM(Sugar)) * MEDIAN(Fat) + (SQRT(AVG(Protein)) - (PI() + 99))';
+//tmpExpression = `aggregationhistogram("AppData.FruityVice", "family", "nutritions.calories")`;
+tmpExpression = 'Out.Match = FindFirstValueByStringIncludes("AppData.FruityVice", "name", "uria", "id")';
 _Fable.log.info(`Solving tmpExpression: [${tmpExpression}]`);
 
-// This is an object where the parser will write out the results of each phase of the compiler/parser/solver
+// // This is an object where the parser will write out the results of each phase of the compiler/parser/solver
 let tmpExpressionParseOutcome = {};
 let tmpSolverResultsObject = {};
 
@@ -82,7 +85,8 @@ _ExpressionParser.substituteValuesInTokenizedObjects(tmpExpressionParseOutcome.P
 let tmpResultValue = _ExpressionParser.solvePostfixedExpression(tmpExpressionParseOutcome.PostfixSolveList, tmpSolverResultsObject, tmpExpressionParseOutcome, _FruitManifest);
 
 // Now that we have a solved expression and the mapped-in values, show the user the solution
-//_Fable.ExpressionParser.Messaging.logFunctionOutcome(tmpExpressionParseOutcome);
+_Fable.ExpressionParser.Messaging.logFunctionOutcome(tmpExpressionParseOutcome);
+
 
 // Step 6: Look at the results.
 console.log(`Outcome object: ${JSON.stringify(tmpSolverResultsObject)}`);

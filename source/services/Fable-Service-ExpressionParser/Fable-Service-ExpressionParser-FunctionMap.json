@@ -131,12 +131,12 @@
 
 	"findfirstvaluebyexactmatch": {
 		"Name": "find + map on array of objects?",
-		"Address": "fable.Utility.findFirstValueByExactMatch"
+		"Address": "fable.Utility.findFirstValueByExactMatchInternal"
 	},
 
 	"findfirstvaluebystringincludes": {
 		"Name": "find + map on array of objects?",
-		"Address": "fable.Utility.findFirstValueByStringIncludes"
+		"Address": "fable.Utility.findFirstValueByStringIncludesInternal"
 	},
 
 	"entryinset": {

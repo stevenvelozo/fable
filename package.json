@@ -1,70 +1,70 @@
 {
-    "name": "fable",
-    "version": "3.1.4",
-    "description": "A service dependency injection, configuration and logging library.",
-    "main": "source/Fable.js",
-    "scripts": {
-        "start": "node source/Fable.js",
-        "coverage": "./node_modules/.bin/nyc --reporter=lcov --reporter=text-lcov ./node_modules/mocha/bin/_mocha -- -u tdd -R spec",
-        "test": "./node_modules/.bin/mocha -u tdd -R spec",
-        "build": "npx quack build",
-        "docker-dev-build": "docker build ./ -f Dockerfile_LUXURYCode -t fable-image:local",
-        "docker-dev-run": "docker run -it -d --name fable-dev -p 30001:8080 -p 38086:8086 -v \"$PWD/.config:/home/coder/.config\"  -v \"$PWD:/home/coder/fable\" -u \"$(id -u):$(id -g)\" -e \"DOCKER_USER=$USER\" fable-image:local",
-        "docker-dev-shell": "docker exec -it fable-dev /bin/bash",
-        "tests": "./node_modules/mocha/bin/_mocha -u tdd --exit -R spec --grep"
-    },
-    "mocha": {
-        "diff": true,
-        "extension": [
-            "js"
-        ],
-        "package": "./package.json",
-        "reporter": "spec",
-        "slow": "75",
-        "timeout": "5000",
-        "ui": "tdd",
-        "watch-files": [
-            "source/**/*.js",
-            "test/**/*.js"
-        ],
-        "watch-ignore": [
-            "lib/vendor"
-        ]
-    },
-    "browser": {
-        "./source/service/Fable-Service-EnvironmentData.js": "./source/service/Fable-Service-EnvironmentData-Web.js",
-        "./source/service/Fable-Service-FilePersistence.js": "./source/service/Fable-Service-FilePersistence-Web.js"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/stevenvelozo/fable.git"
-    },
-    "keywords": [
-        "entity",
-        "behavior"
+  "name": "fable",
+  "version": "3.1.5",
+  "description": "A service dependency injection, configuration and logging library.",
+  "main": "source/Fable.js",
+  "scripts": {
+    "start": "node source/Fable.js",
+    "coverage": "./node_modules/.bin/nyc --reporter=lcov --reporter=text-lcov ./node_modules/mocha/bin/_mocha -- -u tdd -R spec",
+    "test": "./node_modules/.bin/mocha -u tdd -R spec",
+    "build": "npx quack build",
+    "docker-dev-build": "docker build ./ -f Dockerfile_LUXURYCode -t fable-image:local",
+    "docker-dev-run": "docker run -it -d --name fable-dev -p 30001:8080 -p 38086:8086 -v \"$PWD/.config:/home/coder/.config\"  -v \"$PWD:/home/coder/fable\" -u \"$(id -u):$(id -g)\" -e \"DOCKER_USER=$USER\" fable-image:local",
+    "docker-dev-shell": "docker exec -it fable-dev /bin/bash",
+    "tests": "./node_modules/mocha/bin/_mocha -u tdd --exit -R spec --grep"
+  },
+  "mocha": {
+    "diff": true,
+    "extension": [
+      "js"
     ],
-    "author": "Steven Velozo <steven@velozo.com> (http://velozo.com/)",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/stevenvelozo/fable/issues"
-    },
-    "homepage": "https://github.com/stevenvelozo/fable",
-    "devDependencies": {
-        "quackage": "^1.0.41"
-    },
-    "dependencies": {
-        "async.eachlimit": "^0.5.2",
-        "async.waterfall": "^0.5.2",
-        "big.js": "^6.2.2",
-        "cachetrax": "^1.0.4",
-        "cookie": "^0.6.0",
-        "data-arithmatic": "^1.0.7",
-        "dayjs": "^1.11.13",
-        "fable-log": "^3.0.16",
-        "fable-serviceproviderbase": "^3.0.15",
-        "fable-settings": "^3.0.12",
-        "fable-uuid": "^3.0.11",
-        "manyfest": "^1.0.38",
-        "simple-get": "^4.0.1"
-    }
+    "package": "./package.json",
+    "reporter": "spec",
+    "slow": "75",
+    "timeout": "5000",
+    "ui": "tdd",
+    "watch-files": [
+      "source/**/*.js",
+      "test/**/*.js"
+    ],
+    "watch-ignore": [
+      "lib/vendor"
+    ]
+  },
+  "browser": {
+    "./source/service/Fable-Service-EnvironmentData.js": "./source/service/Fable-Service-EnvironmentData-Web.js",
+    "./source/service/Fable-Service-FilePersistence.js": "./source/service/Fable-Service-FilePersistence-Web.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stevenvelozo/fable.git"
+  },
+  "keywords": [
+    "entity",
+    "behavior"
+  ],
+  "author": "Steven Velozo <steven@velozo.com> (http://velozo.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/stevenvelozo/fable/issues"
+  },
+  "homepage": "https://github.com/stevenvelozo/fable",
+  "devDependencies": {
+    "quackage": "^1.0.41"
+  },
+  "dependencies": {
+    "async.eachlimit": "^0.5.2",
+    "async.waterfall": "^0.5.2",
+    "big.js": "^6.2.2",
+    "cachetrax": "^1.0.4",
+    "cookie": "^0.6.0",
+    "data-arithmatic": "^1.0.7",
+    "dayjs": "^1.11.13",
+    "fable-log": "^3.0.16",
+    "fable-serviceproviderbase": "^3.0.15",
+    "fable-settings": "^3.0.12",
+    "fable-uuid": "^3.0.11",
+    "manyfest": "^1.0.38",
+    "simple-get": "^4.0.1"
+  }
 }
