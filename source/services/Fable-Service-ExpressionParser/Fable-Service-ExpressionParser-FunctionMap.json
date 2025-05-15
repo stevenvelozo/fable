@@ -139,24 +139,44 @@
 		"Address": "fable.Utility.findFirstValueByStringIncludesInternal"
 	},
 
-	"concat": {
+	"concataddr": {
 		"Name": "concatenate an array of values and output a string",
 		"Address": "fable.DataFormat.concatenateStringsInternal"
 	},
 
-	"concatraw": {
+	"concataddrraw": {
 		"Name": "concatenate an array of values and output a string",
 		"Address": "fable.DataFormat.concatenateStringsRawInternal"
 	},
 
-	"join": {
+	"joinaddr": {
 		"Name": "join an array of values and output a string",
 		"Address": "fable.DataFormat.joinStringsInternal"
 	},
 
-	"joinraw": {
+	"joinaddrraw": {
 		"Name": "join an array of values and output a string",
 		"Address": "fable.DataFormat.joinStringsRawInternal"
+	},
+
+	"concat": {
+		"Name": "concatenate an array of values and output a string",
+		"Address": "fable.DataFormat.concatenateStrings"
+	},
+
+	"concatraw": {
+		"Name": "concatenate an array of values and output a string",
+		"Address": "fable.DataFormat.concatenateStringsRaw"
+	},
+
+	"join": {
+		"Name": "join an array of values and output a string",
+		"Address": "fable.DataFormat.joinStrings"
+	},
+
+	"joinraw": {
+		"Name": "join an array of values and output a string",
+		"Address": "fable.DataFormat.joinStringsRaw"
 	},
 
 	"entryinset": {

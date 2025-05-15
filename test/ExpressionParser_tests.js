@@ -368,8 +368,8 @@ suite
 						let tmpResultsObject = {};
 						let tmpDestinationObject = {};
 						
-						_Parser.solve('DistributionResult = distributionhistogram("AppData.Cities", "state")', this.fable, tmpResultsObject, false, tmpDestinationObject);
-						_Parser.solve('AggregationResult = aggregationHistogram("AppData.Cities", "state", "population")', this.fable, tmpResultsObject, false, tmpDestinationObject);
+						_Parser.solve('DistributionResult = distributionhistogram("AppData.Cities", "state")', testFable, tmpResultsObject, false, tmpDestinationObject);
+						_Parser.solve('AggregationResult = aggregationHistogram("AppData.Cities", "state", "population")', testFable, tmpResultsObject, false, tmpDestinationObject);
 
 						Expect(tmpDestinationObject.DistributionResult.Alabama).to.equal(12);
 						Expect(tmpDestinationObject.DistributionResult.Colorado).to.equal(21);
@@ -404,17 +404,30 @@ suite
 						let tmpResultsObject = {};
 						let tmpDestinationObject = {};
 						
-						_Parser.solve('Names = concat("AppData.CityNames")', this.fable, tmpResultsObject, false, tmpDestinationObject);
+						_Parser.solve('Names = concatAddr("AppData.CityNames")', testFable, tmpResultsObject, false, tmpDestinationObject);
 						Expect(tmpDestinationObject.Names).to.equal('New YorkLos AngelesHouston');
 
-						_Parser.solve('RawNames = concatRaw("AppData.CityNames")', this.fable, tmpResultsObject, false, tmpDestinationObject);
+						_Parser.solve('RawNames = concatAddrRaw("AppData.CityNames")', testFable, tmpResultsObject, false, tmpDestinationObject);
 						Expect(tmpDestinationObject.RawNames).to.equal('New YorkLos Angeles[object Object]Houston');
 
-						_Parser.solve('JoinedNames = join("&comma; ", "AppData.CityNames")', this.fable, tmpResultsObject, false, tmpDestinationObject);
+						_Parser.solve('JoinedNames = joinAddr("&comma; ", "AppData.CityNames")', testFable, tmpResultsObject, false, tmpDestinationObject);
 						Expect(tmpDestinationObject.JoinedNames).to.equal('New York&comma; Los Angeles&comma; Houston');
 
-						_Parser.solve('RawJoinedNames = joinRaw(" ", "AppData.CityNames")', this.fable, tmpResultsObject, false, tmpDestinationObject);
+						_Parser.solve('RawJoinedNames = joinAddrRaw(" ", "AppData.CityNames")', testFable, tmpResultsObject, false, tmpDestinationObject);
 						Expect(tmpDestinationObject.RawJoinedNames).to.equal('New York Los Angeles [object Object] Houston');
+
+						_Parser.solve('NamesArgs = concat("cat", "dog", "waffle")', testFable, tmpResultsObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.NamesArgs).to.equal('catdogwaffle');
+
+						testFable.AppData.CityName = 'New York';
+						_Parser.solve('RawNamesArgs = concatRaw(AppData.CityName, "arg name")', testFable, tmpResultsObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.RawNamesArgs).to.equal('New Yorkarg name');
+
+						_Parser.solve('JoinedNamesArgs = join("&comma; ", AppData.CityNames[1], AppData.CityNames[2])', testFable, tmpResultsObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.JoinedNamesArgs).to.equal('Los Angeles&comma; [object Object]');
+
+						_Parser.solve('RawJoinedNamesArgs = joinRaw(" ", AppData.CityNames)', testFable, tmpResultsObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.RawJoinedNamesArgs).to.equal('New York Los Angeles [object Object] Houston');
 					}
 				);
 			}
