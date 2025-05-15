@@ -171,22 +171,27 @@ class DataFormat extends libFableServiceProviderBase
 	/**
 	 * Concatenate a list of strings together. Non-strings are excluded.
 	 *
-	 * @param {string} pValueObjectSetAddress - The address of the array of strings to concatenate
+	 * @param {...any} pParams - Any number of parameters
 	 * @return {string}
 	 */
-	concatenateStringsInternal (pValueObjectSetAddress)
+	concatenateStringsInternal ()
 	{
-		if (!pValueObjectSetAddress)
+		const pParams = [ ...arguments ];
+		const tmpArrayFlattener = (p) =>
 		{
-			return {};
-		}
+			if (Array.isArray(p))
+			{
+				return p.flatMap(tmpArrayFlattener);
+			}
+			if (typeof p === 'object')
+			{
+				return Object.values(p);
+			}
+			return [ p ];
+		};
+		const tmpFlattenedArrays = pParams.flatMap(tmpArrayFlattener);
 
-		let tmpValueObjectSet = this.fable.Utility.getInternalValueByHash(pValueObjectSetAddress);
-		if (!Array.isArray(tmpValueObjectSet))
-		{
-			return tmpValueObjectSet || null;
-		}
-		return this.concatenateStrings(...tmpValueObjectSet);
+		return this.concatenateStrings(...tmpFlattenedArrays);
 	}
 
 	/**
@@ -205,22 +210,27 @@ class DataFormat extends libFableServiceProviderBase
 	 * Joins a list of strings together. Non-strings are excluded.
 	 *
 	 * @param {string} pJoin - The string to join with
-	 * @param {string} pValueObjectSetAddress - The address of the array of values to join
+	 * @param {...any} pParams - Any number of parameters
 	 * @return {string}
 	 */
-	joinStringsInternal (pJoin, pValueObjectSetAddress)
+	joinStringsInternal()
 	{
-		if (!pValueObjectSetAddress)
+		const [ pJoinOn, ...pParams ] = arguments;
+		const tmpArrayFlattener = (p) =>
 		{
-			return {};
-		}
+			if (Array.isArray(p))
+			{
+				return p.flatMap(tmpArrayFlattener);
+			}
+			if (typeof p === 'object')
+			{
+				return Object.values(p);
+			}
+			return [ p ];
+		};
+		const tmpFlattenedArrays = pParams.flatMap(tmpArrayFlattener);
 
-		let tmpValueObjectSet = this.fable.Utility.getInternalValueByHash(pValueObjectSetAddress);
-		if (!Array.isArray(tmpValueObjectSet))
-		{
-			return tmpValueObjectSet || null;
-		}
-		return this.joinStrings(pJoin, ...tmpValueObjectSet);
+		return this.joinStrings(pJoinOn, ...tmpFlattenedArrays);
 	}
 
 
@@ -238,22 +248,27 @@ class DataFormat extends libFableServiceProviderBase
 	/**
 	 * Concatenate a list of values together into a string.
 	 *
-	 * @param {string} pValueObjectSetAddress - The address of the array of values to concatenate
+	 * @param {...any} pParams - Any number of parameters
 	 * @return {string}
 	 */
 	concatenateStringsRawInternal (pValueObjectSetAddress)
 	{
-		if (!pValueObjectSetAddress)
+		const pParams = [ ...arguments ];
+		const tmpArrayFlattener = (p) =>
 		{
-			return {};
-		}
+			if (Array.isArray(p))
+			{
+				return p.flatMap(tmpArrayFlattener);
+			}
+			if (typeof p === 'object')
+			{
+				return Object.values(p);
+			}
+			return [ p ];
+		};
+		const tmpFlattenedArrays = pParams.flatMap(tmpArrayFlattener);
 
-		let tmpValueObjectSet = this.fable.Utility.getInternalValueByHash(pValueObjectSetAddress);
-		if (!Array.isArray(tmpValueObjectSet))
-		{
-			return tmpValueObjectSet || null;
-		}
-		return this.concatenateStringsRaw(...tmpValueObjectSet);
+		return this.concatenateStringsRaw(...tmpFlattenedArrays);
 	}
 
 	/**
@@ -272,22 +287,27 @@ class DataFormat extends libFableServiceProviderBase
 	 * Joins a list of values together into a string.
 	 *
 	 * @param {string} pJoin - The string to join with
-	 * @param {string} pValueObjectSetAddress - The address of the array of values to join
+	 * @param {...any} pParams - Any number of parameters
 	 * @return {string}
 	 */
-	joinStringsRawInternal (pJoin, pValueObjectSetAddress)
+	joinStringsRawInternal ()
 	{
-		if (!pValueObjectSetAddress)
+		const [ pJoinOn, ...pParams ] = arguments;
+		const tmpArrayFlattener = (p) =>
 		{
-			return {};
-		}
+			if (Array.isArray(p))
+			{
+				return p.flatMap(tmpArrayFlattener);
+			}
+			if (typeof p === 'object')
+			{
+				return Object.values(p);
+			}
+			return [ p ];
+		};
+		const tmpFlattenedArrays = pParams.flatMap(tmpArrayFlattener);
 
-		let tmpValueObjectSet = this.fable.Utility.getInternalValueByHash(pValueObjectSetAddress);
-		if (!Array.isArray(tmpValueObjectSet))
-		{
-			return tmpValueObjectSet || null;
-		}
-		return this.joinStringsRaw(pJoin, ...tmpValueObjectSet);
+		return this.joinStringsRaw(pJoinOn, ...tmpFlattenedArrays);
 	}
 
 	/**
