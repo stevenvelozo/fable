@@ -129,6 +129,11 @@
 		"Address": "fable.Utility.getInternalValueByHash"
 	},
 
+	"flatten": {
+		"Name": "flatten an array of values",
+		"Address": "fable.Utility.flattenArrayOfSolverInputs"
+	},
+
 	"findfirstvaluebyexactmatch": {
 		"Name": "find + map on array of objects?",
 		"Address": "fable.Utility.findFirstValueByExactMatchInternal"
@@ -157,6 +162,16 @@
 	"joinraw": {
 		"Name": "join an array of values and output a string",
 		"Address": "fable.DataFormat.joinStringsRawInternal"
+	},
+
+	"if": {
+		"Name": "perform a conditional operator on two values, and choose one of two outcomes based on the result",
+		"Address": "fable.Logic.checkIf"
+	},
+
+	"when": {
+		"Name": "perform a 'truthy' check on one value, and return one of two outcomes based on the result",
+		"Address": "fable.Logic.when"
 	},
 
 	"entryinset": {

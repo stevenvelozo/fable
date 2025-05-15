@@ -39,7 +39,7 @@ suite
 							crlfDelay: Infinity
 						});
 
-						tmpReadline.on('line', 
+						tmpReadline.on('line',
 							(pLine) =>
 							{
 								let tmpRecord = tmpCSVParser.parseCSVLine(pLine);

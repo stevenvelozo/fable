@@ -74,17 +74,17 @@ class FableServiceFilePersistence extends libFableServiceBase
 		let tmpRecordFunction = (typeof(fRecordFunction) === 'function') ? fRecordFunction :
 			(pRecord) =>
 			{
-				this.fable.log(`CSV Reader received line ${pRecord}`);
+				this.fable.log.trace(`CSV Reader received line ${pRecord}`);
 			};
 		let tmpCompleteFunction = (typeof(fCompleteFunction) === 'function') ? fCompleteFunction :
 			() =>
 			{
-				this.fable.log(`CSV Read of ${pFilePath} complete.`);
+				this.fable.log.info(`CSV Read of ${pFilePath} complete.`);
 			};
 		let tmpErrorFunction = (typeof(fErrorFunction) === 'function') ? fErrorFunction :
 			(pError) =>
 			{
-				this.fable.log(`CSV Read of ${pFilePath} Error: ${pError}`, pError);
+				this.fable.log.error(`CSV Read of ${pFilePath} Error: ${pError}`, pError);
 			};
 		
 		return this.lineReaderFactory(pFilePath,

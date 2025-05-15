@@ -379,6 +379,36 @@ suite
 						return fDone();
 					}
 				);
+				test
+				(
+					'plumbing histogram into aggregation',
+					() =>
+					{
+						let testFable = new libFable();
+
+						let testCityData = require('./data/cities.json');
+						testFable.AppData = { Cities: testCityData };
+
+						// Now through the solver
+
+						let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+						let tmpResultsObject = {};
+						testFable.AppData.ResultsObject = tmpResultsObject;
+						let tmpDestinationObject = {};
+						testFable.AppData.DestinationObject = tmpDestinationObject;
+
+						_Parser.solve('DistributionResult = distributionhistogram("AppData.Cities", "state")', testFable, tmpResultsObject, false, tmpDestinationObject);
+						_Parser.solve('AggregationResult = aggregationHistogram("AppData.Cities", "state", "population")', testFable, tmpResultsObject, false, tmpDestinationObject);
+
+						Expect(tmpDestinationObject.DistributionResult.Alabama).to.equal(12);
+						Expect(tmpDestinationObject.DistributionResult.Colorado).to.equal(21);
+
+						Expect(tmpDestinationObject.AggregationResult.Alabama).to.equal('1279813');
+
+						_Parser.solve('SumByAddress = SUM(FLATTEN(AppData.DestinationObject.AggregationResult))', testFable, tmpResultsObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.SumByAddress).to.equal(testCityData.reduce((sum, city) => testFable.Math.addPrecise(city.population, sum), '0'));
+					}
+				);
 			}
 		);
 		suite
@@ -393,7 +423,6 @@ suite
 					{
 						let testFable = new libFable();
 
-						//FIXME: would be nicer to have a way of transorming the city object via the solver
 						let testCityData = require('./data/cities.json');
 						testFable.AppData =
 						{
@@ -420,10 +449,10 @@ suite
 						Expect(tmpDestinationObject.RawNames).to.equal('New YorkLos AngelesHouston');
 
 						_Parser.solve('JoinedNames = join("&comma; ", AppData.CityNames)', testFable, tmpResultsObject, false, tmpDestinationObject);
-						Expect(tmpDestinationObject.JoinedNames).to.equal('New York&comma; Los Angeles&comma; [object Object]&comma; Houston');
+						Expect(tmpDestinationObject.JoinedNames).to.equal('New York&comma; Los Angeles&comma; Houston');
 
 						_Parser.solve('RawJoinedNames = joinRaw(" ", AppData.CityNames)', testFable, tmpResultsObject, false, tmpDestinationObject);
-						Expect(tmpDestinationObject.RawJoinedNames).to.equal('New York Los Angeles [object Object] Houston');
+						Expect(tmpDestinationObject.RawJoinedNames).to.equal('New York Los Angeles Houston');
 
 						_Parser.solve('NamesArgs = concat("cat", "dog", "waffle")', testFable, tmpResultsObject, false, tmpDestinationObject);
 						Expect(tmpDestinationObject.NamesArgs).to.equal('catdogwaffle');
@@ -433,10 +462,76 @@ suite
 						Expect(tmpDestinationObject.RawNamesArgs).to.equal('New Yorkarg name');
 
 						_Parser.solve('JoinedNamesArgs = join("&comma; ", AppData.CityNames[1], AppData.CityNames[2])', testFable, tmpResultsObject, false, tmpDestinationObject);
-						Expect(tmpDestinationObject.JoinedNamesArgs).to.equal('Los Angeles&comma; [object Object]');
+						Expect(tmpDestinationObject.JoinedNamesArgs).to.equal('Los Angeles');
 
 						_Parser.solve('RawJoinedNamesArgs = joinRaw(" ", AppData.CityNames)', testFable, tmpResultsObject, false, tmpDestinationObject);
 						Expect(tmpDestinationObject.RawJoinedNamesArgs).to.equal('New York Los Angeles [object Object] Houston');
+					}
+				);
+			}
+		);
+		suite
+		(
+			'Conditional Expressions',
+			function()
+			{
+				test
+				(
+					'Conditional When',
+					() =>
+					{
+						let testFable = new libFable();
+
+						let testCityData = require('./data/cities.json');
+						testFable.AppData =
+						{
+							Cities: testCityData.slice(0, 4),
+							Null: null,
+						};
+
+						// Now through the solver
+						let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+						let tmpResultsObject = {};
+						let tmpDestinationObject = {};
+
+						_Parser.solve('Name = When(AppData.Cities[0].city, AppData.Cities[0].city)', testFable, tmpResultsObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.Name).to.equal('New York');
+
+						_Parser.solve('Overrun = When(AppData.Cities[10000000].city, AppData.Cities[10000000].city)', testFable, tmpResultsObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.Overrun).to.equal('');
+					}
+				);
+
+				test
+				(
+					'Conditional If',
+					() =>
+					{
+						let testFable = new libFable();
+
+						let testCityData = require('./data/cities.json');
+						testFable.AppData =
+						{
+							Cities: testCityData.slice(0, 4),
+							Null: null,
+						};
+
+						// Now through the solver
+						let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+						let tmpResultsObject = {};
+						let tmpDestinationObject = {};
+
+						_Parser.solve('GTE = If(AppData.Cities[0].latitude, "<", "50", "west", "east")', testFable, tmpResultsObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.GTE).to.equal('west');
+
+						_Parser.solve('Equals = If(AppData.Cities[0].city, "==", "New York", "yes", "no")', testFable, tmpResultsObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.Equals).to.equal('yes');
+
+						_Parser.solve('EpsilonEquals = If("1.0000000001", "==", "1", "yes", "no")', testFable, tmpResultsObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.EpsilonEquals).to.equal('yes');
+
+						_Parser.solve('PreciseEquals = If("1.0000000001", "===", "1", "yes", "no")', testFable, tmpResultsObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.PreciseEquals).to.equal('no');
 					}
 				);
 			}

@@ -452,6 +452,40 @@ class FableServiceUtility extends libFableServiceBase
 
 		return this.findFirstValueByExactMatch(tmpObjectArray, pValueToMatchAddress, pValueToMatch, pValueAddress);
 	}
+
+	/**
+	 * Flatten an array of solver inputs into a single array
+	 *
+	 * @param {Array<any>} pInputArray - The array of inputs to flatten
+	 * @return {Array<any>} - The flattened array
+	 */
+	flattenArrayOfSolverInputs(pInputArray)
+	{
+		if (!Array.isArray(pInputArray))
+		{
+			if (typeof pInputArray === 'object')
+			{
+				pInputArray = Object.values(pInputArray);
+			}
+			if (!pInputArray)
+			{
+				return [];
+			}
+		}
+		const tmpArrayFlattener = (p) =>
+		{
+			if (Array.isArray(p))
+			{
+				return p.flatMap(tmpArrayFlattener);
+			}
+			if (typeof p === 'object')
+			{
+				return Object.values(p);
+			}
+			return [ p ];
+		};
+		return pInputArray.flatMap(tmpArrayFlattener);
+	}
 }
 
 module.exports = FableServiceUtility;

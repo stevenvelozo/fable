@@ -155,7 +155,7 @@ suite
 
 								tmpAnticipate.wait(fStepComplete);
 							}, {}, 'Example Step 2', 'This is the second step of the mega test.', 'STEP2');
-						
+
 						tmpOperation.execute(fDone);
 					}
 				);

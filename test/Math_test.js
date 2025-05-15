@@ -75,13 +75,13 @@ suite
 						Expect(testFable.Math.ceilPrecise(4.939323)).to.equal('5');
 						Expect(testFable.Math.ceilPrecise('BARF')).to.equal('0');
 						Expect(testFable.Math.ceilPrecise(undefined)).to.equal('0');
-						
+
 						Expect(testFable.Math.comparePrecise(4, 5)).to.equal(-1);
-						
+
 						Expect(testFable.Math.modPrecise(4.939323, 4)).to.equal('0.939323');
 
 						Expect(testFable.Math.absPrecise('-492')).to.equal('492');
-						
+
 						return fDone();
 					}
 				);
@@ -128,7 +128,7 @@ suite
 						// 3.3333333333333333333333333333333 in the current node.js implementation collapses to 3.3333333333333335
 						Expect(testFable.Math.parsePrecise('4.3333333333333333333333333333333')).to.equal('4.3333333333333333333333333333333');
 						Expect(testFable.Math.parsePrecise(undefined)).to.equal('0.0');
-						
+
 						return fDone();
 					}
 				);

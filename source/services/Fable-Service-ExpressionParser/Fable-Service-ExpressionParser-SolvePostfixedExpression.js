@@ -1,4 +1,5 @@
 const libExpressionParserOperationBase = require('./Fable-Service-ExpressionParser-Base.js');
+const libSetConcatArray = require('../Fable-SetConcatArray.js');
 
 class ExpressionParserSolver extends libExpressionParserOperationBase
 {
@@ -41,6 +42,7 @@ class ExpressionParserSolver extends libExpressionParserOperationBase
 
 		for (let i = 0; i < pPostfixedExpression.length; i++)
 		{
+			// X = SUM(15, SUM(SIN(25), 10), (5 + 2), 3)
 			if (pPostfixedExpression[i].Operation.Type === 'Token.SolverInstruction')
 			{
 				continue;
@@ -89,7 +91,7 @@ class ExpressionParserSolver extends libExpressionParserOperationBase
 			{
 				// TODO: This can be optimized.   A lot.  If necessary.  Seems pretty fast honestly for even thousands of operations.  Slowest part is arbitrary precision.
 				// An operator always has a left and right value.
-				let tmpFunctionAddress = false;
+				let tmpFunctionAddress;
 				// Note: There are easier, passive ways of managing this state.  But this is complex.
 				let tmpIsFunction = false;
 				if (tmpStepResultObject.ExpressionStep.Operation.Token in this.ExpressionParser.tokenMap)
@@ -106,6 +108,27 @@ class ExpressionParserSolver extends libExpressionParserOperationBase
 				{
 					try
 					{
+						let tmpResult;
+						const tmpFunction = tmpManifest.getValueAtAddress(tmpStepResultObject, tmpFunctionAddress);
+						if (typeof tmpFunction === 'function')
+						{
+							let tmpFunctionBinding = null;
+							if (tmpFunctionAddress.includes('.'))
+							{
+								tmpFunctionBinding = tmpManifest.getValueAtAddress(tmpStepResultObject, tmpFunctionAddress.split('.').slice(0, -1).join('.'));
+							}
+							let tmpArguments = tmpStepResultObject.ExpressionStep.LeftValue.Value;
+							if (!(tmpArguments instanceof libSetConcatArray))
+							{
+								tmpArguments = [ tmpArguments ];
+							}
+							else
+							{
+								tmpArguments = tmpArguments.values;
+							}
+							tmpResult = tmpFunction.apply(tmpFunctionBinding, tmpArguments);
+						}
+						/*
 						//this.log.trace(`Solving Function Step ${i} [${tmpStepResultObject.ExpressionStep.VirtualSymbolName}] --> [${tmpStepResultObject.ExpressionStep.Operation.Token}]: ( ${tmpStepResultObject.ExpressionStep.LeftValue.Value} , ${tmpStepResultObject.ExpressionStep.RightValue.Value} )`);
 						// Build the set of arguments to send to the functions.
 						tmpStepResultObject.ExpressionStep.LeftValue.ArgumentString = '';
@@ -138,7 +161,9 @@ class ExpressionParserSolver extends libExpressionParserOperationBase
 								tmpStepResultObject.ExpressionStep.LeftValue.ArgumentString += `ExpressionStep.LeftValue.Arguments[${j}]`;
 							}
 						}
-						tmpManifest.setValueAtAddress(tmpResults.VirtualSymbols, tmpStepResultObject.ExpressionStep.VirtualSymbolName, tmpManifest.getValueAtAddress(tmpStepResultObject, `${tmpFunctionAddress}(${tmpStepResultObject.ExpressionStep.LeftValue.ArgumentString})`));
+						const tmpResult = tmpManifest.getValueAtAddress(tmpStepResultObject, `${tmpFunctionAddress}(${tmpStepResultObject.ExpressionStep.LeftValue.ArgumentString})`);
+						*/
+						tmpManifest.setValueAtAddress(tmpResults.VirtualSymbols, tmpStepResultObject.ExpressionStep.VirtualSymbolName, tmpResult);
 						tmpResults.LastResult = tmpManifest.getValueAtAddress(tmpResults.VirtualSymbols, tmpStepResultObject.ExpressionStep.VirtualSymbolName);
 						//this.log.trace(`   ---> Step ${i}: ${tmpResults.VirtualSymbols[tmpStepResultObject.ExpressionStep.VirtualSymbolName]}`)
 					}

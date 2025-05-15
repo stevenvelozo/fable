@@ -5,6 +5,8 @@
  * @extends libFableServiceBase
  */
 const libFableServiceBase = require('fable-serviceproviderbase');
+const libSetConcatArray = require('./Fable-SetConcatArray.js');
+//const libValueSet = require('./Fable-ValueSet.js');
 
 /**
  * Arbitrary Precision Math Operations
@@ -64,7 +66,7 @@ class FableServiceMath extends libFableServiceBase
 			tmpNumber = (typeof (pNonNumberValue) === 'undefined') ? "0.0" : pNonNumberValue;
 		}
 
-		return tmpNumber.toString();
+		return tmpNumber ? tmpNumber.toString() : tmpNumber;
 	}
 
 	/**
@@ -109,11 +111,11 @@ class FableServiceMath extends libFableServiceBase
 	 *
 	 * @param {any} pLeftValue - The left value to append.
 	 * @param {any} pRightValue - The right value to append.
-	 * @returns {string} The concatenated string of the left and right values.
+	 * @returns {InstanceType<libSetConcatArray>} The concatenated string of the left and right values.
 	 */
 	setConcatenate(pLeftValue, pRightValue)
 	{
-		return `${pLeftValue},${pRightValue}`;
+		return new libSetConcatArray(pLeftValue, pRightValue);
 	}
 
 	/**
@@ -317,8 +319,8 @@ class FableServiceMath extends libFableServiceBase
 	/**
 	 * Compares two values precisely.
 	 *
-	 * @param {number} pLeftValue - The left value to compare.
-	 * @param {number} pRightValue - The right value to compare.
+	 * @param {number|string} pLeftValue - The left value to compare.
+	 * @param {number|string} pRightValue - The right value to compare.
 	 * @returns {number} - Returns the result of the comparison.
 	 */
 	comparePrecise(pLeftValue, pRightValue)
@@ -328,6 +330,32 @@ class FableServiceMath extends libFableServiceBase
 
 		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
 		return tmpLeftArbitraryValue.cmp(tmpRightValue);
+	}
+
+	/**
+	 * Compares two values precisely within a tolerance.
+	 *
+	 * @param {number|string} pLeftValue - The left value to compare.
+	 * @param {number|string} pRightValue - The right value to compare.
+	 * @param {number|string} pEpsilon - The epsilon value for comparison.
+	 * @returns {number} - Returns the result of the comparison.
+	 */
+	comparePreciseWithin(pLeftValue, pRightValue, pEpsilon)
+	{
+		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;
+		let tmpRightValue = isNaN(pRightValue) ? 0 : pRightValue;
+
+		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+		const diff = tmpLeftArbitraryValue.minus(tmpRightValue).abs();
+		if (diff.lte(pEpsilon))
+		{
+			return 0;
+		}
+		if (tmpLeftArbitraryValue.lt(tmpRightValue))
+		{
+			return -1;
+		}
+		return 1;
 	}
 
 	/**
@@ -556,7 +584,7 @@ class FableServiceMath extends libFableServiceBase
 	 */
 	bucketSetPrecise(pValueSet, pBucketSize)
 	{
-		let tmpBucketedSet = {};
+		let tmpBucketedSet = {}; // new libValueSet();
 		let tmpBucketSize = this.parsePrecise(pBucketSize, NaN);
 
 		if (Array.isArray(pValueSet))
@@ -617,7 +645,7 @@ class FableServiceMath extends libFableServiceBase
 	 */
 	sortHistogramPrecise(pHistogram)
 	{
-		let tmpSortedHistogram = {};
+		let tmpSortedHistogram =  {}; //new libValueSet();
 		let tmpKeys = Object.keys(pHistogram);
 
 		tmpKeys.sort((pLeft, pRight) => { return pHistogram[pLeft] - pHistogram[pRight]; });
@@ -656,7 +684,8 @@ class FableServiceMath extends libFableServiceBase
 			return {};
 		}
 
-		let tmpCleanedObject = {};
+		//TODO: is this right?
+		let tmpCleanedObject = {}; //new libValueSet();
 		let tmpKeys = Object.keys(pValueObject);
 		for (let i = 0; i < tmpKeys.length; i++)
 		{
@@ -686,7 +715,7 @@ class FableServiceMath extends libFableServiceBase
 			return {};
 		}
 
-		let tmpHistogram = {};
+		let tmpHistogram = {}; //new libValueSet();
 		for (let i = 0; i < pValueObjectSet.length; i++)
 		{
 			let tmpValue = this.fable.Utility.getValueByHash(pValueObjectSet[i], pValueAddress, pManifest).toString();
@@ -729,7 +758,7 @@ class FableServiceMath extends libFableServiceBase
 			return {};
 		}
 
-		let tmpHistogram = {};
+		let tmpHistogram = {}; //new libValueSet();
 		for (let i = 0; i < pValueObjectSet.length; i++)
 		{
 			let tmpValue = this.fable.Utility.getValueByHash(pValueObjectSet[i], pValueAddress, pManifest).toString();

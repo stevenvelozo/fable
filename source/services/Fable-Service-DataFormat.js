@@ -22,6 +22,7 @@ class DataFormat extends libFableServiceProviderBase
 		this._Regex_formatterDollarsRemoveCommas = /,/gi;
 		this._Regex_formatterCleanNonAlphaChar = /[^a-zA-Z]/gi;
 		this._Regex_formatterCapitalizeEachWord = /([a-zA-Z]+)/g;
+		this._Regex_matcherHTMLEntities = /&(#?[a-zA-Z0-9]+);/g;
 
 		// TODO: Potentially pull these in from a configuration.
 		// TODO: Use locale data for this if it's defaults all the way down.
@@ -158,6 +159,66 @@ class DataFormat extends libFableServiceProviderBase
 	}
 
 	/**
+	 * @param {string} pString - The string to resolve
+	 * @return {string} - The input string with all HTML entities resolved to their character counterparts
+	 */
+	resolveHtmlEntities(pString)
+	{
+		if (typeof(pString) !== 'string')
+		{
+			return pString;
+		}
+
+		return pString.replace(this._Regex_matcherHTMLEntities, (pMatch, pEntity) =>
+		{
+			switch (pEntity)
+			{
+				case 'comma':
+					return ',';
+				case 'amp':
+					return '&';
+				case 'lt':
+					return '<';
+				case 'gt':
+					return '>';
+				case 'times':
+					return '×';
+				case 'divide':
+					return '÷';
+				case 'plus':
+					return '+';
+				case 'minus':
+					return '-';
+				case 'infin':
+					return '∞';
+				case 'ang':
+					return '∠';
+				case 'quot':
+					return '"';
+				case 'apos':
+					return '\'';
+				case 'nbsp':
+					return ' ';
+				case 'copy':
+					return '©';
+				case 'reg':
+					return '®';
+				case 'trade':
+					return '™';
+				case 'euro':
+					return '€';
+				default:
+					if (!pEntity.startsWith('#'))
+					{
+						return pMatch;
+					}
+			}
+			const tmpNumericalValue = parseInt(pEntity.substring(1), 10);
+			return String.fromCharCode(tmpNumericalValue);
+		});
+	}
+
+	/**
 	 * Concatenate a list of strings together. Non-strings are excluded.
 	 *
 	 * @param {...string} pStrings - The strings to concatenate
@@ -177,19 +238,7 @@ class DataFormat extends libFableServiceProviderBase
 	concatenateStringsInternal ()
 	{
 		const pParams = [ ...arguments ];
-		const tmpArrayFlattener = (p) =>
-		{
-			if (Array.isArray(p))
-			{
-				return p.flatMap(tmpArrayFlattener);
-			}
-			if (typeof p === 'object')
-			{
-				return Object.values(p);
-			}
-			return [ p ];
-		};
-		const tmpFlattenedArrays = pParams.flatMap(tmpArrayFlattener);
+		const tmpFlattenedArrays = this.fable.Utility.flattenArrayOfSolverInputs(pParams);
 
 		return this.concatenateStrings(...tmpFlattenedArrays);
 	}
@@ -216,19 +265,7 @@ class DataFormat extends libFableServiceProviderBase
 	joinStringsInternal()
 	{
 		const [ pJoinOn, ...pParams ] = arguments;
-		const tmpArrayFlattener = (p) =>
-		{
-			if (Array.isArray(p))
-			{
-				return p.flatMap(tmpArrayFlattener);
-			}
-			if (typeof p === 'object')
-			{
-				return Object.values(p);
-			}
-			return [ p ];
-		};
-		const tmpFlattenedArrays = pParams.flatMap(tmpArrayFlattener);
+		const tmpFlattenedArrays = this.fable.Utility.flattenArrayOfSolverInputs(pParams);
 
 		return this.joinStrings(pJoinOn, ...tmpFlattenedArrays);
 	}
@@ -254,19 +291,7 @@ class DataFormat extends libFableServiceProviderBase
 	concatenateStringsRawInternal (pValueObjectSetAddress)
 	{
 		const pParams = [ ...arguments ];
-		const tmpArrayFlattener = (p) =>
-		{
-			if (Array.isArray(p))
-			{
-				return p.flatMap(tmpArrayFlattener);
-			}
-			if (typeof p === 'object')
-			{
-				return Object.values(p);
-			}
-			return [ p ];
-		};
-		const tmpFlattenedArrays = pParams.flatMap(tmpArrayFlattener);
+		const tmpFlattenedArrays = this.fable.Utility.flattenArrayOfSolverInputs(pParams);
 
 		return this.concatenateStringsRaw(...tmpFlattenedArrays);
 	}
@@ -293,19 +318,7 @@ class DataFormat extends libFableServiceProviderBase
 	joinStringsRawInternal ()
 	{
 		const [ pJoinOn, ...pParams ] = arguments;
-		const tmpArrayFlattener = (p) =>
-		{
-			if (Array.isArray(p))
-			{
-				return p.flatMap(tmpArrayFlattener);
-			}
-			if (typeof p === 'object')
-			{
-				return Object.values(p);
-			}
-			return [ p ];
-		};
-		const tmpFlattenedArrays = pParams.flatMap(tmpArrayFlattener);
+		const tmpFlattenedArrays = this.fable.Utility.flattenArrayOfSolverInputs(pParams);
 
 		return this.joinStringsRaw(pJoinOn, ...tmpFlattenedArrays);
 	}

@@ -40,7 +40,7 @@ const configMetaTemplate = (pModule) =>
 		{
 			return fCallback(null, `ASYNC DATA IS [${pHash}]`);
 		});
-	
+
 	pModule.addPatternBoth('<~', '~>',
 		(pHash, pData) =>
 		{
@@ -162,7 +162,7 @@ suite
 						let testMetaTemplate = loadMetaTemplateModule();
 						configMetaTemplate(testMetaTemplate);
 
-						testMetaTemplate.addPattern('[^', '^]', 
+						testMetaTemplate.addPattern('[^', '^]',
 							function (pData)
 							{
 								return `This ${pData} is like ${JSON.stringify(this)}`;
@@ -391,7 +391,7 @@ suite
 								return fDone();
 							});
 					}
-				);		
+				);
 			}
 		);
 	}

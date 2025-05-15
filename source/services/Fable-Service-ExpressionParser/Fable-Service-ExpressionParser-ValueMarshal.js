@@ -60,6 +60,8 @@ class ExpressionParserValueMarshal extends libExpressionParserOperationBase
 				// }
 				if (!tmpValue)
 				{
+					tmpToken.Value = tmpValue;
+					tmpToken.Resolve = true;
 					tmpResults.ExpressionParserLog.push(`WARNING: ExpressionParser.substituteValuesInTokenizedObjects found no value for the symbol hash or address ${tmpToken.Token} at index ${i}`);
 					this.log.warn(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
 					continue;

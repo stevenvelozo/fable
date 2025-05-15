@@ -142,7 +142,7 @@ suite
 
 						for (let i = 0; i < 3; i++)
 						{
-							tmpFolderExtras.push(tmpDataGeneration.randomName()); 
+							tmpFolderExtras.push(tmpDataGeneration.randomName());
 						}
 
 						let tmpFullPathName = `/tmp/${tmpFolderExtras.join('/')}`;

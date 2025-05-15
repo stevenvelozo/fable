@@ -289,7 +289,23 @@ suite
 
 						return fTestComplete();
 					}
-				)
+				);
+				test
+				(
+					'Converts HTML entities to their character equivalents',
+					() =>
+					{
+						// given
+						let testFable = new libFable({LogStreams: false});
+						let _DataFormat = testFable.services.DataFormat;
+
+						// when
+						const converted = _DataFormat.resolveHtmlEntities('Bob &amp; Alice &#106;');
+
+						// then
+						Expect(converted).to.equal('Bob & Alice j');
+					}
+				);
 			}
 		);
 	}
