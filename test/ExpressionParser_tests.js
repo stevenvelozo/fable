@@ -51,6 +51,9 @@ suite
 						Expect(tokenizedWithSymbologyInQuotes).to.deep.equal(['5', '+', '2', '*', '"Hello World"']);
 						// TODO: refresh on the tokenization process and see if this is a valid test
 						//Expect(tmpResultObject.RawExpression).to.equal('5 + 2');
+						let tokenizedNegativeParams = _Parser.tokenize('SUM(10, -10)');
+						//Expect(tokenizedNegativeParams.length).to.equal(6);
+						Expect(tokenizedNegativeParams).to.deep.equal(['SUM', '(', '10', ',', '-', '10', ')']);
 						return fDone();
 					}
 				);
@@ -92,10 +95,15 @@ suite
 						let postfixResults = _Parser.buildPostfixedSolveList(tokenizedResults, tmpResultObject);
 						Expect(postfixResults.length).to.equal(2);
 
+						let negativeConstantResults = _Parser.tokenize('Value = (-5 + 3)');
+						let negativeConstantValueLintedResults = _Parser.lintTokenizedExpression(negativeConstantResults);
+						let negativeConstantValueResults = _Parser.buildPostfixedSolveList(negativeConstantResults);
+						Expect(negativeConstantValueResults.length).to.equal(3);
+
 						let complexTokenizedResults = _Parser.tokenize('Value = 5+3 - sqrt(75 / (3 + -{Depth}) * Width)^ 3');
 						let complexLintedResults = _Parser.lintTokenizedExpression(complexTokenizedResults);
 						let complexPostfixResults = _Parser.buildPostfixedSolveList(complexTokenizedResults);
-						Expect(complexPostfixResults.length).to.equal(0);
+						Expect(complexPostfixResults.length).to.equal(9);
 
 						return fDone();
 					}
@@ -139,6 +147,31 @@ suite
 
 						_Parser.solve('PitSize = getvalue("AppData.Pit")', tmpDataObject, tmpResultObject, false, tmpDestinationObject);
 						Expect(tmpDestinationObject.PitSize).to.equal("Bottomless");
+
+						_Parser.solve('Value = -3', tmpDataObject, tmpResultObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.Value).to.equal("-3");
+
+						_Parser.solve('Value2 = (4 + -3)', tmpDataObject, tmpResultObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.Value2).to.equal("1");
+
+						_Parser.solve('ValueN = 5+3 - sqrt(75 / (3 + -1) * 2)^ 3', tmpDataObject, tmpResultObject, false, tmpDestinationObject);
+						Expect(testFable.Math.ltPrecise(
+								testFable.Math.absPrecise(
+								testFable.Math.subtractPrecise(tmpDestinationObject.ValueN, "-641.5190528383289850727923780647")),
+							'0.00000000000000001'))
+							.to.equal(true, 'Expected complex expression to be with a small epsilon of the computed value');
+						
+						tmpDataObject.Temp = '24';
+						tmpDataObject.HR = '20.5';
+						_Parser.solve('2.71828182845905 ^ -0.282444', tmpDataObject, tmpResultObject, false, tmpDestinationObject);
+						testFable.ExpressionParser.Messaging.logFunctionSolve(tmpResultObject);
+						_Parser.solve('EGS=ROUND(ROUND(0.0172834*2.71828182845905^(-0.0117685*Temp),5)*SQRT(ROUND(16.294-0.163*HR,1)/60),4)',
+							tmpDataObject, tmpResultObject, false, tmpDestinationObject);
+						_Parser.solve('EGSR=ROUND(ROUND(0.0172834*2.71828182845905^(((1-2)*0.0117685)*Temp),5)*SQRT(ROUND(16.294-0.163*HR,1)/60),4)',
+							tmpDataObject, tmpResultObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.EGS).to.equal(tmpDestinationObject.EGSR);
+						testFable.ExpressionParser.Messaging.logFunctionSolve(tmpResultObject);
+						Expect(tmpDestinationObject.EGS).to.equal("0.0061");
 
 						return fDone();
 					}
@@ -370,11 +403,14 @@ suite
 
 						_Parser.solve('DistributionResult = distributionhistogram("AppData.Cities", "state")', testFable, tmpResultsObject, false, tmpDestinationObject);
 						_Parser.solve('AggregationResult = aggregationHistogram("AppData.Cities", "state", "population")', testFable, tmpResultsObject, false, tmpDestinationObject);
+						_Parser.solve('PopSum = sum(flatten(AppData.Cities[].population, AppData.Cities[].latitude))', testFable, tmpResultsObject, false, tmpDestinationObject);
+
 
 						Expect(tmpDestinationObject.DistributionResult.Alabama).to.equal(12);
 						Expect(tmpDestinationObject.DistributionResult.Colorado).to.equal(21);
 
 						Expect(tmpDestinationObject.AggregationResult.Alabama).to.equal('1279813');
+						Expect(tmpDestinationObject.PopSum).to.equal(testCityData.reduce((sum, city) => testFable.Math.addPrecise(city.population, sum), '0'));
 
 						return fDone();
 					}
@@ -407,6 +443,21 @@ suite
 
 						_Parser.solve('SumByAddress = SUM(FLATTEN(AppData.DestinationObject.AggregationResult))', testFable, tmpResultsObject, false, tmpDestinationObject);
 						Expect(tmpDestinationObject.SumByAddress).to.equal(testCityData.reduce((sum, city) => testFable.Math.addPrecise(city.population, sum), '0'));
+
+						_Parser.solve('Smallest = smallestinset(AppData.Cities[], "population")', testFable, tmpResultsObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.Smallest.population).to.equal('36877');
+
+						_Parser.solve('Largest = largestinset(AppData.Cities[], "population")', testFable, tmpResultsObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.Largest.city).to.equal('New York');
+
+						_Parser.solve('Tenth = entryinset(AppData.Cities[], "population", "-10")', testFable, tmpResultsObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.Tenth.city).to.equal('San Jose');
+
+						_Parser.solve('TenthNum = entryinset(AppData.Cities[], "population", -10)', testFable, tmpResultsObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.TenthNum.city).to.equal('San Jose');
+
+						_Parser.solve('TenthNumHacked = entryinset(AppData.Cities[], "population", (10 * -1))', testFable, tmpResultsObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.TenthNumHacked.city).to.equal('San Jose');
 					}
 				);
 			}
@@ -431,7 +482,7 @@ suite
 							Null: null,
 						};
 						testFable.AppData.CityNames[2] = { };
-						testFable.AppData.Cities[2].city = { };
+						testFable.AppData.Cities[2].city = { cat: '12345', dog: 'waffle' };
 
 						// Now through the solver
 
@@ -446,13 +497,13 @@ suite
 						Expect(tmpDestinationObject.Names2).to.equal('New YorkLos AngelesHouston');
 
 						_Parser.solve('RawNames = concatRaw(AppData.CityNames)', testFable, tmpResultsObject, false, tmpDestinationObject);
-						Expect(tmpDestinationObject.RawNames).to.equal('New YorkLos AngelesHouston');
+						Expect(tmpDestinationObject.RawNames).to.equal('New YorkLos Angeles[object Object]Houston');
 
 						_Parser.solve('JoinedNames = join("&comma; ", AppData.CityNames)', testFable, tmpResultsObject, false, tmpDestinationObject);
 						Expect(tmpDestinationObject.JoinedNames).to.equal('New York&comma; Los Angeles&comma; Houston');
 
 						_Parser.solve('RawJoinedNames = joinRaw(" ", AppData.CityNames)', testFable, tmpResultsObject, false, tmpDestinationObject);
-						Expect(tmpDestinationObject.RawJoinedNames).to.equal('New York Los Angeles Houston');
+						Expect(tmpDestinationObject.RawJoinedNames).to.equal('New York Los Angeles [object Object] Houston');
 
 						_Parser.solve('NamesArgs = concat("cat", "dog", "waffle")', testFable, tmpResultsObject, false, tmpDestinationObject);
 						Expect(tmpDestinationObject.NamesArgs).to.equal('catdogwaffle');
@@ -464,8 +515,8 @@ suite
 						_Parser.solve('JoinedNamesArgs = join("&comma; ", AppData.CityNames[1], AppData.CityNames[2])', testFable, tmpResultsObject, false, tmpDestinationObject);
 						Expect(tmpDestinationObject.JoinedNamesArgs).to.equal('Los Angeles');
 
-						_Parser.solve('RawJoinedNamesArgs = joinRaw(" ", AppData.CityNames)', testFable, tmpResultsObject, false, tmpDestinationObject);
-						Expect(tmpDestinationObject.RawJoinedNamesArgs).to.equal('New York Los Angeles [object Object] Houston');
+						_Parser.solve('RawJoinedNamesArgs = joinRaw(" ", AppData.Cities[].city, "My Extra City")', testFable, tmpResultsObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.RawJoinedNamesArgs).to.equal('New York Los Angeles [object Object] Houston My Extra City');
 					}
 				);
 			}

@@ -6,7 +6,6 @@
  */
 const libFableServiceBase = require('fable-serviceproviderbase');
 const libSetConcatArray = require('./Fable-SetConcatArray.js');
-//const libValueSet = require('./Fable-ValueSet.js');
 
 /**
  * Arbitrary Precision Math Operations
@@ -201,9 +200,18 @@ class FableServiceMath extends libFableServiceBase
 	{
 		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;
 		let tmpRightValue = isNaN(pRightValue) ? 0 : parseInt(pRightValue);
+		let tmpResult;
+		if (tmpRightValue == Number(pRightValue))
+		{
+			const tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+			tmpResult = tmpLeftArbitraryValue.pow(tmpRightValue);
+		}
+		else
+		{
+			//FIXME: big.js shits itself on non-integer exponents........................
+			tmpResult = Math.pow(tmpLeftValue, Number(pRightValue));
+		}
 
-		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
-		let tmpResult = tmpLeftArbitraryValue.pow(tmpRightValue);
 		return tmpResult.toString();
 	}
 
@@ -584,7 +592,7 @@ class FableServiceMath extends libFableServiceBase
 	 */
 	bucketSetPrecise(pValueSet, pBucketSize)
 	{
-		let tmpBucketedSet = {}; // new libValueSet();
+		let tmpBucketedSet = {};
 		let tmpBucketSize = this.parsePrecise(pBucketSize, NaN);
 
 		if (Array.isArray(pValueSet))
@@ -645,7 +653,7 @@ class FableServiceMath extends libFableServiceBase
 	 */
 	sortHistogramPrecise(pHistogram)
 	{
-		let tmpSortedHistogram =  {}; //new libValueSet();
+		let tmpSortedHistogram =  {};
 		let tmpKeys = Object.keys(pHistogram);
 
 		tmpKeys.sort((pLeft, pRight) => { return pHistogram[pLeft] - pHistogram[pRight]; });
@@ -685,7 +693,7 @@ class FableServiceMath extends libFableServiceBase
 		}
 
 		//TODO: is this right?
-		let tmpCleanedObject = {}; //new libValueSet();
+		let tmpCleanedObject = {};
 		let tmpKeys = Object.keys(pValueObject);
 		for (let i = 0; i < tmpKeys.length; i++)
 		{
@@ -715,7 +723,7 @@ class FableServiceMath extends libFableServiceBase
 			return {};
 		}
 
-		let tmpHistogram = {}; //new libValueSet();
+		let tmpHistogram = {};
 		for (let i = 0; i < pValueObjectSet.length; i++)
 		{
 			let tmpValue = this.fable.Utility.getValueByHash(pValueObjectSet[i], pValueAddress, pManifest).toString();
@@ -758,7 +766,7 @@ class FableServiceMath extends libFableServiceBase
 			return {};
 		}
 
-		let tmpHistogram = {}; //new libValueSet();
+		let tmpHistogram = {};
 		for (let i = 0; i < pValueObjectSet.length; i++)
 		{
 			let tmpValue = this.fable.Utility.getValueByHash(pValueObjectSet[i], pValueAddress, pManifest).toString();
@@ -806,6 +814,7 @@ class FableServiceMath extends libFableServiceBase
 	 */
 	entryInSet(pValueObjectSet, pValueAddress, pEntryIndex)
 	{
+		const tmpEntryIndex = typeof pEntryIndex === 'number' ? pEntryIndex : parseInt(pEntryIndex);
 		if (!Array.isArray(pValueObjectSet))
 		{
 			return pValueObjectSet;
@@ -816,13 +825,13 @@ class FableServiceMath extends libFableServiceBase
 			return false;
 		}
 
-		if (isNaN(pEntryIndex) || pEntryIndex >= pValueObjectSet.length)
+		if (isNaN(tmpEntryIndex) || tmpEntryIndex >= pValueObjectSet.length)
 		{
 			return false;
 		}
 
-		let tmpValueArray = pValueObjectSet.toSorted((pLeft, pRight) => { return this.comparePrecise(pLeft, pRight); });
-		let tmpIndex = (pEntryIndex === -1) ? tmpValueArray.length - 1 : pEntryIndex;
+		let tmpValueArray = pValueObjectSet.toSorted((pLeft, pRight) => { return this.comparePrecise(pLeft[pValueAddress], pRight[pValueAddress]); });
+		let tmpIndex = (tmpEntryIndex < 0) ? tmpValueArray.length + tmpEntryIndex : tmpEntryIndex;
 		return tmpValueArray[tmpIndex];
 	}
 

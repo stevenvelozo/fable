@@ -45,8 +45,8 @@ class ExpressionTokenizer extends libExpressionParserOperationBase
 			let tmpCharacter = pExpression[i];
 
 			// [ WHITESPACE ]
-			// 1. Space breaks tokens except when we're in an address that's been scoped by a {}
-			if ((tmpCharacter === ' ') && ((tmpCurrentTokenType !== 'StateAddress') && (tmpCurrentTokenType !== 'String')))
+			// 1. Space breaks tokens except when we're in an address that's been scoped by a {} or ""
+			if ((tmpCharacter === ' ' || tmpCharacter === '\t') && ((tmpCurrentTokenType !== 'StateAddress') && (tmpCurrentTokenType !== 'String')))
 			{
 				if (tmpCurrentToken.length > 0)
 				{

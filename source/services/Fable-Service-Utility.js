@@ -476,7 +476,7 @@ class FableServiceUtility extends libFableServiceBase
 		{
 			if (Array.isArray(p))
 			{
-				return p.flatMap(tmpArrayFlattener);
+				return p; // .flatMap(tmpArrayFlattener);
 			}
 			if (typeof p === 'object')
 			{

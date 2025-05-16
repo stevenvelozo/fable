@@ -135,13 +135,18 @@
 	},
 
 	"findfirstvaluebyexactmatch": {
-		"Name": "find + map on array of objects?",
+		"Name": "find + map on array of objects",
 		"Address": "fable.Utility.findFirstValueByExactMatchInternal"
 	},
 
 	"findfirstvaluebystringincludes": {
-		"Name": "find + map on array of objects?",
+		"Name": "find + map on array of objects",
 		"Address": "fable.Utility.findFirstValueByStringIncludesInternal"
+	},
+
+	"resolvehtmlentities": {
+		"Name": "resolve HTML entities",
+		"Address": "fable.Utility.resolveHtmlEntities"
 	},
 
 	"concat": {
@@ -178,11 +183,11 @@
 		"Name": "Entry in Set",
 		"Address": "fable.Math.entryInSet"
 	},
-	"smallestInSet": {
+	"smallestinset": {
 		"Name": "Smallest in Set",
 		"Address": "fable.Math.smallestInSet"
 	},
-	"largestInSet": {
+	"largestinset": {
 		"Name": "Largest in Set",
 		"Address": "fable.Math.largestInSet"
 	},

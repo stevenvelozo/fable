@@ -63,7 +63,7 @@
 			"Name": "Exponent",
 			"Token": "^",
 			"Function": "fable.Math.powerPrecise",
-			"Precedence": 1,
+			"Precedence": 2,
 			"Type": "Operator"
 		},
 	"%":

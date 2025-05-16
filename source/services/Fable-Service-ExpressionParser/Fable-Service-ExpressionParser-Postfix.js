@@ -243,6 +243,9 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 		// This maps layer stack addresses (which match parenthesis virtual symbol names) to the resultant value for that layer stack.
 		// These values change as it solves but the last assignment is the proper assignment because math only reads forward in a line
 		tmpResults.PostfixLayerstackMap = {};
+		//FIXME: vet these - do we need a suffix version?
+		const unaryEligibleOperationTokens = [ '+', '-' ];
+		const unaryOperationPrefixTriggerTypes = [ 'Token.Operator', 'Token.Assignment' ];
 		for (let tmpSolveLayerIndex = 0; tmpSolveLayerIndex < tmpSolveLayerKeys.length; tmpSolveLayerIndex++)
 		{
 			let tmpSolveLayerTokens = tmpSolveLayerMap[tmpSolveLayerKeys[tmpSolveLayerIndex]];
@@ -253,17 +256,35 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 				// There is a recursive way to do this, but given the short length of even the most complex equations we're favoring readability.
 				for (let i = 0; i < tmpSolveLayerTokens.length; i++)
 				{
+					const tmpToken = tmpSolveLayerTokens[i];
+					if (unaryEligibleOperationTokens.includes(tmpToken.Token) &&
+					// promote to unary if:
+					// 1. we are the first token in our group
+					// 2. we are prefixed by a token type that is incompatible with us being binary
+						(i == 0 || unaryOperationPrefixTriggerTypes.includes(tmpSolveLayerTokens[i - 1].Type)))
+					{
+						//FIXME: slow, but don't break the static data
+						tmpToken.Descriptor = JSON.parse(JSON.stringify(tmpToken.Descriptor));
+						tmpToken.Descriptor.Precedence = 1;
+					}
+					//FIXME: handle operators with dynamic precedence (ex. unary vs. bunary + and -)
 					// If the token is an operator and at the current precedence, add it to the postfix solve list and mutate the array.
 					if ((tmpSolveLayerTokens[i].Type === 'Token.Operator') &&
-						(tmpSolveLayerTokens[i].Descriptor.Precedence === tmpPrecedence))
+						(tmpToken.Descriptor.Precedence === tmpPrecedence))
 					{
-						let tmpToken = tmpSolveLayerTokens[i];
 						// If there is a token and nothing else in this layer, then it's an error.
 						if (tmpSolveLayerTokens.length === 1)
 						{
 							tmpResults.ExpressionParserLog.push(`ERROR: ExpressionParser.buildPostfixedSolveList found a single operator in a solve layer expression at token index ${i}`);
 							this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
 							return tmpResults.PostfixSolveList;
+						}
+						// The - at the beginning of an expression is a number line orientation modifier
+						else if ((i == 0) && (tmpToken.Token == '-' || tmpToken.Token == '+'))
+						{
+							tmpToken.VirtualSymbolName = `VNLO_${tmpVirtualSymbolIndex}`;
+							tmpResults.PostfixLayerstackMap[tmpToken.SolveLayerStack] = tmpToken.VirtualSymbolName;
+							tmpVirtualSymbolIndex++;
 						}
 						// If the token is at the beginning of the expression and not a number line orientation modifier, it's an error.
 						else if ((i == 0) && ((tmpToken.Token != '+') || (tmpToken.Token != '-')))
@@ -280,13 +301,6 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 							return tmpResults.PostfixSolveList;
 						}
 
-						// The - at the beginning of an expression is a number line orientation modifier
-						else if ((i == 0) && (tmpToken.Token == '-'))
-						{
-							tmpToken.VirtualSymbolName = `VNLO_${tmpVirtualSymbolIndex}`;
-							tmpResults.PostfixLayerstackMap[tmpToken.SolveLayerStack] = tmpToken.VirtualSymbolName;
-							tmpVirtualSymbolIndex++;
-						}
 						// The - after an operator or an open parenthesis is also a number line orientation modifier
 						else if ((i > 0) && (tmpToken.Token == '-') && ((tmpSolveLayerTokens[i-1].Type === 'Token.Operator') || (tmpSolveLayerTokens[i-1].Token === '(')))
 						{
@@ -306,7 +320,8 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 						}
 
 						// If the token is next to another operator it's a parsing error
-						else if ((tmpSolveLayerTokens[i-1].Type === 'Token.Operator') || (tmpSolveLayerTokens[i+1].Type === 'Token.Operator'))
+						else if (((tmpSolveLayerTokens[i-1].Type === 'Token.Operator') || (tmpSolveLayerTokens[i+1].Type === 'Token.Operator')) &&
+								(tmpSolveLayerTokens[i+1].Token != '-' && tmpSolveLayerTokens[i+1].Token != '+'))
 						{
 							tmpResults.ExpressionParserLog.push(`ERROR: ExpressionParser.buildPostfixedSolveList found an operator at token index ${i} that is not surrounded by two values.`);
 							this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);

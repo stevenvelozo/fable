@@ -25,7 +25,7 @@ class ExpressionParserMessaging extends libExpressionParserOperationBase
 	{
 		let tmpVirtualSymbol = this.getOperationVirtualSymbolName(pToken);
 
-		if ((pToken.Type == 'Token.Constant') && (pToken.Value))
+		if ((pToken.Type == 'Token.Symbol' || pToken.Type == 'Token.Constant') && (pToken.Value))
 		{
 			return pToken.Value.toString();
 		}
@@ -166,9 +166,9 @@ class ExpressionParserMessaging extends libExpressionParserOperationBase
 			return;
 		}
 
-		for (let i = 0; i < tmpExpressionParseOutcome.PostfixSolveList.length; i++)
+		for (let i = 0; i < pResultObject.PostfixSolveList.length; i++)
 		{
-			let tmpToken = tmpExpressionParseOutcome.PostfixSolveList[i];
+			let tmpToken = pResultObject.PostfixSolveList[i];
 			console.log(`${i}: ${tmpToken.VirtualSymbolName} = (${tmpToken.LeftValue.Token}::${tmpToken.LeftValue.Value})  ${tmpToken.Operation.Token}  (${tmpToken.RightValue.Token}::${tmpToken.RightValue.Value}) `)
 		}
 

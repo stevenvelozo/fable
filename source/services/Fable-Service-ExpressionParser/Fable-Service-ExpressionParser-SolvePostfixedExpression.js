@@ -128,41 +128,6 @@ class ExpressionParserSolver extends libExpressionParserOperationBase
 							}
 							tmpResult = tmpFunction.apply(tmpFunctionBinding, tmpArguments);
 						}
-						/*
-						//this.log.trace(`Solving Function Step ${i} [${tmpStepResultObject.ExpressionStep.VirtualSymbolName}] --> [${tmpStepResultObject.ExpressionStep.Operation.Token}]: ( ${tmpStepResultObject.ExpressionStep.LeftValue.Value} , ${tmpStepResultObject.ExpressionStep.RightValue.Value} )`);
-						// Build the set of arguments to send to the functions.
-						tmpStepResultObject.ExpressionStep.LeftValue.ArgumentString = '';
-						if (typeof(tmpStepResultObject.ExpressionStep.LeftValue.Value) === 'undefined')
-						{
-							tmpStepResultObject.ExpressionStep.LeftValue.Arguments = [];
-						}
-						else if (Array.isArray(tmpStepResultObject.ExpressionStep.LeftValue.Value))
-						{
-							// Allow for array-based math sets to just be pased through
-							tmpStepResultObject.ExpressionStep.LeftValue.Arguments = tmpStepResultObject.ExpressionStep.LeftValue.Value;
-							tmpStepResultObject.ExpressionStep.LeftValue.ArgumentString = 'ExpressionStep.LeftValue.Arguments';
-						}
-						else if (typeof(tmpStepResultObject.ExpressionStep.LeftValue.Value) === 'object')
-						{
-							// Allow for array-based math sets to just be pased through
-							tmpStepResultObject.ExpressionStep.LeftValue.Arguments = tmpStepResultObject.ExpressionStep.LeftValue.Value;
-							tmpStepResultObject.ExpressionStep.LeftValue.ArgumentString = 'ExpressionStep.LeftValue.Arguments';
-						}
-						else
-						{
-							// Allow for string-based math sets.
-							tmpStepResultObject.ExpressionStep.LeftValue.Arguments = tmpStepResultObject.ExpressionStep.LeftValue.Value.toString().split(',');
-							for (let j = 0; j < tmpStepResultObject.ExpressionStep.LeftValue.Arguments.length; j++)
-							{
-								if (tmpStepResultObject.ExpressionStep.LeftValue.ArgumentString !== '')
-								{
-									tmpStepResultObject.ExpressionStep.LeftValue.ArgumentString += ',';
-								}
-								tmpStepResultObject.ExpressionStep.LeftValue.ArgumentString += `ExpressionStep.LeftValue.Arguments[${j}]`;
-							}
-						}
-						const tmpResult = tmpManifest.getValueAtAddress(tmpStepResultObject, `${tmpFunctionAddress}(${tmpStepResultObject.ExpressionStep.LeftValue.ArgumentString})`);
-						*/
 						tmpManifest.setValueAtAddress(tmpResults.VirtualSymbols, tmpStepResultObject.ExpressionStep.VirtualSymbolName, tmpResult);
 						tmpResults.LastResult = tmpManifest.getValueAtAddress(tmpResults.VirtualSymbols, tmpStepResultObject.ExpressionStep.VirtualSymbolName);
 						//this.log.trace(`   ---> Step ${i}: ${tmpResults.VirtualSymbols[tmpStepResultObject.ExpressionStep.VirtualSymbolName]}`)
