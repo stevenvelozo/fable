@@ -146,7 +146,7 @@
 
 	"resolvehtmlentities": {
 		"Name": "resolve HTML entities",
-		"Address": "fable.Utility.resolveHtmlEntities"
+		"Address": "fable.DataFormat.resolveHtmlEntities"
 	},
 
 	"concat": {

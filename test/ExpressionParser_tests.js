@@ -550,6 +550,12 @@ suite
 
 						_Parser.solve('Overrun = When(AppData.Cities[10000000].city, AppData.Cities[10000000].city)', testFable, tmpResultsObject, false, tmpDestinationObject);
 						Expect(tmpDestinationObject.Overrun).to.equal('');
+
+						testFable.AppData.ECDMonth = 'January';
+						testFable.AppData.ECDYear = '2023';
+						_Parser.solve('EstimatedCompletionDate = ResolveHtmlEntities(When(AppData.ECDMonth, Join("&comma; ", AppData.ECDMonth, AppData.ECDYear)))',
+							testFable, tmpResultsObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.EstimatedCompletionDate).to.equal('January, 2023');
 					}
 				);
 

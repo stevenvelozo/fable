@@ -55,8 +55,10 @@ class FableServiceLogic extends libFableServiceBase
 					break;
 				case '==':
 					tmpCheckResult = pLeft == pRight;
+					break;
 				case '===':
 					tmpCheckResult = pLeft === pRight;
+					break;
 				default:
 					this.fable.log.warn(`[FableServiceLogic.checkIf] Invalid comparison operator: ${pComparisonOperator}`);
 					tmpCheckResult = pLeft == pRight;
