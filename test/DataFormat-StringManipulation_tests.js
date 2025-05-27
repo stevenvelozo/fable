@@ -80,6 +80,59 @@ suite
 				)
 				test
 				(
+					'Encode and decode URI string components',
+					(fTestComplete)=>
+					{
+						let testFable = new libFable({LogStreams: false});
+						let _DataFormat = testFable.services.DataFormat;
+						Expect(_DataFormat.stringEncodeURIComponent('Dogs with guns'))
+							.to.equal('Dogs%20with%20guns');
+						Expect(_DataFormat.stringDecodeURIComponent('Dogs%20with%20guns'))
+							.to.equal('Dogs with guns');
+						Expect(_DataFormat.stringEncodeURIComponent('Dogs with guns & cats'))
+							.to.equal('Dogs%20with%20guns%20%26%20cats');
+						Expect(_DataFormat.stringDecodeURIComponent('Dogs%20with%20guns%20%26%20cats'))
+							.to.equal('Dogs with guns & cats');
+						Expect(_DataFormat.stringEncodeURIComponent('Dogs with guns & cats 12321'))
+							.to.equal('Dogs%20with%20guns%20%26%20cats%2012321');
+						Expect(_DataFormat.stringDecodeURIComponent('Dogs%20with%20guns%20%26%20cats%2012321'))
+							.to.equal('Dogs with guns & cats 12321');
+						Expect(_DataFormat.stringEncodeURIComponent('Dogs with guns & cats 12321!'))
+							.to.equal('Dogs%20with%20guns%20%26%20cats%2012321!');
+						Expect(_DataFormat.stringDecodeURIComponent('Dogs%20with%20guns%20%26%20cats%2012321%21'))
+							.to.equal('Dogs with guns & cats 12321!');
+						Expect(_DataFormat.stringDecodeURIComponent('Dogs%20with%20guns%20%26%20cats%2012321%21%40%23%24%25%5E%26*%28%29'))
+							.to.equal('Dogs with guns & cats 12321!@#$%^&*()');
+						return fTestComplete();
+					}
+				)
+				test
+				(
+					'Encode and decode javascript string components',
+					(fTestComplete)=>
+					{
+						let testFable = new libFable({LogStreams: false});
+						let _DataFormat = testFable.services.DataFormat;
+						Expect(_DataFormat.stringEncodeForJavascript('Dogs with guns'))
+							.to.equal('Dogs with guns');
+						Expect(_DataFormat.stringDecodeForJavascript('Dogs with guns'))
+							.to.equal('Dogs with guns');
+						Expect(_DataFormat.stringEncodeForJavascript('Dogs with guns & cats'))
+							.to.equal('Dogs with guns & cats');
+						Expect(_DataFormat.stringDecodeForJavascript('Dogs with guns & cats'))
+							.to.equal('Dogs with guns & cats');
+						Expect(_DataFormat.stringEncodeForJavascript(`Dogs with "guns" & \\\\cats 12321`))
+							.to.equal('Dogs with "guns" & \\\\cats 12321');
+						Expect(_DataFormat.stringDecodeForJavascript('Dogs with "guns" & 	cats 12321'))
+							.to.equal('Dogs with "guns" & \tcats 12321');
+						Expect(_DataFormat.stringEncodeForJavascript('Dogs with guns & \t cats 12321!'))
+							.to.equal('Dogs with guns & \t cats 12321!');
+
+						return fTestComplete();
+					}
+				)
+				test
+				(
 					'Capitalize each word in a string',
 					(fTestComplete)=>
 					{

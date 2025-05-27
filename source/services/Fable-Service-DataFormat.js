@@ -820,6 +820,116 @@ class DataFormat extends libFableServiceProviderBase
 	}
 
 	/**
+	 * Encodes a string using encodeURIComponent, returning the encoded string.
+	 * If the input is not a string, returns the input unchanged.
+	 *
+	 * @param {string} pString - The string to encode.
+	 * @returns {string|*} The encoded string, or the original input if it is not a string.
+	 */
+	stringEncodeURIComponent (pString)
+	{
+		if (typeof(pString) !== 'string')
+		{
+			return pString;
+		}
+
+		return encodeURIComponent(pString);
+	}
+
+	/**
+	 * Safely decodes a URI component string using decodeURIComponent.
+	 * If the input is not a string or decoding fails, returns the original input.
+	 *
+	 * @param {string} pString - The string to decode.
+	 * @returns {string} The decoded string, or the original input if decoding fails.
+	 */
+	stringDecodeURIComponent (pString)
+	{
+		if (typeof(pString) !== 'string')
+		{
+			return pString;
+		}
+
+		try
+		{
+			return decodeURIComponent(pString);
+		}
+		catch (e)
+		{
+			this.fable.Log.error(`Failed to decode URI component: ${pString}`, e);
+			return pString; // Return the original string if decoding fails
+		}
+	}
+
+	/**
+	 * Encodes a string so that it can be safely embedded in JavaScript code.
+	 * Escapes special characters such as quotes, backslashes, and newlines.
+	 *
+	 * @param {string} pString - The input string to encode.
+	 * @returns {string} The encoded string with special characters escaped.
+	 */
+	stringEncodeForJavascript (pString)
+	{
+		if (typeof(pString) !== 'string')
+		{
+			return pString;
+		}
+
+		return pString.replace(this._Regex_matcherJavascriptEncode, (pMatch) =>
+		{
+			switch (pMatch)
+			{
+				case '"':
+					return '\\"';
+				case '\'':
+					return '\\\'';
+				case '\\':
+					return '\\\\';
+				case '\n':
+					return '\\n';
+				case '\r':
+					return '\\r';
+				default:
+					return pMatch; // Return the original character if no encoding is needed
+			}
+		});
+	}
+
+	/**
+	 * Decodes a JavaScript-escaped string by replacing common escape sequences
+	 * (such as \" \\n \\r \\' and \\\\) with their actual character representations.
+	 *
+	 * @param {string} pString - The string to decode. If not a string, the input is returned as-is.
+	 * @returns {string} The decoded string with escape sequences replaced, or the original input if not a string.
+	 */
+	stringDecodeForJavascript (pString)
+	{
+		if (typeof(pString) !== 'string')
+		{
+			return pString;
+		}
+
+		return pString.replace(this._Regex_matcherJavascriptDecode, (pMatch) =>
+		{
+			switch (pMatch)
+			{
+				case '\\"':
+					return '"';
+				case '\\\'':
+					return '\'';
+				case '\\\\':
+					return '\\';
+				case '\\n':
+					return '\n';
+				case '\\r':
+					return '\r';
+				default:
+					return pMatch; // Return the original character if no decoding is needed
+			}
+		});
+	}
+
+	/**
 	 * Count the number of enclosures in a string based on the start and end characters.
 	 *
 	 * If no start or end characters are specified, it will default to parentheses.  If the string is not a string, it will return 0.
