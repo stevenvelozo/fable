@@ -61,7 +61,9 @@ class FableServiceMath extends libFableServiceBase
 		}
 		catch (pError)
 		{
-			this.log.warn(`Error parsing number (type ${typeof (pValue)}): ${pError}`);
+			// TODO: This seems more correct -- we can add a silent or noisy parameter if we want this to export.
+			//       Reason: Currently this is absolutely obliterating logs in the data integrations from bad data sources.
+			//this.log.warn(`Error parsing number (type ${typeof (pValue)}): ${pError}`);
 			tmpNumber = (typeof (pNonNumberValue) === 'undefined') ? "0.0" : pNonNumberValue;
 		}
 
