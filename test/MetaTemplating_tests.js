@@ -53,13 +53,13 @@ const configMetaTemplate = (pModule) =>
 
 	// Exercise the history a bit
 	pModule.addPatternBoth('{~', '~}',
-		(pHash, pData, pContext) =>
+		(pHash, pData, pContext, pScope) =>
 		{
-			return `Non-AsyncJF with a hash of [${pHash}] with a Context size of [${pContext.length}] and a Context[0] of [${JSON.stringify(pContext[0])}]`
+			return `Non-AsyncJF with a hash of [${pHash}] with a Context size of [${pContext.length}] and a Context[0] of [${JSON.stringify(pContext[0])}] with scope of [${JSON.stringify(pScope)}]`;
 		},
-		(pHash, pData, fCallback, pContext)=>
+		(pHash, pData, fCallback, pContext, pScope)=>
 		{
-			return fCallback(null, `AsyncJF with a hash of [${pHash}] with a Context size of [${pContext.length}] and a Context[0] of [${JSON.stringify(pContext[0])}]`);
+			return fCallback(null, `AsyncJF with a hash of [${pHash}] with a Context size of [${pContext.length}] and a Context[0] of [${JSON.stringify(pContext[0])}] with scope of [${JSON.stringify(pScope)}]`);
 		});
 
 };
@@ -369,19 +369,19 @@ suite
 					(fDone) =>
 					{
 						let tmpTestString = 'A {~SomeValue~} B';
-						let tmpExpectedResultAsync = 'A AsyncJF with a hash of [SomeValue] with a Context size of [1] and a Context[0] of [{\"SomeValue\":\"AirbornLight\"}] B';
-						let tmpExpectedResult = 'A Non-AsyncJF with a hash of [SomeValue] with a Context size of [1] and a Context[0] of [{\"SomeValue\":\"AirbornLight\"}] B';
+						let tmpExpectedResultAsync = 'A AsyncJF with a hash of [SomeValue] with a Context size of [1] and a Context[0] of [{\"SomeValue\":\"AirbornLight\"}] with scope of [{"ScopeValue":1}] B';
+						let tmpExpectedResult = 'A Non-AsyncJF with a hash of [SomeValue] with a Context size of [1] and a Context[0] of [{\"SomeValue\":\"AirbornLight\"}] with scope of [{"ScopeValue":1}] B';
 
 						let tmpCustomHistory = [{YouTheMan:'NowDog'}];
-						let tmpExpectedResultCustomHistory = 'A Non-AsyncJF with a hash of [SomeValue] with a Context size of [2] and a Context[0] of [{\"YouTheMan\":\"NowDog\"}] B';
+						let tmpExpectedResultCustomHistory = 'A Non-AsyncJF with a hash of [SomeValue] with a Context size of [2] and a Context[0] of [{\"YouTheMan\":\"NowDog\"}] with scope of [{"ScopeValue":1}] B';
 
 						let testMetaTemplate = loadMetaTemplateModule();
 						configMetaTemplate(testMetaTemplate);
 
-						let tmpNonAsyncResult = testMetaTemplate.parseString(tmpTestString, {SomeValue:'AirbornLight'});
+						let tmpNonAsyncResult = testMetaTemplate.parseString(tmpTestString, {SomeValue:'AirbornLight'}, null, null, { ScopeValue: 1 });
 						Expect(tmpNonAsyncResult).to.equal(tmpExpectedResult);
 
-						let tmpNonAsyncCustomResult = testMetaTemplate.parseString(tmpTestString, {SomeValue:'AirbornLight'}, null, tmpCustomHistory);
+						let tmpNonAsyncCustomResult = testMetaTemplate.parseString(tmpTestString, {SomeValue:'AirbornLight'}, null, tmpCustomHistory, { ScopeValue: 1 });
 						Expect(tmpNonAsyncCustomResult).to.equal(tmpExpectedResultCustomHistory);
 
 						let	tmpResult = testMetaTemplate.parseString(tmpTestString, {SomeValue:'AirbornLight'},
@@ -389,7 +389,7 @@ suite
 							{
 								Expect(pValue).to.equal(tmpExpectedResultAsync);
 								return fDone();
-							});
+							}, null, { ScopeValue: 1 });
 					}
 				);
 			}

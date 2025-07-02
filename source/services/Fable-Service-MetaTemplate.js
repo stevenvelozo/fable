@@ -42,15 +42,16 @@ class FableServiceMetaTemplate extends libFableServiceBase
 	 * @param {object} pData - Data to pass in as the second argument
 	 * @param {function} fCallback - The callback function to call when a pattern is matched
 	 * @param {array} pDataContext - The history of data objects already passed in
+	 * @param {any} [pScope] - A sticky scope that can be used to carry state and simplify template
 	 * @return {string} The result from the parser
 	 */
-	parseString(pString, pData, fCallback, pDataContext)
+	parseString(pString, pData, fCallback, pDataContext, pScope)
 	{
 		if (this.LogNoisiness > 4)
 		{
 			this.fable.log.trace(`Metatemplate parsing template string [${pString}] where the callback is a ${typeof(fCallback)}`, {TemplateData:pData});
 		}
-		return this.StringParser.parseString(pString, this.ParseTree, pData, fCallback, pDataContext);
+		return this.StringParser.parseString(pString, this.ParseTree, pData, fCallback, pDataContext, pScope);
 	}
 }
 

@@ -83,9 +83,12 @@ class StringParser
 	 * @method parseCharacter
 	 * @param {string} pCharacter - The character to append
 	 * @param {Object} pParserState - The state object for the current parsing task
+	 * @param {any} pData - The data available to the template
+	 * @param {any} pDataContext - The history of data objects/context already passed in
+	 * @param {any} [pScope] - A sticky scope that can be used to carry state and simplify template
 	 * @private
 	 */
-	parseCharacter (pCharacter, pParserState, pData, pDataContext)
+	parseCharacter (pCharacter, pParserState, pData, pDataContext, pScope)
 	{
 		// If we are already in a pattern match traversal
 		if (pParserState.PatternMatch)
@@ -109,11 +112,11 @@ class StringParser
 					let tmpFunctionContext = ('ParserContext' in pParserState.Pattern) ? pParserState.Pattern.ParserContext : false;
 					if (tmpFunctionContext)
 					{
-						pParserState.OutputBuffer = pParserState.Pattern.Parse.call(tmpFunctionContext, pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
+						pParserState.OutputBuffer = pParserState.Pattern.Parse.call(tmpFunctionContext, pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext, pScope);
 					}
 					else
 					{
-						pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
+						pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext, pScope);
 					}
 					return this.resetOutputBuffer(pParserState);
 				}
@@ -152,11 +155,11 @@ class StringParser
 						let tmpFunctionContext = ('ParserContext' in pParserState.Pattern) ? pParserState.Pattern.ParserContext : false;
 						if (tmpFunctionContext)
 						{
-							pParserState.OutputBuffer = pParserState.Pattern.Parse.call(tmpFunctionContext, pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
+							pParserState.OutputBuffer = pParserState.Pattern.Parse.call(tmpFunctionContext, pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext, pScope);
 						}
 						else
 						{
-							pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
+							pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext, pScope);
 						}
 						return this.resetOutputBuffer(pParserState);
 					}
@@ -189,7 +192,7 @@ class StringParser
 		return false;
 	}
 
-	executePatternAsync(pParserState, pData, fCallback, pDataContext)
+	executePatternAsync(pParserState, pData, fCallback, pDataContext, pScope)
 	{
 		// ... this is the end of a pattern, cut off the end tag and parse it.
 		// Trim the start and end tags off the output buffer now
@@ -210,7 +213,7 @@ class StringParser
 						pParserState.OutputBuffer = pAsyncOutput;
 						this.resetOutputBuffer(pParserState);
 						return fCallback();
-					}, pDataContext);
+					}, pDataContext, pScope);
 			}
 			else
 			{
@@ -225,7 +228,7 @@ class StringParser
 						pParserState.OutputBuffer = pAsyncOutput;
 						this.resetOutputBuffer(pParserState);
 						return fCallback();
-					}, pDataContext);
+					}, pDataContext, pScope);
 			}
 		}
 		else
@@ -234,11 +237,11 @@ class StringParser
 			let tmpFunctionContext = ('ParserContext' in pParserState.Pattern) ? pParserState.Pattern.ParserContext : false;
 			if (tmpFunctionContext)
 			{
-				pParserState.OutputBuffer = pParserState.Pattern.Parse.call(tmpFunctionContext, pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
+				pParserState.OutputBuffer = pParserState.Pattern.Parse.call(tmpFunctionContext, pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext, pScope);
 			}
 			else
 			{
-				pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext);
+				pParserState.OutputBuffer = pParserState.Pattern.Parse(pParserState.OutputBuffer.substr(pParserState.Pattern.PatternStartString.length, pParserState.OutputBuffer.length - (pParserState.Pattern.PatternStartString.length+pParserState.Pattern.PatternEndString.length)), pData, pDataContext, pScope);
 			}
 			this.resetOutputBuffer(pParserState);
 			return fCallback();
@@ -254,9 +257,10 @@ class StringParser
 	 * @param {Object} pData - The data to pass to the function as a second parameter
 	 * @param {function} fCallback - The callback function to call when the parse is complete
 	 * @param {array} pDataContext - The history of data objects/context already passed in
+	 * @param {any} [pScope] - A sticky scope that can be used to carry state and simplify template
 	 * @private
 	 */
-	parseCharacterAsync (pCharacter, pParserState, pData, fCallback, pDataContext)
+	parseCharacterAsync (pCharacter, pParserState, pData, fCallback, pDataContext, pScope)
 	{
 		// If we are already in a pattern match traversal
 		if (pParserState.PatternMatch)
@@ -278,7 +282,7 @@ class StringParser
 					// If this last character is the end of the pattern, parse it.
 					if ('Parse' in pParserState.Pattern)
 					{
-						return this.executePatternAsync(pParserState, pData, fCallback, pDataContext);
+						return this.executePatternAsync(pParserState, pData, fCallback, pDataContext, pScope);
 					}
 				}
 				else if (pCharacter in pParserState.PatternStartNode.PatternEnd)
@@ -312,7 +316,7 @@ class StringParser
 					// If this last character is the end of the pattern, parse it.
 					if ('Parse' in pParserState.Pattern)
 					{
-						return this.executePatternAsync(pParserState, pData, fCallback, pDataContext);
+						return this.executePatternAsync(pParserState, pData, fCallback, pDataContext, pScope);
 					}
 				}
 			}
@@ -352,8 +356,9 @@ class StringParser
 	 * @param {Object} pData - The data to pass to the function as a second parameter
 	 * @param {function} fCallback - The callback function to call when the parse is complete
 	 * @param {array} pDataContext - The history of data objects/context already passed in
+	 * @param {any} [pScope] - A sticky scope that can be used to carry state and simplify template
 	 */
-	parseString (pString, pParseTree, pData, fCallback, pDataContext)
+	parseString (pString, pParseTree, pData, fCallback, pDataContext, pScope)
 	{
 		// TODO: There is danger here if a template function attempts to functionally recurse and doesn't pass this in.
 		let tmpPreviousDataContext = (Array.isArray(pDataContext)) ? pDataContext : [];
@@ -367,7 +372,7 @@ class StringParser
 			for (var i = 0; i < pString.length; i++)
 			{
 				// TODO: This is not fast.
-				this.parseCharacter(pString[i], tmpParserState, pData, tmpDataContext);
+				this.parseCharacter(pString[i], tmpParserState, pData, tmpDataContext, pScope);
 			}
 
 			this.flushOutputBuffer(tmpParserState);
@@ -387,7 +392,7 @@ class StringParser
 				tmpAnticipate.anticipate(
 					(fCallback) =>
 					{
-						this.parseCharacterAsync(pString[i], tmpParserState, pData, fCallback, tmpDataContext);
+						this.parseCharacterAsync(pString[i], tmpParserState, pData, fCallback, tmpDataContext, pScope);
 					});
 			}
 
