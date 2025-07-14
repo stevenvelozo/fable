@@ -303,6 +303,25 @@ suite
 				);
 				test
 				(
+					'Test sanitizing object keys',
+					(fTestComplete)=>
+					{
+						let testFable = new libFable({LogStreams: false});
+						let _DataFormat = testFable.services.DataFormat;
+						Expect(_DataFormat
+							.sanitizeObjectKey('Dogs'))
+							.to.equal('Dogs');
+						Expect(_DataFormat
+							.sanitizeObjectKey('Dogs are cool'))
+							.to.equal('Dogs_are_cool');
+						Expect(_DataFormat
+							.sanitizeObjectKey('Dogs 123 are cool!'))
+							.to.equal('Dogs_123_are_cool_');
+						return fTestComplete();
+					}
+				);
+				test
+				(
 					'Pad the beginning of a string',
 					(fTestComplete)=>
 					{

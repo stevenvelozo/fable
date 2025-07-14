@@ -35,8 +35,11 @@ class DataFormat extends libFableServiceProviderBase
 
 		this._UseEngineStringStartsWith = (typeof(String.prototype.startsWith) === 'function');
 		this._UseEngineStringEndsWith = (typeof(String.prototype.endsWith) === 'function');
-	}
 
+		this._SanitizeObjectKeyRegex = /[^a-zA-Z0-9_]/gi;
+		this._SanitizeObjectKeyReplacement = '_';
+		this._SanitizeObjectKeyInvalid = 'INVALID';
+	}
 
 	/*************************************************************************
 	 * String Manipulation and Comparison Functions
@@ -368,6 +371,21 @@ class DataFormat extends libFableServiceProviderBase
 		}
 
 		return '';
+	}
+
+	/**
+	 * Clean a string of any characters to create a consistent object key.
+	 *
+	 * @param {string} pString  The string to clean.
+	 * @return {string} the cleaned string, or a placeholder if the input is invalid
+	 */
+	sanitizeObjectKey(pString)
+	{
+		if (typeof pString !== 'string' || pString.length < 1)
+		{
+			return this._SanitizeObjectKeyInvalid;
+		}
+		return pString.replace(this._SanitizeObjectKeyRegex, this._SanitizeObjectKeyReplacement);
 	}
 
 
