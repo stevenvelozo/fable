@@ -367,8 +367,9 @@ class StringParser
 	 * @param {function} fCallback - The callback function to call when the parse is complete
 	 * @param {array} pDataContext - The history of data objects/context already passed in
 	 * @param {any} [pScope] - A sticky scope that can be used to carry state and simplify template
+	 * @param {any} [pState] - A catchall state object for plumbing data through template processing.
 	 */
-	parseString (pString, pParseTree, pData, fCallback, pDataContext, pScope)
+	parseString (pString, pParseTree, pData, fCallback, pDataContext, pScope, pState)
 	{
 		// TODO: There is danger here if a template function attempts to functionally recurse and doesn't pass this in.
 		let tmpPreviousDataContext = (Array.isArray(pDataContext)) ? pDataContext : [];
@@ -382,7 +383,7 @@ class StringParser
 			for (var i = 0; i < pString.length; i++)
 			{
 				// TODO: This is not fast.
-				this.parseCharacter(pString[i], tmpParserState, pData, tmpDataContext, pScope);
+				this.parseCharacter(pString[i], tmpParserState, pData, tmpDataContext, pScope, pState);
 			}
 
 			this.flushOutputBuffer(tmpParserState);
@@ -402,7 +403,7 @@ class StringParser
 				tmpAnticipate.anticipate(
 					(fCallback) =>
 					{
-						this.parseCharacterAsync(pString[i], tmpParserState, pData, fCallback, tmpDataContext, pScope);
+						this.parseCharacterAsync(pString[i], tmpParserState, pData, fCallback, tmpDataContext, pScope, pState);
 					});
 			}
 

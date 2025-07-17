@@ -4342,10 +4342,11 @@ return fCallback();}/**
 	 * @param {function} fCallback - The callback function to call when the parse is complete
 	 * @param {array} pDataContext - The history of data objects/context already passed in
 	 * @param {any} [pScope] - A sticky scope that can be used to carry state and simplify template
-	 */parseString(pString,pParseTree,pData,fCallback,pDataContext,pScope){// TODO: There is danger here if a template function attempts to functionally recurse and doesn't pass this in.
+	 * @param {any} [pState] - A catchall state object for plumbing data through template processing.
+	 */parseString(pString,pParseTree,pData,fCallback,pDataContext,pScope,pState){// TODO: There is danger here if a template function attempts to functionally recurse and doesn't pass this in.
 let tmpPreviousDataContext=Array.isArray(pDataContext)?pDataContext:[];let tmpDataContext=Array.from(tmpPreviousDataContext);tmpDataContext.push(pData);if(typeof fCallback!=='function'){let tmpParserState=this.newParserState(pParseTree);for(var i=0;i<pString.length;i++){// TODO: This is not fast.
-this.parseCharacter(pString[i],tmpParserState,pData,tmpDataContext,pScope);}this.flushOutputBuffer(tmpParserState);return tmpParserState.Output;}else{// This is the async mode
-let tmpParserState=this.newParserState(pParseTree);tmpParserState.Asynchronous=true;let tmpAnticipate=this.fable.instantiateServiceProviderWithoutRegistration('Anticipate');for(let i=0;i<pString.length;i++){tmpAnticipate.anticipate(fCallback=>{this.parseCharacterAsync(pString[i],tmpParserState,pData,fCallback,tmpDataContext,pScope);});}tmpAnticipate.wait(pError=>{// Flush the remaining data
+this.parseCharacter(pString[i],tmpParserState,pData,tmpDataContext,pScope,pState);}this.flushOutputBuffer(tmpParserState);return tmpParserState.Output;}else{// This is the async mode
+let tmpParserState=this.newParserState(pParseTree);tmpParserState.Asynchronous=true;let tmpAnticipate=this.fable.instantiateServiceProviderWithoutRegistration('Anticipate');for(let i=0;i<pString.length;i++){tmpAnticipate.anticipate(fCallback=>{this.parseCharacterAsync(pString[i],tmpParserState,pData,fCallback,tmpDataContext,pScope,pState);});}tmpAnticipate.wait(pError=>{// Flush the remaining data
 this.flushOutputBuffer(tmpParserState);return fCallback(pError,tmpParserState.Output);});}}}module.exports=StringParser;},{}],173:[function(require,module,exports){/**
 * Word Tree
 * @author      Steven Velozo <steven@velozo.com>
