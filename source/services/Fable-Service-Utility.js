@@ -486,6 +486,20 @@ class FableServiceUtility extends libFableServiceBase
 		};
 		return pInputArray.flatMap(tmpArrayFlattener);
 	}
+
+	/**
+	 * Take a set of arbitrary parameters and build an array from them
+	 * @returns {Array} - An array built from the absolute values of the parameters
+	 */
+	createArrayFromAbsoluteValues()
+	{
+		let tmpArray = [];
+		for (let i = 0; i < arguments.length; i++)
+		{
+			tmpArray.push(arguments[i]);
+		}
+		return tmpArray;
+	}
 }
 
 module.exports = FableServiceUtility;

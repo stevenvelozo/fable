@@ -668,8 +668,10 @@ class FableServiceMath extends libFableServiceBase
 		return tmpSortedHistogram;
 	}
 
-	cleanValueArray(pValueArray)
+	cleanValueArray(pValueArray, pRemoveZeroes)
 	{
+		let tmpRemoveZeroes = (typeof (pRemoveZeroes) === 'undefined') ? false : pRemoveZeroes;
+
 		if (!Array.isArray(pValueArray))
 		{
 			return [];
@@ -679,7 +681,7 @@ class FableServiceMath extends libFableServiceBase
 		for (let i = 0; i < pValueArray.length; i++)
 		{
 			let tmpValue = this.parsePrecise(pValueArray[i], NaN);
-			if (!isNaN(tmpValue))
+			if (!isNaN(tmpValue) && (!tmpRemoveZeroes || (tmpValue != "0")))
 			{
 				tmpCleanedArray.push(tmpValue);
 			}

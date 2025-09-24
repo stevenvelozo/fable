@@ -398,12 +398,37 @@ suite
 						// Now through the solver
 
 						let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+						testFable.AppData.Value1 = "100"; // Comment
+						testFable.AppData.Value2 = "-80.5"; // Comment
+						testFable.AppData.Value3 = "10000"; // Comment
+						testFable.AppData.Value4 = "-333.333"; // Comment
+						testFable.AppData.Value5 = "0"; // Comment
+
 						let tmpResultsObject = {};
 						let tmpDestinationObject = {};
 
 						_Parser.solve('DistributionResult = distributionhistogram("AppData.Cities", "state")', testFable, tmpResultsObject, false, tmpDestinationObject);
 						_Parser.solve('AggregationResult = aggregationHistogram("AppData.Cities", "state", "population")', testFable, tmpResultsObject, false, tmpDestinationObject);
 						_Parser.solve('PopSum = sum(flatten(AppData.Cities[].population, AppData.Cities[].latitude))', testFable, tmpResultsObject, false, tmpDestinationObject);
+
+						//_Parser.solve('MadeUpValueArray = ROUND(AVG(createarrayfromabsolutevalues(100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100)),2)', testFable, tmpResultsObject, false, tmpDestinationObject);
+						//Expect(tmpDestinationObject.MadeUpValueArray).to.equal('600');
+						_Parser.solve('MadeUpValueArray = ROUND(AVG(createarrayfromabsolutevalues(AppData.Value1, AppData.Value2, AppData.Value3, AppData.Value4, AppData.Value5)),2)', testFable, tmpResultsObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.MadeUpValueArray).to.equal('1937.23');
+
+						_Parser.solve('MadeUpValueArray = ROUND(AVG(cleanvaluearray(createarrayfromabsolutevalues(AppData.Value1, AppData.Value2, AppData.Value3, AppData.Value4, AppData.Value5), 1)),2)', testFable, tmpResultsObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.MadeUpValueArray).to.equal('2421.54');
+
+//						_Parser.solve('MadeUpValueArray = ROUND(AVG(createarrayfromabsolutevalues(100, -80.5, 10000, -333.333, 0)),2)', testFable, tmpResultsObject, false, tmpDestinationObject);
+//						Expect(tmpDestinationObject.MadeUpValueArray).to.equal('600');
+
+
+						_Parser.solve('MadeUpValueArray = ROUND(AVG(createarrayfromabsolutevalues(100, 10, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100)),2)', testFable, tmpResultsObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.MadeUpValueArray).to.equal('550.83');
+
+						// _Parser.solve('MadeUpValueArray = ROUND(AVG(createarrayfromabsolutevalues(-5, 5, 0, -10, 10, -25, 25, -50, 50)),2)', testFable, tmpResultsObject, false, tmpDestinationObject);
+						// Expect(tmpDestinationObject.MadeUpValueArray).to.equal('25');
 
 
 						Expect(tmpDestinationObject.DistributionResult.Alabama).to.equal(12);

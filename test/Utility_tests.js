@@ -411,6 +411,23 @@ suite
 						return fDone();
 					}
 				);
+				test
+				(
+					'createArrayFromAbsoluteValues works as expected',
+					function(fDone)
+					{
+						testFable = new libFable();
+
+						let tmpResult = testFable.services.Utility.createArrayFromAbsoluteValues(0,3,5,9);
+						Expect(tmpResult).to.be.an('array');
+						Expect(tmpResult.length).to.equal(4);
+						Expect(tmpResult[0]).to.equal(0);
+						Expect(tmpResult[1]).to.equal(3);
+						Expect(tmpResult[2]).to.equal(5);
+						Expect(tmpResult[3]).to.equal(9);
+						return fDone();
+					}
+				)
 			}
 		);
 	}

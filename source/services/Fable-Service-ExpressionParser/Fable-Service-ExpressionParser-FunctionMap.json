@@ -129,6 +129,11 @@
 		"Address": "fable.Utility.getInternalValueByHash"
 	},
 
+	"createarrayfromabsolutevalues": {
+		"Name": "Create Array from Absolute Values",
+		"Address": "fable.Utility.createArrayFromAbsoluteValues"
+	},
+
 	"flatten": {
 		"Name": "flatten an array of values",
 		"Address": "fable.Utility.flattenArrayOfSolverInputs"
