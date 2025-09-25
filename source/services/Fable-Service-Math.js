@@ -26,7 +26,10 @@ class FableServiceMath extends libFableServiceBase
 		// From NASA: https://apod.nasa.gov/htmltest/gifcity/e.2mil
 		this.euler = '2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664';
 
-//		this.manifest = this.fable.newManyfest();
+		//		this.manifest = this.fable.newManyfest();
+		this.bigNumber = this.fable.Utility.bigNumber;
+
+		this.ln2Cache = new Map();
 	}
 
 	/*
@@ -39,10 +42,10 @@ class FableServiceMath extends libFableServiceBase
 		roundHalfEven  2       ROUND_HALF_EVEN    Rounds towards nearest neighbour. (_If equidistant, rounds towards even neighbour._)
 		roundUp        3       ROUND_UP           Rounds positively away from zero. (_Always round up._)
 	*/
-	get roundDown() { return this.fable.Utility.bigNumber.roundDown; }
-	get roundHalfUp() { return this.fable.Utility.bigNumber.roundHalfUp; }
-	get roundHalfEven() { return this.fable.Utility.bigNumber.roundHalfEven; }
-	get roundUp() { return this.fable.Utility.bigNumber.roundUp; }
+	get roundDown() { return this.bigNumber.roundDown; }
+	get roundHalfUp() { return this.bigNumber.roundHalfUp; }
+	get roundHalfEven() { return this.bigNumber.roundHalfEven; }
+	get roundUp() { return this.bigNumber.roundUp; }
 
 	/**
 	 * Parses a precise number value.
@@ -57,7 +60,7 @@ class FableServiceMath extends libFableServiceBase
 
 		try
 		{
-			tmpNumber = new this.fable.Utility.bigNumber(pValue);
+			tmpNumber = new this.bigNumber(pValue);
 		}
 		catch (pError)
 		{
@@ -97,7 +100,7 @@ class FableServiceMath extends libFableServiceBase
 			return '0';
 		}
 
-		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+		let tmpLeftArbitraryValue = new this.bigNumber(tmpLeftValue);
 		let tmpResult = tmpLeftArbitraryValue.div(tmpRightValue);
 		tmpResult = tmpResult.times(100);
 		return tmpResult.toString();
@@ -133,7 +136,7 @@ class FableServiceMath extends libFableServiceBase
 		let tmpDecimals = isNaN(pDecimals) ? 0 : parseInt(pDecimals, 10);
 		let tmpRoundingMethod = (typeof (pRoundingMethod) === 'undefined') ? this.roundHalfUp : parseInt(pRoundingMethod, 10);
 
-		let tmpArbitraryValue = new this.fable.Utility.bigNumber(tmpValue);
+		let tmpArbitraryValue = new this.bigNumber(tmpValue);
 		let tmpResult = tmpArbitraryValue.round(tmpDecimals, tmpRoundingMethod);
 		return tmpResult.toString();
 	}
@@ -152,7 +155,7 @@ class FableServiceMath extends libFableServiceBase
 		let tmpDecimals = isNaN(pDecimals) ? 0 : pDecimals;
 		let tmpRoundingMethod = (typeof (pRoundingMethod) === 'undefined') ? this.roundHalfUp : pRoundingMethod;
 
-		let tmpArbitraryValue = new this.fable.Utility.bigNumber(tmpValue);
+		let tmpArbitraryValue = new this.bigNumber(tmpValue);
 		let tmpResult = tmpArbitraryValue.toFixed(tmpDecimals, tmpRoundingMethod);
 
 		return tmpResult.toString();
@@ -169,7 +172,7 @@ class FableServiceMath extends libFableServiceBase
 		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;
 		let tmpRightValue = isNaN(pRightValue) ? 0 : pRightValue;
 
-		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+		let tmpLeftArbitraryValue = new this.bigNumber(tmpLeftValue);
 		let tmpResult = tmpLeftArbitraryValue.plus(tmpRightValue);
 		return tmpResult.toString();
 	}
@@ -186,7 +189,7 @@ class FableServiceMath extends libFableServiceBase
 		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;
 		let tmpRightValue = isNaN(pRightValue) ? 0 : pRightValue;
 
-		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+		let tmpLeftArbitraryValue = new this.bigNumber(tmpLeftValue);
 		let tmpResult = tmpLeftArbitraryValue.minus(tmpRightValue);
 		return tmpResult.toString();
 	}
@@ -205,7 +208,7 @@ class FableServiceMath extends libFableServiceBase
 		let tmpResult;
 		if (tmpRightValue == Number(pRightValue))
 		{
-			const tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+			const tmpLeftArbitraryValue = new this.bigNumber(tmpLeftValue);
 			tmpResult = tmpLeftArbitraryValue.pow(tmpRightValue);
 		}
 		else
@@ -229,7 +232,7 @@ class FableServiceMath extends libFableServiceBase
 		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;
 		let tmpRightValue = isNaN(pRightValue) ? 0 : pRightValue;
 
-		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+		let tmpLeftArbitraryValue = new this.bigNumber(tmpLeftValue);
 		let tmpResult = tmpLeftArbitraryValue.times(tmpRightValue);
 		return tmpResult.toString();
 	}
@@ -246,7 +249,7 @@ class FableServiceMath extends libFableServiceBase
 		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;
 		let tmpRightValue = isNaN(pRightValue) ? 0 : pRightValue;
 
-		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+		let tmpLeftArbitraryValue = new this.bigNumber(tmpLeftValue);
 		let tmpResult = tmpLeftArbitraryValue.div(tmpRightValue);
 		return tmpResult.toString();
 	}
@@ -263,7 +266,7 @@ class FableServiceMath extends libFableServiceBase
 		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;
 		let tmpRightValue = isNaN(pRightValue) ? 0 : pRightValue;
 
-		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+		let tmpLeftArbitraryValue = new this.bigNumber(tmpLeftValue);
 		let tmpResult = tmpLeftArbitraryValue.mod(tmpRightValue);
 		return tmpResult.toString();
 	}
@@ -278,7 +281,7 @@ class FableServiceMath extends libFableServiceBase
 	{
 		let tmpValue = isNaN(pValue) ? 0 : pValue;
 
-		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpValue);
+		let tmpLeftArbitraryValue = new this.bigNumber(tmpValue);
 		let tmpResult = tmpLeftArbitraryValue.sqrt();
 		return tmpResult.toString();
 	}
@@ -293,7 +296,7 @@ class FableServiceMath extends libFableServiceBase
 	{
 		let tmpValue = isNaN(pValue) ? 0 : pValue;
 
-		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpValue);
+		let tmpLeftArbitraryValue = new this.bigNumber(tmpValue);
 		let tmpResult = tmpLeftArbitraryValue.abs();
 		return tmpResult.toString();
 	}
@@ -338,7 +341,7 @@ class FableServiceMath extends libFableServiceBase
 		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;
 		let tmpRightValue = isNaN(pRightValue) ? 0 : pRightValue;
 
-		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+		let tmpLeftArbitraryValue = new this.bigNumber(tmpLeftValue);
 		return tmpLeftArbitraryValue.cmp(tmpRightValue);
 	}
 
@@ -355,7 +358,7 @@ class FableServiceMath extends libFableServiceBase
 		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;
 		let tmpRightValue = isNaN(pRightValue) ? 0 : pRightValue;
 
-		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+		let tmpLeftArbitraryValue = new this.bigNumber(tmpLeftValue);
 		const diff = tmpLeftArbitraryValue.minus(tmpRightValue).abs();
 		if (diff.lte(pEpsilon))
 		{
@@ -380,7 +383,7 @@ class FableServiceMath extends libFableServiceBase
 		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;
 		let tmpRightValue = isNaN(pRightValue) ? 0 : pRightValue;
 
-		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+		let tmpLeftArbitraryValue = new this.bigNumber(tmpLeftValue);
 		return tmpLeftArbitraryValue.gt(tmpRightValue);
 	}
 
@@ -397,7 +400,7 @@ class FableServiceMath extends libFableServiceBase
 		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;
 		let tmpRightValue = isNaN(pRightValue) ? 0 : pRightValue;
 
-		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+		let tmpLeftArbitraryValue = new this.bigNumber(tmpLeftValue);
 		return tmpLeftArbitraryValue.gte(tmpRightValue);
 	}
 
@@ -413,7 +416,7 @@ class FableServiceMath extends libFableServiceBase
 		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;
 		let tmpRightValue = isNaN(pRightValue) ? 0 : pRightValue;
 
-		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+		let tmpLeftArbitraryValue = new this.bigNumber(tmpLeftValue);
 		return tmpLeftArbitraryValue.lt(tmpRightValue);
 	}
 
@@ -429,7 +432,7 @@ class FableServiceMath extends libFableServiceBase
 		let tmpLeftValue = isNaN(pLeftValue) ? 0 : pLeftValue;
 		let tmpRightValue = isNaN(pRightValue) ? 0 : pRightValue;
 
-		let tmpLeftArbitraryValue = new this.fable.Utility.bigNumber(tmpLeftValue);
+		let tmpLeftArbitraryValue = new this.bigNumber(tmpLeftValue);
 		return tmpLeftArbitraryValue.lte(tmpRightValue);
 	}
 
@@ -443,7 +446,7 @@ class FableServiceMath extends libFableServiceBase
 	{
 		let tmpDegrees = isNaN(pDegrees) ? 0 : pDegrees;
 
-		let tmpDegreesArbitraryValue = new this.fable.Utility.bigNumber(tmpDegrees);
+		let tmpDegreesArbitraryValue = new this.bigNumber(tmpDegrees);
 		// TODO: Const for pi in arbitrary precision?
 		let tmpResult = tmpDegreesArbitraryValue.times(Math.PI).div(180);
 		return tmpResult.toString();
@@ -655,7 +658,7 @@ class FableServiceMath extends libFableServiceBase
 	 */
 	sortHistogramPrecise(pHistogram)
 	{
-		let tmpSortedHistogram =  {};
+		let tmpSortedHistogram = {};
 		let tmpKeys = Object.keys(pHistogram);
 
 		tmpKeys.sort((pLeft, pRight) => { return pHistogram[pLeft] - pHistogram[pRight]; });
@@ -687,6 +690,238 @@ class FableServiceMath extends libFableServiceBase
 			}
 		}
 		return tmpCleanedArray;
+	}
+
+	/**
+	 * Calculate the natural log of 2 to a specific precision, for use in the Taylor series.
+	 * Cache outcome so it only runs once per precision.
+	 * @param {number} pPrecision - The decimal precision to calculate ln(2) to.
+	 * @returns 
+	 */
+	arbitraryNaturalLogOfTwo(pPrecision)
+	{
+		const tmpPrecisionKey = pPrecision | 0;
+		const tmpPrecision = new this.bigNumber(tmpPrecisionKey);
+		if (this.ln2Cache.has(tmpPrecisionKey))
+		{
+			return this.ln2Cache.get(tmpPrecisionKey);
+		}
+
+		const tmpTwoConstant = new this.bigNumber(2);
+		const y = tmpTwoConstant.minus(1).div(tmpTwoConstant.plus(1)); // 1/3
+		const y2 = y.mul(y);
+		let tmpSummation = new this.bigNumber(0);
+		let tmpTermination = y;
+		let tmpDenominator = 1;
+
+		// Use a slightly larger precision for this to prevent numeric drift for larger log requirements
+		const tmpEpsilon = this.powerPrecise(10, -(tmpPrecision.add(8))); // target tail < 10^-(precision+8)
+
+		for (let i = 0; i < 200000; i++)
+		{
+			tmpSummation = tmpSummation.plus(tmpTermination.div(tmpDenominator));
+			tmpTermination = tmpTermination.mul(y2);
+			tmpDenominator += 2;
+			if (tmpTermination.abs().div(tmpDenominator).lt(tmpEpsilon))
+			{
+				break;
+			}
+		}
+		const tmpNaturalLogOfTwo = tmpSummation.mul(2);
+		this.ln2Cache.set(tmpPrecisionKey, tmpNaturalLogOfTwo);
+		return tmpNaturalLogOfTwo;
+	}
+
+	/**
+	 * Calculate the natural log of a number to a specific precision using arbitrary precision numbers.
+	 * @param {number} pNumberToCompute 
+	 * @param {number} pPrecision 
+	 * @returns 
+	 */
+	arbitraryNaturalLog(pNumberToCompute, pPrecision)
+	{
+		let tmpNumberToCompute = new this.bigNumber(pNumberToCompute);
+		let tmpPrecision = new this.bigNumber(pPrecision);
+
+		if (tmpNumberToCompute.lte(0)) throw new Error('ln undefined for non-positive values.');
+		if (tmpNumberToCompute.eq(1)) return new this.bigNumber(0);
+
+		// Reduce x to m in ~[0.75, 1.5] by multiplying/dividing by 2
+		const TWO = new this.bigNumber(2);
+		let k = 0;
+		let m = tmpNumberToCompute;
+
+		const tmpUpperBounds = new this.bigNumber('1.5');
+		const tmpLowerBounds = new this.bigNumber('0.75');
+
+		while (m.gt(tmpUpperBounds))
+		{
+			m = m.div(TWO); k += 1;
+		}
+		while (m.lt(tmpLowerBounds))
+		{
+			m = m.mul(TWO); k -= 1;
+		}
+
+		// ln(m) via atanh/Taylor
+		const y = m.minus(1).div(m.plus(1)); // |y| < 1
+		const y2 = y.mul(y);
+
+		let tmpSummation = new this.bigNumber(0);
+		let tmpSeriesTermination = y; // y^(2j+1)
+		let tmpDenominator = 1;
+
+		const tmpEpsilon = this.powerPrecise(10, -(tmpPrecision.add(6))); // target tail < 10^-(precision+6)
+
+		// Iterate until next term contribution is below eps
+		for (let i = 0; i < 200000; i++)
+		{
+			tmpSummation = tmpSummation.plus(tmpSeriesTermination.div(tmpDenominator));
+			tmpSeriesTermination = tmpSeriesTermination.mul(y2);
+			tmpDenominator += 2;
+			// Stop when |tmpSeriesTermination|/tmpDenominator < eps
+			if (tmpSeriesTermination.abs().div(tmpDenominator).lt(tmpEpsilon))
+			{
+				break;
+			}
+		}
+		const tmpNaturalLog = tmpSummation.mul(2);
+
+		// ln(2) once per precision via same series with m=2 (y = 1/3 ==> for faster convergence)
+		const tmpPrecisionNaturalLog = this.arbitraryNaturalLogOfTwo(tmpPrecision);
+
+		return tmpNaturalLog.plus(tmpPrecisionNaturalLog.mul(k));
+	}
+
+	/**
+	 * High-precision natural log using:
+	 *  - Argument reduction by powers of 2: x = m * 2^k with m ~ 1
+	 *  - atanh series: ln(m) = 2 * sum_{j>=0} y^(2j+1)/(2j+1), y=(m-1)/(m+1), |y|<1
+	 *
+	 * Converges rapidly when m is close to 1 with arbitrary precision numbers.
+	 * 
+	 * @param {number} pNumberToGenerateLogarithmFor - The number to generate the logarithm for.
+	 * @param {number} [pBase] - The base of the logarithm. Defaults to 10.
+	 * @param {number} [pPrecision] - The precision of the result. Defaults to 9 decimal places.
+	 * @returns {string} - The logarithm of the number to the specified base and precision.
+	 */
+	logPrecise(pNumberToGenerateLogarithmFor, pBase, pPrecision)
+	{
+		let tmpBase = (typeof (pBase) === 'undefined') ? this.bigNumber(10) : this.bigNumber(pBase);
+		// Default precision is 9 decimal places -- matches Excel's default for LOG function
+		const tmpPrecision = (typeof (pPrecision) === 'undefined') ? 9 : pPrecision;
+		// Extra precision to avoid rounding errors since we are using a series
+		const tmpExtraPrecision = 8;
+		const tmpWorkingPrecision = tmpPrecision + tmpExtraPrecision;
+
+		// Store existing precision since this function integrates on a its own precision terms
+		const tmpSavedBigDecimalPrecision = this.bigNumber.DP;
+		const tmpSavedBigRoundingMethod = this.bigNumber.RM;
+
+		this.bigNumber.DP = tmpWorkingPrecision;
+		this.bigNumber.RM = 1; // round half up for the Taylor series
+
+		const N = this.bigNumber(pNumberToGenerateLogarithmFor);
+		const B = this.bigNumber(tmpBase);
+
+		// Run domain checks, which Excel also does
+		if (N.lte(0))
+		{
+			this.log.error(`Fable logPrecise Error: Number must be greater than 0; number was ${pNumberToGenerateLogarithmFor}.`);
+			return NaN;
+		}
+		if (B.lte(0) || B.eq(1))
+		{
+			this.log.error(`Fable logPrecise Error: Base must be greater than 0 and not equal to 1 -- base ${Base} was passed in.`);
+			return NaN;
+		}
+
+		const tmpNaturalLogOfN = this.arbitraryNaturalLog(N, tmpPrecision);
+		const tmpNaturalLogOfB = this.arbitraryNaturalLog(B, tmpPrecision);
+
+		const tmpResult = tmpNaturalLogOfN.div(tmpNaturalLogOfB);
+
+		// Final rounding to requested precision
+		let finalResult = tmpResult.toFixed(tmpPrecision);
+		this.bigNumber.DP = tmpSavedBigDecimalPrecision;
+		this.bigNumber.RM = tmpSavedBigRoundingMethod;
+		return finalResult;
+	}
+
+	expPrecise(pValue, pDecimalPrecision)
+	{
+		let tmpValue = isNaN(pValue) ? this.bigNumber(1) : this.bigNumber(pValue);
+
+		// Constants & thresholds (Excel / IEEE-754 double limits) -- this is required to match Excel's behavior
+		const tmpDecimalPrecision = (typeof (pDecimalPrecision) === 'undefined') ? 9 : parseInt(pDecimalPrecision, 10);
+		const tmpSavedBigDecimalPrecision = this.bigNumber.DP;
+		this.bigNumber.DP = tmpDecimalPrecision + 10; // a bit of extra precision for rounding safety (this makes it match excel)
+
+		// ln(2), min/max natural logs before double overflow/underflow
+		const tmpNaturalLogOfTwo = new this.bigNumber('0.693147180559945309417232121458176568'); // This is hilarious that we can compute the value above but this is what Excel uses.
+		const tmpNaturalLogMaxDouble = new this.bigNumber('709.782712893384'); // ln(1.7976931348623157e308)
+		const tmpNaturalLogMinimumValue = new this.bigNumber('-744.4400719213812'); // ln(5e-324)
+
+		// 1. Guard for Overflow / underflow behavior to match Excel
+		if (tmpValue.gt(tmpNaturalLogMaxDouble))
+		{
+			this.bigNumber.DP = tmpSavedBigDecimalPrecision;
+			return NaN; // Excel shows #NUM! when result overflows we will use NaN
+		}
+		if (tmpValue.lt(tmpNaturalLogMinimumValue))
+		{
+			this.bigNumber.DP = tmpSavedBigDecimalPrecision;
+			return new this.bigNumber(0); // Excel underflows to 0
+		}
+
+		// 2. Perform Range reduction: x = k*ln2 + r, with r small
+		// k = floor(x / ln2)
+		let k;
+		try
+		{
+			k = tmpValue.div(tmpNaturalLogOfTwo).round(0, 0 /* RoundDown toward -infinity */); // floor for positives & negatives
+		}
+		catch(pErrorRounding)
+		{
+			this.log.error(`Fable expPrecise Error: Rounding error during range reduction for value of ${pValue}.  Error: ${pErrorRounding}`);
+			this.bigNumber.DP = tmpSavedBigDecimalPrecision;
+			return NaN;
+		}
+		const r = tmpValue.minus(k.times(tmpNaturalLogOfTwo));
+
+		// Compute exp(r) via Taylor series with Big arithmetic
+		// exp(r) = Summation of r^n / n!, n=0..infinity
+		// Sum until termination is below tolerance based on decimal precision
+		const tmpTolerance = new this.bigNumber(10).pow(-(tmpDecimalPrecision + 2));
+		let tmpTermination = new this.bigNumber(1); // r^0/0! = 1
+		let tmpSummation = new this.bigNumber(1);
+		let n = 1;
+
+		// 3. Multiply incrementally: term *= r / n
+		// SOOOOO close to a fractal!
+		while (true)
+		{
+			tmpTermination = tmpTermination.times(r).div(n);
+			if (tmpTermination.abs().lt(tmpTolerance)) break;
+			tmpSummation = tmpSummation.plus(tmpTermination);
+			n++;
+			// Hard safety cap for pathological inputs (shouldn’t be possible with step 2's range reduction):
+			if (n > 2000)
+			{
+				this.log.warn(`Fable expPrecise warning: Taylor series failed to converge after 2000 iterations for value of ${pValue}.`);
+				break;
+			}
+		}
+
+		// 4. Recompose: exp(x) = 2^k * exp(r)
+		const tmpTwo = new this.bigNumber(2);
+		const tmpAbsoluteValueOfK = k.abs().toNumber(); // k is integer; big.js pow requires a JS integer
+		let tmpTwoToThePowerOfAbsoluteK = tmpAbsoluteValueOfK === 0 ? new this.bigNumber(1) : tmpTwo.pow(tmpAbsoluteValueOfK);
+		const tmpResult = k.gte(0) ? tmpSummation.times(tmpTwoToThePowerOfAbsoluteK) : tmpSummation.div(tmpTwoToThePowerOfAbsoluteK);
+
+		// 5. Restore global decimal precision
+		this.bigNumber.DP = tmpSavedBigDecimalPrecision;
+		return tmpResult.round(tmpDecimalPrecision).toString();
 	}
 
 	cleanValueObject(pValueObject)

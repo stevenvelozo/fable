@@ -41,6 +41,16 @@
 		"Address": "fable.Math.eulerPrecise"
 	},
 
+	"log": {
+		"Name": "Logarithm",
+		"Address": "fable.Math.logPrecise"
+	},
+	"exp": {
+		"Name": "Eulers Number to the Power Of N",
+		"Address": "fable.Math.expPrecise"
+	},
+
+
 	"sin": {
 		"Name": "Sine",
 		"Address": "fable.Math.sin"

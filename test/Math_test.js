@@ -295,6 +295,80 @@ suite
 						return fDone();
 					}
 				);
+
+				test
+				(
+					'Logarithms',
+					function(fDone)
+					{
+						let testFable = new libFable();
+						
+						Expect(testFable.Math.logPrecise(0)).to.be.NaN;
+						Expect(testFable.Math.logPrecise(1.124)).to.equal('0.050766311');
+						Expect(testFable.Math.logPrecise('1.124')).to.equal('0.050766311');
+						Expect(testFable.Math.logPrecise('1.4')).to.equal('0.146128036');
+						Expect(testFable.Math.logPrecise('1.874232')).to.equal('0.272823349');
+						Expect(testFable.Math.logPrecise('1.9')).to.equal('0.278753601');
+						Expect(testFable.Math.logPrecise('2.2')).to.equal('0.342422681');
+						Expect(testFable.Math.logPrecise('3.324')).to.equal('0.521661015');
+						Expect(testFable.Math.logPrecise('6.32423')).to.equal('0.801007656');
+						Expect(testFable.Math.logPrecise('7')).to.equal('0.845098040');
+						Expect(testFable.Math.logPrecise('16')).to.equal('1.204119983');
+						Expect(testFable.Math.logPrecise('10000')).to.equal('4.000000000');
+						Expect(testFable.Math.logPrecise('87')).to.equal('1.939519253');
+						Expect(testFable.Math.logPrecise('100')).to.equal('2.000000000');
+						Expect(testFable.Math.logPrecise('110')).to.equal('2.041392685');
+						Expect(testFable.Math.logPrecise('130')).to.equal('2.113943352');
+						Expect(testFable.Math.logPrecise('400')).to.equal('2.602059991');
+						Expect(testFable.Math.logPrecise('500')).to.equal('2.698970004');
+						Expect(testFable.Math.logPrecise('600')).to.equal('2.778151250');
+						Expect(testFable.Math.logPrecise('900')).to.equal('2.954242509');
+						Expect(testFable.Math.logPrecise('999')).to.equal('2.999565488');
+						Expect(testFable.Math.logPrecise('1000')).to.equal('3.000000000');
+						Expect(testFable.Math.logPrecise('1001')).to.equal('3.000434077');
+						Expect(testFable.Math.logPrecise('1200')).to.equal('3.079181246');
+						Expect(testFable.Math.logPrecise('1300')).to.equal('3.113943352');
+						Expect(testFable.Math.logPrecise('1999')).to.equal('3.300812794');
+						Expect(testFable.Math.logPrecise('2000')).to.equal('3.301029996');
+						Expect(testFable.Math.logPrecise('3000')).to.equal('3.477121255');
+						Expect(testFable.Math.logPrecise('4000')).to.equal('3.602059991');
+						Expect(testFable.Math.logPrecise('5000')).to.equal('3.698970004');
+						Expect(testFable.Math.logPrecise('100000')).to.equal('5.000000000');
+						Expect(testFable.Math.logPrecise('1005000901')).to.equal('9.002166451');
+
+						return fDone();
+					}
+				);
+
+				test
+				(
+					'Eulers to an Exponent of N',
+					function(fDone)
+					{
+						let testFable = new libFable();
+
+						Expect(testFable.Math.expPrecise('0')).to.equal('1');
+						Expect(testFable.Math.expPrecise('1.124')).to.equal('3.077138172');
+						Expect(testFable.Math.expPrecise('1.4')).to.equal('4.055199967');
+						Expect(testFable.Math.expPrecise('1.874232')).to.equal('6.515813054');
+						Expect(testFable.Math.expPrecise('1.9')).to.equal('6.685894442');
+						Expect(testFable.Math.expPrecise('2.2')).to.equal('9.025013499');
+						Expect(testFable.Math.expPrecise('3.324')).to.equal('27.771213539');
+						Expect(testFable.Math.expPrecise('6.32423')).to.equal('557.928043628');
+						Expect(testFable.Math.expPrecise('7')).to.equal('1096.633158427');
+						Expect(testFable.Math.expPrecise('16')).to.equal('8886110.52050434');
+						Expect(testFable.Math.expPrecise('87')).to.equal('6.0760302250165910226862305668049228933571005991e+37');
+						Expect(testFable.Math.expPrecise('100')).to.equal('2.6881171418144006498361355299904430489510323068101727e+43');
+						Expect(testFable.Math.expPrecise('110')).to.equal('5.92097202763302871775566547178919934033680861763789992544e+47');
+						Expect(testFable.Math.expPrecise('130')).to.equal('2.87264955081656835249498360594656214322410986618852673463510287128e+56');
+						Expect(testFable.Math.expPrecise('400')).to.equal('5.22146968976280766823448917819312119928757838636294365087229965314955319234363035967068090474969920921229926737521823711259606341428359454445036263563446386876069161748564476869487107e+173');
+						Expect(testFable.Math.expPrecise('500')).to.equal('1.4035922178443322635139346187029106729839029888278346358090479055036847329857327659066066346423163346684518112330560812299308307757301544400486805796338124141628072493187592353782193348029633841832360152127536485213047179412609e+217');
+						Expect(testFable.Math.expPrecise('600')).to.equal('3.77302030092434336419695838674700740088354673638834622388500325660794131835628047153390042345698138347361656320402231485978980283954189824175081056524926295674148482949243810250377530201023308557571234567617672508975937688969808748216814845636042130603884174370820531865e+260');
+
+						return fDone();
+					}
+				)
+
 			}
 		);
 	}
