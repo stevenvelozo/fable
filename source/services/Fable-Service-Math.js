@@ -152,7 +152,7 @@ class FableServiceMath extends libFableServiceBase
 	toFixedPrecise(pValue, pDecimals, pRoundingMethod)
 	{
 		let tmpValue = isNaN(pValue) ? 0 : pValue;
-		let tmpDecimals = isNaN(pDecimals) ? 0 : pDecimals;
+		let tmpDecimals = isNaN(pDecimals) ? 0 : parseInt(pDecimals);
 		let tmpRoundingMethod = (typeof (pRoundingMethod) === 'undefined') ? this.roundHalfUp : pRoundingMethod;
 
 		let tmpArbitraryValue = new this.bigNumber(tmpValue);
