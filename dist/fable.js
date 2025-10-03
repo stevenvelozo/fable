@@ -4002,7 +4002,7 @@ tmpNumber=typeof pNonNumberValue==='undefined'?"0.0":pNonNumberValue;}return tmp
 	 * @param {number} pDecimals - The number of decimals to include in the formatted string.
 	 * @param {string} [pRoundingMethod] - The rounding method to use. Defaults to 'roundHalfUp'.
 	 * @returns {string} - The formatted number as a string.
-	 */toFixedPrecise(pValue,pDecimals,pRoundingMethod){let tmpValue=isNaN(pValue)?0:pValue;let tmpDecimals=isNaN(pDecimals)?0:parseInt(pDecimals);let tmpRoundingMethod=typeof pRoundingMethod==='undefined'?this.roundHalfUp:pRoundingMethod;let tmpArbitraryValue=new this.bigNumber(tmpValue);let tmpResult=tmpArbitraryValue.toFixed(tmpDecimals,tmpRoundingMethod);return tmpResult.toString();}/**
+	 */toFixedPrecise(pValue,pDecimals,pRoundingMethod){let tmpValue=isNaN(pValue)?0:pValue;let tmpDecimals=isNaN(pDecimals)?0:parseInt(pDecimals,10);let tmpRoundingMethod=typeof pRoundingMethod==='undefined'?this.roundHalfUp:pRoundingMethod;let tmpArbitraryValue=new this.bigNumber(tmpValue);let tmpResult=tmpArbitraryValue.toFixed(tmpDecimals,tmpRoundingMethod);return tmpResult.toString();}/**
 	 * Adds two values precisely.
 	 * @param {number} pLeftValue - The left value to be added.
 	 * @param {number} pRightValue - The right value to be added.
