@@ -264,6 +264,22 @@
 		"Address": "fable.DataGeneration.randomFloatUpTo"
 	},
 
+	"datemilliseconddifference": {
+		"Name": "Date Difference in Milliseconds",
+		"Address": "fable.Dates.dateMillisecondDifference"
+	},
+	"dateseconddifference": {
+		"Name": "Date Difference in Seconds",
+		"Address": "fable.Dates.dateSecondDifference"
+	},
+	"dateminutedifference": {
+		"Name": "Date Difference in Minutes",
+		"Address": "fable.Dates.dateMinuteDifference"
+	},
+	"datehourdifference": {
+		"Name": "Date Difference in Hours",
+		"Address": "fable.Dates.dateHourDifference"
+	},
 	"datedaydifference": {
 		"Name": "Date Difference in Days",
 		"Address": "fable.Dates.dateDayDifference"

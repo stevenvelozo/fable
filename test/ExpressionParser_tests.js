@@ -193,6 +193,18 @@ suite
 						Expect(_Parser.solve('7 +13')).to.equal("20");
 						Expect(_Parser.solve('7+14')).to.equal("21");
 
+						Expect(_Parser.solve('Result = datemilliseconddifference("2023-08-10T05:00:00.000Z", "2023-08-11T05:00:00.000Z")')).to.equal("86400000");
+						Expect(_Parser.solve('Result = datemilliseconddifference(StartDate, EndDate)', {StartDate: "2023-08-10T05:00:00.000Z", EndDate: "2023-08-11T05:00:00.000Z"})).to.equal("86400000");
+						Expect(_Parser.solve('Result = datemilliseconddifference(StartDate, EndDate)', {StartDate: "2023-08-10T05:11:00.000Z", EndDate: "2023-08-11T05:00:00.000Z"})).to.equal("85740000");
+						Expect(_Parser.solve('Result = datemilliseconddifference(StartDate, EndDate, 1)', {StartDate: "2023-08-10T05:11:00.000Z"})).to.equal('NaN');
+						Expect(_Parser.solve('Result = dateseconddifference(StartDate, EndDate)', {StartDate: "2023-08-10T05:00:00.000Z", EndDate: "2023-08-11T05:00:00.000Z"})).to.equal("86400");
+						Expect(_Parser.solve('Result = datehourdifference(StartDate, EndDate)', {StartDate: "2023-08-10T05:00:00.000Z", EndDate: "2023-08-11T05:00:00.000Z"})).to.equal("24");
+						Expect(_Parser.solve('Result = dateminutedifference(StartDate, EndDate)', {StartDate: "2023-08-10T05:00:00.000Z", EndDate: "2023-08-11T05:00:00.000Z"})).to.equal("1440");
+						Expect(_Parser.solve('Result = datehourdifference(StartDate, EndDate)', {StartDate: "2023-08-10T05:00:00.000Z", EndDate: "2023-08-11T05:00:00.000Z"})).to.equal("24");
+						Expect(_Parser.solve('Result = datedaydifference(StartDate, EndDate)', {StartDate: "2023-08-10T05:00:00.000Z", EndDate: "2023-08-11T05:00:00.000Z"})).to.equal("1");
+						Expect(_Parser.solve('Result = dateweekdifference(StartDate, EndDate)', {StartDate: "2023-08-10T05:00:00.000Z", EndDate: "2023-05-22T05:00:00.000Z"})).to.equal("-11");
+						Expect(_Parser.solve('Result = datemonthdifference(StartDate, EndDate)', {StartDate: "2023-08-10T05:00:00.000Z", EndDate: "2021-01-11T05:00:00.000Z"})).to.equal("-30");
+						Expect(_Parser.solve('Result = dateyeardifference(StartDate, EndDate)', {StartDate: "1986-08-10T05:00:00.000Z", EndDate: "2023-08-11T05:00:00.000Z"})).to.equal("37");
 
 						Expect(_Parser.solve('5 + 2 * 10')).to.equal("25");
 						Expect(_Parser.solve('3.5 + 5 + 10 * 10 / 5')).to.equal("28.5");
