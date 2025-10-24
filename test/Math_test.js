@@ -113,6 +113,100 @@ suite
 						Expect(tmpTestValueSet[4].RunningTotal).to.equal('18.95');
 						Expect(tmpTestValueSet[5].RunningTotal).to.equal('20.44');
 
+						tmpTestValueSet = (
+							[
+								{ Item: 'NoCost', Quantity: 2 },
+								...tmpTestValueSet
+							]);
+
+						testFable.Math.cumulativeSummation(tmpTestValueSet, 'Price', 'RunningTotal');
+
+						Expect(tmpTestValueSet[0].RunningTotal).to.equal('0');
+						Expect(tmpTestValueSet[1].RunningTotal).to.equal('7.99');
+						Expect(tmpTestValueSet[2].RunningTotal).to.equal('11.98');
+						Expect(tmpTestValueSet[3].RunningTotal).to.equal('13.97');
+						Expect(tmpTestValueSet[4].RunningTotal).to.equal('16.96');
+						Expect(tmpTestValueSet[5].RunningTotal).to.equal('18.95');
+						Expect(tmpTestValueSet[6].RunningTotal).to.equal('20.44');
+
+						return fDone();
+					}
+				);
+
+				test
+				(
+					'Subtractive Summation',
+					function(fDone)
+					{
+						let testFable = new libFable();
+
+						let tmpTestValueSet = (
+							[
+								{ Item: 'GroceryBag', Volume: '150.00' },
+
+								{ Item: 'Lettuce', Volume: '80' },
+								{ Item: 'Tomato', Volume: '30.17' },
+								{ Item: 'Onion', Volume: '10.9' },
+								{ Item: 'Cucumber', Volume: '15.032' }
+							]);
+
+						testFable.Math.subtractingSummation(tmpTestValueSet, 'Volume', 'SpaceLeftInBag');
+
+						Expect(tmpTestValueSet[0].SpaceLeftInBag).to.equal('150');
+						Expect(tmpTestValueSet[1].SpaceLeftInBag).to.equal('70');
+						Expect(tmpTestValueSet[2].SpaceLeftInBag).to.equal('39.83');
+						Expect(tmpTestValueSet[3].SpaceLeftInBag).to.equal('28.93');
+						Expect(tmpTestValueSet[4].SpaceLeftInBag).to.equal('13.898');
+
+						return fDone();
+					}
+				);
+
+				test
+				(
+					'Iterative Series Operations',
+					function(fDone)
+					{
+						let testFable = new libFable();
+
+						let tmpTestValueSet = (
+							[
+								{ Item: 'FirstSplit', Amount: '8' },
+								{ Item: 'SecondSplit', Amount: '2' },
+								{ Item: 'ThirdSplit', Amount: '4' },
+								{ Item: 'FourthSplit', Amount: '2' }
+							]);
+
+						testFable.Math.iterativeSeries(tmpTestValueSet, 'Amount', 'RAMLeft', '1.25', 'divide', '1024', true);
+						Expect(tmpTestValueSet[0].RAMLeft).to.equal('102.4');
+						Expect(tmpTestValueSet[1].RAMLeft).to.equal('40.96');
+						Expect(tmpTestValueSet[2].RAMLeft).to.equal('8.192');
+						Expect(tmpTestValueSet[3].RAMLeft).to.equal('3.2768');
+
+						testFable.Math.iterativeSeries(tmpTestValueSet, 'Amount', 'RAMLeft', '1.0', 'divide', '1024', true);
+						Expect(tmpTestValueSet[0].RAMLeft).to.equal('128');
+						Expect(tmpTestValueSet[1].RAMLeft).to.equal('64');
+						Expect(tmpTestValueSet[2].RAMLeft).to.equal('16');
+						Expect(tmpTestValueSet[3].RAMLeft).to.equal('8');
+
+						testFable.Math.iterativeSeries(tmpTestValueSet, 'Amount', 'RAMLeft', '0.7512', 'mul', '1024', true);
+						Expect(tmpTestValueSet[0].RAMLeft).to.equal('6153.8304');
+						Expect(tmpTestValueSet[1].RAMLeft).to.equal('9245.51479296');
+						Expect(tmpTestValueSet[2].RAMLeft).to.equal('27780.922849886208');
+						Expect(tmpTestValueSet[3].RAMLeft).to.equal('41738.0584896690388992');
+
+						testFable.Math.iterativeSeries(tmpTestValueSet, 'Amount', 'RAMLeft', null, 'sub');
+						Expect(tmpTestValueSet[0].RAMLeft).to.equal('8');
+						Expect(tmpTestValueSet[1].RAMLeft).to.equal('6');
+						Expect(tmpTestValueSet[2].RAMLeft).to.equal('2');
+						Expect(tmpTestValueSet[3].RAMLeft).to.equal('0');
+
+						testFable.Math.iterativeSeries(tmpTestValueSet, 'Amount', 'RAMLeft', undefined, 'sub', 1100);
+						Expect(tmpTestValueSet[0].RAMLeft).to.equal('1092');
+						Expect(tmpTestValueSet[1].RAMLeft).to.equal('1090');
+						Expect(tmpTestValueSet[2].RAMLeft).to.equal('1086');
+						Expect(tmpTestValueSet[3].RAMLeft).to.equal('1084');
+
 						return fDone();
 					}
 				);
@@ -128,6 +222,7 @@ suite
 						// 3.3333333333333333333333333333333 in the current node.js implementation collapses to 3.3333333333333335
 						Expect(testFable.Math.parsePrecise('4.3333333333333333333333333333333')).to.equal('4.3333333333333333333333333333333');
 						Expect(testFable.Math.parsePrecise(undefined)).to.equal('0.0');
+						Expect(testFable.Math.parsePrecise('')).to.equal('0.0');
 
 						return fDone();
 					}

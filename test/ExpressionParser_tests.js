@@ -178,6 +178,30 @@ suite
 				);
 				test
 				(
+					'Test iterative series',
+					(fDone)=>
+					{
+						let testFable = new libFable();
+						let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+						let tmpResult = _Parser.solve('Result = ITERATIVESERIES(Values, "Value", "Resultant", 1, "add")',
+							{
+								Values: [
+									{Value: 10},
+									{Value: 20},
+									{Value: 5}
+								]
+							});
+
+						Expect(tmpResult[0].Resultant).to.equal("10");
+						Expect(tmpResult[1].Resultant).to.equal("30");
+						Expect(tmpResult[2].Resultant).to.equal("35");
+
+						return fDone();
+					}
+				)
+				test
+				(
 					'Exercise End-to-End Expression Parsing',
 					(fDone)=>
 					{

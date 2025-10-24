@@ -1101,9 +1101,54 @@ class FableServiceMath extends libFableServiceBase
 	/**
 	 * Expects an array of objects, and an address in each object to sum.  Expects 
 	 * an address to put the cumulative summation as well.
-	 * @param {Array} pValueObjectSet 
+	 * 
+	 * @param {Array} pValueObjectSet - The array of objects to perform a cumulative summation on
+	 * @param {string} pValueAddress - The address of the column in each object to sum
+	 * @param {string} pCumulationResultAddress - The address in each object to put the cumulative summation result
+	 * @param {Object} pManifest - The manifest to use for value retrieval and setting
+	 * @returns {Array} The updated value object set with cumulative summation results.
 	 */
 	cumulativeSummation(pValueObjectSet, pValueAddress, pCumulationResultAddress, pManifest)
+	{
+		return this.iterativeSeries(pValueObjectSet, pValueAddress, pCumulationResultAddress, "1.0", "add", "0.0", true, pManifest);
+	}
+
+	/**
+	 * Expects an array of objects, and an address in each object to sum.  Expects 
+	 * an address to put the cumulative summation as well.
+	 * 
+	 * @param {Array} pValueObjectSet - The array of objects to perform a cumulative summation on
+	 * @param {string} pValueAddress - The address of the column in each object to sum
+	 * @param {string} pCumulationResultAddress - The address in each object to put the cumulative summation result
+	 * @param {string} pStartingValue - The (optional) address of the value to start with
+	 * @param {Object} pManifest - The manifest to use for value retrieval and setting
+	 * @returns {Array} The updated value object set with cumulative summation results.
+	 */
+	subtractingSummation(pValueObjectSet, pValueAddress, pCumulationResultAddress, pStartingValue, pManifest)
+	{
+		let tmpProcessFirstRow = true;
+		// If the starting value comes from somewhere else, we want to subtract the first row from it.
+		if (typeof (pStartingValue) === 'undefined' || pStartingValue === null)
+		{
+			tmpProcessFirstRow = false;
+		}
+		return this.iterativeSeries(pValueObjectSet, pValueAddress, pCumulationResultAddress, "1.0", "subtract", pStartingValue, tmpProcessFirstRow, pManifest);
+	}
+
+	/**
+	 * Expects an array of objects, and an address in each object to perform an iterative mathematical operation on.
+
+	 * @param {Array} pValueObjectSet - The array of objects to perform a cumulative summation on
+	 * @param {string} pValueAddress - The address of the column in each object to sum
+	 * @param {string} pValueMultiplier - The multiplier to apply to each value before summation
+	 * @param {string} pSummationOperation - The operation to perform for summation: +, -, *, / (and some textual equivalents)
+	 * @param {string} pCumulationResultAddress - The address in each object to put the cumulative summation result
+	 * @param {string} pStartingValue - The address of the value to process from; defaults to the first row
+	 * @param {boolean} pProcessFirstRowWithAValue - Whether to process the first row's value from all subsequent rows
+	 * @param {Object} pManifest - The manifest to 
+	 * @returns {Array} The updated value object set with cumulative summation results.
+	 */
+	iterativeSeries(pValueObjectSet, pValueAddress, pCumulationResultAddress, pValueMultiplier, pSummationOperation, pStartingValue, pProcessFirstRowWithAValue, pManifest)
 	{
 		if (!Array.isArray(pValueObjectSet))
 		{
@@ -1115,18 +1160,86 @@ class FableServiceMath extends libFableServiceBase
 			return pValueObjectSet;
 		}
 
-		let tmpSummationValue = '0.0';
+		// By default don't subtract the first row from the value
+		let tmpProcessFirstRow = (typeof(pProcessFirstRowWithAValue) === 'undefined') ? false : pProcessFirstRowWithAValue;
+
+		let tmpValueMultiplier;
+		if (pValueMultiplier && pValueMultiplier !== '')
+		{
+			tmpValueMultiplier = this.parsePrecise(pValueMultiplier);
+		}
+		if (isNaN(tmpValueMultiplier))
+		{
+			tmpValueMultiplier = this.parsePrecise("1.0");
+		}
+
+		// Default to start from the current value address
+		let tmpSummationValue;
+		// This logic ensures we don't default to 0 when pStartingValue is an empty string
+		if (pStartingValue || (pStartingValue !== ''))
+		{
+			tmpSummationValue = this.parsePrecise(pStartingValue);
+		}
+		if (isNaN(tmpSummationValue) || typeof(pStartingValue) === 'undefined' || pStartingValue === null)
+		{
+			tmpSummationValue = '';
+		}
+
 		for (let i = 0; i < pValueObjectSet.length; i++)
 		{
 			let tmpValue = this.parsePrecise(this.fable.Utility.getValueByHash(pValueObjectSet[i], pValueAddress, pManifest));
+			// Since summation might start on a row after the first, 
+			let tmpFirstRowWithValue = false;
+			if ((tmpSummationValue === '') && tmpValue && !isNaN(tmpSummationValue))
+			{
+				// Try to grab the summation value from the first row with a value
+				tmpSummationValue = tmpValue;
+				tmpFirstRowWithValue = true;
+			}
 
+			// Continue on with the values as they are if the current row doesn't have a change
 			if (isNaN(tmpValue))
 			{
 				this.fable.Utility.setValueByHash(pValueObjectSet[i], pCumulationResultAddress, tmpSummationValue, pManifest);
 				continue;
 			}
 
-			tmpSummationValue = this.addPrecise(tmpValue, tmpSummationValue);
+			tmpValue = this.multiplyPrecise(tmpValue, tmpValueMultiplier);
+
+			// Now perform the operation
+			if (!tmpFirstRowWithValue || tmpProcessFirstRow)
+			{
+				switch (pSummationOperation)
+				{
+					case '+':
+					case 'add':
+					case 'plus':
+					case 'addition':
+						tmpSummationValue = this.addPrecise(tmpSummationValue, tmpValue);
+						break;
+
+					case '-':
+					case 'sub':
+					case 'minus':
+					case 'subtract':
+						tmpSummationValue = this.subtractPrecise(tmpSummationValue, tmpValue);
+						break;
+
+					case '*':
+					case 'mul':
+					case 'times':
+					case 'multiply':
+						tmpSummationValue = this.multiplyPrecise(tmpSummationValue, tmpValue);
+						break;
+
+					case '-':
+					case 'div':
+					case 'over':
+					case 'divide':
+						tmpSummationValue = this.dividePrecise(tmpSummationValue, tmpValue);
+						break;
+				}
+			}
 			this.fable.Utility.setValueByHash(pValueObjectSet[i], pCumulationResultAddress, tmpSummationValue, pManifest);
 		}
 
