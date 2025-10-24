@@ -129,7 +129,7 @@
 		"Address": "fable.Math.cumulativeSummation"
 	},
 
-	"subtractingSummation": {
+	"subtractingsummation": {
 		"Name": "Subtract each subsequent value in a Histogram or Value Map cumulatively (by default from the first row), creating or setting a property with the result on each row.",
 		"Address": "fable.Math.subtractingSummation"
 	},
