@@ -54,6 +54,8 @@ suite
 						let tokenizedNegativeParams = _Parser.tokenize('SUM(10, -10)');
 						//Expect(tokenizedNegativeParams.length).to.equal(6);
 						Expect(tokenizedNegativeParams).to.deep.equal(['SUM', '(', '10', ',', '-', '10', ')']);
+						let unbalancedParens = _Parser.tokenize('ROUND(5 + (2 * 10), 10))');
+						Expect(unbalancedParens).to.deep.equal(['ROUND', '(', '5', '+', '(', '2', '*', '10', ')', ',', '10', ')', ')']);
 						return fDone();
 					}
 				);
@@ -78,6 +80,12 @@ suite
 						let brokenLintedResults = _Parser.lintTokenizedExpression(brokenTokenizedResults, tmpResultObject);
 						// The */ is invalid!!!!
 						Expect(brokenLintedResults.length).to.equal(1);
+
+						let unbalancedParensTokenizedResults = _Parser.tokenize('Value = ROUND(5 + (2 * 10), 10))');
+						let unbalancedParensLintedResults = _Parser.lintTokenizedExpression(unbalancedParensTokenizedResults, tmpResultObject);
+						// The unbalanced parens should be caught
+						Expect(unbalancedParensLintedResults.length).to.equal(1);
+						Expect(unbalancedParensLintedResults[0]).to.contain('unbalanced parenthesis');
 						return fDone();
 					}
 				);
@@ -172,6 +180,20 @@ suite
 						Expect(tmpDestinationObject.EGS).to.equal(tmpDestinationObject.EGSR);
 						testFable.ExpressionParser.Messaging.logFunctionSolve(tmpResultObject);
 						Expect(tmpDestinationObject.EGS).to.equal("0.0061");
+
+						tmpDataObject.EJBinderGb1 = '15.5';
+						tmpDataObject.EKPctBinderPb2 = '2.55555';
+						_Parser.solve('EGse1 = Round((100 - EJBinderGb1) / EKPctBinderPb2), 2)', tmpDataObject, tmpResultObject, false, tmpDestinationObject);
+						//TODO: we can consider solving and ignoring this paren, but for now, the error is fatal
+						Expect(tmpDestinationObject.EGse1).to.not.exist;
+						testFable.ExpressionParser.Messaging.logFunctionSolve(tmpResultObject);
+
+						_Parser.solve('EGse1 = Round((100 - EJBinderGb1) / EKPctBinderPb2, 2)', tmpDataObject, tmpResultObject, false, tmpDestinationObject);
+						Expect(tmpDestinationObject.EGse1).to.equal('33.07');
+
+						_Parser.solve('EGse1 = Round((100 - EJBinderGb1) / EKPctBinderPb2), 2)', tmpDataObject, tmpResultObject, false, tmpDestinationObject);
+						// ensure that this does mutate the output on error
+						Expect(tmpDestinationObject.EGse1).to.not.exist;
 
 						return fDone();
 					}

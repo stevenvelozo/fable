@@ -407,6 +407,12 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 				else if (tmpPostfixTokenObject.Token === ')')
 				{
 					let tmpOpenParenthesis = tmpFunctionCacheLIFOStack.pop();
+					if (!tmpOpenParenthesis)
+					{
+						tmpResults.ExpressionParserLog.push(`ERROR: ExpressionParser.buildPostfixedSolveList found a closing parenthesis at token index ${i} with no corresponding opening parenthesis.`);
+						continue;
+					}
+
 					if (tmpOpenParenthesis.IsFunction)
 					{
 						tmpPostfixTokenObject.IsFunction = true;
@@ -471,6 +477,12 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 							}
 						}
 					}
+					if (!tmpOpenParenthesis)
+					{
+						tmpResults.ExpressionParserLog.push(`ERROR: ExpressionParser.buildPostfixedSolveList found a closing parenthesis at token index ${i} with no corresponding opening parenthesis.`);
+						continue;
+					}
+
 					if (tmpOpenParenthesis.PreviousOperator && tmpOpenParenthesis.NextOperator)
 					{
 						if (tmpOpenParenthesis.PreviousOperator.Descriptor.Precedence <= tmpOpenParenthesis.NextOperator.Descriptor.Precedence)
