@@ -84,6 +84,10 @@
 		"Name": "Sort Histogram",
 		"Address": "fable.Math.sortHistogramPrecise"
 	},
+	"sorthistogrambykeys": {
+		"Name": "Sort Histogram by Keys",
+		"Address": "fable.Math.sortHistogramByKeys"
+	},
 
 	"max": {
 		"Name": "Maximum",
@@ -147,6 +151,35 @@
 	"getvalue": {
 		"Name": "Get Value from Application State or Services (AppData, etc.)",
 		"Address": "fable.Utility.getInternalValueByHash"
+	},
+
+	"objectkeystoarray": {
+		"Name": "Get Array of an Object's keys",
+		"Address": "fable.Utility.objectKeysToArray"
+	},
+	"objectvaluestoarray": {
+		"Name": "Get Array of an Object's values",
+		"Address": "fable.Utility.objectValuesToArray"
+	},
+	"objectvaluessortbyexternalobjectarray": {
+		"Name": "Get Array of an Object's values sorted by an external array",
+		"Address": "fable.Utility.objectValuesSortByExternalArray"
+	},
+	"setkeystoarray": {
+		"Name": "Get Array of an Object's keys",
+		"Address": "fable.Utility.objectKeysToArray"
+	},
+	"setvaluestoarray": {
+		"Name": "Get Array of an Object's values",
+		"Address": "fable.Utility.objectValuesToArray"
+	},
+	"histogramkeystoarray": {
+		"Name": "Get Array of an Object's keys",
+		"Address": "fable.Utility.objectKeysToArray"
+	},
+	"histogramvaluestoarray": {
+		"Name": "Get Array of an Object's values",
+		"Address": "fable.Utility.objectValuesToArray"
 	},
 
 	"createarrayfromabsolutevalues": {

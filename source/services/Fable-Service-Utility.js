@@ -299,6 +299,70 @@ class FableServiceUtility extends libFableServiceBase
 		return false;
 	}
 
+	// Convert objects to arrays of labels or values for solvers
+	objectKeysToArray(pObject)
+	{
+		return Object.keys(pObject);
+	}
+
+	// Convert object values to an array of values
+	objectValuesToArray(pObject)
+	{
+		let tmpKeys = Object.keys(pObject);
+		let tmpValues = [];
+
+		for (let i = 0; i < tmpKeys.length; i++)
+		{
+			tmpValues.push(pObject[tmpKeys[i]]);
+		}
+
+		return tmpValues;
+	}
+
+	objectValuesSortByExternalArray(pArray, pObjectArray, pDescending, pSearchAddress)
+	{
+		let tmpDescending = (typeof(pDescending) == 'boolean') ? pDescending : 
+							((typeof(pDescending) == 'number') && (pDescending == 1)) ? true : 
+							((typeof(pDescending) == 'string') && (pDescending == '1')) ? true : 
+							false;
+		let tmpManifest = this.fable.newManyfest();
+
+		let tmpSearchAddresses = pSearchAddress;
+
+		if (typeof(tmpSearchAddresses) != 'string')
+		{
+			// Defaulting to "label"...
+			tmpSearchAddresses = 'label';
+		}
+
+		let tmpSortHelperArray = [];
+
+		for (let i = 0; i < pArray.length; i++)
+		{
+			tmpSortHelperArray.push(
+				{
+					Value: pArray[i],
+					SortValue: tmpManifest.getValueByHash(pObjectArray[i], tmpSearchAddresses),
+					SortObject: pObjectArray[i]
+				});
+		}
+
+		let tmpSortedArray = tmpSortHelperArray.sort((pLeft, pRight) =>
+		{
+			if (pLeft.SortValue < pRight.SortValue)
+			{
+				return tmpDescending ? 1 : -1;
+			}
+			if (pLeft.SortValue > pRight.SortValue)
+			{
+				return tmpDescending ? -1 : 1;
+			}
+			return 0;
+		}).map((pSortHelperArrayObject) => { return pSortHelperArrayObject.Value; });
+
+		return tmpSortedArray;
+	}
+
 	// Convert an ISO string to a javascript date object
 	// Adapted from https://stackoverflow.com/a/54751179
 	//

@@ -119,6 +119,71 @@ suite
 				);
 				test
 				(
+					'Process object keys and values for use in solvers',
+					function()
+					{
+						testFable = new libFable();
+						let tmpKeys = testFable.services.Utility.objectKeysToArray({A: 1, B: 2, c: 3});
+						Expect(tmpKeys).to.be.an('array');
+						Expect(tmpKeys.length).to.equal(3);
+						Expect(tmpKeys).to.include('A');
+						Expect(tmpKeys).to.include('B');
+						Expect(tmpKeys).to.include('c');
+
+						let tmpValues = testFable.services.Utility.objectValuesToArray({A: 1, B: 2, c: 3});
+						Expect(tmpValues).to.be.an('array');
+						Expect(tmpValues.length).to.equal(3);
+						Expect(tmpValues).to.include(1);
+						Expect(tmpValues).to.include(2);
+						Expect(tmpValues).to.include(3);
+
+						let tmpObjectArray = [
+							{ City: 'Boston', State: 'MA', Population: 692600 },
+							{ City: 'Los Angeles', State: 'CA', Population: 3884000 },
+							{ City: 'Chicago', State: 'IL', Population: 2716000 },
+							{ City: 'Houston', State: 'TX', Population: 2196000 },
+							{ City: 'Phoenix', State: 'AZ', Population: 1513000 },
+							{ City: 'Philadelphia', State: 'PA', Population: 1553000 },
+							{ City: 'San Antonio', State: 'TX', Population: 1409000 }
+						];
+						let tmpHistogram = testFable.Math.histogramAggregationByExactValue(tmpObjectArray, 'State', 'Population');
+						Expect(tmpHistogram).to.be.an('object');
+
+						Expect(Object.keys(tmpHistogram).length).to.equal(6);
+
+						let tmpSortedHistogram = testFable.services.Math.sortHistogramByKeys(tmpHistogram);
+						Expect(tmpSortedHistogram).to.be.an('object');
+						let tmpSortedHistogramKeys = testFable.services.Utility.objectKeysToArray(tmpSortedHistogram);
+						Expect(tmpSortedHistogramKeys[0]).to.equal('AZ');
+						Expect(tmpSortedHistogramKeys[1]).to.equal('CA');
+						Expect(tmpSortedHistogramKeys[2]).to.equal('IL');
+						Expect(tmpSortedHistogramKeys[3]).to.equal('MA');
+						Expect(tmpSortedHistogramKeys[4]).to.equal('PA');
+						Expect(tmpSortedHistogramKeys[5]).to.equal('TX');
+
+						let tmpArrayToSortExternally = Object.keys(tmpHistogram);
+						let tmpSortedHistogramByExternalArray = testFable.services.Utility.objectValuesSortByExternalArray(tmpArrayToSortExternally, tmpObjectArray, false, 'State');
+						Expect(tmpSortedHistogramByExternalArray).to.be.an('array');
+						Expect(tmpSortedHistogramByExternalArray[0]).to.equal('AZ');
+						Expect(tmpSortedHistogramByExternalArray[1]).to.equal('CA');
+						Expect(tmpSortedHistogramByExternalArray[2]).to.equal('IL');
+						Expect(tmpSortedHistogramByExternalArray[3]).to.equal('MA');
+						Expect(tmpSortedHistogramByExternalArray[4]).to.equal('PA');
+						Expect(tmpSortedHistogramByExternalArray[5]).to.equal('TX');
+
+						let tmpSortedByCity = Object.keys(tmpHistogram);
+						let tmpSortedHistogramByValueExternalArray = testFable.services.Utility.objectValuesSortByExternalArray(tmpSortedByCity, tmpObjectArray, false, 'City');
+						Expect(tmpSortedHistogramByValueExternalArray).to.be.an('array');
+						Expect(tmpSortedHistogramByValueExternalArray[0]).to.equal('MA');
+						Expect(tmpSortedHistogramByValueExternalArray[1]).to.equal('IL');
+						Expect(tmpSortedHistogramByValueExternalArray[2]).to.equal('TX');
+						Expect(tmpSortedHistogramByValueExternalArray[3]).to.equal('CA');
+						Expect(tmpSortedHistogramByValueExternalArray[4]).to.equal('PA');
+						Expect(tmpSortedHistogramByValueExternalArray[5]).to.equal('AZ');
+					}
+				);
+				test
+				(
 					'Processed Template like Underscore Work Without Variables',
 					function()
 					{

@@ -671,6 +671,34 @@ class FableServiceMath extends libFableServiceBase
 		return tmpSortedHistogram;
 	}
 
+	/**
+	 * Sorts the histogram object in ascending order based on the keys.
+	 * 
+	 * @param {Object} pHistogram - The histogram object to be sorted.
+	 * @returns {Object} - The sorted histogram object.
+	 */
+	sortHistogramByKeys(pHistogram, pDescending)
+	{
+		let tmpSortedHistogram = {};
+		let tmpKeys = Object.keys(pHistogram);
+		let tmpDescending = (typeof (pDescending) === 'undefined') ? false : pDescending;
+
+		// Sort tmpKeys by the string comparison
+		tmpKeys.sort();
+
+		if (tmpDescending)
+		{
+			tmpKeys = tmpKeys.reverse();
+		}
+
+		for (let i = 0; i < tmpKeys.length; i++)
+		{
+			tmpSortedHistogram[tmpKeys[i]] = pHistogram[tmpKeys[i]];
+		}
+
+		return tmpSortedHistogram;
+	}
+
 	cleanValueArray(pValueArray, pRemoveZeroes)
 	{
 		let tmpRemoveZeroes = (typeof (pRemoveZeroes) === 'undefined') ? false : pRemoveZeroes;
