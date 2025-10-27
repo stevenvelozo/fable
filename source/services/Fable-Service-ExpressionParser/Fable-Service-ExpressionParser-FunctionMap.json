@@ -254,9 +254,17 @@
 		"Name": "Generate a Histogram by Exact Value Aggregation",
 		"Address": "fable.Math.histogramAggregationByExactValueFromInternalState"
 	},
+	"aggregationhistogrambyobject": {
+		"Name": "Generate a Histogram by Exact Value Aggregation from Object Property",
+		"Address": "fable.Math.histogramAggregationByExactValue"
+	},
 	"distributionhistogram": {
 		"Name": "Generate a Histogram Based on Value Distribution",
 		"Address": "fable.Math.histogramDistributionByExactValueFromInternalState"
+	},
+	"distributionhistogrambyobject": {
+		"Name": "Generate a Histogram Based on Value Distribution from Object Property",
+		"Address": "fable.Math.histogramDistributionByExactValue"
 	},
 
 	"setconcatenate": {

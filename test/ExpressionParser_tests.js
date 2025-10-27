@@ -280,6 +280,23 @@ suite
 						Expect(_Parser.solve("TotalCost = MEDIAN(ItemCosts)", {"ItemCosts": [100,200,50,45,5]})).to.equal("50");
 						Expect(_Parser.solve("TotalCost = COUNT(ItemCosts)", {"ItemCosts": [100,200,50,45,5]})).to.equal("5");
 
+						_Parser.fable.AppData = {
+							Teams: [
+								{ Team: 'Mariners', States: 'Washington', Score: 100 },
+								{ Team: 'Yankees', States: 'New York', Score: 200 },
+								{ Team: 'Mets', States: 'New York', Score: 50 },
+								{ Team: 'Giants', States: 'California', Score: 45 },
+								{ Team: 'Dodgers', States: 'California', Score: 5 },
+								{ Team: 'Astros', States: 'Texas', Score: 75 }
+							]
+						};
+
+						let tmpHistogramByReference = _Parser.solve(`aggregationhistogram("AppData.Teams", "States", "Score")`);
+						Expect(tmpHistogramByReference['New York']).to.equal("250");
+
+						let tmpHistogram = _Parser.solve(`aggregationhistogrambyobject(getvalue("AppData.Teams"), "States", "Score")`);
+						Expect(tmpHistogram['New York']).to.equal("250");
+
 						return fDone();
 					}
 				);
