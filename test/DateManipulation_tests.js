@@ -40,6 +40,10 @@ suite
 						let tmpDatePacific = tmpDate.tz("America/Los_Angeles");
 						testFable.log.trace(`Date Pacific formats to: ${tmpDatePacific.format()}`);
 
+						Expect(tmpDates.dateFromParts(2023, 8, 10, 5, 0, 0, 0)).to.equal("2023-08-10T05:00:00.000Z");
+						Expect(tmpDates.dateFromParts(2023, 8, 10)).to.equal("2023-08-10T00:00:00.000Z");
+						Expect(tmpDates.dateFromParts(2023, 12, 31, 23, 59, 59, 999)).to.equal("2023-12-31T23:59:59.999Z");
+
 						return fDone();
 					}
 				);
@@ -84,6 +88,32 @@ suite
 						// Test required end date behavior, specifically for solvers
 						Expect(tmpDates.dateYearDifference(tmpFirstDate, null, "1")).to.be.NaN;
 						Expect(tmpDates.dateYearDifference(tmpFirstDate, null)).to.not.be.NaN;
+						return fDone();
+					}
+				);
+				test
+				(
+					'Add or remove time from dates.',
+					function(fDone)
+					{
+						let testFable = new libFable();
+						let tmpDates = testFable.instantiateServiceProvider('Dates');
+
+						const tmpFirstDate = "2023-08-10T05:00:00.000Z";
+						const tmpSecondDate = "2023-08-11T05:00:00.000Z"; // 1 day later, precisely
+						const tmpThirdDate = "2023-03-11T11:01:01.030Z";
+						const tmpFourthDate = "2025-12-25T00:00:00.000Z";
+
+						Expect(tmpDates.dateAddDays(tmpFirstDate, 1)).to.equal(tmpSecondDate);
+						Expect(tmpDates.dateAddHours(tmpFirstDate, 24)).to.equal(tmpSecondDate);
+						Expect(tmpDates.dateAddHours(tmpFirstDate, "24")).to.equal(tmpSecondDate);
+						Expect(tmpDates.dateAddMinutes(tmpFirstDate, 1440)).to.equal(tmpSecondDate);
+						Expect(tmpDates.dateAddSeconds(tmpFirstDate, 86400)).to.equal(tmpSecondDate);
+						Expect(tmpDates.dateAddMilliseconds(tmpFirstDate, 86400000)).to.equal(tmpSecondDate);
+
+						Expect(tmpDates.dateAddDays(tmpSecondDate, -1)).to.equal(tmpFirstDate);
+						Expect(tmpDates.dateAddDays(tmpSecondDate, "-1")).to.equal(tmpFirstDate);
+
 						return fDone();
 					}
 				);

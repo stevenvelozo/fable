@@ -348,7 +348,49 @@
 		"Address": "fable.Dates.dateYearDifference"
 	},
 
-	"createValueObjectByHashes": {
+	"datemathadd": {
+		"Name": "Date Math Add",
+		"Address": "fable.Dates.dateMath"
+	},
+	"dateaddmilliseconds": {
+		"Name": "Date Add Milliseconds",
+		"Address": "fable.Dates.dateAddMilliseconds"
+	},
+	"dateaddseconds": {
+		"Name": "Date Add Seconds",
+		"Address": "fable.Dates.dateAddSeconds"
+	},
+	"dateaddminutes": {
+		"Name": "Date Add Minutes",
+		"Address": "fable.Dates.dateAddMinutes"
+	},
+	"dateaddhours": {
+		"Name": "Date Add Hours",
+		"Address": "fable.Dates.dateAddHours"
+	},
+	"dateadddays": {
+		"Name": "Date Add Days",
+		"Address": "fable.Dates.dateAddDays"
+	},
+	"dateaddweeks": {
+		"Name": "Date Add Weeks",
+		"Address": "fable.Dates.dateAddWeeks"
+	},
+	"dateaddmonths": {
+		"Name": "Date Add Months",
+		"Address": "fable.Dates.dateAddMonths"
+	},
+	"dateaddyears": {
+		"Name": "Date Add Years",
+		"Address": "fable.Dates.dateAddYears"
+	},
+
+	"datefromparts": {
+		"Name": "Date From Parts",
+		"Address": "fable.Dates.dateFromParts"
+	},
+
+	"createvalueobjectbyhashes": {
 		"Name": "Create Value Object by Hashes",
 		"Address": "fable.Utility.createValueObjectByHashes"
 	}

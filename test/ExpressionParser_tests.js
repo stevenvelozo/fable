@@ -319,6 +319,9 @@ suite
 						let tmpHistogram = _Parser.solve(`aggregationhistogrambyobject(getvalue("AppData.Teams"), "States", "Score")`);
 						Expect(tmpHistogram['New York']).to.equal("250");
 
+						Expect(_Parser.solve("DateFromPartsExample = DATEFROMPARTS(2025, 4, 1)")).to.equal("2025-04-01T00:00:00.000Z");
+						Expect(_Parser.solve("DateFromPartsExample = DATEADDDAYS(DATEFROMPARTS(2025, 4, 1, 13, 03, 51, 761),87)")).to.equal("2025-06-27T13:03:51.761Z");
+
 						return fDone();
 					}
 				);

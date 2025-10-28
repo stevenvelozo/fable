@@ -225,6 +225,81 @@ class DateManipulation extends libFableServiceProviderBase
         let tmpEndDate = this.dayJS(pDateEnd);
         return tmpEndDate.diff(tmpStartDate, 'year');
     }
+
+	dateAddMilliseconds(pDate, pAmount)
+	{
+		return this.dateMath(pDate, pAmount, 'millisecond', 'add');
+	}
+
+	dateAddSeconds(pDate, pAmount)
+	{
+		return this.dateMath(pDate, pAmount, 'second', 'add');
+	}
+
+	dateAddMinutes(pDate, pAmount)
+	{
+		return this.dateMath(pDate, pAmount, 'minute', 'add');
+	}
+
+	dateAddHours(pDate, pAmount)
+	{
+		return this.dateMath(pDate, pAmount, 'hour', 'add');
+	}
+
+	dateAddDays(pDate, pAmount)
+	{
+		return this.dateMath(pDate, pAmount, 'day', 'add');
+	}
+
+	dateAddWeeks(pDate, pAmount)
+	{
+		return this.dateMath(pDate, pAmount, 'week', 'add');
+	}
+	
+	dateAddMonths(pDate, pAmount)
+	{
+		return this.dateMath(pDate, pAmount, 'month', 'add');
+	}
+
+	dateAddYears(pDate, pAmount)
+	{
+		return this.dateMath(pDate, pAmount, 'year', 'add');
+	}
+
+	dateMath(pDate, pAmount, pUnit, pOperation)
+	{
+		try
+		{
+			let tmpDate = this.dayJS.utc(pDate);
+
+			if (pOperation === 'add')
+			{
+				tmpDate = tmpDate.add(pAmount, pUnit);
+			}
+			else if (pOperation === 'subtract')
+			{
+				tmpDate = tmpDate.subtract(pAmount, pUnit);
+			}
+			return this.dayJS.utc(tmpDate).toISOString();
+		}
+		catch (pError)
+		{
+			return undefined;
+		}
+	}
+
+	dateFromParts(pYear, pMonth, pDay, pHour = 0, pMinute = 0, pSecond = 0, pMillisecond = 0)
+	{
+		try
+		{
+			let tmpDate = this.dayJS.utc().year(pYear).month(pMonth - 1).date(pDay).hour(pHour).minute(pMinute).second(pSecond).millisecond(pMillisecond);
+			return tmpDate.toISOString();
+		}
+		catch (pError)
+		{
+			return undefined;
+		}
+	}
 }
 
 module.exports = DateManipulation;
