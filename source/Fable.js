@@ -125,8 +125,8 @@ class Fable extends libFableServiceBase.CoreServiceProviderBase
 	{
 		if (pServiceType in this.servicesMap)
 		{
-			// TODO: Check if any services are running?
-			this.log.warn(`Adding a service type [${pServiceType}] that already exists.  This will change the default class prototype for this service.`);
+			//this.log.warn(`Adding a service type [${pServiceType}] that already exists.  This will change the default class prototype for this service.`);
+			// This broke command-line utilities that overrode services and wanted to strictly control log output
 		}
 		else
 		{
