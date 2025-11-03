@@ -161,6 +161,10 @@
 		"Name": "Get Array of an Object's values",
 		"Address": "fable.Utility.objectValuesToArray"
 	},
+	"generatearrayofobjectsfromsets": {
+		"Name": "Generate Array of Objects from Sets",
+		"Address": "fable.Utility.generateArrayOfObjectsFromSets"
+	},
 	"objectvaluessortbyexternalobjectarray": {
 		"Name": "Get Array of an Object's values sorted by an external array",
 		"Address": "fable.Utility.objectValuesSortByExternalArray"

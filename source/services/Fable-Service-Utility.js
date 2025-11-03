@@ -308,6 +308,10 @@ class FableServiceUtility extends libFableServiceBase
 	// Convert object values to an array of values
 	objectValuesToArray(pObject)
 	{
+		if ((typeof(pObject) !== 'object') || (pObject === null))
+		{
+			return [];
+		}
 		let tmpKeys = Object.keys(pObject);
 		let tmpValues = [];
 
@@ -549,6 +553,54 @@ class FableServiceUtility extends libFableServiceBase
 			return [ p ];
 		};
 		return pInputArray.flatMap(tmpArrayFlattener);
+	}
+
+	generateArrayOfObjectsFromSets()
+	{
+		// For each argument pair, map data to an array of objects with the first parameter of the pairs as the property name and the second parameter as the array of values
+		let tmpResultArray = [];
+		if (arguments.length % 2 != 0)
+		{
+			// Must be pairs
+			return tmpResultArray;
+		}
+
+		let tmpPropertyNames = [];
+		let tmpValueArrays = [];
+
+		for (let i = 0; i < arguments.length; i += 2)
+		{
+			tmpPropertyNames.push(arguments[i]);
+			tmpValueArrays.push(this.objectValuesToArray(arguments[i + 1]));
+		}
+
+		for (let h = 0; h < tmpValueArrays.length; h++)
+		{
+			let tmpValueArray = tmpValueArrays[h];
+			let tmpPropertyName = tmpPropertyNames[h];
+			if (!Array.isArray(tmpValueArray))
+			{
+				continue;
+			}
+			for (let i = 0; i < tmpValueArray.length; i++)
+			{
+				if (tmpResultArray.length <= i)
+				{
+					tmpResultArray.push({});
+				}
+
+				let tmpObject = tmpResultArray[i];
+				if (!tmpObject)
+				{
+					// This shouldn't be possible
+					continue;
+				}
+
+				tmpObject[tmpPropertyName] = tmpValueArray[i];
+			}
+		}
+
+		return tmpResultArray;
 	}
 
 	/**

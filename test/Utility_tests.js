@@ -70,6 +70,54 @@ suite
 						Expect(tmpInternalValueArray[3]).to.equal(undefined);
 						Expect(tmpInternalValueArray[4]).to.equal(6.75);
 
+						let tmpTestObject1 = {'a': 1, 'b': 2, 'c': 3};
+						let tmpTestObject2 = {'d': 4, 'e': 5, 'f': 6};
+						let tmpTestObject3 = {'g': 7, 'h': 8};
+						let tmpObjectCoordinateMap = testFable.services.Utility.generateArrayOfObjectsFromSets('x', tmpTestObject1, 'y', tmpTestObject2);
+						Expect(tmpObjectCoordinateMap).to.be.an('array');
+						Expect(tmpObjectCoordinateMap.length).to.equal(3);
+						Expect(tmpObjectCoordinateMap[0]).to.have.property('x').that.equals(1);
+						Expect(tmpObjectCoordinateMap[0]).to.have.property('y').that.equals(4);
+						Expect(tmpObjectCoordinateMap[1]).to.have.property('x').that.equals(2);
+						Expect(tmpObjectCoordinateMap[1]).to.have.property('y').that.equals(5);
+						Expect(tmpObjectCoordinateMap[2]).to.have.property('x').that.equals(3);
+						Expect(tmpObjectCoordinateMap[2]).to.have.property('y').that.equals(6);
+
+						let tmpObjectCoordinateMapBadSet = testFable.services.Utility.generateArrayOfObjectsFromSets('x', tmpTestObject1, 'y', tmpTestObject2, 'z', null);
+						Expect(tmpObjectCoordinateMap).to.be.an('array');
+						Expect(tmpObjectCoordinateMap.length).to.equal(3);
+						Expect(tmpObjectCoordinateMap[0]).to.have.property('x').that.equals(1);
+						Expect(tmpObjectCoordinateMap[0]).to.have.property('y').that.equals(4);
+						Expect(tmpObjectCoordinateMap[1]).to.have.property('x').that.equals(2);
+						Expect(tmpObjectCoordinateMap[1]).to.have.property('y').that.equals(5);
+						Expect(tmpObjectCoordinateMap[2]).to.have.property('x').that.equals(3);
+						Expect(tmpObjectCoordinateMap[2]).to.have.property('y').that.equals(6);
+
+						let tmpSparseCoordinateMap = testFable.services.Utility.generateArrayOfObjectsFromSets('x', tmpTestObject1, 'y', tmpTestObject3);
+						Expect(tmpSparseCoordinateMap).to.be.an('array');
+						Expect(tmpSparseCoordinateMap.length).to.equal(3);
+						Expect(tmpSparseCoordinateMap[0]).to.have.property('x').that.equals(1);
+						Expect(tmpSparseCoordinateMap[0]).to.have.property('y').that.equals(7);
+						Expect(tmpSparseCoordinateMap[1]).to.have.property('x').that.equals(2);
+						Expect(tmpSparseCoordinateMap[1]).to.have.property('y').that.equals(8);
+						Expect(tmpSparseCoordinateMap[2]).to.have.property('x').that.equals(3);
+						Expect(tmpSparseCoordinateMap[2]).to.not.have.property('y');
+						// The third value in tmpTestObject1 has no corresponding value in tmpTestObject3
+
+						let tmpObjectCoordinateMapBigSet = testFable.services.Utility.generateArrayOfObjectsFromSets('x', tmpTestObject1, 'y', tmpTestObject2, 'z', tmpTestObject3);
+						Expect(tmpObjectCoordinateMapBigSet).to.be.an('array');
+						Expect(tmpObjectCoordinateMapBigSet.length).to.equal(3);
+						Expect(tmpObjectCoordinateMapBigSet[0]).to.have.property('x').that.equals(1);
+						Expect(tmpObjectCoordinateMapBigSet[0]).to.have.property('y').that.equals(4);
+						Expect(tmpObjectCoordinateMapBigSet[0]).to.have.property('z').that.equals(7);
+						Expect(tmpObjectCoordinateMapBigSet[1]).to.have.property('x').that.equals(2);
+						Expect(tmpObjectCoordinateMapBigSet[1]).to.have.property('y').that.equals(5);
+						Expect(tmpObjectCoordinateMapBigSet[1]).to.have.property('z').that.equals(8);
+						Expect(tmpObjectCoordinateMapBigSet[2]).to.have.property('x').that.equals(3);
+						Expect(tmpObjectCoordinateMapBigSet[2]).to.have.property('y').that.equals(6);
+						Expect(tmpObjectCoordinateMapBigSet[2]).to.not.have.property('z');
+						// The third value in tmpTestObject1 and tmpTestObject2 has no corresponding value in tmpTestObject3
+
 						let tmpValueObject = testFable.services.Utility.createValueObjectByHashes(tmpDataObject, ['Name', 'Age', 'Colors[2]', 'Nonce', 'Details.Height']);
 						Expect(tmpValueObject.Name).to.equal('Thee Tortoise and the Hare');
 						Expect(tmpValueObject.Age).to.equal(100);
