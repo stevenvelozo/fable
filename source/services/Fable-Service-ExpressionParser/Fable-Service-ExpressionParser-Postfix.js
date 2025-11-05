@@ -609,6 +609,11 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 						}
 					}
 				}
+				if (!tmpAbstractAssignToken.VirtualSymbolName)
+				{
+					tmpAbstractAssignToken.VirtualSymbolName = `V_SingleValue_${tmpVirtualSymbolIndex}`;
+					tmpVirtualSymbolIndex++;
+				}
 				tmpResults.PostfixSolveList.push(this.getPosfixSolveListOperation(tmpAbstractAssignToken, tmpSolveLayerTokens[0], this.getTokenContainerObject('0.0')));
 				continue;
 			}
