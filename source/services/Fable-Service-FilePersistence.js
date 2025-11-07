@@ -86,7 +86,7 @@ class FableServiceFilePersistence extends libFableServiceBase
 			{
 				this.fable.log.error(`CSV Read of ${pFilePath} Error: ${pError}`, pError);
 			};
-		
+
 		return this.lineReaderFactory(pFilePath,
 			(pLine) =>
 			{

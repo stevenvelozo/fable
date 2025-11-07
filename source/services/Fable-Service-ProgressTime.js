@@ -58,7 +58,7 @@ class FableServiceProgressTime extends libFableServiceBase
 	{
 		let tmpTimeStampHash = (typeof(pTimeStampHash) == 'string') ? pTimeStampHash : 'Default';
 		let tmpReferenceTime = false;
-		
+
 		// This function allows the user to pass in either a reference time in ms, or, a hash of a timestamp.
 		if (typeof(pReferenceTime) == 'string')
 		{
@@ -102,7 +102,7 @@ class FableServiceProgressTime extends libFableServiceBase
 	{
 		let tmpTimeStampHash = (typeof(pTimeStampHash) == 'string') ? pTimeStampHash : 'Default';
 		let tmpReferenceTime = false;
-		
+
 		// This function allows the user to pass in either a reference time in ms, or, a hash of a timestamp.
 		if (typeof(pReferenceTime) == 'string')
 		{

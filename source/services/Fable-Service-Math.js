@@ -34,7 +34,7 @@ class FableServiceMath extends libFableServiceBase
 
 	/*
 		Pass-through Rounding Method Constants
-	
+
 		Property	   Value   BigDecimal Equiv   Description
 		----------     -----   ----------------   -----------
 		roundDown      0       ROUND_DOWN         Rounds towards zero. (_I.e. truncate, no rounding._)
@@ -118,9 +118,9 @@ class FableServiceMath extends libFableServiceBase
 
 	/**
 	 * Concatenates two value sets and returns the result as a string.
-	 * 
+	 *
 	 * Value sets are comma separated.
-	 * 
+	 *
 	 * Used for arbitrary precision set generation.
 	 *
 	 * @param {any} pLeftValue - The left value to append.
@@ -153,7 +153,7 @@ class FableServiceMath extends libFableServiceBase
 
 	/**
 	 * Returns a string representation of a number with a specified number of decimals.
-	 * 
+	 *
 	 * @param {number} pValue - The number to be formatted.
 	 * @param {number} pDecimals - The number of decimals to include in the formatted string.
 	 * @param {string} [pRoundingMethod] - The rounding method to use. Defaults to 'roundHalfUp'.
@@ -206,7 +206,7 @@ class FableServiceMath extends libFableServiceBase
 
 	/**
 	 * Calculates the precise power of two numbers.
-	 * 
+	 *
 	 * @param {number} pLeftValue - The base value.
 	 * @param {number} pRightValue - The exponent value.
 	 * @returns {string} The result of raising the base value to the exponent value.
@@ -233,8 +233,8 @@ class FableServiceMath extends libFableServiceBase
 	/**
 	 * Multiplies two values precisely.
 	 *
-	 * @param {number} pLeftValue - The left value to multiply.
-	 * @param {number} pRightValue - The right value to multiply.
+	 * @param {number|string} pLeftValue - The left value to multiply.
+	 * @param {number|string} pRightValue - The right value to multiply.
 	 * @returns {string} The result of the multiplication as a string.
 	 */
 	multiplyPrecise(pLeftValue, pRightValue)
@@ -250,8 +250,8 @@ class FableServiceMath extends libFableServiceBase
 	/**
 	 * Divides two values precisely.
 	 *
-	 * @param {number} pLeftValue - The left value to be divided.
-	 * @param {number} pRightValue - The right value to divide by.
+	 * @param {number|string} pLeftValue - The left value to be divided.
+	 * @param {number|string} pRightValue - The right value to divide by.
 	 * @returns {string} The result of the division as a string.
 	 */
 	dividePrecise(pLeftValue, pRightValue)
@@ -267,8 +267,8 @@ class FableServiceMath extends libFableServiceBase
 	/**
 	 * Calculates the modulus of two values with precision.
 	 *
-	 * @param {number} pLeftValue - The left value.
-	 * @param {number} pRightValue - The right value.
+	 * @param {number|string} pLeftValue - The left value.
+	 * @param {number|string} pRightValue - The right value.
 	 * @returns {string} The result of the modulus operation as a string.
 	 */
 	modPrecise(pLeftValue, pRightValue)
@@ -284,7 +284,7 @@ class FableServiceMath extends libFableServiceBase
 	/**
 	 * Calculates the square root of a number with precise decimal places.
 	 *
-	 * @param {number} pValue - The number to calculate the square root of.
+	 * @param {number|string} pValue - The number to calculate the square root of.
 	 * @returns {string} The square root of the input number as a string.
 	 */
 	sqrtPrecise(pValue)
@@ -299,7 +299,7 @@ class FableServiceMath extends libFableServiceBase
 	/**
 	 * Calculates the absolute value of a number precisely.
 	 *
-	 * @param {number} pValue - The number to calculate the absolute value of.
+	 * @param {number|string} pValue - The number to calculate the absolute value of.
 	 * @returns {string} The absolute value of the input number as a string.
 	 */
 	absPrecise(pValue)
@@ -314,7 +314,7 @@ class FableServiceMath extends libFableServiceBase
 	/**
 	 * Calculates the floor of a number precisely.
 	 *
-	 * @param {number} pValue - The number to calculate the floor value of.
+	 * @param {string|number} pValue - The number to calculate the floor value of.
 	 * @returns {string} The floor value of the input number as a string.
 	 */
 	floorPrecise(pValue)
@@ -328,7 +328,7 @@ class FableServiceMath extends libFableServiceBase
 	/**
 	 * Calculates the ceiling of a number precisely.
 	 *
-	 * @param {number} pValue - The number to calculate the ceiling value of.
+	 * @param {number|string} pValue - The number to calculate the ceiling value of.
 	 * @returns {string} The ceiling value of the input number as a string.
 	 */
 	ceilPrecise(pValue)
@@ -384,8 +384,8 @@ class FableServiceMath extends libFableServiceBase
 	/**
 	 * Determines if the left value is greater than the right value precisely.
 	 *
-	 * @param {number} pLeftValue - The left value to compare.
-	 * @param {number} pRightValue - The right value to compare.
+	 * @param {number|string} pLeftValue - The left value to compare.
+	 * @param {number|string} pRightValue - The right value to compare.
 	 * @returns {boolean} - Returns true if the left value is greater than the right value, otherwise returns false.
 	 */
 	gtPrecise(pLeftValue, pRightValue)
@@ -401,8 +401,8 @@ class FableServiceMath extends libFableServiceBase
 	 * Checks if the left value is greater than or equal to the right value.
 	 * If either value is not a number, it is treated as 0.
 	 *
-	 * @param {number} pLeftValue - The left value to compare.
-	 * @param {number} pRightValue - The right value to compare.
+	 * @param {number|string} pLeftValue - The left value to compare.
+	 * @param {number|string} pRightValue - The right value to compare.
 	 * @returns {boolean} - True if the left value is greater than or equal to the right value, false otherwise.
 	 */
 	gtePrecise(pLeftValue, pRightValue)
@@ -417,8 +417,8 @@ class FableServiceMath extends libFableServiceBase
 	/**
 	 * Determines if the left value is less than the right value precisely.
 	 *
-	 * @param {number} pLeftValue - The left value to compare.
-	 * @param {number} pRightValue - The right value to compare.
+	 * @param {number|string} pLeftValue - The left value to compare.
+	 * @param {number|string} pRightValue - The right value to compare.
 	 * @returns {boolean} - Returns true if the left value is less than the right value, otherwise returns false.
 	 */
 	ltPrecise(pLeftValue, pRightValue)
@@ -433,8 +433,8 @@ class FableServiceMath extends libFableServiceBase
 	/**
 	 * Determines if the left value is less than or equal to the right value.
 	 *
-	 * @param {number} pLeftValue - The left value to compare.
-	 * @param {number} pRightValue - The right value to compare.
+	 * @param {number|string} pLeftValue - The left value to compare.
+	 * @param {number|string} pRightValue - The right value to compare.
 	 * @returns {boolean} - Returns true if the left value is less than or equal to the right value, otherwise returns false.
 	 */
 	ltePrecise(pLeftValue, pRightValue)
@@ -448,8 +448,8 @@ class FableServiceMath extends libFableServiceBase
 
 	/**
 	 * Converts degrees to radians with arbitrary precision.
-	 * 
-	 * @param {number} pDegrees - The degrees to convert to radians.
+	 *
+	 * @param {number|string} pDegrees - The degrees to convert to radians.
 	 * @returns {string} - The converted radians as a string.
 	 */
 	radPrecise(pDegrees)
@@ -466,7 +466,7 @@ class FableServiceMath extends libFableServiceBase
 	 * Calculates the value of pi with the specified precision.
 	 * If no precision is provided, returns 100 digits after the decimal.
 	 *
-	 * @param {number} [pPrecision] - The precision to use for calculating pi.
+	 * @param {number|string} [pPrecision] - The precision to use for calculating pi.
 	 * @returns {number} - The calculated value of pi.
 	 */
 	piPrecise(pPrecision)
@@ -484,8 +484,8 @@ class FableServiceMath extends libFableServiceBase
 	/**
 	 * Calculates the value of euler with the specified precision.
 	 *
-	 * @param {number} [pPrecision] - The precision to use for calculating E.
-	 * @returns {number} - The calculated value of E.
+	 * @param {number|string} [pPrecision] - The precision to use for calculating E.
+	 * @returns {string} - The calculated value of E.
 	 */
 	eulerPrecise(pPrecision)
 	{
@@ -513,7 +513,7 @@ class FableServiceMath extends libFableServiceBase
 
 	/**
 	 * Calculates the cosine of the given angle in radians.
-	 * 
+	 *
 	 * @param {number} pRadians - The angle in radians.
 	 * @returns {number} The cosine of the angle.
 	 */
@@ -540,7 +540,7 @@ class FableServiceMath extends libFableServiceBase
 	 * These are meant to work fine with arrays and more complex set descriptions returned by Manyfest.
 	 * Manyfest sometimes returns values as arrays and sometimes as a map of addresses with values depending
 	 * on what was requested.
-	 * 
+	 *
 	 * The following functions will likely be broken into their own service.
 	 */
 
@@ -570,7 +570,7 @@ class FableServiceMath extends libFableServiceBase
 
 	/**
 	 * Sorts the elements in the given value set in ascending order using the precise parsing and comparison.
-	 * 
+	 *
 	 * @param {Array|Object} pValueSet - The value set to be sorted.
 	 * @returns {Array} - The sorted value set.
 	 */
@@ -602,7 +602,7 @@ class FableServiceMath extends libFableServiceBase
 	 * Bucketizes a set of values based on a specified bucket size.
 	 *
 	 * @param {Array|Object} pValueSet - The set of values to be bucketized.
-	 * @param {number} pBucketSize - The size of each bucket. Optional - If NaN, the values will be bucketized by their value.
+	 * @param {number} [pBucketSize] - The size of each bucket. Optional - If NaN, the values will be bucketized by their value.
 	 * @returns {Object} - The bucketized set of values.
 	 */
 	bucketSetPrecise(pValueSet, pBucketSize)
@@ -651,7 +651,7 @@ class FableServiceMath extends libFableServiceBase
 
 	/**
 	 * Calculates the histogram using precise bucket set for the given pValueSet.
-	 * 
+	 *
 	 * @param {Array<number>} pValueSet - The array of p-values.
 	 * @returns {Array<number>} The histogram of the p-values.
 	 */
@@ -662,7 +662,7 @@ class FableServiceMath extends libFableServiceBase
 
 	/**
 	 * Sorts the histogram object in ascending order based on the frequencies of the buckets.
-	 * 
+	 *
 	 * @param {Object} pHistogram - The histogram object to be sorted.
 	 * @returns {Object} - The sorted histogram object.
 	 */
@@ -683,7 +683,7 @@ class FableServiceMath extends libFableServiceBase
 
 	/**
 	 * Sorts the histogram object in ascending order based on the keys.
-	 * 
+	 *
 	 * @param {Object} pHistogram - The histogram object to be sorted.
 	 * @returns {Object} - The sorted histogram object.
 	 */
@@ -734,7 +734,7 @@ class FableServiceMath extends libFableServiceBase
 	 * Calculate the natural log of 2 to a specific precision, for use in the Taylor series.
 	 * Cache outcome so it only runs once per precision.
 	 * @param {number} pPrecision - The decimal precision to calculate ln(2) to.
-	 * @returns 
+	 * @returns
 	 */
 	arbitraryNaturalLogOfTwo(pPrecision)
 	{
@@ -772,9 +772,9 @@ class FableServiceMath extends libFableServiceBase
 
 	/**
 	 * Calculate the natural log of a number to a specific precision using arbitrary precision numbers.
-	 * @param {number} pNumberToCompute 
-	 * @param {number} pPrecision 
-	 * @returns 
+	 * @param {number} pNumberToCompute
+	 * @param {number} pPrecision
+	 * @returns
 	 */
 	arbitraryNaturalLog(pNumberToCompute, pPrecision)
 	{
@@ -837,7 +837,7 @@ class FableServiceMath extends libFableServiceBase
 	 *  - atanh series: ln(m) = 2 * sum_{j>=0} y^(2j+1)/(2j+1), y=(m-1)/(m+1), |y|<1
 	 *
 	 * Converges rapidly when m is close to 1 with arbitrary precision numbers.
-	 * 
+	 *
 	 * @param {number} pNumberToGenerateLogarithmFor - The number to generate the logarithm for.
 	 * @param {number} [pBase] - The base of the logarithm. Defaults to 10.
 	 * @param {number} [pPrecision] - The precision of the result. Defaults to 9 decimal places.
@@ -985,8 +985,8 @@ class FableServiceMath extends libFableServiceBase
 
 	/**
 	 * Make a histogram of representative counts for exact values (.tostring() is the keys to count)
-	 * @param {Array} pValueSet 
-	 * @param {string} pValueAddress 
+	 * @param {Array} pValueSet
+	 * @param {string} pValueAddress
 	 */
 	histogramDistributionByExactValue(pValueObjectSet, pValueAddress, pManifest)
 	{
@@ -1028,8 +1028,8 @@ class FableServiceMath extends libFableServiceBase
 
 	/**
 	 * Make a histogram of representative counts for exact values (.tostring() is the keys to count)
-	 * @param {Array} pValueSet 
-	 * @param {string} pValueAddress 
+	 * @param {Array} pValueSet
+	 * @param {string} pValueAddress
 	 */
 	histogramAggregationByExactValue(pValueObjectSet, pValueAddress, pValueAmountAddress, pManifest)
 	{
@@ -1083,11 +1083,11 @@ class FableServiceMath extends libFableServiceBase
 	}
 
 	/**
-	 * Given a value object set (an array of objects), find a specific entry when 
+	 * Given a value object set (an array of objects), find a specific entry when
 	 * sorted by a specific value address.  Supports -1 syntax for last entry.
-	 * @param {Array} pValueObjectSet 
-	 * @param {string} pValueAddress 
-	 * @param {Object} pManifest 
+	 * @param {Array} pValueObjectSet
+	 * @param {string} pValueAddress
+	 * @param {Object} pManifest
 	 */
 	entryInSet(pValueObjectSet, pValueAddress, pEntryIndex)
 	{
@@ -1137,9 +1137,9 @@ class FableServiceMath extends libFableServiceBase
 	}
 
 	/**
-	 * Expects an array of objects, and an address in each object to sum.  Expects 
+	 * Expects an array of objects, and an address in each object to sum.  Expects
 	 * an address to put the cumulative summation as well.
-	 * 
+	 *
 	 * @param {Array} pValueObjectSet - The array of objects to perform a cumulative summation on
 	 * @param {string} pValueAddress - The address of the column in each object to sum
 	 * @param {string} pCumulationResultAddress - The address in each object to put the cumulative summation result
@@ -1152,9 +1152,9 @@ class FableServiceMath extends libFableServiceBase
 	}
 
 	/**
-	 * Expects an array of objects, and an address in each object to sum.  Expects 
+	 * Expects an array of objects, and an address in each object to sum.  Expects
 	 * an address to put the cumulative summation as well.
-	 * 
+	 *
 	 * @param {Array} pValueObjectSet - The array of objects to perform a cumulative summation on
 	 * @param {string} pValueAddress - The address of the column in each object to sum
 	 * @param {string} pCumulationResultAddress - The address in each object to put the cumulative summation result
@@ -1183,7 +1183,7 @@ class FableServiceMath extends libFableServiceBase
 	 * @param {string} pCumulationResultAddress - The address in each object to put the cumulative summation result
 	 * @param {string} pStartingValue - The address of the value to process from; defaults to the first row
 	 * @param {boolean} pProcessFirstRowWithAValue - Whether to process the first row's value from all subsequent rows
-	 * @param {Object} pManifest - The manifest to 
+	 * @param {Object} pManifest - The manifest to
 	 * @returns {Array} The updated value object set with cumulative summation results.
 	 */
 	iterativeSeries(pValueObjectSet, pValueAddress, pCumulationResultAddress, pValueMultiplier, pSummationOperation, pStartingValue, pProcessFirstRowWithAValue, pManifest)
@@ -1226,7 +1226,7 @@ class FableServiceMath extends libFableServiceBase
 		for (let i = 0; i < pValueObjectSet.length; i++)
 		{
 			let tmpValue = this.parsePrecise(this.fable.Utility.getValueByHash(pValueObjectSet[i], pValueAddress, pManifest));
-			// Since summation might start on a row after the first, 
+			// Since summation might start on a row after the first,
 			let tmpFirstRowWithValue = false;
 			if ((tmpSummationValue === '') && tmpValue && !isNaN(tmpSummationValue))
 			{
@@ -1286,7 +1286,7 @@ class FableServiceMath extends libFableServiceBase
 
 	/**
 	 * Finds the maximum value from a set of precise values.
-	 * 
+	 *
 	 * @param {Array|Object} pValueSet - The set of values to find the maximum from.
 	 * @returns {number} - The maximum value from the set.
 	 */
@@ -1384,7 +1384,7 @@ class FableServiceMath extends libFableServiceBase
 
 	/**
 	 * Calculates the precise sum of values in the given value set.
-	 * 
+	 *
 	 * @param {Array|Object} pValueSet - The value set to calculate the sum from.
 	 * @returns {string} The precise sum value as a string.
 	 */
@@ -1479,7 +1479,7 @@ class FableServiceMath extends libFableServiceBase
 
 	/**
 	 * Calculates the mode (most frequently occurring value) of a given value set using precise mode calculation.
-	 * 
+	 *
 	 * @param {Array} pValueSet - The array of values to calculate the mode from.
 	 * @returns {Array} - An array containing the mode value(s) from the given value set.
 	 */

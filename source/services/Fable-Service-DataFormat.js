@@ -496,7 +496,7 @@ class DataFormat extends libFableServiceProviderBase
 
 
 	/**
-	 * Generate a reapeating padding string to be appended before or after depending on 
+	 * Generate a reapeating padding string to be appended before or after depending on
 	 * which padding function it uses.
 	 *
 	 * @param {*} pString
@@ -555,7 +555,7 @@ class DataFormat extends libFableServiceProviderBase
 
 	/**
 	 * Format a time length in milliseconds into a human readable string.
-	 * @param {number} pTimeSpan 
+	 * @param {number} pTimeSpan
 	 * @returns {string} - HH:MM:SS.mmm
 	 */
 	formatTimeSpan(pTimeSpan)
@@ -575,9 +575,9 @@ class DataFormat extends libFableServiceProviderBase
 
 	/**
 	 * Format the time delta between two times in milliseconds into a human readable string.
-	 * 
-	 * @param {number} pTimeStart 
-	 * @param {number} pTimeEnd 
+	 *
+	 * @param {number} pTimeStart
+	 * @param {number} pTimeEnd
 	 * @returns {string} - HH:MM:SS.mmm
 	 */
 	formatTimeDelta(pTimeStart, pTimeEnd)
@@ -610,7 +610,7 @@ class DataFormat extends libFableServiceProviderBase
 		let tmpMonth = pJavascriptDate.getMonth() + 1;
 		let tmpDay = pJavascriptDate.getDate();
 		let tmpYear = pJavascriptDate.getFullYear();
-		
+
 		if (tmpStrict)
 		{
 			tmpMonth = this.stringPadStart(tmpMonth, 2, '0');
@@ -620,7 +620,7 @@ class DataFormat extends libFableServiceProviderBase
 
 		return `${tmpMonth}/${tmpDay}/${tmpYear}`;
 	}
-	
+
 	formatSortableStringFromDate (pDate)
 	{
 		return pDate.getFullYear()+this.stringPadStart(pDate.getMonth(),2,'0')+this.stringPadStart(pDate.getDate(),2,'0');
@@ -667,11 +667,11 @@ class DataFormat extends libFableServiceProviderBase
 
 	/**
 	 * Count the number of segments in a string, respecting enclosures
-	 * 
-	 * @param {string} pString 
-	 * @param {string} pSeparator 
-	 * @param {object} pEnclosureStartSymbolMap 
-	 * @param {object} pEnclosureEndSymbolMap 
+	 *
+	 * @param {string} pString
+	 * @param {string} pSeparator
+	 * @param {object} pEnclosureStartSymbolMap
+	 * @param {object} pEnclosureEndSymbolMap
 	 * @returns the count of segments in the string as a number
 	 */
 	stringCountSegments(pString, pSeparator, pEnclosureStartSymbolMap, pEnclosureEndSymbolMap)
@@ -722,11 +722,11 @@ class DataFormat extends libFableServiceProviderBase
 
 	/**
 	 * Get all segments in a string, respecting enclosures
-	 * 
-	 * @param {string} pString 
-	 * @param {string} pSeparator 
-	 * @param {object} pEnclosureStartSymbolMap 
-	 * @param {object} pEnclosureEndSymbolMap 
+	 *
+	 * @param {string} pString
+	 * @param {string} pSeparator
+	 * @param {object} pEnclosureStartSymbolMap
+	 * @param {object} pEnclosureEndSymbolMap
 	 * @returns the first segment in the string as a string
 	 */
 	stringGetSegments(pString, pSeparator, pEnclosureStartSymbolMap, pEnclosureEndSymbolMap)
@@ -785,11 +785,11 @@ class DataFormat extends libFableServiceProviderBase
 
 	/**
 	 * Get the first segment in a string, respecting enclosures
-	 * 
-	 * @param {string} pString 
-	 * @param {string} pSeparator 
-	 * @param {object} pEnclosureStartSymbolMap 
-	 * @param {object} pEnclosureEndSymbolMap 
+	 *
+	 * @param {string} pString
+	 * @param {string} pSeparator
+	 * @param {object} pEnclosureStartSymbolMap
+	 * @param {object} pEnclosureEndSymbolMap
 	 * @returns the first segment in the string as a string
 	 */
 	stringGetFirstSegment(pString, pSeparator, pEnclosureStartSymbolMap, pEnclosureEndSymbolMap)

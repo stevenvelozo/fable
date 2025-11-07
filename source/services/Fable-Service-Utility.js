@@ -19,7 +19,7 @@ class FableServiceUtility extends libFableServiceBase
 	// TODO: Make this use precedent, add configuration, add debugging.
 	constructor(pFable, pOptions, pServiceHash)
 	{
-        super(pFable, pOptions, pServiceHash);
+		super(pFable, pOptions, pServiceHash);
 
 		this.templates = {};
 
@@ -92,7 +92,7 @@ class FableServiceUtility extends libFableServiceBase
 
 		return tmpChunkCache;
 	}
-	
+
 	/**
 	 * Get a value from fable/pict by hash/address
 	 * @param {string} pValueAddress - The manyfest hash/address of the value to get
@@ -207,7 +207,7 @@ class FableServiceUtility extends libFableServiceBase
 		{
 			return [];
 		}
-		
+
 		let tmpValueHashes = Array.prototype.slice.call(arguments);
 		return this.createValueArrayByHashes(this.fable, tmpValueHashes);
 	}
@@ -325,9 +325,9 @@ class FableServiceUtility extends libFableServiceBase
 
 	objectValuesSortByExternalArray(pArray, pObjectArray, pDescending, pSearchAddress)
 	{
-		let tmpDescending = (typeof(pDescending) == 'boolean') ? pDescending : 
-							((typeof(pDescending) == 'number') && (pDescending == 1)) ? true : 
-							((typeof(pDescending) == 'string') && (pDescending == '1')) ? true : 
+		let tmpDescending = (typeof(pDescending) == 'boolean') ? pDescending :
+							((typeof(pDescending) == 'number') && (pDescending == 1)) ? true :
+							((typeof(pDescending) == 'string') && (pDescending == '1')) ? true :
 							false;
 		let tmpManifest = this.fable.newManyfest();
 

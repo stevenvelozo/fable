@@ -313,7 +313,6 @@ class Fable extends libFableServiceBase.CoreServiceProviderBase
 		return false;
 	}
 
-	
 	/**
 	 * Generate a safe string to use in filenames for a date.  Useful for log file uniqueness and temporary outputs.
 	 *

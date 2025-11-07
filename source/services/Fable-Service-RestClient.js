@@ -44,7 +44,7 @@ class FableServiceRestClient extends libFableServiceBase
 			if (tmpCookieKeys.length > 0)
 			{
 				// Only grab the first for now.
-				pRequestOptions.headers.cookie = libCookie.serialize(tmpCookieKeys[0], tmpCookieObject[tmpCookieKeys[0]]);				
+				pRequestOptions.headers.cookie = libCookie.serialize(tmpCookieKeys[0], tmpCookieObject[tmpCookieKeys[0]]);
 			}
 		}
 		return pRequestOptions;

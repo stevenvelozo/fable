@@ -729,6 +729,32 @@ suite
 									Expect(tmpDestinationObject.PreciseEquals).to.equal('no');
 								}
 							);
+
+						test
+							(
+								'Series + Regression',
+								() =>
+								{
+									let testFable = new libFable();
+
+									let testCityData = require('./data/cities.json');
+									testFable.AppData =
+									{
+										Cities: testCityData.slice(0, 4),
+										Null: null,
+									};
+
+									// Now through the solver
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+									_Parser.solve('Coefficients = LINEST(FLATTEN(AppData.Cities[].latitude), FLATTEN(AppData.Cities[].population))', testFable, testFable.AppData, false, testFable.AppData);
+									testFable.log.info('Regression Coefficients:', testFable.AppData.Coefficients);
+									_Parser.solve('SeriesFromCoefficients = SERIES FROM 100 TO 1000 STEP 100 : AppData.Coefficients[0] + n * AppData.Coefficients[1]', testFable, testFable.AppData, false, testFable.AppData);
+									testFable.log.info('Series From Coefficients Result:', testFable.AppData.SeriesFromCoefficients);
+									_Parser.solve('IntegratedSeries = SUM(FLATTEN(AppData.SeriesFromCoefficients))', testFable, testFable.AppData, false, testFable.AppData);
+									testFable.log.info('Integrated Series Result:', testFable.AppData.IntegratedSeries);
+								}
+							);
 					}
 				);
 		}

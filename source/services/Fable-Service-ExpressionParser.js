@@ -1,24 +1,23 @@
-const { PE } = require('big.js');
 const libFableServiceBase = require('fable-serviceproviderbase');
 
 /* Trying a different pattern for this service ...
  *
  * This service is a simple expression parser that can handle math expressions, with magic(tm) lookup of addresses with a manifest.
- * 
+ *
  * Each method works multiple ways.
- * 
+ *
  * 1. You can pass in a results object, and, it will put the state for that step outcome into the results object.
  * 2. It always returns the state, and works without the results object.
- * 
- * 
+ *
+ *
  * Learned a lot from this npm package: https://www.npmjs.com/package/math-expression-evaluator
  * And its related code at github: https://github.com/bugwheels94/math-expression-evaluator
- * 
+ *
  * There were two problems with the codebase above...
- * 
+ *
  * First, the code was very unreadable and determining it was correct or extending it
  * was out of the question.
- * 
+ *
  * Second, and this is a larger issue, is that we need the expressions to be parsed as
  * arbitrary precision.  When I determined that extending the library to use string-based
  * numbers and an arbitrary precision library as the back-end would have taken a significantly
@@ -36,6 +35,11 @@ class FableServiceExpressionParser extends libFableServiceBase
 	constructor(pFable, pOptions, pServiceHash)
 	{
 		super(pFable, pOptions, pServiceHash);
+
+		/** @type {import('../Fable.js') & { Math: import('./Fable-Service-Math.js') }} */
+		this.fable;
+		/** @type {any} */
+		this.log;
 
 		// The configuration for tokens that the solver recognizes, with precedence and friendly names.
 		this.tokenMap = require('./Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-TokenMap.json');
@@ -115,7 +119,7 @@ class FableServiceExpressionParser extends libFableServiceBase
 		this.Messaging.connectExpressionParser(this);
 
 		this.GenericManifest = this.fable.newManyfest();
-		
+
 		// This will look for a LogNoisiness on fable (or one that falls in from pict) and if it doesn't exist, set one for this service.
 		this.LogNoisiness = ('LogNoisiness' in this.fable) ? this.fable.LogNoisiness : 0;
 	}
@@ -158,7 +162,7 @@ class FableServiceExpressionParser extends libFableServiceBase
 
 	/**
 	 * Substitutes values in tokenized objects.
-	 * 
+	 *
 	 * This means marshaling data from pDataSource into the array of objects with the passed in Manifest (or a generic manifest) to prepare for solving.
 	 *
 	 * @param {Array} pTokenizedObjects - The array of tokenized objects.
@@ -188,12 +192,12 @@ class FableServiceExpressionParser extends libFableServiceBase
 
 	/**
 	 * Solves the given expression using the provided data and manifest.
-	 * 
+	 *
 	 * @param {string} pExpression - The expression to solve.
-	 * @param {object} pDataSourceObject - (optional) The data source object (e.g. AppData).
-	 * @param {object} pResultObject - (optional) The result object containing the full postfix expression list, internal variables and solver history.
-	 * @param {object} pManifest - (optional) The manifest object for dereferencing variables.
-	 * @param {object} pDataDestinationObject - (optional) The data destination object for where to marshal the result into.
+	 * @param {Record<string, any>} [pDataSourceObject] - (optional) The data source object (e.g. AppData).
+	 * @param {Record<string, any>} [pResultObject] - (optional) The result object containing the full postfix expression list, internal variables and solver history.
+	 * @param {import('manyfest')} [pManifest] - (optional) The manifest object for dereferencing variables.
+	 * @param {Record<string, any>} [pDataDestinationObject] - (optional) The data destination object for where to marshal the result into.
 	 * @returns {any} - The result of solving the expression.
 	 */
 	solve(pExpression, pDataSourceObject, pResultObject, pManifest, pDataDestinationObject)
@@ -208,7 +212,7 @@ class FableServiceExpressionParser extends libFableServiceBase
 		// Lint the tokenized expression to make sure it's valid
 		this.lintTokenizedExpression(tmpResultsObject.RawTokens, tmpResultsObject);
 		this.buildPostfixedSolveList(tmpResultsObject.RawTokens, tmpResultsObject);
-		
+
 		if (tmpResultsObject.SolverDirectives.Code == 'SERIES')
 		{
 			// Make sure tmpResultsObject.SolverDirective values for From: null, To: null, Step: null are all numeric and non-zero where applicable
@@ -278,7 +282,7 @@ class FableServiceExpressionParser extends libFableServiceBase
 				let tmpSeriesStepDataSourceObject = Object.assign({}, tmpDataSourceObject);
 				tmpSeriesStepDataSourceObject.n = tmpCurrentValueOfN;
 				tmpSeriesStepDataSourceObject.stepIndex = i;
-				
+
 				let tmpMutatedValues = this.substituteValuesInTokenizedObjects(tmpResultsObject.PostfixTokenObjects, tmpSeriesStepDataSourceObject, tmpResultsObject, pManifest);
 
 				tmpValueArray.push( this.solvePostfixedExpression( tmpResultsObject.PostfixSolveList, tmpDataDestinationObject, tmpResultsObject, pManifest) );
@@ -296,7 +300,8 @@ class FableServiceExpressionParser extends libFableServiceBase
 				tmpAssignmentManifestHash = tmpResultsObject.OriginalRawTokens[0];
 			}
 
-			pManifest.setValueByHash(tmpDataDestinationObject, tmpAssignmentManifestHash, tmpValueArray);
+			let tmpManifest = (typeof(pManifest) === 'object') ? pManifest : this.fable.newManyfest();
+			tmpManifest.setValueByHash(tmpDataDestinationObject, tmpAssignmentManifestHash, tmpValueArray);
 
 			return tmpValueArray;
 		}

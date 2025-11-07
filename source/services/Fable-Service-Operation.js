@@ -8,12 +8,12 @@ class FableOperation extends libFableServiceBase
 
 	constructor(pFable, pOptions, pServiceHash)
 	{
-        super(pFable, pOptions, pServiceHash);
+		super(pFable, pOptions, pServiceHash);
 
 		// Timestamps will just be the long ints
 		this.timeStamps = {};
 
-        this.serviceType = 'PhasedOperation';
+		this.serviceType = 'PhasedOperation';
 
 		this.state = JSON.parse(_OperationStatePrototypeString);
 
@@ -44,7 +44,7 @@ class FableOperation extends libFableServiceBase
 		}
 
 		let tmpAnticipate = this.fable.instantiateServiceProviderWithoutRegistration('Anticipate');
-		
+
 		this.progressTrackerSet.setProgressTrackerTotalOperations(this.state.OverallProgressTracker.Hash, this.state.Status.StepCount);
 		this.progressTrackerSet.startProgressTracker(this.state.OverallProgressTracker.Hash);
 		this.info(`Operation [${this.state.Metadata.UUID}] ${this.state.Metadata.Name} starting...`);
@@ -58,7 +58,7 @@ class FableOperation extends libFableServiceBase
 					this.progressTrackerSet.startProgressTracker(this.state.Steps[i].ProgressTracker.Hash);
 					return fNext();
 				}.bind(this));
-			// Steps are executed in a custom context with 
+			// Steps are executed in a custom context with
 			tmpAnticipate.anticipate(this.stepFunctions[this.state.Steps[i].GUIDStep].bind(
 				{
 					log:this,
@@ -66,7 +66,7 @@ class FableOperation extends libFableServiceBase
 					options:this.state.Steps[i].Metadata,
 					metadata:this.state.Steps[i].Metadata,
 					ProgressTracker:this.progressTrackerSet.getProgressTracker(this.state.Steps[i].ProgressTracker.Hash),
-					logProgressTrackerStatus: function() 
+					logProgressTrackerStatus: function()
 						{
 							return this.log.info(`Step #${i} [${this.state.Steps[i].GUIDStep}]: ${this.progressTrackerSet.getProgressTrackerStatusString(this.state.Steps[i].ProgressTracker.Hash)}`);
 						}.bind(this),
@@ -80,7 +80,7 @@ class FableOperation extends libFableServiceBase
 					let tmpStepTimingMessage = this.progressTrackerSet.getProgressTrackerStatusString(this.state.Steps[i].ProgressTracker.Hash);
 					this.fable.log.info(`Step #${i} [${this.state.Steps[i].GUIDStep}] ${this.state.Steps[i].Name} complete.`);
 					this.fable.log.info(`Step #${i} [${this.state.Steps[i].GUIDStep}] ${this.state.Steps[i].Name} ${tmpStepTimingMessage}.`);
-			
+
 					this.progressTrackerSet.incrementProgressTracker(this.state.OverallProgressTracker.Hash, 1);
 					let tmpOperationTimingMessage = this.progressTrackerSet.getProgressTrackerStatusString(this.state.OverallProgressTracker.Hash);
 					this.fable.log.info(`Operation [${this.state.Metadata.UUID}] ${tmpOperationTimingMessage}.`);

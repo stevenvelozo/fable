@@ -13,9 +13,9 @@ class FableServiceMetaTemplate extends libFableServiceBase
 {
 	constructor(pFable, pOptions, pServiceHash)
 	{
-        super(pFable, pOptions, pServiceHash);
+		super(pFable, pOptions, pServiceHash);
 
-        this.serviceType = 'MetaTemplate';
+		this.serviceType = 'MetaTemplate';
 
 		this.WordTree = new libWordTree();
 

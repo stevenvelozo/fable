@@ -135,7 +135,7 @@ class ExpressionParserSolver extends libExpressionParserOperationBase
 					catch (pError)
 					{
 						tmpResults.ExpressionParserLog.push(`ERROR: ExpressionParser.solvePostfixedExpression failed to solve step ${i} with function ${tmpStepResultObject.ExpressionStep.Operation.Token}: ${pError}`);
-						this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
+						this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1], { Stack: pError.stack });
 						return false;
 					}
 				}
@@ -151,7 +151,7 @@ class ExpressionParserSolver extends libExpressionParserOperationBase
 					catch (pError)
 					{
 						tmpResults.ExpressionParserLog.push(`ERROR: ExpressionParser.solvePostfixedExpression failed to solve step ${i} with function ${tmpStepResultObject.ExpressionStep.Operation.Token}: ${pError}`);
-						this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
+						this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1], { Stack: pError.stack });
 						return false;
 					}
 				}

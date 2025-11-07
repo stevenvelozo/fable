@@ -1,6 +1,6 @@
 {
   "name": "fable",
-  "version": "3.1.32",
+  "version": "3.1.33",
   "description": "A service dependency injection, configuration and logging library.",
   "main": "source/Fable.js",
   "scripts": {
@@ -50,7 +50,7 @@
   },
   "homepage": "https://github.com/stevenvelozo/fable",
   "devDependencies": {
-    "quackage": "^1.0.42"
+    "quackage": "^1.0.45"
   },
   "dependencies": {
     "async.eachlimit": "^0.5.2",

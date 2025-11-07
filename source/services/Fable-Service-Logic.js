@@ -9,7 +9,7 @@ class FableServiceLogic extends libFableServiceBase
 	 */
 	constructor(pFable, pOptions, pServiceHash)
 	{
-        super(pFable, pOptions, pServiceHash);
+		super(pFable, pOptions, pServiceHash);
 	}
 
 	/**

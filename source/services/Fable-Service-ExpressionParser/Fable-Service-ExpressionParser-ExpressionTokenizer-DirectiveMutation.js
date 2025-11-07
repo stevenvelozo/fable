@@ -13,7 +13,7 @@ class ExpressionTokenizerDirectiveMutation extends libExpressionParserOperationB
 				'SERIES': { Name: 'Series', Code: 'SERIES', From: null, To: null, Step: null },
 				'MONTECARLO': { Name: 'Monte Carlo Simulation', Code: 'MONTECARLO', Iterations: null, Values: {} }
 			});
-		
+
 		this.defaultDirective = this.directiveTypes.SOLVE;
 	}
 
@@ -112,7 +112,7 @@ class ExpressionTokenizerDirectiveMutation extends libExpressionParserOperationB
 
 					// Remove the directive tokens and the assignment to the left of it from the array of raw tokens
 					// the colonoscopy if you will
-					tmpResults.RawTokens.splice(0, tmpDirectiveTokenEndIndex + 1);		
+					tmpResults.RawTokens.splice(0, tmpDirectiveTokenEndIndex + 1);
 
 					// Further parsing based on directive type could go here
 					// e.g. parseSeriesDirective for SERIES, etc.

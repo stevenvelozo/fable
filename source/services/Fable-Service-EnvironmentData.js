@@ -4,9 +4,9 @@ class FableServiceEnvironmentData extends libFableServiceBase
 {
 	constructor(pFable, pOptions, pServiceHash)
 	{
-        super(pFable, pOptions, pServiceHash);
+		super(pFable, pOptions, pServiceHash);
 
-        this.serviceType = 'EnvironmentData';
+		this.serviceType = 'EnvironmentData';
 
 		this.Environment = `node.js`;
 	}

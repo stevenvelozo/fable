@@ -402,5 +402,39 @@
 	"createvalueobjectbyhashes": {
 		"Name": "Create Value Object by Hashes",
 		"Address": "fable.Utility.createValueObjectByHashes"
+	},
+
+	"polynomialregression": {
+		"Name": "Perform an nth degree Polynomial Regression on a Set of X and Y Values",
+		"Address": "fable.Math.polynomialRegression"
+	},
+	"leastsquares": {
+		"Name": "Perform a Least Squares Regression on a Set of Independent Variable Vectors and a Dependent Variable Vector",
+		"Address": "fable.Math.leastSquares"
+	},
+	"linest": {
+		"Name": "Perform a Least Squares Regression on a Set of Independent Variable Vectors and a Dependent Variable Vector",
+		"Address": "fable.Math.leastSquares"
+	},
+
+	"matrixtranspose": {
+		"Name": "Transpose a Matrix",
+		"Address": "fable.Math.matrixTranspose"
+	},
+	"matrixmultiply": {
+		"Name": "Multiply Two Matrices",
+		"Address": "fable.Math.matrixMultiply"
+	},
+	"matrixvectormultiply": {
+		"Name": "Multiply a Matrix by a Vector",
+		"Address": "fable.Math.matrixVectorMultiply"
+	},
+	"matrixinverse": {
+		"Name": "Inverse a Matrix",
+		"Address": "fable.Math.matrixInverse"
+	},
+	"gaussianelimination": {
+		"Name": "Solve a System of Linear Equations using Gaussian Elimination",
+		"Address": "fable.Math.gaussianElimination"
 	}
 }

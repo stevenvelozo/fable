@@ -10,7 +10,7 @@ class ExpressionParserValueMarshal extends libExpressionParserOperationBase
 
 	/**
 	 * Substitutes values in tokenized objects based on the provided data source and manifest.
-	 * 
+	 *
 	 * TODO: Move this to its own file in the "Fable-Service-ExpressionParser" directory.
 	 *
 	 * @param {Array} pTokenizedObjects - The array of tokenized objects.

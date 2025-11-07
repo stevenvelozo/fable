@@ -13,9 +13,9 @@ class FableServiceTemplate extends libFableServiceBase
 	// TODO: Make this use precedent, add configuration, add debugging.
 	constructor(pFable, pOptions, pServiceHash)
 	{
-        super(pFable, pOptions, pServiceHash);
+		super(pFable, pOptions, pServiceHash);
 
-        this.serviceType = 'Template';
+		this.serviceType = 'Template';
 
 		// These are the exact regex's used in lodash/underscore
 		// TODO: Switch this to precedent
@@ -49,7 +49,7 @@ class FableServiceTemplate extends libFableServiceBase
 		// This is defined as such to underscore that it is a dynamic programming
 		// function on this class.
 		this.renderFunction = false;
-        this.templateString = false;
+		this.templateString = false;
 	}
 
 	renderTemplate(pData)
