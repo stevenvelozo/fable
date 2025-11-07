@@ -479,12 +479,14 @@ suite
 
 									// Approximate an integration of the function 1000 + (n / 2) from 13.2 and 25 every 0.2 values
 									let tmpResult = _Parser.solve('IntegrationApproximationResult = SERIES FROM 13.2 TO 25 STEP 0.2 :  1000 + (n / 2)', tmpDataSourceObject, tmpParserResultsObject, tmpManifest, tmpDataDestinationObject);
-
 									Expect(tmpDataDestinationObject.IntegrationApproximationResult[0]).to.equal("1006.6");
 									Expect(tmpDataDestinationObject.IntegrationApproximationResult[1]).to.equal("1006.7");
 									Expect(tmpDataDestinationObject.IntegrationApproximationResult[59]).to.equal("1012.5");
 
-									// TODO: Add a lot more tests
+									let tmpResultWithStep = _Parser.solve('IntegrationApproximationResultWithStep = SERIES FROM 13.2 TO 25 STEP 0.5 : (1000 * stepIndex) + n', tmpDataSourceObject, tmpParserResultsObject, tmpManifest, tmpDataDestinationObject);
+									Expect(tmpDataDestinationObject.IntegrationApproximationResultWithStep[0]).to.equal("13.2");
+									Expect(tmpDataDestinationObject.IntegrationApproximationResultWithStep[1]).to.equal("1013.7");
+									Expect(tmpDataDestinationObject.IntegrationApproximationResultWithStep[23]).to.equal("23024.7");
 
 									return fDone();
 								}
