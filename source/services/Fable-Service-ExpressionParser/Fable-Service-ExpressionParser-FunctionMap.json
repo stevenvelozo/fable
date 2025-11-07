@@ -294,6 +294,11 @@
 		"Address": "fable.Math.cleanValueObject"
 	},
 
+	"polynomialregression": {
+		"Name": "Perform an nth degree Polynomial Regression on a Set of X and Y Values",
+		"Address": "fable.Math.polynomialRegression"
+	},
+
 	"randominteger": {
 		"Name": "Random Integer",
 		"Address": "fable.DataGeneration.randomInteger"

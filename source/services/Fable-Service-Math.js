@@ -1498,6 +1498,232 @@ class FableServiceMath extends libFableServiceBase
 
 		return tmpModeValueSet;
 	}
+
+	/**
+	 * Performs an nth degree polynomial regression on the given data points.
+	 *
+	 * @param {Array<number|string>} pXVector - The x-coordinates of the data points.
+	 * @param {Array<number|string>} pYVector - The y-coordinates of the data points.
+	 * @param {number} [pDegree=2] - The degree of the polynomial to fit.
+	 *
+	 * @return {Array<number|string>} The coefficients of the fitted polynomial, starting from the constant term.
+	 */
+	polynomialRegression(pXVector, pYVector, pDegree = 2)
+	{
+		const n = pDegree;
+		const tmpXMatrix = [];
+		const tmpYVector = pYVector;
+
+		// Build Vandermonde matrix
+		for (let i = 0; i < pXVector.length; ++i)
+		{
+			const row = [];
+			for (let j = 0; j <= n; j++)
+			{
+				row.push(this.powerPrecise(pXVector[i], j));
+			}
+			tmpXMatrix.push(row);
+		}
+
+		// Compute coefficients
+		const X_T = this.matrixTranspose(tmpXMatrix);
+		const XTX = this.matrixMultiply(X_T, tmpXMatrix);
+		const XTY = this.matrixMultiply(X_T, tmpYVector.map(v => [v]));
+		const XTX_inv = this.matrixInverse(XTX);
+		const A = this.matrixMultiply(XTX_inv, XTY);
+
+		// Flatten coefficients
+		return A.map((row) => row[0]);
+	}
+
+	/**
+	 * Compute least squares regression coefficients for multivariable linear interpolation.
+	 *
+	 * @param {Array<Array<number|string>> | Array<number|string>} pIndependentVariableVectors - array of arrays [[x11, x12, ...], [x21, x22, ...], ...] or single array for single variable.
+	 * @param {Array<number|string>} pDependentVariableVector - array of target values [y1, y2, ...]
+	 *
+	 * @return {Array<number|string>} - linear coefficients [b0, b1, ..., bn] where y = b0 + b1*x1 + b2*x2 + ... + bn*xn
+	 */
+	leastSquares(pIndependentVariableVectors, pDependentVariableVector)
+	{
+		const tmpIndependentVariableVectors = Array.isArray(pIndependentVariableVectors[0]) ? pIndependentVariableVectors : pIndependentVariableVectors.map(value => [value]);
+		// Add bias term (intercept)
+		const tmpIndependentVariableMatrixWithBiasTerm = tmpIndependentVariableVectors.map(row => [1, ...row]);
+
+		// Compute X^T * X
+		const tmpIndependentTermTranpose = this.matrixTranspose(tmpIndependentVariableMatrixWithBiasTerm);
+		const tmpDependentTransposeMultiplication = this.matrixMultiply(tmpIndependentTermTranpose, tmpIndependentVariableMatrixWithBiasTerm);
+
+		// Compute X^T * y
+		const tmpIndependentTransposeMultiplication = this.matrixVectorMultiply(tmpIndependentTermTranpose, pDependentVariableVector);
+
+		// Solve (XtX) * beta = Xty
+		const tmpLinearCoefficients = this.gaussianElimination(tmpDependentTransposeMultiplication, tmpIndependentTransposeMultiplication);
+
+		return tmpLinearCoefficients;
+	}
+
+	/**
+	 * Helper function to transpose a matrix
+	 *
+	 * @param {Array<Array<number|string>>} pInputMatrix - matrix to transpose
+	 *
+	 * @return {Array<Array<number|string>>} - transposed matrix
+	 */
+	matrixTranspose(pInputMatrix)
+	{
+		return pInputMatrix[0].map((_, i) => pInputMatrix.map((row) => row[i]));
+	}
+
+	matrixMultiply(pLHSMatrix, pRHSMatrix)
+	{
+		const result = Array(pLHSMatrix.length)
+			.fill(0)
+			.map(() => Array(pRHSMatrix[0].length).fill(0));
+		for (let i = 0; i < pLHSMatrix.length; ++i)
+		{
+			for (let j = 0; j < pRHSMatrix[0].length; ++j)
+			{
+				for (let k = 0; k < pRHSMatrix.length; ++k)
+				{
+					result[i][j] = this.addPrecise(result[i][j], this.multiplyPrecise(pLHSMatrix[i][k], pRHSMatrix[k][j]));
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * @param {Array<Array<number|string>>} pMatrix - matrix to multiply
+	 * @param {Array<number|string>} pVector - vector to multiply
+	 *
+	 * @return {Array<number|string>} - result vector
+	 */
+	matrixVectorMultiply(pMatrix, pVector)
+	{
+		const result = Array(pMatrix.length).fill(0);
+		for (let i = 0; i < pMatrix.length; ++i)
+		{
+			for (let j = 0; j < pMatrix[0].length; ++j)
+			{
+				result[i] = this.addPrecise(result[i], this.multiplyPrecise(pMatrix[i][j], pVector[j]));
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Matrix inverse (using Gaussian elimination)
+	 *
+	 * @param {Array<Array<number|string>>} pMatrix - matrix to invert
+	 *
+	 * @return {Array<Array<number|string>>} - inverted matrix
+	 */
+	matrixInverse(pMatrix)
+	{
+		const n = pMatrix.length;
+		const tmpIdentityMatrix = pMatrix.map((row, i) => row.map((_, j) => (i === j ? 1 : 0)));
+		const tmpAugmentedMatrix = pMatrix.map((row, i) => row.concat(tmpIdentityMatrix[i]));
+
+		for (let i = 0; i < n; ++i)
+		{
+			// Pivot
+			let maxRow = i;
+			for (let k = i + 1; k < n; ++k)
+			{
+				if (this.gtPrecise(this.absPrecise(tmpAugmentedMatrix[k][i]), this.absPrecise(tmpAugmentedMatrix[maxRow][i])))
+				{
+					maxRow = k;
+				}
+			}
+			[tmpAugmentedMatrix[i], tmpAugmentedMatrix[maxRow]] = [tmpAugmentedMatrix[maxRow], tmpAugmentedMatrix[i]];
+
+			// divide by pivot
+			const tmpPivotValue = tmpAugmentedMatrix[i][i];
+			for (let j = 0; j < 2 * n; ++j)
+			{
+				tmpAugmentedMatrix[i][j] = this.dividePrecise(tmpAugmentedMatrix[i][j], tmpPivotValue);
+			}
+
+			// Eliminate other rows
+			for (let k = 0; k < n; ++k)
+			{
+				if (k === i)
+				{
+					continue;
+				}
+				const tmpFactor = tmpAugmentedMatrix[k][i];
+				for (let j = 0; j < 2 * n; ++j)
+				{
+					tmpAugmentedMatrix[k][j] = this.subtractPrecise(tmpAugmentedMatrix[k][j], this.multiplyPrecise(tmpFactor, tmpAugmentedMatrix[i][j]));
+				}
+			}
+		}
+
+		// Extract right half (inverse)
+		return tmpAugmentedMatrix.map((row) => row.slice(n));
+	}
+
+
+	/**
+	 * Compute solution to linear system using Gaussian elimination.
+	 *
+	 * @param {Array<Array<number|string>>} pCoefficientMatrix - Coefficient matrix
+	 * @param {Array<number|string>} pVector - Right-hand side vector
+	 *
+	 * @return {Array<number|string>} - Solution vector x
+	 */
+	gaussianElimination(pCoefficientMatrix, pVector)
+	{
+		// Solve A*x = b using Gaussian elimination
+		const n = pCoefficientMatrix.length;
+		const tmpAugmentedMatrix = pCoefficientMatrix.map((row, i) => [...row, pVector[i]]);
+
+		for (let i = 0; i < n; ++i)
+		{
+			// Pivot
+			let maxRow = i;
+			for (let k = i + 1; k < n; ++k)
+			{
+				if (this.gtPrecise(this.absPrecise(tmpAugmentedMatrix[k][i]), this.absPrecise(tmpAugmentedMatrix[maxRow][i])))
+				{
+					maxRow = k;
+				}
+			}
+			const tmpSwapValue = tmpAugmentedMatrix[i];
+			tmpAugmentedMatrix[i] = tmpAugmentedMatrix[maxRow];
+			tmpAugmentedMatrix[maxRow] = tmpSwapValue;
+
+			// Normalize pivot row
+			const tmpPivotValue = tmpAugmentedMatrix[i][i];
+			if (this.comparePrecise(tmpPivotValue, 0) == 0)
+			{
+				throw new Error('Matrix not invertible');
+			}
+			for (let j = i; j <= n; ++j)
+			{
+				tmpAugmentedMatrix[i][j] = this.dividePrecise(tmpAugmentedMatrix[i][j], tmpPivotValue);
+			}
+
+			// Eliminate other rows
+			for (let k = 0; k < n; ++k)
+			{
+				if (k === i)
+				{
+					continue;
+				}
+				const tmpFactor = tmpAugmentedMatrix[k][i];
+				for (let j = i; j <= n; ++j)
+				{
+					tmpAugmentedMatrix[k][j] = this.subtractPrecise(tmpAugmentedMatrix[k][j], this.multiplyPrecise(tmpFactor, tmpAugmentedMatrix[i][j]));
+				}
+			}
+		}
+
+		// Extract solution
+		return tmpAugmentedMatrix.map((row) => row[n]);
+	}
+
 }
 
 module.exports = FableServiceMath;

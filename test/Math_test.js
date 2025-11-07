@@ -462,8 +462,88 @@ suite
 
 						return fDone();
 					}
-				)
+				);
 
+				test
+				(
+					'Least Squares Regression',
+					function()
+					{
+						let testFable = new libFable();
+
+						const predict = (coeffs, x) => testFable.Math.addPrecise(coeffs[0], coeffs.slice(1).reduce((sum, b, i) =>
+							{
+								return testFable.Math.addPrecise(sum, testFable.Math.multiplyPrecise(b, x[i]));
+							}, 0));
+						// Example: predict y from x1 and x2
+						const X_1 = [ 1, 2, 3, 4 ];
+						const y_1 = [ 3, 2, 1, 0 ];
+
+						const coeffs_1 = testFable.Math.leastSquares(X_1, y_1);
+						testFable.log.info('Coefficients:', coeffs_1);
+
+
+						testFable.log.info('Prediction for [2,1]:', predict(coeffs_1, [2.5]));
+
+						// Example: predict y from x1 and x2
+						const X = [
+							[1, 2],
+							[2, 0],
+							[3, 1],
+							[4, 3]
+						];
+
+						const y = [3, 2, 4, 5];
+
+						const coeffs = testFable.Math.leastSquares(X, y);
+						testFable.log.info('Coefficients:', coeffs);
+
+						testFable.log.info('Prediction for [1,2] (training value is 3):', predict(coeffs, [1, 2]));
+						testFable.log.info('Prediction for [2,0] (training value is 2):', predict(coeffs, [2, 0]));
+						testFable.log.info('Prediction for [3,1] (training value is 4):', predict(coeffs, [3, 1]));
+						Expect(Number(predict(coeffs, [3, 1]))).to.be.closeTo(4, 0.51);
+						testFable.log.info('Prediction for [4,3] (training value is 5):', predict(coeffs, [4, 3]));
+						Expect(Number(predict(coeffs, [4, 3]))).to.be.closeTo(5, 0.25);
+						testFable.log.info('Prediction for [2,1]:', predict(coeffs, [2, 1]));
+					}
+				);
+
+				test
+				(
+					'Linear regression',
+					function(fDone)
+					{
+						let testFable = new libFable();
+
+						const x = [0, 1, 2, 3, 4];
+						const y = [1, 2.2, 2.9, 3.7, 4.1];
+
+						for (let degree = 1; degree < 5; degree++)
+						{
+							const coeffs = testFable.Math.polynomialRegression(x, y, degree);
+
+							function predict(x, coeffs)
+							{
+								return coeffs.reduce((sum, a, i) => sum + a * Math.pow(x, i), 0);
+							}
+
+							testFable.log.info(`degree ${degree} coefficients:`, coeffs);
+
+							Expect(coeffs.length).to.equal(degree + 1); // quadratic
+							for (let i = 0; i < x.length; i++)
+							{
+								const tmpPrediction = predict(x[i], coeffs);
+								testFable.log.info(`x: ${x[i]}, predicted: ${tmpPrediction}, actual: ${y[i]}`);
+								if (i === 0 || i === x.length - 1)
+								{
+									Expect(tmpPrediction).to.be.closeTo(y[i], 1 / degree);
+								}
+							}
+						}
+
+						return fDone();
+					}
+				);
 			}
 		);
 	}
