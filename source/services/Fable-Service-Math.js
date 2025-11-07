@@ -84,6 +84,16 @@ class FableServiceMath extends libFableServiceBase
 	}
 
 	/**
+	 * Begins an expression with the given value. For performing colon operations in the solver.
+	 * @param {*} pValue - The value to begin the expression with.
+	 * @returns {*} The begun expression value.
+	 */
+	expressionBegin(pValue)
+	{
+		return pValue;
+	}
+
+	/**
 	 * Calculates the precise percentage of a given value compared to another value.
 	 *
 	 * @param {number} pIs - The value to calculate the percentage of.

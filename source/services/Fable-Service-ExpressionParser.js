@@ -88,6 +88,7 @@ class FableServiceExpressionParser extends libFableServiceBase
 
 		// These are sub-services for the tokenizer, linter, compiler, marshaler and solver.
 		this.fable.addServiceTypeIfNotExists('ExpressionParser-Tokenizer', require('./Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-ExpressionTokenizer.js'));
+		this.fable.addServiceTypeIfNotExists('ExpressionParser-TokenizerDirectiveMutation', require('./Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-ExpressionTokenizer-DirectiveMutation.js'));
 		this.fable.addServiceTypeIfNotExists('ExpressionParser-Linter', require('./Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-Linter.js'));
 		this.fable.addServiceTypeIfNotExists('ExpressionParser-Postfix', require('./Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-Postfix.js'));
 		this.fable.addServiceTypeIfNotExists('ExpressionParser-ValueMarshal', require('./Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-ValueMarshal.js'));
@@ -98,6 +99,7 @@ class FableServiceExpressionParser extends libFableServiceBase
 
 		// This code instantitates these fable services to child objects of this service, but does not pollute the main fable with them.
 		this.Tokenizer = this.fable.instantiateServiceProviderWithoutRegistration('ExpressionParser-Tokenizer');
+		this.Tokenizer.TokenizerDirectiveMutation = this.fable.instantiateServiceProviderWithoutRegistration('ExpressionParser-TokenizerDirectiveMutation');
 		this.Linter = this.fable.instantiateServiceProviderWithoutRegistration('ExpressionParser-Linter');
 		this.Postfix = this.fable.instantiateServiceProviderWithoutRegistration('ExpressionParser-Postfix');
 		this.ValueMarshal = this.fable.instantiateServiceProviderWithoutRegistration('ExpressionParser-ValueMarshal');
@@ -202,14 +204,109 @@ class FableServiceExpressionParser extends libFableServiceBase
 
 		// This is technically a "pre-compile" and we can keep this Results Object around to reuse for better performance.  Not required.
 		this.tokenize(pExpression, tmpResultsObject);
+
+		// Lint the tokenized expression to make sure it's valid
 		this.lintTokenizedExpression(tmpResultsObject.RawTokens, tmpResultsObject);
 		this.buildPostfixedSolveList(tmpResultsObject.RawTokens, tmpResultsObject);
 		
-		// This is where the data from variables gets marshaled into their symbols (from AppData or the like)
-		this.substituteValuesInTokenizedObjects(tmpResultsObject.PostfixTokenObjects, tmpDataSourceObject, tmpResultsObject, pManifest);
-		
-		// Finally this is the expr solving method, which returns a string and also marshals it into tmpDataDestinationObject
-		return this.solvePostfixedExpression(tmpResultsObject.PostfixSolveList, tmpDataDestinationObject, tmpResultsObject, pManifest);
+		if (tmpResultsObject.SolverDirectives.Code == 'SERIES')
+		{
+			// Make sure tmpResultsObject.SolverDirective values for From: null, To: null, Step: null are all numeric and non-zero where applicable
+			let tmpFrom = this.fable.Math.parsePrecise(tmpResultsObject.SolverDirectives.From, NaN);
+			let tmpTo = this.fable.Math.parsePrecise(tmpResultsObject.SolverDirectives.To, NaN);
+			let tmpStep = this.fable.Math.parsePrecise(tmpResultsObject.SolverDirectives.Step, NaN);
+
+			if (isNaN(tmpStep))
+			{
+				tmpStep = '1';
+			}
+
+			if (isNaN(tmpFrom) || isNaN(tmpTo))
+			{
+				tmpResultsObject.ExpressionParserLog.push(`ExpressionParser.solve detected invalid SERIES directive parameters.  FROM, TO must be numeric.`);
+				this.log.warn(tmpResultsObject.ExpressionParserLog[tmpResultsObject.ExpressionParserLog.length-1]);
+				return null;
+			}
+
+			// Make sure from/to are not equal
+			if (this.fable.Math.comparePrecise(tmpFrom, tmpTo) == 0)
+			{
+				tmpResultsObject.ExpressionParserLog.push(`ExpressionParser.solve detected invalid SERIES directive parameters.  FROM and TO cannot be equal.`);
+				this.log.warn(tmpResultsObject.ExpressionParserLog[tmpResultsObject.ExpressionParserLog.length-1]);
+				return null;
+			}
+
+			// Make sure that Step is the correct positive/negative based on From and To
+			if (this.fable.Math.comparePrecise(tmpStep, '0') == 0)
+			{
+				tmpResultsObject.ExpressionParserLog.push(`ExpressionParser.solve detected invalid SERIES directive parameters.  STEP cannot be zero.`);
+				this.log.warn(tmpResultsObject.ExpressionParserLog[tmpResultsObject.ExpressionParserLog.length-1]);
+				return null;
+			}
+			if (this.fable.Math.comparePrecise(tmpFrom, tmpTo) < 0)
+			{
+				// From < To so Step must be positive
+				if (this.fable.Math.comparePrecise(tmpStep, '0') < 0)
+				{
+					tmpResultsObject.ExpressionParserLog.push(`ExpressionParser.solve detected invalid SERIES directive parameters.  STEP must be positive when FROM < TO.`);
+					this.log.warn(tmpResultsObject.ExpressionParserLog[tmpResultsObject.ExpressionParserLog.length-1]);
+					return null;
+				}
+			}
+			else
+			{
+				// From >= To so Step must be negative
+				if (this.fable.Math.comparePrecise(tmpStep, '0') > 0)
+				{
+					tmpResultsObject.ExpressionParserLog.push(`ExpressionParser.solve detected invalid SERIES directive parameters.  STEP must be negative when FROM >= TO.`);
+					this.log.warn(tmpResultsObject.ExpressionParserLog[tmpResultsObject.ExpressionParserLog.length-1]);
+					return null;
+				}
+			}
+
+			// Get the number of iterations we need to perform
+			let tmpIterations = parseInt(this.fable.Math.floorPrecise(this.fable.Math.dividePrecise(this.fable.Math.subtractPrecise(tmpTo, tmpFrom), tmpStep)));
+
+			let tmpValueArray = [];
+
+			for (let i = 0; i <= tmpIterations; i++)
+			{
+				let tmpCurrentValueOfN = this.fable.Math.addPrecise(tmpFrom, this.fable.Math.multiplyPrecise(tmpStep, i.toString()));
+
+				// Jimmy up the data source with the current N value, stepIndex and all the other data from the source object
+				// This generates a data source object every time on purpose so we can remarshal in values that changed in the destination
+				let tmpSeriesStepDataSourceObject = Object.assign({}, tmpDataSourceObject);
+				tmpSeriesStepDataSourceObject.n = tmpCurrentValueOfN;
+				tmpSeriesStepDataSourceObject.stepIndex = i;
+				
+				let tmpMutatedValues = this.substituteValuesInTokenizedObjects(tmpResultsObject.PostfixTokenObjects, tmpSeriesStepDataSourceObject, tmpResultsObject, pManifest);
+
+				tmpValueArray.push( this.solvePostfixedExpression( tmpResultsObject.PostfixSolveList, tmpDataDestinationObject, tmpResultsObject, pManifest) );
+
+				for (let j = 0; j < tmpMutatedValues.length; j++)
+				{
+					tmpMutatedValues[j].Resolved = false;
+				}
+			}
+
+			// Do the assignment
+			let tmpAssignmentManifestHash = tmpResultsObject.PostfixedAssignmentAddress;
+			if ((tmpResultsObject.OriginalRawTokens[1] === '=') && (typeof(tmpResultsObject.OriginalRawTokens[0]) === 'string') && (tmpResultsObject.OriginalRawTokens[0].length > 0))
+			{
+				tmpAssignmentManifestHash = tmpResultsObject.OriginalRawTokens[0];
+			}
+
+			pManifest.setValueByHash(tmpDataDestinationObject, tmpAssignmentManifestHash, tmpValueArray);
+
+			return tmpValueArray;
+		}
+		else // For 'SOLVE' or anything else that didn't work
+		{
+			// This is where the data from variables gets marshaled into their symbols (from AppData or the like)
+			this.substituteValuesInTokenizedObjects(tmpResultsObject.PostfixTokenObjects, tmpDataSourceObject, tmpResultsObject, pManifest);
+			// Finally this is the expr solving method, which returns a string and also marshals it into tmpDataDestinationObject
+			return this.solvePostfixedExpression(tmpResultsObject.PostfixSolveList, tmpDataDestinationObject, tmpResultsObject, pManifest);
+		}
 	}
 }
 

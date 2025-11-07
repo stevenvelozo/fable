@@ -13,6 +13,7 @@ class ExpressionTokenizer extends libExpressionParserOperationBase
 		let tmpResults = (typeof(pResultObject) === 'object') ? pResultObject : { ExpressionParserLog: [] };
 
 		tmpResults.RawExpression = pExpression;
+		tmpResults.SolverDirectives = {};
 		tmpResults.RawTokens = [];
 		tmpResults.ExpressionParserLog = [];
 
@@ -202,6 +203,11 @@ class ExpressionTokenizer extends libExpressionParserOperationBase
 		{
 			tmpResults.RawTokens.push(tmpCurrentToken);
 		}
+
+		tmpResults.OriginalRawTokens = Array.from(tmpResults.RawTokens);
+
+		// Potentially mutate the tokens based on directives in the tokenized expression
+		this.TokenizerDirectiveMutation.parseDirectives(tmpResults);
 
 		return tmpResults.RawTokens;
 	}

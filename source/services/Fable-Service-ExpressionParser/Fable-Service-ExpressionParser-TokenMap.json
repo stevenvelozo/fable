@@ -8,6 +8,15 @@
 			"Type": "Assignment"
 		},
 
+	":":
+		{
+			"Name": "Expression Begin",
+			"Token": ":",
+			"Function": "fable.Math.expressionBegin",
+			"Precedence": 0,
+			"Type": "Assignment"
+		},
+
 	"?=":
 		{
 			"Name": "Null or Empty Coalescing Assign Value",

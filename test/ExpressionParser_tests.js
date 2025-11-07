@@ -466,6 +466,31 @@ suite
 							);
 						test
 							(
+								'Test integration prepartion..',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+									let tmpManifest = testFable.newManyfest();
+									let tmpDataSourceObject = {};
+									let tmpDataDestinationObject = {};
+									let tmpParserResultsObject = {};
+
+									// Approximate an integration of the function 1000 + (n / 2) from 13.2 and 25 every 0.2 values
+									let tmpResult = _Parser.solve('IntegrationApproximationResult = SERIES FROM 13.2 TO 25 STEP 0.2 :  1000 + (n / 2)', tmpDataSourceObject, tmpParserResultsObject, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpDataDestinationObject.IntegrationApproximationResult[0]).to.equal("1006.6");
+									Expect(tmpDataDestinationObject.IntegrationApproximationResult[1]).to.equal("1006.7");
+									Expect(tmpDataDestinationObject.IntegrationApproximationResult[59]).to.equal("1012.5");
+
+									// TODO: Add a lot more tests
+
+									return fDone();
+								}
+							);
+						test
+							(
 								'Complex Histogram Arithmatic',
 								(fDone) =>
 								{
