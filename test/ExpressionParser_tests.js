@@ -477,6 +477,13 @@ suite
 									let tmpDataDestinationObject = {};
 									let tmpParserResultsObject = {};
 
+									/* FIXME: This test is broken since `n` doesn't result in a valid postfix expression for the series generation.
+									let tmpPassthroughResult = _Parser.solve('IntegrationApproximationResult = SERIES FROM 13.2 TO 25 STEP 0.2 : n', tmpDataSourceObject, tmpParserResultsObject, tmpManifest, tmpDataDestinationObject);
+									Expect(tmpDataDestinationObject.IntegrationApproximationResult[0]).to.equal("13.2");
+									Expect(tmpDataDestinationObject.IntegrationApproximationResult[1]).to.equal("13.4");
+									Expect(tmpDataDestinationObject.IntegrationApproximationResult[59]).to.equal("25");
+									 */
+
 									// Approximate an integration of the function 1000 + (n / 2) from 13.2 and 25 every 0.2 values
 									let tmpResult = _Parser.solve('IntegrationApproximationResult = SERIES FROM 13.2 TO 25 STEP 0.2 :  1000 + (n / 2)', tmpDataSourceObject, tmpParserResultsObject, tmpManifest, tmpDataDestinationObject);
 									Expect(tmpDataDestinationObject.IntegrationApproximationResult[0]).to.equal("1006.6");
