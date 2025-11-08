@@ -191,6 +191,40 @@ class FableServiceExpressionParser extends libFableServiceBase
 	}
 
 	/**
+	 * Prepares the parameters for a SERIES directive by substituting values and applying defaults.
+	 *
+	 * @param {Array} pParameters
+	 * @param {Array} pDefaults
+	 * @param {Object} pResultObject
+	 * @param {Object} pDataSourceObject
+	 * @param {import('manyfest')} [pManifest]
+	 */
+	_prepareDirectiveParameters(pParameters, pDefaults, pResultObject, pDataSourceObject, pManifest)
+	{
+		const tmpResults = [];
+		for (let i = 0; i < pParameters.length; i++)
+		{
+			const tmpParameter = pParameters[i];
+			let tmpValue = this.fable.Math.parsePrecise(tmpParameter, NaN);
+			if (isNaN(tmpValue) && typeof tmpParameter === 'string' && tmpParameter.length > 0)
+			{
+				const tmpToken = this.fable.ExpressionParser.Postfix.getTokenContainerObject(tmpParameter, 'Token.Symbol');
+				this.substituteValuesInTokenizedObjects([tmpToken], pDataSourceObject, pResultObject, pManifest);
+				if (tmpToken.Resolved)
+				{
+					tmpValue = tmpToken.Value;
+				}
+			}
+			if (isNaN(tmpValue) && pDefaults.length > i)
+			{
+				tmpValue = pDefaults[i];
+			}
+			tmpResults.push(tmpValue);
+		}
+		return tmpResults;
+	}
+
+	/**
 	 * Solves the given expression using the provided data and manifest.
 	 *
 	 * @param {string} pExpression - The expression to solve.
@@ -215,15 +249,11 @@ class FableServiceExpressionParser extends libFableServiceBase
 
 		if (tmpResultsObject.SolverDirectives.Code == 'SERIES')
 		{
-			// Make sure tmpResultsObject.SolverDirective values for From: null, To: null, Step: null are all numeric and non-zero where applicable
-			let tmpFrom = this.fable.Math.parsePrecise(tmpResultsObject.SolverDirectives.From, NaN);
-			let tmpTo = this.fable.Math.parsePrecise(tmpResultsObject.SolverDirectives.To, NaN);
-			let tmpStep = this.fable.Math.parsePrecise(tmpResultsObject.SolverDirectives.Step, NaN);
-
-			if (isNaN(tmpStep))
-			{
-				tmpStep = '1';
-			}
+			const [ tmpStep , tmpFrom, tmpTo] = this._prepareDirectiveParameters([
+				tmpResultsObject.SolverDirectives.Step,
+				tmpResultsObject.SolverDirectives.From,
+				tmpResultsObject.SolverDirectives.To,
+			], [ '1' ], tmpResultsObject, tmpDataSourceObject, pManifest);
 
 			if (isNaN(tmpFrom) || isNaN(tmpTo))
 			{

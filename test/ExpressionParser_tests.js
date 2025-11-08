@@ -488,6 +488,20 @@ suite
 									Expect(tmpDataDestinationObject.IntegrationApproximationResultWithStep[1]).to.equal("1013.7");
 									Expect(tmpDataDestinationObject.IntegrationApproximationResultWithStep[23]).to.equal("23024.7");
 
+									testFable.AppData =
+									{
+										StartValue: 5,
+										EndValue: 10,
+										StepValue: 0.5,
+										BaseValue: 200,
+									};
+									let tmpResultWithVariables = _Parser.solve('XValues = SERIES FROM StartValue TO EndValue STEP StepValue : (BaseValue * stepIndex) + n',
+										testFable.AppData, tmpParserResultsObject, tmpManifest, testFable.AppData);
+									Expect(testFable.AppData.XValues.length).to.equal(11);
+									Expect(testFable.AppData.XValues[0]).to.equal('5');
+									Expect(testFable.AppData.XValues[5]).to.equal('1007.5');
+									Expect(testFable.AppData.XValues[10]).to.equal('2010');
+
 									return fDone();
 								}
 							);

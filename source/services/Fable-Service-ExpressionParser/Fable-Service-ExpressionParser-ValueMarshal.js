@@ -58,7 +58,7 @@ class ExpressionParserValueMarshal extends libExpressionParserOperationBase
 				// 	// If no hash resolves, try by address.
 				// 	tmpValue = tmpManifest.getValueAtAddress(tmpToken.Token, tmpDataSource);
 				// }
-				if (!tmpValue)
+				if (tmpValue == null)
 				{
 					tmpToken.Value = tmpValue;
 					tmpToken.Resolve = true;
