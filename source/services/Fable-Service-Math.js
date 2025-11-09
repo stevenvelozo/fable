@@ -1734,6 +1734,28 @@ class FableServiceMath extends libFableServiceBase
 		return tmpAugmentedMatrix.map((row) => row[n]);
 	}
 
+	generateValueFromEasingDescription(pEasingConfiguration)
+	{
+		// Branch based on type
+		switch (pEasingConfiguration.Easing)
+		{
+			case 'LINEAR':
+			default:
+				let tmpDomainRange = pEasingConfiguration.DomainLength;
+
+				if (this.comparePrecise(tmpDomainRange, 0) == 0)
+				{
+					return this.parsePrecise(pEasingConfiguration.DomainRangeStart);
+				}
+
+				// Now, generate a random number and then multiply it to fit in the domain length
+				let tmpRandomFraction = Math.random();
+				// Scale it to the domain
+				let tmpScaledValue = this.multiplyPrecise(tmpRandomFraction, tmpDomainRange);
+				// Shift it to the range start
+				return this.addPrecise(pEasingConfiguration.DomainRangeStart, tmpScaledValue);
+		}
+	}
 }
 
 module.exports = FableServiceMath;

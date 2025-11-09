@@ -120,7 +120,7 @@ class ExpressionParserLinter extends libExpressionParserOperationBase
 		{
 			tmpResults.ExpressionParserLog.push(`WARNING: ExpressionParser.lintTokenizedExpression found no equality assignment in the tokenized expression.  One called Result will be added automatically.`);
 			tmpResults.LinterResults.push(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
-			this.log.warn(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
+			//this.log.warn(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
 		}
 
 		// 4. Make sure the equality assignment only has a single value on the other side of it

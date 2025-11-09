@@ -11,7 +11,7 @@ class ExpressionTokenizerDirectiveMutation extends libExpressionParserOperationB
 			{
 				'SOLVE': { Name: 'Solve Expression', Code: 'SOLVE' },
 				'SERIES': { Name: 'Series', Code: 'SERIES', From: null, To: null, Step: null },
-				'MONTECARLO': { Name: 'Monte Carlo Simulation', Code: 'MONTECARLO', Iterations: null, Values: {} }
+				'MONTECARLO': { Name: 'Monte Carlo Simulation', SampleCount: '1', Code: 'MONTECARLO', Values: {} }
 			});
 
 		this.defaultDirective = this.directiveTypes.SOLVE;
@@ -57,6 +57,85 @@ class ExpressionTokenizerDirectiveMutation extends libExpressionParserOperationB
 		return tmpNewSeriesDirectiveDescription;
 	}
 
+	parseMonteCarloDirective(pTokens)
+	{
+		// This isn't a fancy real parse it's just taking words and stealing values after them.
+		let tmpNewSeriesDirectiveDescription = Object.assign({}, this.directiveTypes.MONTECARLO);
+
+		for (let i = 0; i < pTokens.length; i++)
+		{
+			let tmpToken = pTokens[i].toUpperCase();
+			switch(tmpToken)
+			{
+				case 'SAMPLECOUNT':
+					if ((i + 1) < pTokens.length)
+					{
+						tmpNewSeriesDirectiveDescription.SampleCount = pTokens[i + 1];
+					}
+					i = i + 1;
+					break;
+
+				case 'VARIABLE':
+				case 'VAR':
+				case 'V':
+					if ((i + 1) < pTokens.length)
+					{
+						let tmpVariableToken = pTokens[i + 1];
+						if (typeof(tmpVariableToken) === 'string' && (tmpVariableToken.length > 0))
+						{
+							tmpNewSeriesDirectiveDescription.Values[tmpVariableToken] = 
+							{
+								Token: tmpVariableToken,
+								Easing: 'Linear', // could be parametric, logarithmic, bezier, uniform, normal, etc.
+								Points: [] // array of values for points to generate between.
+							}
+						}
+					}
+					i = i + 1;
+					break;
+
+				case 'POINT':
+				case 'PT':
+				case 'P':
+					if (pTokens.length < i + 2)
+					{
+						continue;
+					}
+
+					let tmpVariableToken = pTokens[i + 1];
+					if (tmpVariableToken in tmpNewSeriesDirectiveDescription.Values)
+					{
+						let tmpVariableValue = this.fable.Math.parsePrecise(pTokens[i + 2], NaN);
+						if (!isNaN(tmpVariableValue))
+							tmpNewSeriesDirectiveDescription.Values[tmpVariableToken].Points.push(tmpVariableValue);
+					}
+					i = i + 2;
+					break;
+
+				case 'EASING':
+					if (pTokens.length < i + 2)
+					{
+						continue;
+					}
+
+					tmpVariableToken = pTokens[i + 1];
+					let tmpEasingType = pTokens[i + 2].toUpperCase();
+					if (tmpVariableToken in tmpNewSeriesDirectiveDescription.Values)
+					{
+						tmpNewSeriesDirectiveDescription.Values[tmpVariableToken].Easing = tmpEasingType;
+					}
+					i = i + 2;
+					break;
+
+				default:
+					// Ignore other tokens
+					break;
+			}
+		}
+
+		return tmpNewSeriesDirectiveDescription;
+	}
+
 	parseDirectives(pResultObject)
 	{
 		let tmpResults = (typeof(pResultObject) === 'object') ? pResultObject : { ExpressionParserLog: [] };
@@ -85,7 +164,7 @@ class ExpressionTokenizerDirectiveMutation extends libExpressionParserOperationB
 					tmpResults.SolverDirectives.Type = this.directiveTypes[tmpToken];
 
 					tmpResults.ExpressionParserLog.push(`ExpressionParser.tokenizeDirectiveMutation identified solver directive: ${tmpToken}`);
-					this.log.info(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
+					//this.log.info(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
 
 					// Extract the Directive name and everything else from it up until the : token
 					let tmpDirectiveTokenStartIndex = i;
@@ -120,6 +199,9 @@ class ExpressionTokenizerDirectiveMutation extends libExpressionParserOperationB
 					{
 						case 'SERIES':
 							tmpResults.SolverDirectives = this.parseSeriesDirective(tmpResults.SolverDirectiveTokens);
+							break;
+						case 'MONTECARLO':
+							tmpResults.SolverDirectives = this.parseMonteCarloDirective(tmpResults.SolverDirectiveTokens);
 							break;
 						default:
 							// No further parsing needed

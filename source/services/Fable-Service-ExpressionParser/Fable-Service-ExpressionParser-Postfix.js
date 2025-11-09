@@ -104,7 +104,7 @@ class ExpressionParserPostfix extends libExpressionParserOperationBase
 		if (tmpEqualsIndex == -1)
 		{
 			tmpResults.ExpressionParserLog.push(`WARNING: ExpressionParser.buildPostfixedSolveList found no equality assignment in the tokenized expression; defaulting to Result`);
-			this.log.warn(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
+			//this.log.warn(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
 		}
 		else if (tmpEqualsIndex > 1)
 		{

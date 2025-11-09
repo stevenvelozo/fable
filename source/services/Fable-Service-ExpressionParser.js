@@ -335,6 +335,150 @@ class FableServiceExpressionParser extends libFableServiceBase
 
 			return tmpValueArray;
 		}
+		else if (tmpResultsObject.SolverDirectives.Code == 'MONTECARLO')
+		{
+			const [ tmpSampleCount ] = this._prepareDirectiveParameters([
+				tmpResultsObject.SolverDirectives.SampleCount
+			], [ '1' ], tmpResultsObject, tmpDataSourceObject, pManifest);
+
+			if (isNaN(tmpSampleCount))
+			{
+				tmpResultsObject.ExpressionParserLog.push(`ExpressionParser.solve detected invalid MONTECARLO directive parameters.  SAMPLECOUNT must be numeric.`);
+				this.log.warn(tmpResultsObject.ExpressionParserLog[tmpResultsObject.ExpressionParserLog.length-1]);
+				return null;
+			}
+
+			let tmpMonteCarloOutput = JSON.parse(JSON.stringify(tmpResultsObject.SolverDirectives));
+			tmpMonteCarloOutput.Samples = [];
+
+			// Now go through each variable and prepare its object of values
+			let tmpVariableKeys = Object.keys(tmpMonteCarloOutput.Values);
+			for (let i = 0; i < tmpVariableKeys.length; i++)
+			{
+				let tmpVariableKey = tmpVariableKeys[i];
+				let tmpVariableDescription = tmpMonteCarloOutput.Values[tmpVariableKey];
+				
+				// For each variable, generate its array of sampled values
+				tmpVariableDescription.Distribution = {};
+				tmpVariableDescription.ValueSequence = [];
+
+				// Resolve the points if they are tokenized expressions
+				const tmpResolvedPoints = [];
+				for (let j = 0; j < tmpVariableDescription.Points.length; j++)
+				{
+					let tmpPointToken = tmpVariableDescription.Points[j];
+					let tmpPointValue = this.fable.Math.parsePrecise(tmpPointToken, NaN);
+					if (isNaN(tmpPointValue) && typeof tmpPointToken === 'string' && tmpPointToken.length > 0)
+					{
+						tmpPointValue = pManifest.getValueByHash(tmpDataSourceObject, tmpPointToken);
+						if (!tmpPointValue || (tmpPointValue == null))
+						{
+							//TODO: Warn?
+						}
+						else
+						{
+							tmpResolvedPoints.push(tmpPointValue);
+						}
+
+					}
+					else
+					{
+						tmpResolvedPoints.push(tmpPointToken);
+					}
+				}
+				// Now sort the resolved points
+				tmpResolvedPoints.sort((a, b) => this.fable.Math.comparePrecise(a, b));
+				tmpVariableDescription.ResolvedPoints = tmpResolvedPoints;
+
+				// Just simple linear until we add more easing types in a separate library (refactoring the below out)
+				tmpVariableDescription.FirstPoint = tmpVariableDescription.ResolvedPoints[0];
+				tmpVariableDescription.DomainRangeStart = tmpVariableDescription.FirstPoint;
+				if (tmpVariableDescription.ResolvedPoints.length < 2)
+				{
+					tmpVariableDescription.LastPoint = tmpVariableDescription.FirstPoint;
+				}
+				else
+				{
+					tmpVariableDescription.LastPoint = this.fable.Math.parsePrecise(tmpVariableDescription.ResolvedPoints[tmpVariableDescription.ResolvedPoints.length - 1], NaN);
+					if (isNaN(tmpVariableDescription.LastPoint))
+					{
+						tmpVariableDescription.LastPoint = tmpVariableDescription.FirstPoint;
+					}
+				}
+				tmpVariableDescription.DomainLength = this.fable.Math.subtractPrecise(tmpVariableDescription.LastPoint, tmpVariableDescription.FirstPoint);
+				//this.fable.log.trace(`Monte Carlo variable ${tmpVariableKey} has first point ${tmpVariableDescription.FirstPoint}, last point ${tmpVariableDescription.LastPoint}, domain length ${tmpVariableDescription.DomainLength}`);
+
+				// // This generation of data based on the resolved points (and easing type) should be abstracted.  Most require the same rules.
+				// tmpVariableDescription.ResolvedPointDomainStarts = [];
+				// tmpVariableDescription.DomainTranslationAmount = [];
+
+				// // Get the length of each domain segment and the multiplier for them
+				// tmpVariableDescription.DomainLength = this.fable.Math.subtractPrecise(tmpVariableDescription.ResolvedPoints[tmpVariableDescription.ResolvedPoints.length - 1], tmpVariableDescription.ResolvedPoints[0]);
+				// tmpVariableDescription.DomainChunkCount = tmpVariableDescription.ResolvedPoints.length;
+				// tmpVariableDescription.DomainStart = tmpVariableDescription.ResolvedPoints[0];
+
+				// let tmpCurrentDomainPosition = tmpVariableDescription.DomainStart;
+				// let tmpPreviousDomainTranslationAmount = '0';
+				// for (let j = 0; j < tmpVariableDescription.ResolvedPoints.length; j++)
+				// {
+				// 	let tmpResolvedPointValue = tmpVariableDescription.ResolvedPoints[j];
+				// 	// Set the resolved point domain start
+				// 	tmpVariableDescription.DomainTranslationAmount.push(this.fable.Math.dividePrecise(tmpResolvedPointValue, tmpVariableDescription.DomainLength));
+				// 	// Push the previous translation amount as the start of this domain
+				// 	tmpVariableDescription.ResolvedPointDomainStarts.push(tmpPreviousDomainTranslationAmount);
+				// 	// Calculate the translation amount, for the start of the next domain
+				// 	tmpPreviousDomainTranslationAmount = this.fable.Math.addPrecise(tmpPreviousDomainTranslationAmount, tmpVariableDescription.DomainLength);
+				// }
+			}
+				
+			for (let i = 0; i <= tmpSampleCount - 1; i++)
+			{
+				// Jimmy up the data source with the current N value, stepIndex and all the other data from the source object
+				// This generates a data source object every time on purpose so we can remarshal in values that changed in the destination
+				let tmpSeriesStepDataSourceObject = Object.assign({}, tmpDataSourceObject);
+				tmpSeriesStepDataSourceObject.stepIndex = i;
+
+				// Generate each value from the array of values
+				for (let j = 0; j < tmpVariableKeys.length; j++)
+				{
+					let tmpPointManifestHash = tmpVariableKeys[j];
+					let tmpPointManifest = tmpMonteCarloOutput.Values[tmpPointManifestHash];
+					let tmpPointValue = this.fable.Math.generateValueFromEasingDescription(tmpPointManifest);
+					tmpSeriesStepDataSourceObject[tmpVariableKeys[j]] = tmpPointValue;
+
+					// Log the value out
+					this.fable.log.info(`Monte Carlo variable ${tmpPointManifestHash} generated value ${tmpPointValue}`);
+
+					if (!(tmpPointValue in tmpPointManifest.Distribution))
+					{
+						tmpPointManifest.Distribution[tmpPointValue] = 0;
+					}
+					tmpPointManifest.Distribution[tmpPointValue]++;
+
+					tmpPointManifest.ValueSequence.push(tmpPointValue);
+				}
+
+				let tmpMutatedValues = this.substituteValuesInTokenizedObjects(tmpResultsObject.PostfixTokenObjects, tmpSeriesStepDataSourceObject, tmpResultsObject, pManifest);
+				tmpMonteCarloOutput.Samples.push( this.solvePostfixedExpression( tmpResultsObject.PostfixSolveList, tmpDataDestinationObject, tmpResultsObject, pManifest ) );
+
+				for (let j = 0; j < tmpMutatedValues.length; j++)
+				{
+					tmpMutatedValues[j].Resolved = false;
+				}
+			}
+
+			// Do the assignment
+			let tmpAssignmentManifestHash = tmpResultsObject.PostfixedAssignmentAddress;
+			if ((tmpResultsObject.OriginalRawTokens[1] === '=') && (typeof(tmpResultsObject.OriginalRawTokens[0]) === 'string') && (tmpResultsObject.OriginalRawTokens[0].length > 0))
+			{
+				tmpAssignmentManifestHash = tmpResultsObject.OriginalRawTokens[0];
+			}
+
+			let tmpManifest = (typeof(pManifest) === 'object') ? pManifest : this.fable.newManyfest();
+			tmpManifest.setValueByHash(tmpDataDestinationObject, tmpAssignmentManifestHash, tmpMonteCarloOutput);
+
+			return tmpMonteCarloOutput;
+		}
 		else // For 'SOLVE' or anything else that didn't work
 		{
 			// This is where the data from variables gets marshaled into their symbols (from AppData or the like)

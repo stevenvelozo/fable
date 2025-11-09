@@ -514,6 +514,29 @@ suite
 							);
 						test
 							(
+								'Test monte carlo...',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+									let tmpManifest = testFable.newManyfest();
+									let tmpDataSourceObject = {};
+									let tmpDataDestinationObject = {};
+									let tmpParserResultsObject = {};
+
+									// Approximate an integration of the function 1000 + (n / 2) from 13.2 and 25 every 0.2 values
+									let tmpResult = _Parser.solve('MonteCarloResult = MONTECARLO SAMPLECOUNT 1000 VAR x PT x 50 PT x 100 : 10000000 + x', tmpDataSourceObject, tmpParserResultsObject, tmpManifest, tmpDataDestinationObject);
+
+									// Generate 1000 samples between 50 and 100, added to 10 million
+									Expect(tmpResult).to.exist;
+									Expect(tmpResult.Samples.length).to.equal(1000);
+
+									return fDone();
+								}
+							);
+						test
+							(
 								'Complex Histogram Arithmatic',
 								(fDone) =>
 								{
