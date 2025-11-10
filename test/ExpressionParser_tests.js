@@ -466,6 +466,59 @@ suite
 							);
 						test
 							(
+								'Test map operation',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+
+									let tmpManifest = testFable.newManyfest();
+									let tmpDataSourceObject = {};
+									tmpDataSourceObject.CitiesData = require('./data/Cities.json');
+									/* Records look like:
+[
+	{
+		"city": "New York", 
+		"growth_from_2000_to_2013": "4.8%", 
+		"latitude": 40.7127837, 
+		"longitude": -74.0059413, 
+		"population": "8405837", 
+		"rank": "1", 
+		"state": "New York"
+	}, 
+	{
+		"city": "Los Angeles", 
+		"growth_from_2000_to_2013": "4.8%", 
+		"latitude": 34.0522342, 
+		"longitude": -118.2436849, 
+		"population": "3884307", 
+		"rank": "2", 
+		"state": "California"
+	}, 
+									*/
+
+									tmpDataSourceObject.MapTest = {};
+									tmpDataSourceObject.MapTest.Values = [ 1, 2, 3, 4, 5 ];
+
+									let tmpDataDestinationObject = {};
+									let tmpParserResultsObject = {};
+
+									let tmpResult = _Parser.solve('SimpleMapResult = MAP VAR x FROM MapTest.Values : x + 100', tmpDataSourceObject, tmpParserResultsObject, tmpManifest, tmpDataDestinationObject);
+
+									// Should expect 101 -> 105
+									Expect(tmpDataDestinationObject.SimpleMapResult.length).to.equal(5);
+									Expect(tmpDataDestinationObject.SimpleMapResult[0]).to.equal("101");
+									Expect(tmpDataDestinationObject.SimpleMapResult[1]).to.equal("102");
+									Expect(tmpDataDestinationObject.SimpleMapResult[2]).to.equal("103");
+									Expect(tmpDataDestinationObject.SimpleMapResult[3]).to.equal("104");
+									Expect(tmpDataDestinationObject.SimpleMapResult[4]).to.equal("105");
+
+									return fDone();
+								}
+							);
+						test
+							(
 								'Test integration prepartion..',
 								(fDone) =>
 								{
@@ -519,8 +572,8 @@ suite
 								{
 									let testFable = new libFable();
 									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
-
 									let tmpManifest = testFable.newManyfest();
+
 									let tmpDataSourceObject = {};
 									let tmpDataDestinationObject = {};
 									let tmpParserResultsObject = {};
@@ -532,6 +585,46 @@ suite
 									Expect(tmpResult).to.exist;
 									Expect(tmpResult.Samples.length).to.equal(1000);
 
+									// Rosenbrock function test (experimenting with non-deterministic test cases)
+									/* Interesting values:
+
+| Purpose                                   | (x)               | (y)               | (z)               | Notes                                                                           |
+| ----------------------------------------- | ----------------- | ----------------- | ----------------- | ------------------------------------------------------------------------------- |
+| **Exploration (broad view)**              | ([-3, 3])         | ([-1, 5])         | ([-1, 5])         | Shows how the function grows large and steep outside the valley.                |
+| **Focused optimization testing**          | ([0, 2])          | ([0, 2])          | ([0, 2])          | Focuses on region around the minimum — ideal for Monte Carlo convergence plots. |
+| **High-resolution contour visualization** | ([-1.5, 1.5])     | ([0, 2])          | ([0, 2])          | Best for plotting slices and seeing the curvature of the valley.                |
+| **Stress testing**                        | ([-2.048, 2.048]) | ([-2.048, 2.048]) | ([-2.048, 2.048]) | Tests the function's behavior over a wider range, useful for robustness checks. |
+*/
+									let tmpRosenbrockDataSourceObject = {};
+									let tmpRosenbrockDataDestinationObject = {};
+									let tmpRosenbrockParserResultsObject = {};
+									let tmpRosenbrockResult = _Parser.solve('RosenbrockResult = MONTECARLO SAMPLECOUNT 5000 VAR x PT x -3 PT x 3 VAR y PT y -1 PT y 5 VAR z PT z -1 PT z 5 : (1 - x)^2 + 100 * (y - x^2)^2 + (z - y)^2', tmpRosenbrockDataSourceObject, tmpRosenbrockParserResultsObject, tmpManifest, tmpRosenbrockDataDestinationObject);
+
+									Expect(tmpRosenbrockResult).to.exist;
+									Expect(tmpRosenbrockResult.Samples.length).to.equal(5000);
+
+									// Build a histogram of the results to see how many are near zero
+									let tmpHistogram = [];
+									for (let sampleIndex = 0; sampleIndex < tmpRosenbrockResult.Samples.length; sampleIndex++)
+									{
+										let tmpSample = tmpRosenbrockResult.Samples[sampleIndex];
+										let tmpValue = testFable.Math.roundPrecise(tmpSample, 0);
+										if (!tmpHistogram[tmpValue])
+											tmpHistogram[tmpValue] = 0;
+										tmpHistogram[tmpValue] = tmpHistogram[tmpValue] + 1;
+										// Log the output sample for visual inspection
+										testFable.log.info(`Rosenbrock Sample ${sampleIndex}: Value: ${tmpSample}, Rounded Value: ${tmpValue} --> Histogram Count: ${tmpHistogram[tmpValue]}`);
+									}
+									// Output the histogram for visual inspection
+									//testFable.ExpressionParser.Messaging.logMessage("Rosenbrock Histogram:");
+									let tmpHistogramKeys = Object.keys(tmpHistogram);
+									tmpHistogramKeys.sort((a, b) => parseFloat(a) - parseFloat(b));
+									for (let i = 0; i < tmpHistogramKeys.length; i++)
+									{
+										let key = tmpHistogramKeys[i];
+										testFable.log.info(`Value: ${key}, Count: ${tmpHistogram[key]}`);
+									}
+									
 									return fDone();
 								}
 							);

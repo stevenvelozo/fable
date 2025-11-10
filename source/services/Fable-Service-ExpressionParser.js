@@ -335,6 +335,73 @@ class FableServiceExpressionParser extends libFableServiceBase
 
 			return tmpValueArray;
 		}
+		else if (tmpResultsObject.SolverDirectives.Code == 'MAP')
+		{
+			// The values to map
+			const tmpDirectiveValues = tmpResultsObject.SolverDirectives.Values;
+			const tmpVariableKeys = Object.keys(tmpDirectiveValues);
+			let tmpValueArray = [];
+
+			for (let i = 0; i < tmpVariableKeys.length; i++)
+			{
+				const tmpVariableKey = tmpVariableKeys[i];
+				const tmpVariableDescription = tmpDirectiveValues[tmpVariableKey];
+
+				// Get the actual value for this variable's address
+				tmpVariableDescription.Value = pManifest.getValueByHash(tmpDataSourceObject, tmpVariableDescription.Address);
+			}
+
+			// If the first value doesn't have keys, don't do the map.
+			if ((tmpVariableKeys.length < 1) || (tmpDirectiveValues[tmpVariableKeys[0]].Value == null) || (!Array.isArray(tmpDirectiveValues[tmpVariableKeys[0]].Value)))
+			{
+				tmpResultsObject.ExpressionParserLog.push(`ExpressionParser.solve detected invalid MAP directive parameters.  The first variable's address must resolve to an array.`);
+				this.log.warn(tmpResultsObject.ExpressionParserLog[tmpResultsObject.ExpressionParserLog.length-1]);
+				return undefined;
+			}
+
+			let tmpControllingSet = tmpDirectiveValues[tmpVariableKeys[0]].Value;
+
+			for (let i = 0; i < tmpControllingSet.length; i++)
+			{
+				// Jimmy up the data source with the current N value, stepIndex and all the other data from the source object
+				// This generates a data source object every time on purpose so we can remarshal in values that changed in the destination
+				let tmpSeriesStepDataSourceObject = Object.assign({}, tmpDataSourceObject);
+
+				for (let j = 0; j < tmpVariableKeys.length; j++)
+				{
+					const tmpVariableKey = tmpVariableKeys[j];
+					if (!Array.isArray(tmpDirectiveValues[tmpVariableKey].Value) || (tmpDirectiveValues[tmpVariableKey].Value.length <= j))
+					{
+						tmpSeriesStepDataSourceObject[tmpVariableKey] = 0;
+					}
+					else
+					{
+						tmpSeriesStepDataSourceObject[tmpVariableKey] = tmpDirectiveValues[tmpVariableKey].Value[i];
+					}
+				}
+
+				let tmpMutatedValues = this.substituteValuesInTokenizedObjects(tmpResultsObject.PostfixTokenObjects, tmpSeriesStepDataSourceObject, tmpResultsObject, pManifest);
+
+				tmpValueArray.push( this.solvePostfixedExpression( tmpResultsObject.PostfixSolveList, tmpDataDestinationObject, tmpResultsObject, pManifest) );
+
+				for (let j = 0; j < tmpMutatedValues.length; j++)
+				{
+					tmpMutatedValues[j].Resolved = false;
+				}
+			}
+
+			// Do the assignment
+			let tmpAssignmentManifestHash = tmpResultsObject.PostfixedAssignmentAddress;
+			if ((tmpResultsObject.OriginalRawTokens[1] === '=') && (typeof(tmpResultsObject.OriginalRawTokens[0]) === 'string') && (tmpResultsObject.OriginalRawTokens[0].length > 0))
+			{
+				tmpAssignmentManifestHash = tmpResultsObject.OriginalRawTokens[0];
+			}
+
+			let tmpManifest = (typeof(pManifest) === 'object') ? pManifest : this.fable.newManyfest();
+			tmpManifest.setValueByHash(tmpDataDestinationObject, tmpAssignmentManifestHash, tmpValueArray);
+
+			return tmpValueArray;
+		}
 		else if (tmpResultsObject.SolverDirectives.Code == 'MONTECARLO')
 		{
 			const [ tmpSampleCount ] = this._prepareDirectiveParameters([
@@ -443,19 +510,22 @@ class FableServiceExpressionParser extends libFableServiceBase
 				{
 					let tmpPointManifestHash = tmpVariableKeys[j];
 					let tmpPointManifest = tmpMonteCarloOutput.Values[tmpPointManifestHash];
+
+					// Generate the value for this sample variable
 					let tmpPointValue = this.fable.Math.generateValueFromEasingDescription(tmpPointManifest);
 					tmpSeriesStepDataSourceObject[tmpVariableKeys[j]] = tmpPointValue;
-
-					// Log the value out
-					this.fable.log.info(`Monte Carlo variable ${tmpPointManifestHash} generated value ${tmpPointValue}`);
-
-					if (!(tmpPointValue in tmpPointManifest.Distribution))
-					{
-						tmpPointManifest.Distribution[tmpPointValue] = 0;
-					}
-					tmpPointManifest.Distribution[tmpPointValue]++;
-
 					tmpPointManifest.ValueSequence.push(tmpPointValue);
+
+					// We keep track of a distribution of generated values here for analysis later
+					let tmpDistributionRoundPrecision = tmpPointManifest.DistributionRoundPrecision || 0;
+					// Log the value out
+					//this.fable.log.info(`Monte Carlo variable ${tmpPointManifestHash} generated value ${tmpPointValue}`);
+					let tmpDistributionPointValue = this.fable.Math.roundPrecise(tmpPointValue, tmpDistributionRoundPrecision);
+					if (!(tmpDistributionPointValue in tmpPointManifest.Distribution))
+					{
+						tmpPointManifest.Distribution[tmpDistributionPointValue] = 0;
+					}
+					tmpPointManifest.Distribution[tmpDistributionPointValue] = tmpPointManifest.Distribution[tmpDistributionPointValue] + 1;
 				}
 
 				let tmpMutatedValues = this.substituteValuesInTokenizedObjects(tmpResultsObject.PostfixTokenObjects, tmpSeriesStepDataSourceObject, tmpResultsObject, pManifest);
