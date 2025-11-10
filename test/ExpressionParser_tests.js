@@ -188,6 +188,9 @@ suite
 									Expect(tmpDestinationObject.EGS).to.equal(tmpDestinationObject.EGSR);
 									testFable.ExpressionParser.Messaging.logFunctionSolve(tmpResultObject);
 									Expect(tmpDestinationObject.EGS).to.equal("0.0061");
+									_Parser.solve('MATH_DP=ROUND(1.2345, 5 - 2)',
+										tmpDataObject, tmpResultObject, false, tmpDestinationObject);
+									Expect(tmpDestinationObject.MATH_DP).to.equal("1.235");
 
 									tmpDataObject.EJBinderGb1 = '15.5';
 									tmpDataObject.EKPctBinderPb2 = '2.55555';
@@ -873,6 +876,9 @@ suite
 
 									_Parser.solve('PreciseEquals = If("1.0000000001", "===", "1", "yes", "no")', testFable, tmpResultsObject, false, tmpDestinationObject);
 									Expect(tmpDestinationObject.PreciseEquals).to.equal('no');
+
+									_Parser.solve('Computed = If(AppData.Cities[0].latitude, "<", "50", AppData.Cities[0].latitude - 25, AppData.Cities[0].latitude + 25)', testFable, tmpResultsObject, false, tmpDestinationObject);
+									Expect(tmpDestinationObject.Computed).to.equal(testFable.AppData.Cities[0].latitude - 25);
 								}
 							);
 
