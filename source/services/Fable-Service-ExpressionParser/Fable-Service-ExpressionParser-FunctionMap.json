@@ -441,5 +441,9 @@
 	"gaussianelimination": {
 		"Name": "Solve a System of Linear Equations using Gaussian Elimination",
 		"Address": "fable.Math.gaussianElimination"
+	},
+	"predict": {
+		"Name": "Predict Y Values from X Values using a Regression Model",
+		"Address": "fable.Math.predictFromRegressionModel"
 	}
 }

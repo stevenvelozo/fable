@@ -173,8 +173,8 @@ class FableServiceMath extends libFableServiceBase
 
 	/**
 	 * Adds two values precisely.
-	 * @param {number} pLeftValue - The left value to be added.
-	 * @param {number} pRightValue - The right value to be added.
+	 * @param {number|string} pLeftValue - The left value to be added.
+	 * @param {number|string} pRightValue - The right value to be added.
 	 * @returns {string} - The result of adding the two values as a string.
 	 */
 	addPrecise(pLeftValue, pRightValue)
@@ -190,8 +190,8 @@ class FableServiceMath extends libFableServiceBase
 	/**
 	 * Subtracts two values precisely.
 	 *
-	 * @param {number} pLeftValue - The left value to subtract.
-	 * @param {number} pRightValue - The right value to subtract.
+	 * @param {number|string} pLeftValue - The left value to subtract.
+	 * @param {number|string} pRightValue - The right value to subtract.
 	 * @returns {string} The result of the subtraction as a string.
 	 */
 	subtractPrecise(pLeftValue, pRightValue)
@@ -1556,7 +1556,7 @@ class FableServiceMath extends libFableServiceBase
 	 */
 	leastSquares(pIndependentVariableVectors, pDependentVariableVector)
 	{
-		const tmpIndependentVariableVectors = Array.isArray(pIndependentVariableVectors[0]) ? pIndependentVariableVectors : pIndependentVariableVectors.map(value => [value]);
+		const tmpIndependentVariableVectors = Array.isArray(pIndependentVariableVectors[0]) ? this.matrixTranspose(pIndependentVariableVectors) : pIndependentVariableVectors.map(value => [value]);
 		// Add bias term (intercept)
 		const tmpIndependentVariableMatrixWithBiasTerm = tmpIndependentVariableVectors.map(row => [1, ...row]);
 
@@ -1755,6 +1755,27 @@ class FableServiceMath extends libFableServiceBase
 				// Shift it to the range start
 				return this.addPrecise(pEasingConfiguration.DomainRangeStart, tmpScaledValue);
 		}
+	}
+
+	/**
+	 * Predicts the dependent variable using a regression model.
+	 *
+	 * @param {Array<number|string>} pRegressionCoefficients - The regression coefficients [b0, b1, ..., bn].
+	 * @param {Array<number|string>|number|string} pIndependentVariableVector - The independent variable values [x1, x2, ..., xn] or single value for single variable.
+	 *
+	 * @return {number|string} - The predicted dependent variable value.
+	 */
+	predictFromRegressionModel(pRegressionCoefficients, pIndependentVariableVector)
+	{
+		let tmpIndependentVariableVector = pIndependentVariableVector;
+		if (!Array.isArray(pIndependentVariableVector))
+		{
+			tmpIndependentVariableVector = [ pIndependentVariableVector ];
+		}
+		return pRegressionCoefficients.slice(1).reduce((sum, b, i) =>
+			{
+				return this.addPrecise(sum, this.multiplyPrecise(b, pIndependentVariableVector[i]));
+			}, pRegressionCoefficients[0]);
 	}
 }
 

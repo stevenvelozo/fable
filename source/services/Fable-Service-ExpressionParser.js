@@ -247,13 +247,14 @@ class FableServiceExpressionParser extends libFableServiceBase
 		this.lintTokenizedExpression(tmpResultsObject.RawTokens, tmpResultsObject);
 		this.buildPostfixedSolveList(tmpResultsObject.RawTokens, tmpResultsObject);
 
+		const tmpManifest = (typeof(pManifest) === 'object') ? pManifest : this.fable.newManyfest();
 		if (tmpResultsObject.SolverDirectives.Code == 'SERIES')
 		{
 			const [ tmpStep , tmpFrom, tmpTo] = this._prepareDirectiveParameters([
 				tmpResultsObject.SolverDirectives.Step,
 				tmpResultsObject.SolverDirectives.From,
 				tmpResultsObject.SolverDirectives.To,
-			], [ '1' ], tmpResultsObject, tmpDataSourceObject, pManifest);
+			], [ '1' ], tmpResultsObject, tmpDataSourceObject, tmpManifest);
 
 			if (isNaN(tmpFrom) || isNaN(tmpTo))
 			{
@@ -313,9 +314,9 @@ class FableServiceExpressionParser extends libFableServiceBase
 				tmpSeriesStepDataSourceObject.n = tmpCurrentValueOfN;
 				tmpSeriesStepDataSourceObject.stepIndex = i;
 
-				let tmpMutatedValues = this.substituteValuesInTokenizedObjects(tmpResultsObject.PostfixTokenObjects, tmpSeriesStepDataSourceObject, tmpResultsObject, pManifest);
+				let tmpMutatedValues = this.substituteValuesInTokenizedObjects(tmpResultsObject.PostfixTokenObjects, tmpSeriesStepDataSourceObject, tmpResultsObject, tmpManifest);
 
-				tmpValueArray.push( this.solvePostfixedExpression( tmpResultsObject.PostfixSolveList, tmpDataDestinationObject, tmpResultsObject, pManifest) );
+				tmpValueArray.push( this.solvePostfixedExpression( tmpResultsObject.PostfixSolveList, tmpDataDestinationObject, tmpResultsObject, tmpManifest) );
 
 				for (let j = 0; j < tmpMutatedValues.length; j++)
 				{
@@ -330,7 +331,6 @@ class FableServiceExpressionParser extends libFableServiceBase
 				tmpAssignmentManifestHash = tmpResultsObject.OriginalRawTokens[0];
 			}
 
-			let tmpManifest = (typeof(pManifest) === 'object') ? pManifest : this.fable.newManyfest();
 			tmpManifest.setValueByHash(tmpDataDestinationObject, tmpAssignmentManifestHash, tmpValueArray);
 
 			return tmpValueArray;
@@ -348,7 +348,7 @@ class FableServiceExpressionParser extends libFableServiceBase
 				const tmpVariableDescription = tmpDirectiveValues[tmpVariableKey];
 
 				// Get the actual value for this variable's address
-				tmpVariableDescription.Value = pManifest.getValueByHash(tmpDataSourceObject, tmpVariableDescription.Address);
+				tmpVariableDescription.Value = tmpManifest.getValueByHash(tmpDataSourceObject, tmpVariableDescription.Address);
 			}
 
 			// If the first value doesn't have keys, don't do the map.
@@ -380,9 +380,9 @@ class FableServiceExpressionParser extends libFableServiceBase
 					}
 				}
 
-				let tmpMutatedValues = this.substituteValuesInTokenizedObjects(tmpResultsObject.PostfixTokenObjects, tmpSeriesStepDataSourceObject, tmpResultsObject, pManifest);
+				let tmpMutatedValues = this.substituteValuesInTokenizedObjects(tmpResultsObject.PostfixTokenObjects, tmpSeriesStepDataSourceObject, tmpResultsObject, tmpManifest);
 
-				tmpValueArray.push( this.solvePostfixedExpression( tmpResultsObject.PostfixSolveList, tmpDataDestinationObject, tmpResultsObject, pManifest) );
+				tmpValueArray.push( this.solvePostfixedExpression( tmpResultsObject.PostfixSolveList, tmpDataDestinationObject, tmpResultsObject, tmpManifest) );
 
 				for (let j = 0; j < tmpMutatedValues.length; j++)
 				{
@@ -397,7 +397,6 @@ class FableServiceExpressionParser extends libFableServiceBase
 				tmpAssignmentManifestHash = tmpResultsObject.OriginalRawTokens[0];
 			}
 
-			let tmpManifest = (typeof(pManifest) === 'object') ? pManifest : this.fable.newManyfest();
 			tmpManifest.setValueByHash(tmpDataDestinationObject, tmpAssignmentManifestHash, tmpValueArray);
 
 			return tmpValueArray;
@@ -406,7 +405,7 @@ class FableServiceExpressionParser extends libFableServiceBase
 		{
 			const [ tmpSampleCount ] = this._prepareDirectiveParameters([
 				tmpResultsObject.SolverDirectives.SampleCount
-			], [ '1' ], tmpResultsObject, tmpDataSourceObject, pManifest);
+			], [ '1' ], tmpResultsObject, tmpDataSourceObject, tmpManifest);
 
 			if (isNaN(tmpSampleCount))
 			{
@@ -437,7 +436,7 @@ class FableServiceExpressionParser extends libFableServiceBase
 					let tmpPointValue = this.fable.Math.parsePrecise(tmpPointToken, NaN);
 					if (isNaN(tmpPointValue) && typeof tmpPointToken === 'string' && tmpPointToken.length > 0)
 					{
-						tmpPointValue = pManifest.getValueByHash(tmpDataSourceObject, tmpPointToken);
+						tmpPointValue = tmpManifest.getValueByHash(tmpDataSourceObject, tmpPointToken);
 						if (!tmpPointValue || (tmpPointValue == null))
 						{
 							//TODO: Warn?
@@ -528,8 +527,8 @@ class FableServiceExpressionParser extends libFableServiceBase
 					tmpPointManifest.Distribution[tmpDistributionPointValue] = tmpPointManifest.Distribution[tmpDistributionPointValue] + 1;
 				}
 
-				let tmpMutatedValues = this.substituteValuesInTokenizedObjects(tmpResultsObject.PostfixTokenObjects, tmpSeriesStepDataSourceObject, tmpResultsObject, pManifest);
-				tmpMonteCarloOutput.Samples.push( this.solvePostfixedExpression( tmpResultsObject.PostfixSolveList, tmpDataDestinationObject, tmpResultsObject, pManifest ) );
+				let tmpMutatedValues = this.substituteValuesInTokenizedObjects(tmpResultsObject.PostfixTokenObjects, tmpSeriesStepDataSourceObject, tmpResultsObject, tmpManifest);
+				tmpMonteCarloOutput.Samples.push( this.solvePostfixedExpression( tmpResultsObject.PostfixSolveList, tmpDataDestinationObject, tmpResultsObject, tmpManifest ) );
 
 				for (let j = 0; j < tmpMutatedValues.length; j++)
 				{
@@ -544,7 +543,6 @@ class FableServiceExpressionParser extends libFableServiceBase
 				tmpAssignmentManifestHash = tmpResultsObject.OriginalRawTokens[0];
 			}
 
-			let tmpManifest = (typeof(pManifest) === 'object') ? pManifest : this.fable.newManyfest();
 			tmpManifest.setValueByHash(tmpDataDestinationObject, tmpAssignmentManifestHash, tmpMonteCarloOutput);
 
 			return tmpMonteCarloOutput;

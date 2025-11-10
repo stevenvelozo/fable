@@ -899,6 +899,234 @@ suite
 									testFable.log.info('Series From Coefficients Result:', testFable.AppData.SeriesFromCoefficients);
 									_Parser.solve('IntegratedSeries = SUM(FLATTEN(AppData.SeriesFromCoefficients))', testFable, testFable.AppData, false, testFable.AppData);
 									testFable.log.info('Integrated Series Result:', testFable.AppData.IntegratedSeries);
+
+									const tmpRawData =
+									{
+										"StandardSelector": "English",
+										"MaxDryDensityTable": [
+											{
+												"MaxDryDensityTable": {
+													"f": "4.19",
+													"g": "125.7",
+													"j": "0.19",
+													"l": "109.1",
+													"NTest": "",
+													"a": "",
+													"b": "",
+													"d": "13.51",
+													"e": "9.32",
+													"h": "1.44",
+													"i": "1.25",
+													"k": "15.2"
+												},
+												"MaxDryDensityTablec": "10.00"
+											},
+											{
+												"MaxDryDensityTable": {
+													"f": "4.01",
+													"g": "120.3",
+													"j": "0.16",
+													"l": "106.5",
+													"NTest": "",
+													"a": "",
+													"b": "",
+													"d": "13.34",
+													"e": "9.33",
+													"h": "1.39",
+													"i": "1.23",
+													"k": "13"
+												},
+												"MaxDryDensityTablec": "11.00"
+											},
+											{
+												"MaxDryDensityTable": {
+													"f": "4.19",
+													"g": "125.7",
+													"j": "0.22",
+													"l": "106",
+													"NTest": "",
+													"a": "",
+													"b": "",
+													"d": "13.51",
+													"e": "9.32",
+													"h": "1.40",
+													"i": "1.18",
+													"k": "18.6"
+												},
+												"MaxDryDensityTablec": "12.00"
+											}
+										],
+										"NuclearTable": [
+											{
+												"NuclearTable": {},
+												"NDD": "0",
+												"ADD": "0",
+												"NuclearPercentPR": "0"
+											}
+										],
+										"Pulverization": [
+											{
+												"PTestNo": "1"
+											}
+										],
+										"FMC": [
+											{
+												"MassOfWater": "0"
+											}
+										],
+										"MetaTemplate": {},
+										"Header": {},
+										"SM": {
+											"SF": "0",
+											"SI": "0",
+											"SJ": "0"
+										},
+										"NM": {},
+										"Chart": {
+											"Slope": "1.18181818181818181818",
+											"Intercept": "91.136363636363636363664",
+											"MCZeroAtDD": "21.830887491264849755",
+											"ShiftToParallel": "3.230887491264849755",
+											"WetSideY2": "0.84615384615384615385",
+											"WetSideY1": "-36.84746008708272859272",
+											"DomainBegin": "13",
+											"DomainEnd": "18.6",
+											"WetSideY0": "-6240",
+											"OptimalMoistureContent": "16.27122843513086489567",
+											"DryCount": 16,
+											"WetCount": "16",
+											"TotalCount": "32",
+											"StartPlot": "12",
+											"XValues": [
+												"13.2",
+												"13.4",
+												"13.6",
+												"13.8",
+												"14",
+												"14.2",
+												"14.4",
+												"14.6",
+												"14.8",
+												"15",
+												"15.2",
+												"15.4",
+												"15.6",
+												"15.8",
+												"16",
+												"16.2",
+												"16.4",
+												"16.6",
+												"16.8",
+												"17",
+												"17.2",
+												"17.4",
+												"17.6",
+												"17.8",
+												"18",
+												"18.2",
+												"18.4",
+												"18.6",
+												"18.8",
+												"19",
+												"19.2",
+												"19.4",
+											],
+											"PrimaryRoot": "110.3659972415182948767",
+											"WetCountIntermediate": "43",
+											"ValueLimit": "28"
+										},
+										"Result": "",
+										"FamilyOfCurvesZone": "0.99",
+										"MaxDryDensityEnglish": "0",
+										"MaxDryDensityMetric": "0",
+										"DryX": "15.2",
+										"DryY": "109.1",
+										"AsIsX": "13",
+										"AsIsY": "106.5",
+										"WetX": "18.6",
+										"WetY": "106",
+										"AverageMaxDryDensity": "11",
+										"OptimumMoistureOfTotalMaterial": "0.1",
+										"om": "0.0",
+										"pr": "0.0"
+									};
+
+									const tmpBaseMoistures = tmpRawData.Chart.XValues;
+									//TODO: compute this form above; 3 stages; dry, wet, combined
+									const tmpCombinedDensities = [ '106.7363636','106.9727273','107.2090909','107.4454545','107.6818182','107.9181818',
+										'108.1545455','108.3909091','108.6272727','108.8636364','109.1','109.3363636','109.5727273','109.8090909','110.0454545',
+										'110.2818182','110.1152028','109.7279363','109.3433842','108.9615182','108.5823101','108.2057322','107.8317574',
+										'107.4603587','107.0915096','106.7251839','106.3613559','106','105.6410912','105.2846046','104.9305159','104.5788009'
+									];
+									const tmpMatrix = [];
+									for (let i = 1; i <= 10; ++i)
+									{
+										const tmpPowArray = [];
+										for (let j = 0; j < tmpBaseMoistures.length; ++j)
+										{
+											tmpPowArray.push(testFable.Math.powerPrecise(tmpBaseMoistures[j], i));
+										}
+										tmpMatrix.push(tmpPowArray);
+									}
+									testFable.AppData.FitToDensities = tmpCombinedDensities;
+									testFable.AppData.MoistureMatrix = tmpMatrix;
+									testFable.log.info('Fit To Densities:', testFable.AppData.FitToDensities);
+									testFable.log.info('Moisture Matrix:', testFable.AppData.MoistureMatrix);
+									_Parser.solve('LinearRegressionHand = LINEST(AppData.MoistureMatrix, AppData.FitToDensities)', testFable, testFable.AppData, false, testFable.AppData);
+									testFable.log.info('Density Regression Coefficients:', testFable.AppData.LinearRegressionHand);
+
+									const tmpSolverInstructions =
+									[
+										'ChartDomainBegin = MaxDryDensityTable[0].MaxDryDensityTable.k - 2',
+										'ChartDomainEnd = ChartDomainBegin + (Chart.TotalCount - 1) * 0.2',
+										'XValues = SERIES FROM ChartDomainBegin TO ChartDomainEnd STEP 0.2 : n + 0',
+										'DryCount = MATCH(Chart.OptimalMoistureContent, XValues)',
+										'WetCountIntermediate = 60 - DryCount',
+										'WetCount = IF(DryCount, "<=", 30, DryCount, WetCountIntermediate)',
+										'TotalCount = DryCount + WetCount',
+										'StartPlot = DryCount - 5',
+										'ChartValueLimit = Chart.XValues.length - 1',
+										'DryValues = MAP VAR x FROM Chart.XValues : x * Chart.Slope + Chart.Intercept',
+										'WetValues = MAP VAR x FROM Chart.XValues : 6240 / (x + 100 / 2.7 + Chart.ShiftToParallel)',
+										'CombinedValues = MAP VAR dry FROM DryValues VAR wet FROM WetValues VAR x from XValues : IF(x, "LTE", Chart.OptimalMoistureContent, dry, wet)',
+										'FilteredXValues = MAP VAR x FROM XValues : IF(ABS(Chart.OptimalMoistureContent - x), "LT", 1, x, 0)',
+										'XValueMatrix = createarrayfromabsolutevalues(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)', // Create Placeholders
+										'XValueMatrix[0] = MAP VAR x FROM XValues : x + 0',
+										'XValueMatrix[1] = MAP VAR x FROM XValues : x^2',
+										'XValueMatrix[2] = MAP VAR x FROM XValues : x^3',
+										'XValueMatrix[3] = MAP VAR x FROM XValues : x^4',
+										'XValueMatrix[4] = MAP VAR x FROM XValues : x^5',
+										'XValueMatrix[5] = MAP VAR x FROM XValues : x^6',
+										'XValueMatrix[6] = MAP VAR x FROM XValues : x^7',
+										'XValueMatrix[7] = MAP VAR x FROM XValues : x^8',
+										'XValueMatrix[8] = MAP VAR x FROM XValues : x^9',
+										'XValueMatrix[9] = MAP VAR x FROM XValues : x^10',
+										'LinearRegression = LINEST(XValueMatrix, CombinedValues)',
+										'FilteredXValueVectors = MatrixTranspose(XValueMatrix)',
+										'FittedDensities = MAP VAR x FROM XValues VAR vector FROM FilteredXValueVectors : PREDICT(LinearRegression, vector)',
+										'FilteredDensities = MAP VAR x FROM FilteredXValues VAR prediction FROM FittedDensities : IF(x, "==", 0, 0, prediction)',
+									];
+									const tmpResultsObject = {};
+									for (const tmpInstruction of tmpSolverInstructions)
+									{
+										_Parser.solve(tmpInstruction, tmpRawData, tmpResultsObject, false, tmpRawData);
+										testFable.log.info(`After instruction: ${tmpInstruction}`, tmpRawData[tmpInstruction.split('=')[0].trim()]);
+									}
+
+									Expect(tmpRawData.FilteredDensities[10]).to.equal('0');
+									Expect(Number(tmpRawData.FilteredDensities[11])).to.be.closeTo(109.3, 0.1);
+									Expect(Number(tmpRawData.FilteredDensities[20])).to.be.closeTo(108.6, 0.1);
+									Expect(tmpRawData.FilteredDensities[21]).to.equal('0');
+
+									/*
+									testFable.log.info('linest payload (hand):', { MoistureMatrix: testFable.AppData.MoistureMatrix, FitToDensities: testFable.AppData.FitToDensities });
+									testFable.log.info('linest payload (solver):', { XValueMatrix: tmpRawData.XValueMatrix, CombinedValues: tmpRawData.CombinedValues });
+
+									testFable.log.info('coefficients (hand):', testFable.AppData.LinearRegressionHand);
+									testFable.log.info('coefficients (solver):', tmpRawData.LinearRegression);
+
+									testFable.log.info('filtered densities (solver):', tmpRawData.FilteredDensities);
+									*/
 								}
 							);
 					}

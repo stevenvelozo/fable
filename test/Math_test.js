@@ -486,25 +486,33 @@ suite
 						testFable.log.info('Prediction for [2,1]:', predict(coeffs_1, [2.5]));
 
 						// Example: predict y from x1 and x2
+						/* Example from: https://mathforcollege.com/nm/mws/gen/06reg/mws_gen_reg_spe_multivariate.pdf
+							144 18 52
+							142 24 40
+							124 12 40
+							64 30 48
+							96 30 32
+							92 22 16
+						 */
 						const X = [
-							[1, 2],
-							[2, 0],
-							[3, 1],
-							[4, 3]
+							[ 18, 24, 12, 30, 30, 22 ],
+							[ 52, 40, 40, 48, 32, 16 ],
 						];
 
-						const y = [3, 2, 4, 5];
+						const y = [ 144, 142, 124, 64, 96, 92 ];
 
 						const coeffs = testFable.Math.leastSquares(X, y);
 						testFable.log.info('Coefficients:', coeffs);
+						Expect(coeffs.length).to.equal(3); // intercept + 2 variables
+						Expect(Number(coeffs[0])).to.be.closeTo(150.166, 0.01);
+						Expect(Number(coeffs[1])).to.be.closeTo(-2.731, 0.01);
+						Expect(Number(coeffs[2])).to.be.closeTo(0.581, 0.01);
 
-						testFable.log.info('Prediction for [1,2] (training value is 3):', predict(coeffs, [1, 2]));
-						testFable.log.info('Prediction for [2,0] (training value is 2):', predict(coeffs, [2, 0]));
-						testFable.log.info('Prediction for [3,1] (training value is 4):', predict(coeffs, [3, 1]));
-						Expect(Number(predict(coeffs, [3, 1]))).to.be.closeTo(4, 0.51);
-						testFable.log.info('Prediction for [4,3] (training value is 5):', predict(coeffs, [4, 3]));
-						Expect(Number(predict(coeffs, [4, 3]))).to.be.closeTo(5, 0.25);
-						testFable.log.info('Prediction for [2,1]:', predict(coeffs, [2, 1]));
+						testFable.log.info('Prediction for [18,52] (training value is 144):', predict(coeffs, [18, 52]));
+						Expect(Number(predict(coeffs, [18, 52]))).to.be.closeTo(144, 15);
+
+						testFable.log.info('Prediction for [22,16] (training value is 92):', predict(coeffs, [22, 16]));
+						Expect(Number(predict(coeffs, [22, 16]))).to.be.closeTo(92, 10);
 					}
 				);
 
