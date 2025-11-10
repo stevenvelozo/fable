@@ -12,7 +12,7 @@ class ExpressionTokenizerDirectiveMutation extends libExpressionParserOperationB
 				'SOLVE': { Name: 'Solve Expression', Code: 'SOLVE' },
 				'SERIES': { Name: 'Series', Code: 'SERIES', From: null, To: null, Step: null },
 				'MONTECARLO': { Name: 'Monte Carlo Simulation', SampleCount: '1', Code: 'MONTECARLO', Values: {} },
-				'MAP': { Name: 'Map', Code: 'MAP', Values: {} },
+				'MAP': { Name: 'Map', Code: 'MAP', Values: {}, ValueKeys: [] },
 			});
 
 		this.defaultDirective = this.directiveTypes.SOLVE;
@@ -21,7 +21,7 @@ class ExpressionTokenizerDirectiveMutation extends libExpressionParserOperationB
 	parseSeriesDirective(pTokens)
 	{
 		// This isn't a fancy real parse it's just taking words and stealing values after them.
-		let tmpNewSeriesDirectiveDescription = Object.assign({}, this.directiveTypes.SERIES);
+		let tmpNewSeriesDirectiveDescription = JSON.parse(JSON.stringify(this.directiveTypes.SERIES));
 
 		for (let i = 0; i < pTokens.length; i++)
 		{
@@ -61,7 +61,7 @@ class ExpressionTokenizerDirectiveMutation extends libExpressionParserOperationB
 	parseMonteCarloDirective(pTokens)
 	{
 		// This isn't a fancy real parse it's just taking words and stealing values after them.
-		let tmpNewMonteCarloDirectiveDescription = Object.assign({}, this.directiveTypes.MONTECARLO);
+		let tmpNewMonteCarloDirectiveDescription = JSON.parse(JSON.stringify(this.directiveTypes.MONTECARLO));
 
 		for (let i = 0; i < pTokens.length; i++)
 		{
@@ -153,7 +153,7 @@ class ExpressionTokenizerDirectiveMutation extends libExpressionParserOperationB
 	parseMapDirective(pTokens)
 	{
 		// This isn't a fancy real parse it's just taking words and stealing values after them.
-		let tmpNewMapDirectiveDescription = Object.assign({}, this.directiveTypes.MAP);
+		let tmpNewMapDirectiveDescription = JSON.parse(JSON.stringify(this.directiveTypes.MAP));
 
 		for (let i = 0; i < pTokens.length; i++)
 		{
@@ -168,6 +168,7 @@ class ExpressionTokenizerDirectiveMutation extends libExpressionParserOperationB
 						let tmpVariableToken = pTokens[i + 1];
 						if (typeof(tmpVariableToken) === 'string' && (tmpVariableToken.length > 0))
 						{
+							tmpNewMapDirectiveDescription.ValueKeys.push(tmpVariableToken);
 							tmpNewMapDirectiveDescription.Values[tmpVariableToken] = 
 							{
 								Token: tmpVariableToken,

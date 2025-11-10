@@ -514,6 +514,15 @@ suite
 									Expect(tmpDataDestinationObject.SimpleMapResult[3]).to.equal("104");
 									Expect(tmpDataDestinationObject.SimpleMapResult[4]).to.equal("105");
 
+									let tmpComplexMapResult = _Parser.solve('ComplexMapResult = MAP VAR cityRecord FROM CitiesData VAR x FROM MapTest.Values : cityRecord.population + (x * 1000000000000000)', tmpDataSourceObject, tmpParserResultsObject, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpDataDestinationObject.ComplexMapResult.length).to.equal(1000);
+									Expect(tmpDataDestinationObject.ComplexMapResult[0]).to.equal("1000000008405837");
+									Expect(tmpDataDestinationObject.ComplexMapResult[4]).to.equal("5000000001553165");
+									// We ran out of values 1-5 so now it's just population
+									Expect(tmpDataDestinationObject.ComplexMapResult[10]).to.equal("885400");
+									Expect(tmpDataDestinationObject.ComplexMapResult[400]).to.equal("81050");
+
 									return fDone();
 								}
 							);

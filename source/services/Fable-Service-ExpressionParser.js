@@ -337,14 +337,14 @@ class FableServiceExpressionParser extends libFableServiceBase
 		}
 		else if (tmpResultsObject.SolverDirectives.Code == 'MAP')
 		{
-			// The values to map
+			// The values to pull in -- this could be a map but affords better flexibility broken out like this.
 			const tmpDirectiveValues = tmpResultsObject.SolverDirectives.Values;
-			const tmpVariableKeys = Object.keys(tmpDirectiveValues);
+			const tmpDirectiveValueKeys = tmpResultsObject.SolverDirectives.ValueKeys;
 			let tmpValueArray = [];
 
-			for (let i = 0; i < tmpVariableKeys.length; i++)
+			for (let i = 0; i < tmpDirectiveValueKeys.length; i++)
 			{
-				const tmpVariableKey = tmpVariableKeys[i];
+				const tmpVariableKey = tmpDirectiveValueKeys[i];
 				const tmpVariableDescription = tmpDirectiveValues[tmpVariableKey];
 
 				// Get the actual value for this variable's address
@@ -352,14 +352,14 @@ class FableServiceExpressionParser extends libFableServiceBase
 			}
 
 			// If the first value doesn't have keys, don't do the map.
-			if ((tmpVariableKeys.length < 1) || (tmpDirectiveValues[tmpVariableKeys[0]].Value == null) || (!Array.isArray(tmpDirectiveValues[tmpVariableKeys[0]].Value)))
+			if ((tmpDirectiveValueKeys.length < 1) || (tmpDirectiveValues[tmpDirectiveValueKeys[0]].Value == null) || (!Array.isArray(tmpDirectiveValues[tmpDirectiveValueKeys[0]].Value)))
 			{
 				tmpResultsObject.ExpressionParserLog.push(`ExpressionParser.solve detected invalid MAP directive parameters.  The first variable's address must resolve to an array.`);
 				this.log.warn(tmpResultsObject.ExpressionParserLog[tmpResultsObject.ExpressionParserLog.length-1]);
 				return undefined;
 			}
 
-			let tmpControllingSet = tmpDirectiveValues[tmpVariableKeys[0]].Value;
+			let tmpControllingSet = tmpDirectiveValues[tmpDirectiveValueKeys[0]].Value;
 
 			for (let i = 0; i < tmpControllingSet.length; i++)
 			{
@@ -367,9 +367,9 @@ class FableServiceExpressionParser extends libFableServiceBase
 				// This generates a data source object every time on purpose so we can remarshal in values that changed in the destination
 				let tmpSeriesStepDataSourceObject = Object.assign({}, tmpDataSourceObject);
 
-				for (let j = 0; j < tmpVariableKeys.length; j++)
+				for (let j = 0; j < tmpDirectiveValueKeys.length; j++)
 				{
-					const tmpVariableKey = tmpVariableKeys[j];
+					const tmpVariableKey = tmpDirectiveValueKeys[j];
 					if (!Array.isArray(tmpDirectiveValues[tmpVariableKey].Value) || (tmpDirectiveValues[tmpVariableKey].Value.length <= j))
 					{
 						tmpSeriesStepDataSourceObject[tmpVariableKey] = 0;
