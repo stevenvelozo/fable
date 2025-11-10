@@ -522,6 +522,82 @@ class FableServiceUtility extends libFableServiceBase
 	}
 
 	/**
+	 * Find the index of a value in an array, using the specified search mode.
+	 *
+	 * @param {any} pValueToFind - The value to find.
+	 * @param {Array<any>|string} pSearchArray - The array to search, or the address of such an array.
+	 * @param {string|number} [pSearchMode='1'] - The search mode ('0' for exact match, '1' (or default) for searching sorted sets and finding the first value >= the specifid value. '-1' is the same behavior as '1' but sorted descending.
+	 *
+	 * @returns {number} - The index of the found value, or -1 if not found.
+	 */
+	findIndexInternal(pValueToFind, pSearchArray, pSearchMode = '1')
+	{
+		let tmpSearchArray = pSearchArray;
+		if (typeof (pSearchArray) === 'string')
+		{
+			if (!this.manifest)
+			{
+				this.manifest = this.fable.newManyfest();
+			}
+			tmpSearchArray = this.manifest.getValueByHash(this.fable, pSearchArray);
+		}
+
+		if (!Array.isArray(tmpSearchArray))
+		{
+			this.fable.log.error('findIndexInternal called with non-array search array.');
+			return -1;
+		}
+
+		const tmpIsNumericSearch = this.fable.Math.parsePrecise(pValueToFind, null) !== null;
+		let tmpMatchIndex = -1;
+		let tmpComparisonFunction;
+		if (Number(pSearchMode) === 0)
+		{
+			// Exact match
+			if (tmpIsNumericSearch)
+			{
+				tmpComparisonFunction = (pCandidate) => this.fable.Math.comparePrecise(pCandidate, pValueToFind) === 0;
+			}
+			else
+			{
+				tmpComparisonFunction = (pCandidate) => pCandidate === pValueToFind;
+			}
+		}
+		else if (Number(pSearchMode) === -1)
+		{
+			// Sorted descending
+			if (tmpIsNumericSearch)
+			{
+				tmpComparisonFunction = (pCandidate) => this.fable.Math.ltePrecise(pCandidate, pValueToFind);
+			}
+			else
+			{
+				tmpComparisonFunction = (pCandidate) => pCandidate <= pValueToFind;
+			}
+		}
+		else
+		{
+			// Sorted ascending
+			if (tmpIsNumericSearch)
+			{
+				tmpComparisonFunction = (pCandidate) => this.fable.Math.gtePrecise(pCandidate, pValueToFind);
+			}
+			else
+			{
+				tmpComparisonFunction = (pCandidate) => pCandidate >= pValueToFind;
+			}
+		}
+		for (let i = 0; i < tmpSearchArray.length; i++)
+		{
+			if (tmpComparisonFunction(tmpSearchArray[i]))
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	/**
 	 * Flatten an array of solver inputs into a single array
 	 *
 	 * @param {Array<any>} pInputArray - The array of inputs to flatten

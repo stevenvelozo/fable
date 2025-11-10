@@ -206,6 +206,11 @@
 		"Address": "fable.Utility.findFirstValueByStringIncludesInternal"
 	},
 
+	"match": {
+		"Name": "Implementation of sheets MATCH() function",
+		"Address": "fable.Utility.findIndexInternal"
+	},
+
 	"resolvehtmlentities": {
 		"Name": "resolve HTML entities",
 		"Address": "fable.DataFormat.resolveHtmlEntities"
