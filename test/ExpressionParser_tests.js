@@ -475,7 +475,7 @@ suite
 
 									let tmpManifest = testFable.newManyfest();
 									let tmpDataSourceObject = {};
-									tmpDataSourceObject.CitiesData = require('./data/Cities.json');
+									tmpDataSourceObject.CitiesData = require('./data/cities.json');
 									/* Records look like:
 [
 	{
