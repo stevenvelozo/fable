@@ -190,9 +190,21 @@ class FableServiceUtility extends libFableServiceBase
 		return tmpValueArray;
 	}
 
+	slice(pValueArray, pStartIndex, pEndIndex)
+	{
+		if (!Array.isArray(pValueArray))
+		{
+			this.fable.log.error('Fable.Math.slice called with non-array value', { pValueArray });
+			return [];
+		}
+		const tmpStartIndex = Number(this.fable.Math.parsePrecise(pStartIndex, '0'));
+		const tmpEndIndex = Number(this.fable.Math.parsePrecise(pEndIndex, pValueArray.length.toString()));
+		return pValueArray.slice(tmpStartIndex, tmpEndIndex);
+	}
+
 	/**
 	 * Get a value array by hash/address list from the internal fable/pict state
-	 * @param {string} pValueAddress - The manyfest hash/address of the value to get
+	 * @param {string} pValueHashes - The manyfest hash/address of the value to get
 	 * @param {object} [pManifest] - The manyfest object to use; constructs one inline if not provided
 	 * @returns {Array} - The value array built from the hash list
 	 */
@@ -215,7 +227,7 @@ class FableServiceUtility extends libFableServiceBase
 	/**
 	 * Get a value object from a list of hash/addressese
 	 * @param {object} pObject - The object to get the value from
-	 * @param {string} pValueAddress - The manyfest hash/address of the value to get
+	 * @param {string} pValueHashes - The manyfest hash/address of the value to get
 	 * @param {object} [pManifest] - The manyfest object to use; constructs one inline if not provided
 	 * @returns {object} - The value object built from the hash list
 	 */

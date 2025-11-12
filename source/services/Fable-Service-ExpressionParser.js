@@ -306,12 +306,14 @@ class FableServiceExpressionParser extends libFableServiceBase
 
 			for (let i = 0; i <= tmpIterations; i++)
 			{
-				let tmpCurrentValueOfN = this.fable.Math.addPrecise(tmpFrom, this.fable.Math.multiplyPrecise(tmpStep, i.toString()));
+				const tmpCurrentValueOfN = this.fable.Math.addPrecise(tmpFrom, this.fable.Math.multiplyPrecise(tmpStep, i.toString()));
+				const tmpPreviousValueOfN = (i == 0) ? 'false' : this.fable.Math.addPrecise(tmpFrom, this.fable.Math.multiplyPrecise(tmpStep, (i - 1).toString()));
 
 				// Jimmy up the data source with the current N value, stepIndex and all the other data from the source object
 				// This generates a data source object every time on purpose so we can remarshal in values that changed in the destination
 				let tmpSeriesStepDataSourceObject = Object.assign({}, tmpDataSourceObject);
 				tmpSeriesStepDataSourceObject.n = tmpCurrentValueOfN;
+				tmpSeriesStepDataSourceObject.prev_n = tmpPreviousValueOfN;
 				tmpSeriesStepDataSourceObject.stepIndex = i;
 
 				let tmpMutatedValues = this.substituteValuesInTokenizedObjects(tmpResultsObject.PostfixTokenObjects, tmpSeriesStepDataSourceObject, tmpResultsObject, tmpManifest);
@@ -366,17 +368,31 @@ class FableServiceExpressionParser extends libFableServiceBase
 				// Jimmy up the data source with the current N value, stepIndex and all the other data from the source object
 				// This generates a data source object every time on purpose so we can remarshal in values that changed in the destination
 				let tmpSeriesStepDataSourceObject = Object.assign({}, tmpDataSourceObject);
+				tmpSeriesStepDataSourceObject.stepIndex = i;
 
 				for (let j = 0; j < tmpDirectiveValueKeys.length; j++)
 				{
 					const tmpVariableKey = tmpDirectiveValueKeys[j];
-					if (!Array.isArray(tmpDirectiveValues[tmpVariableKey].Value) || (tmpDirectiveValues[tmpVariableKey].Value.length <= j))
+					if (!Array.isArray(tmpDirectiveValues[tmpVariableKey].Value) || (tmpDirectiveValues[tmpVariableKey].Value.length <= i))
 					{
 						tmpSeriesStepDataSourceObject[tmpVariableKey] = 0;
 					}
 					else
 					{
 						tmpSeriesStepDataSourceObject[tmpVariableKey] = tmpDirectiveValues[tmpVariableKey].Value[i];
+					}
+					const tmpPreviousValueKey = `prev_${tmpVariableKey}`;
+					if (!Array.isArray(tmpDirectiveValues[tmpVariableKey].Value) || (tmpDirectiveValues[tmpVariableKey].Value.length <= i))
+					{
+						tmpSeriesStepDataSourceObject[tmpPreviousValueKey] = 0;
+					}
+					else if (i == 0)
+					{
+						tmpSeriesStepDataSourceObject[tmpPreviousValueKey] = 'false';
+					}
+					else
+					{
+						tmpSeriesStepDataSourceObject[tmpPreviousValueKey] = tmpDirectiveValues[tmpVariableKey].Value[i - 1];
 					}
 				}
 
@@ -423,7 +439,7 @@ class FableServiceExpressionParser extends libFableServiceBase
 			{
 				let tmpVariableKey = tmpVariableKeys[i];
 				let tmpVariableDescription = tmpMonteCarloOutput.Values[tmpVariableKey];
-				
+
 				// For each variable, generate its array of sampled values
 				tmpVariableDescription.Distribution = {};
 				tmpVariableDescription.ValueSequence = [];
@@ -496,8 +512,8 @@ class FableServiceExpressionParser extends libFableServiceBase
 				// 	tmpPreviousDomainTranslationAmount = this.fable.Math.addPrecise(tmpPreviousDomainTranslationAmount, tmpVariableDescription.DomainLength);
 				// }
 			}
-				
-			for (let i = 0; i <= tmpSampleCount - 1; i++)
+
+			for (let i = 0; i <= Number(tmpSampleCount) - 1; i++)
 			{
 				// Jimmy up the data source with the current N value, stepIndex and all the other data from the source object
 				// This generates a data source object every time on purpose so we can remarshal in values that changed in the destination

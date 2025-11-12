@@ -404,6 +404,11 @@
 		"Address": "fable.Dates.dateFromParts"
 	},
 
+	"slice": {
+		"Name": "Slice Array",
+		"Address": "fable.Utility.slice"
+	},
+
 	"createvalueobjectbyhashes": {
 		"Name": "Create Value Object by Hashes",
 		"Address": "fable.Utility.createValueObjectByHashes"
