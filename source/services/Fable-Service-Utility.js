@@ -704,6 +704,29 @@ class FableServiceUtility extends libFableServiceBase
 		}
 		return tmpArray;
 	}
+
+	/**
+	 * Concatenate multiple arrays into a single array
+	 *
+	 * @return {Array<any>} - The concatenated array
+	 */
+	concatenateArrays()
+	{
+		let tmpResultArray = [];
+		for (let i = 0; i < arguments.length; ++i)
+		{
+			let tmpArray = arguments[i];
+			if (Array.isArray(tmpArray))
+			{
+				tmpResultArray = tmpResultArray.concat(tmpArray);
+			}
+			else
+			{
+				this.fable.log.error('Fable.Service.Utility.concatenateArrays called with non-array argument', { index: i, value: tmpArray });
+			}
+		}
+		return tmpResultArray;
+	}
 }
 
 module.exports = FableServiceUtility;

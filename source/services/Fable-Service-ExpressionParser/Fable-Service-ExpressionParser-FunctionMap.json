@@ -226,6 +226,11 @@
 		"Address": "fable.DataFormat.concatenateStringsRawInternal"
 	},
 
+	"arrayconcat": {
+		"Name": "concatenate two or more arrays generating a single output array",
+		"Address": "fable.Utility.concatenateArrays"
+	},
+
 	"join": {
 		"Name": "join an array of values and output a string",
 		"Address": "fable.DataFormat.joinStringsInternal"
