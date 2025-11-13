@@ -1556,7 +1556,7 @@ class FableServiceMath extends libFableServiceBase
 	 */
 	leastSquares(pIndependentVariableVectors, pDependentVariableVector)
 	{
-		const tmpIndependentVariableVectors = Array.isArray(pIndependentVariableVectors[0]) ? this.matrixTranspose(pIndependentVariableVectors) : pIndependentVariableVectors.map(value => [value]);
+		const tmpIndependentVariableVectors = Array.isArray(pIndependentVariableVectors) ? (Array.isArray(pIndependentVariableVectors[0]) ? this.matrixTranspose(pIndependentVariableVectors) : pIndependentVariableVectors.map(value => [value])) : [ [ pIndependentVariableVectors ] ];
 		// Add bias term (intercept)
 		const tmpIndependentVariableMatrixWithBiasTerm = tmpIndependentVariableVectors.map(row => [1, ...row]);
 
@@ -1774,7 +1774,7 @@ class FableServiceMath extends libFableServiceBase
 		}
 		return pRegressionCoefficients.slice(1).reduce((sum, b, i) =>
 			{
-				return this.addPrecise(sum, this.multiplyPrecise(b, pIndependentVariableVector[i]));
+				return this.addPrecise(sum, this.multiplyPrecise(b, tmpIndependentVariableVector[i]));
 			}, pRegressionCoefficients[0]);
 	}
 }
