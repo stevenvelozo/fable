@@ -66,7 +66,7 @@ _Fable.log.info(`Beginning Manual Solve with Embedded Fruit Data....`);
 // // The expression we pass into the solver is just a string
 let tmpExpression = 'HyperMax.HealthIndex = (SUM(Calories) / SUM(Sugar)) * MEDIAN(Fat) + (SQRT(AVG(Protein)) - (PI() + 99))';
 //tmpExpression = `aggregationhistogram("AppData.FruityVice", "family", "nutritions.calories")`;
-tmpExpression = "Result = 3.5 + 50 + 10 * \"taco\" / 5 - 1.5", "ExpectedResult";
+//tmpExpression = "Result = 3.5 + 50 + 10 * \"taco\" / 5 - 1.5", "ExpectedResult";
 //tmpExpression = 'Out.Match = FindFirstValueByStringIncludes("AppData.FruityVice", "name", "uria", "id")';
 _Fable.log.info(`Solving tmpExpression: [${tmpExpression}]`);
 

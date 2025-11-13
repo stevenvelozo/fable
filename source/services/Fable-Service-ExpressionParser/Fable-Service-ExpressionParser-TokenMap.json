@@ -46,7 +46,7 @@
 			"Name": "Set Concatenate",
 			"Token": ",",
 			"Function": "fable.Math.setConcatenate",
-			"Precedence": 4,
+			"Precedence": 5,
 			"Type": "Operator"
 		},
 

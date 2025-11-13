@@ -877,8 +877,8 @@ suite
 									_Parser.solve('PreciseEquals = If("1.0000000001", "===", "1", "yes", "no")', testFable, tmpResultsObject, false, tmpDestinationObject);
 									Expect(tmpDestinationObject.PreciseEquals).to.equal('no');
 
-									_Parser.solve('Computed = If(AppData.Cities[0].latitude, "<", "50", AppData.Cities[0].latitude - 25, AppData.Cities[0].latitude + 25)', testFable, tmpResultsObject, false, tmpDestinationObject);
-									Expect(tmpDestinationObject.Computed).to.equal(testFable.AppData.Cities[0].latitude - 25);
+									_Parser.solve('Computed = If(AppData.Cities[0].latitude, "<", "50", AppData.Cities[0].latitude + 25, AppData.Cities[0].latitude - 25)', testFable, tmpResultsObject, false, tmpDestinationObject);
+									Expect(tmpDestinationObject.Computed).to.equal(testFable.Math.addPrecise(testFable.AppData.Cities[0].latitude, 25));
 								}
 							);
 
