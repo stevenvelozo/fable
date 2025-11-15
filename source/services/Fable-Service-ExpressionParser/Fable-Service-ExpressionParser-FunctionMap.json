@@ -455,5 +455,14 @@
 	"predict": {
 		"Name": "Predict Y Values from X Values using a Regression Model",
 		"Address": "fable.Math.predictFromRegressionModel"
+	},
+
+	"stringcountsegments": {
+		"Name": "Count Segments in a String",
+		"Address": "fable.DataFormat.stringCountSegments"
+	},
+	"stringgetsegments": {
+		"Name": "Get Segments from a String",
+		"Address": "fable.DataFormat.stringGetSegments"
 	}
 }

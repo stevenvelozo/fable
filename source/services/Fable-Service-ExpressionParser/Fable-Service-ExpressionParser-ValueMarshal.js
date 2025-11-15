@@ -97,7 +97,15 @@ class ExpressionParserValueMarshal extends libExpressionParserOperationBase
 			if ((pTokenizedObjects[i].Type === 'Token.StateAddress') && !tmpToken.Resolved)
 			{
 				// Symbols are always hashes.  This gracefully works for simple shallow objects because hashes default to the address in Manyfest.
-				let tmpValue = tmpManifest.getValueAtAddress(tmpDataSource, tmpToken.Token);
+				// Sometimes the token is wrapped in {} to indicate it's a direct address reference... we need to strip those off.
+				// e.g., {0x1234abcd...}
+				// So we need to strip off the {} if they exist.
+				let tmpAddress = tmpToken.Token;
+				if ((tmpAddress.startsWith('{')) && (tmpAddress.endsWith('}')))
+				{
+					tmpAddress = tmpAddress.substring(1, tmpAddress.length-1);
+				}
+				let tmpValue = tmpManifest.getValueAtAddress(tmpDataSource, tmpAddress);
 				if (!tmpValue)
 				{
 					tmpResults.ExpressionParserLog.push(`WARNING: ExpressionParser.substituteValuesInTokenizedObjects found no value for the state address ${tmpToken.Token} at index ${i}`);

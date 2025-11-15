@@ -349,6 +349,8 @@ suite
 									Expect(_Parser.solve("TotalCost = MEAN(ItemCosts)", { "ItemCosts": [100, 200, 50, 45, 5] })).to.equal("80");
 									Expect(_Parser.solve("TotalCost = MEDIAN(ItemCosts)", { "ItemCosts": [100, 200, 50, 45, 5] })).to.equal("50");
 									Expect(_Parser.solve("TotalCost = COUNT(ItemCosts)", { "ItemCosts": [100, 200, 50, 45, 5] })).to.equal("5");
+									Expect(_Parser.solve('NameList = STRINGGETSEGMENTS(Names, ",")}', { "Names": "Jane,John" })).to.deep.equal(["Jane", "John"]);
+									Expect(_Parser.solve('NameList = STRINGGETSEGMENTS(Names, ",")}', { "Names": "Jane,John" })).to.deep.equal(["Jane", "John"]);
 
 									return fDone();
 								}
