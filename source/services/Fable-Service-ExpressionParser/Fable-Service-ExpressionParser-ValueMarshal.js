@@ -89,7 +89,7 @@ class ExpressionParserValueMarshal extends libExpressionParserOperationBase
 							tmpToken.Resolved = true;
 							tmpToken.Value = tmpValue;
 							tmpResults.ExpressionParserLog.push(`INFO: ExpressionParser.substituteValuesInTokenizedObjects found a non-numeric value for the state address ${tmpToken.Token} at index ${i}; using raw value.`);
-							this.log.warn(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
+							//this.log.warn(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
 						}
 					}
 				}
@@ -125,7 +125,7 @@ class ExpressionParserValueMarshal extends libExpressionParserOperationBase
 					catch(pError)
 					{
 						tmpResults.ExpressionParserLog.push(`ERROR: ExpressionParser.substituteValuesInTokenizedObjects found a non-numeric value for the state address ${tmpToken.Token} at index ${i}`);
-						this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
+						//this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
 						tmpToken.Resolved = false;
 					}
 				}
@@ -152,7 +152,7 @@ class ExpressionParserValueMarshal extends libExpressionParserOperationBase
 				{
 					// This constant has the right symbols but apparently isn't a parsable number.
 					tmpResults.ExpressionParserLog.push(`ERROR: ExpressionParser.substituteValuesInTokenizedObjects found a non-numeric value for the state address ${tmpToken.Token} at index ${i}`);
-					this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
+					//this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
 					tmpToken.Resolved = false;
 				}
 			}

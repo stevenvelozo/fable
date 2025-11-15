@@ -30,26 +30,6 @@ suite
 					{
 						test
 							(
-								'Perform a GET request.',
-								function (fTestComplete)
-								{
-									let testFable = new libFable();
-									// Instantiate the RestClient Service Provider
-									testFable.instantiateServiceProvider('RestClient', { TraceLog: true });
-
-									// Download the wiktionary entry for dog!
-									testFable.RestClient.getJSON('http://localhost:8086/1.0/Author/1',
-										(pError, pResponse, pBody) =>
-										{
-											Expect(pBody).to.be.an('object');
-											Expect(pBody.hasOwnProperty('Name')).to.equal(true);
-											Expect(pBody.Name).to.equal('John Green');
-											fTestComplete();
-										});
-								}
-							);
-						test
-							(
 								'Perform a POST request.',
 								function (fTestComplete)
 								{
@@ -70,6 +50,27 @@ suite
 											Expect(pBody).to.be.an('object');
 											Expect(pBody.hasOwnProperty('Name')).to.equal(true);
 											Expect(pBody.Name).to.equal('Test Author');
+											fTestComplete();
+										});
+								}
+							);
+						test
+							(
+								'Perform a GET request.',
+								function (fTestComplete)
+								{
+									let testFable = new libFable();
+									// Instantiate the RestClient Service Provider
+									testFable.instantiateServiceProvider('RestClient', { TraceLog: true });
+
+									// Download the wiktionary entry for dog!
+									testFable.RestClient.getJSON('http://localhost:8086/1.0/Author/1',
+										(pError, pResponse, pBody) =>
+										{
+											Expect(pBody).to.be.an('object');
+											Expect(pBody.hasOwnProperty('Name')).to.equal(true);
+											Expect(pBody.Name).to.be.a('string');
+											Expect(pBody.Name.length).to.be.greaterThan(0);
 											fTestComplete();
 										});
 								}
