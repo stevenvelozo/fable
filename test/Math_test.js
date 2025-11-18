@@ -284,6 +284,7 @@ suite
 						Expect(testFable.Math.roundPrecise(1.123456789, 14)).to.equal('1.123456789');
 
 						Expect(testFable.Math.roundPrecise(undefined, 2)).to.equal('0');
+						Expect(testFable.Math.roundPrecise(false, 2)).to.equal('0');
 
 						try
 						{
@@ -369,6 +370,7 @@ suite
 						Expect(testFable.Math.toFixedPrecise(1.123456789, 14)).to.equal('1.12345678900000');
 
 						Expect(testFable.Math.toFixedPrecise(undefined, 2)).to.equal('0.00');
+						Expect(testFable.Math.toFixedPrecise(false, 2)).to.equal('0.00');
 
 						try
 						{
