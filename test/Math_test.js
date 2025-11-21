@@ -513,6 +513,23 @@ suite
 
 						testFable.log.info('Prediction for [22,16] (training value is 92):', predict(coeffs, [22, 16]));
 						Expect(Number(predict(coeffs, [22, 16]))).to.be.closeTo(92, 10);
+
+						// denegerate case: only one data point, only 1 variable
+						const X_degen = [ 1 ];
+
+						const y_degen = [ 144 ];
+
+						const coeffs_degen = testFable.Math.leastSquares(X_degen, y_degen);
+						testFable.log.info('Coefficients:', coeffs_degen);
+						Expect(coeffs_degen.length).to.equal(2); // intercept + 1 variables
+						Expect(Number(coeffs_degen[0])).to.be.closeTo(144, 0.0000001);
+						Expect(Number(coeffs_degen[1])).to.be.closeTo(0, 0.0000001);
+
+						testFable.log.info('Prediction for 12345:', predict(coeffs_degen, 12345));
+						Expect(Number(predict(coeffs_degen, 12345))).to.be.closeTo(144, 0.0000001);
+
+						testFable.log.info('Prediction for 54321:', predict(coeffs_degen, 54321));
+						Expect(Number(predict(coeffs_degen, 54321))).to.be.closeTo(144, 0.0000001);
 					}
 				);
 
