@@ -1550,17 +1550,18 @@ class FableServiceMath extends libFableServiceBase
 	 * Compute least squares regression coefficients for multivariable linear interpolation.
 	 *
 	 * @param {Array<Array<number|string>> | Array<number|string> | string} pIndependentVariableVectors - array of arrays [[x11, x12, ...], [x21, x22, ...], ...] or single array for single variable.
-	 * @param {Array<number|string>} pDependentVariableVector - array of target values [y1, y2, ...]
+	 * @param {Array<number|string>|string} pDependentVariableVector - array of target values [y1, y2, ...]
 	 *
 	 * @return {Array<number|string>} - linear coefficients [b0, b1, ..., bn] where y = b0 + b1*x1 + b2*x2 + ... + bn*xn
 	 */
 	leastSquares(pIndependentVariableVectors, pDependentVariableVector)
 	{
 		const tmpIndependentVariableVectors = Array.isArray(pIndependentVariableVectors) ? (Array.isArray(pIndependentVariableVectors[0]) ? this.matrixTranspose(pIndependentVariableVectors) : pIndependentVariableVectors.map(value => [value])) : [ [ pIndependentVariableVectors ] ];
+		const tmpDependentVariableVector = Array.isArray(pDependentVariableVector) ? pDependentVariableVector : [ pDependentVariableVector ];
 		if (tmpIndependentVariableVectors.length  === 1)
 		{
 			// degenerate case: only one independent variable value, result is just a y-intercept
-			return [ pDependentVariableVector[0], '0.0' ];
+			return [ tmpDependentVariableVector[0], '0.0' ];
 		}
 		// Add bias term (intercept)
 		const tmpIndependentVariableMatrixWithBiasTerm = tmpIndependentVariableVectors.map(row => [1, ...row]);
@@ -1570,7 +1571,7 @@ class FableServiceMath extends libFableServiceBase
 		const tmpDependentTransposeMultiplication = this.matrixMultiply(tmpIndependentTermTranpose, tmpIndependentVariableMatrixWithBiasTerm);
 
 		// Compute X^T * y
-		const tmpIndependentTransposeMultiplication = this.matrixVectorMultiply(tmpIndependentTermTranpose, pDependentVariableVector);
+		const tmpIndependentTransposeMultiplication = this.matrixVectorMultiply(tmpIndependentTermTranpose, tmpDependentVariableVector);
 
 		// Solve (XtX) * beta = Xty
 		const tmpLinearCoefficients = this.gaussianElimination(tmpDependentTransposeMultiplication, tmpIndependentTransposeMultiplication);
