@@ -70,22 +70,23 @@ class ExpressionParserValueMarshal extends libExpressionParserOperationBase
 				{
 					tmpResults.ExpressionParserLog.push(`INFO: ExpressionParser.substituteValuesInTokenizedObjects found a value [${tmpValue}] for the state address ${tmpToken.Token} at index ${i}`);
 					if (this.LogNoisiness > 1) this.log.info(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
-					try
+					if (typeof tmpValue === 'object') // this encapsulates POJOs and arrays
 					{
-						let tmpValueParsed = new this.fable.Utility.bigNumber(tmpValue);
+						// this must be checked first, which works around an edge case where bigNumber turns single-element arrays into numbers, which we never want
 						tmpToken.Resolved = true;
-						tmpToken.Value = tmpValueParsed.toString();
+						tmpToken.Value = tmpValue;
 					}
-					catch(pError)
+					else
 					{
-						// TODO: Should we allow this to be a function?  Good god the complexity and beauty of that...
-						if (Array.isArray(tmpValue) || (typeof(tmpValue) === 'object'))
+						try
 						{
+							const tmpValueParsed = new this.fable.Utility.bigNumber(tmpValue);
 							tmpToken.Resolved = true;
-							tmpToken.Value = tmpValue;
+							tmpToken.Value = tmpValueParsed.toString();
 						}
-						else
+						catch(pError)
 						{
+							// TODO: Should we allow this to be a function?  Good god the complexity and beauty of that...
 							tmpToken.Resolved = true;
 							tmpToken.Value = tmpValue;
 							tmpResults.ExpressionParserLog.push(`INFO: ExpressionParser.substituteValuesInTokenizedObjects found a non-numeric value for the state address ${tmpToken.Token} at index ${i}; using raw value.`);

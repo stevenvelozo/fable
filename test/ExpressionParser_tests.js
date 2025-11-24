@@ -146,6 +146,41 @@ suite
 							);
 						test
 							(
+								'Capture array -> number bug',
+								(fDone) =>
+								{
+									let _Parser = getExpressionParser();
+
+									let tmpResultObject = {};
+									let tmpDataObject = { W: ['3', '4', '5'], X: ['5'], Y: 3, Z: 75, Depth: 3, Width: 2 };
+									let tmpDestinationObject = {};
+
+									let tmpArea = _Parser.solve('Area = X * Y * Z', tmpDataObject, tmpResultObject, false, tmpDestinationObject);
+
+									Expect(tmpArea).to.equal("1125");
+
+									let tmpSliced = _Parser.solve('SlicedSingleElementArray = SLICE(X, 0, 1)', tmpDataObject, tmpResultObject, false, tmpDestinationObject);
+
+									Expect(tmpSliced).to.be.an('array');
+									Expect(tmpSliced.length).to.equal(1);
+									Expect(tmpSliced[0]).to.equal('5');
+
+									let tmpNonNumberTreatedAsZero = _Parser.solve('NonNumberTreatedAsZero = W + 3.456', tmpDataObject, tmpResultObject, false, tmpDestinationObject);
+
+									Expect(tmpNonNumberTreatedAsZero).to.equal('3.456');
+
+									let tmpLargerSlice = _Parser.solve('SLICE(W, 1, 3)', tmpDataObject, tmpResultObject, false, tmpDestinationObject);
+
+									Expect(tmpLargerSlice).to.be.an('array');
+									Expect(tmpLargerSlice.length).to.equal(2);
+									Expect(tmpLargerSlice[0]).to.equal('4');
+									Expect(tmpLargerSlice[1]).to.equal('5');
+
+									return fDone();
+								}
+							);
+						test
+							(
 								'Exercise Marshaling to Value at a Hashed Address',
 								(fDone) =>
 								{
