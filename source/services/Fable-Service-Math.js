@@ -25,6 +25,7 @@ class FableServiceMath extends libFableServiceBase
 		this.pi = '3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679';
 		// From NASA: https://apod.nasa.gov/htmltest/gifcity/e.2mil
 		this.euler = '2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664';
+		this.errorReturnValue = NaN;
 
 		//		this.manifest = this.fable.newManyfest();
 		this.bigNumber = this.fable.Utility.bigNumber;
@@ -146,9 +147,16 @@ class FableServiceMath extends libFableServiceBase
 		let tmpDecimals = isNaN(pDecimals) ? 0 : parseInt(pDecimals, 10);
 		let tmpRoundingMethod = (typeof (pRoundingMethod) === 'undefined') ? this.roundHalfUp : parseInt(pRoundingMethod, 10);
 
-		let tmpArbitraryValue = new this.bigNumber(tmpValue);
-		let tmpResult = tmpArbitraryValue.round(tmpDecimals, tmpRoundingMethod);
-		return tmpResult.toString();
+		try
+		{
+			let tmpArbitraryValue = new this.bigNumber(tmpValue);
+			let tmpResult = tmpArbitraryValue.round(tmpDecimals, tmpRoundingMethod);
+			return tmpResult.toString();
+		}
+		catch
+		{
+			return this.errorReturnValue;
+		}
 	}
 
 	/**
@@ -165,10 +173,16 @@ class FableServiceMath extends libFableServiceBase
 		let tmpDecimals = isNaN(pDecimals) ? 0 : parseInt(pDecimals, 10);
 		let tmpRoundingMethod = (typeof (pRoundingMethod) === 'undefined') ? this.roundHalfUp : pRoundingMethod;
 
-		let tmpArbitraryValue = new this.bigNumber(tmpValue);
-		let tmpResult = tmpArbitraryValue.toFixed(tmpDecimals, tmpRoundingMethod);
-
-		return tmpResult.toString();
+		try
+		{
+			let tmpArbitraryValue = new this.bigNumber(tmpValue);
+			let tmpResult = tmpArbitraryValue.toFixed(tmpDecimals, tmpRoundingMethod);
+			return tmpResult.toString();
+		}
+		catch
+		{
+			return this.errorReturnValue;
+		}
 	}
 
 	/**
