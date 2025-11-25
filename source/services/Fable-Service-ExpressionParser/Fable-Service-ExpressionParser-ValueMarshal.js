@@ -63,7 +63,7 @@ class ExpressionParserValueMarshal extends libExpressionParserOperationBase
 					tmpToken.Value = tmpValue;
 					tmpToken.Resolve = true;
 					tmpResults.ExpressionParserLog.push(`WARNING: ExpressionParser.substituteValuesInTokenizedObjects found no value for the symbol hash or address ${tmpToken.Token} at index ${i}`);
-					this.log.warn(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
+					if (this.LogNoisiness > 1) this.log.warn(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
 					continue;
 				}
 				else
@@ -110,13 +110,13 @@ class ExpressionParserValueMarshal extends libExpressionParserOperationBase
 				if (!tmpValue)
 				{
 					tmpResults.ExpressionParserLog.push(`WARNING: ExpressionParser.substituteValuesInTokenizedObjects found no value for the state address ${tmpToken.Token} at index ${i}`);
-					this.log.warn(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
+					//this.log.warn(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
 					continue;
 				}
 				else
 				{
 					//tmpResults.ExpressionParserLog.push(`INFO: ExpressionParser.substituteValuesInTokenizedObjects found a value [${tmpValue}] for the state address ${tmpToken.Token} at index ${i}`);
-					this.log.info(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
+					//this.log.info(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
 					try
 					{
 						let tmpValueParsed = new this.fable.Utility.bigNumber(tmpValue);
