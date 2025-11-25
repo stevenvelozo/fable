@@ -921,6 +921,27 @@ suite
 
 						test
 							(
+								'Custom Solver Functions',
+								(fNext) =>
+								{
+									let testFable = new libFable();
+
+									testFable.MonkeyFunction = (pParameter) => { return `Monkey says hello to ${pParameter}`; };
+
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+									let tmpResultsObject = {};
+									let tmpDestinationObject = {};
+
+									_Parser.addSolverFunction('monkeypatchedfunction', 'fable.MonkeyFunction', 'This is just for documentation.');
+									
+									_Parser.solve('MonkeyResult = monkeypatchedfunction("Jerry")', testFable, tmpResultsObject, false, tmpDestinationObject);
+									Expect(tmpDestinationObject.MonkeyResult).to.equal('Monkey says hello to Jerry');
+									return fNext();
+								}
+							);
+
+						test
+							(
 								'Series + Regression',
 								() =>
 								{
