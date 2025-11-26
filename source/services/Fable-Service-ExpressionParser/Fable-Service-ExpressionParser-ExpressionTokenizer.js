@@ -39,6 +39,7 @@ class ExpressionTokenizer extends libExpressionParserOperationBase
 		 *  - String
 		 *    : Wrapped in double quotes e.g. "Hello World", "This is a test", etc.
 		 */
+		/** @type {any} */
 		let tmpCurrentTokenType = false;
 		let tmpCurrentToken = '';
 		for (let i = 0; i < pExpression.length; i++)

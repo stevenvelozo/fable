@@ -919,6 +919,42 @@ suite
 								}
 							);
 
+						test('Solver Quoted Empty Strings', () =>
+						{
+							const tmpSourceData =
+							{
+							};
+							let testFable = new libFable();
+							let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+							_Parser.solve('Taco = 3', tmpSourceData, {}, false, tmpSourceData);
+							Expect(tmpSourceData.Taco).to.equal('3');
+
+							_Parser.solve('Taco = ""', tmpSourceData, {}, false, tmpSourceData);
+							Expect(tmpSourceData.Taco).to.equal('');
+						});
+						test('Solver Performance', () =>
+						{
+							const tmpSourceData =
+							{
+								MethodAB_WWD_Dry_MinMoistureContent: -150,
+								MethodAB_WWD_Dry_MaxMoistureContent: -18.3,
+							};
+							const tmpExpr = 'MethodAB_WWD_Dry_PlotXValues = SERIES FROM MethodAB_WWD_Dry_MinMoistureContent TO MethodAB_WWD_Dry_MaxMoistureContent STEP 0.1 : n + 0';
+							let testFable = new libFable();
+							let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+							const t0 = performance.now();
+							// Execute the expression multiple times to get a measurable time
+							_Parser.solve(tmpExpr, tmpSourceData, {}, false, tmpSourceData);
+							const t1 = performance.now();
+							const duration = t1 - t0;
+							testFable.log.info(`Solver Performance Test: Executed in ${duration} milliseconds.`);
+							Expect(tmpSourceData.MethodAB_WWD_Dry_PlotXValues.length).to.equal(1318);
+							Expect(tmpSourceData.MethodAB_WWD_Dry_PlotXValues[0]).to.equal('-150');
+							Expect(tmpSourceData.MethodAB_WWD_Dry_PlotXValues[1317]).to.equal('-18.3');
+							Expect(duration).to.be.below(20);
+						});
 						test
 							(
 								'Custom Solver Functions',
