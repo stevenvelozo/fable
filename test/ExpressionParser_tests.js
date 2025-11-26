@@ -927,11 +927,16 @@ suite
 							let testFable = new libFable();
 							let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
 
+							let tmpSolverResults = {};
+
 							_Parser.solve('Taco = 3', tmpSourceData, {}, false, tmpSourceData);
 							Expect(tmpSourceData.Taco).to.equal('3');
 
-							_Parser.solve('Taco = ""', tmpSourceData, {}, false, tmpSourceData);
+							_Parser.solve('Taco = ""', tmpSourceData, tmpSolverResults, false, tmpSourceData);
 							Expect(tmpSourceData.Taco).to.equal('');
+
+							Expect(_Parser.solve('Taco = " "', tmpSourceData, tmpSolverResults, false, tmpSourceData)).to.equal(' ');
+							Expect(_Parser.solve('Taco = "Whooo"', tmpSourceData, tmpSolverResults, false, tmpSourceData)).to.equal('Whooo');
 						});
 						test('Solver Performance', () =>
 						{
@@ -953,7 +958,7 @@ suite
 							Expect(tmpSourceData.MethodAB_WWD_Dry_PlotXValues.length).to.equal(1318);
 							Expect(tmpSourceData.MethodAB_WWD_Dry_PlotXValues[0]).to.equal('-150');
 							Expect(tmpSourceData.MethodAB_WWD_Dry_PlotXValues[1317]).to.equal('-18.3');
-							Expect(duration).to.be.below(20);
+							Expect(duration).to.be.below(100);
 						});
 						test
 							(

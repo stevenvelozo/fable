@@ -28,7 +28,7 @@ class ExpressionParserOperationBase extends libFableServiceProviderBase
 		{
 			return 'Token.StateAddress';
 		}
-		else if ((pToken.length > 2) && (pToken[0] === '"') && (pToken[pToken.length-1] === '"'))
+		else if ((pToken.length > 1) && (pToken[0] === '"') && (pToken[pToken.length-1] === '"'))
 		{
 			return 'Token.String';
 		}
