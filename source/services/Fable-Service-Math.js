@@ -1060,7 +1060,11 @@ class FableServiceMath extends libFableServiceBase
 		let tmpHistogram = {};
 		for (let i = 0; i < pValueObjectSet.length; i++)
 		{
-			let tmpValue = this.fable.Utility.getValueByHash(pValueObjectSet[i], pValueAddress, pManifest).toString();
+			let tmpValue = this.fable.Utility.getValueByHash(pValueObjectSet[i], pValueAddress, pManifest);
+			if (typeof(tmpValue) === undefined)
+			{
+				continue;
+			}
 			let tmpAmount = this.parsePrecise(this.fable.Utility.getValueByHash(pValueObjectSet[i], pValueAmountAddress, pManifest), NaN);
 
 			if (!(tmpValue in tmpHistogram))
