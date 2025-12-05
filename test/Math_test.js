@@ -316,6 +316,31 @@ suite
 
 						let tmpChocoSizes = testManyfest.getValueAtAddress(_ChocoData, 'files[].size');
 
+						Expect(testFable.Math.variancePrecise([1, 2, 3])).to.equal('1');
+						Expect(Number(testFable.Math.populationVariancePrecise([1, 2, 3]))).to.be.closeTo(0.6667, 0.0001);
+						Expect(testFable.Math.standardDeviationPrecise([1, 2, 3])).to.equal('1');
+						Expect(Number(testFable.Math.populationStandardDeviationPrecise([1, 2, 3]))).to.be.closeTo(0.8165, 0.0001);
+						try
+						{
+							testFable.Math.variancePrecise([1]);
+							Expect.fail('Expected error for sample variance with single value');
+						}
+						catch (pError)
+						{
+							Expect(pError).to.be.an.instanceof(Error);
+							Expect(pError.message).to.equal('[big.js] Division by zero');
+						}
+						try
+						{
+							testFable.Math.standardDeviationPrecise([1]);
+							Expect.fail('Expected error for sample standard deviation with single value');
+						}
+						catch (pError)
+						{
+							Expect(pError).to.be.an.instanceof(Error);
+							Expect(pError.message).to.equal('[big.js] Division by zero');
+						}
+
 						Expect(testFable.Math.maxPrecise(tmpChocoSizes)).to.equal("31625216");
 						Expect(testFable.Math.minPrecise(tmpChocoSizes)).to.equal("620");
 						Expect(testFable.Math.sumPrecise(tmpChocoSizes)).to.equal("36431778");
@@ -324,6 +349,8 @@ suite
 						Expect(testFable.Math.medianPrecise(tmpChocoSizes)).to.equal("5993");
 						// Since the file sizes are all different, this is just the whole list.
 						Expect(testFable.Math.modePrecise(tmpChocoSizes)).to.deep.equal(["620","838","1371","3383","3503","4093","4951","5993","6843","7481","8388","31141","101114","2248166","2378677","31625216","NaN"]);
+						Expect(Number(testFable.Math.standardDeviationPrecise(tmpChocoSizes))).to.be.closeTo(7635456.5390, 0.0001);
+						Expect(Number(testFable.Math.populationStandardDeviationPrecise(tmpChocoSizes))).to.be.closeTo(7407480.8965, 0.0001);
 
 						Expect(testFable.Math.maxPrecise([100, 101, 400, "20", "dog"])).to.equal("400");
 						Expect(testFable.Math.modePrecise([100, 20, 101, 400, "20", "dog"])).to.deep.equal(["20"]);
@@ -351,6 +378,8 @@ suite
 						Expect(testFable.Math.meanPrecise([1,2,3,4,5,6,7,8,9,10,11])).to.equal('6');
 						Expect(testFable.Math.medianPrecise([1,2,3,4,5,6,7,8,9,10,11])).to.equal('6');
 						Expect(testFable.Math.modePrecise([1,2,3,4,5,6,7,8,9,10,11])).to.deep.equal(['1','2','3','4','5','6','7','8','9','10','11']);
+						Expect(Number(testFable.Math.standardDeviationPrecise([1,2,3,4,5,6,7,8,9,10,11]))).to.be.closeTo(3.3166, 0.0001);
+						Expect(Number(testFable.Math.populationStandardDeviationPrecise([1,2,3,4,5,6,7,8,9,10,11]))).to.be.closeTo(3.1623, 0.0001);
 
 						return fDone();
 					}

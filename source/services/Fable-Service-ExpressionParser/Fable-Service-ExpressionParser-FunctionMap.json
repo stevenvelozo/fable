@@ -119,6 +119,30 @@
 		"Name": "Mode",
 		"Address": "fable.Math.modePrecise"
 	},
+	"var": {
+		"Name": "Variance (Sample)",
+		"Address": "fable.Math.variancePrecise"
+	},
+	"vara": {
+		"Name": "Variance (Sample)",
+		"Address": "fable.Math.variancePrecise"
+	},
+	"varp": {
+		"Name": "Variance (Population)",
+		"Address": "fable.Math.populationVariancePrecise"
+	},
+	"stdev": {
+		"Name": "Standard Deviation (Sample)",
+		"Address": "fable.Math.standardDeviationPrecise"
+	},
+	"stdeva": {
+		"Name": "Standard Deviation (Sample)",
+		"Address": "fable.Math.standardDeviationPrecise"
+	},
+	"stdevp": {
+		"Name": "Standard Deviation (Population)",
+		"Address": "fable.Math.populationStandardDeviationPrecise"
+	},
 	"round": {
 		"Name": "Round",
 		"Address": "fable.Math.roundPrecise"

@@ -347,6 +347,8 @@ suite
 									Expect(_Parser.solve("TotalCost = MEAN(ItemCosts)", { "ItemCosts": [100, 200, 50, 45, 5] })).to.equal("80");
 									Expect(_Parser.solve("TotalCost = MEDIAN(ItemCosts)", { "ItemCosts": [100, 200, 50, 45, 5] })).to.equal("50");
 									Expect(_Parser.solve("TotalCost = COUNT(ItemCosts)", { "ItemCosts": [100, 200, 50, 45, 5] })).to.equal("5");
+									Expect(Number(_Parser.solve("StDev = STDEV(Values)", { "Values": [1,2,3,4,5,6,7,8,9,10,11] }))).to.be.closeTo(3.3166, 0.0001);
+									Expect(Number(_Parser.solve("StDevP = STDEVP(Values)", { "Values": [1,2,3,4,5,6,7,8,9,10,11] }))).to.be.closeTo(3.1623, 0.0001);
 
 									_Parser.fable.AppData = {
 										Teams: [

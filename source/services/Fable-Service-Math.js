@@ -1438,7 +1438,7 @@ class FableServiceMath extends libFableServiceBase
 	/**
 	 * Calculates the precise mean of a given value set.
 	 *
-	 * @param {Array<number>} pValueSet - The array of values to calculate the mean.
+	 * @param {Array<string|number>} pValueSet - The array of values to calculate the mean.
 	 * @returns {string} The precise mean value as a string.
 	 */
 	meanPrecise(pValueSet)
@@ -1455,8 +1455,8 @@ class FableServiceMath extends libFableServiceBase
 	/**
 	 * Calculates the average of an array of values precisely.
 	 *
-	 * @param {Array<number>} pValueSet - The array of values to calculate the average of.
-	 * @returns {number} The precise average of the values.
+	 * @param {Array<string|number>} pValueSet - The array of values to calculate the average of.
+	 * @returns {string} The precise average of the values.
 	 */
 	averagePrecise(pValueSet)
 	{
@@ -1525,6 +1525,68 @@ class FableServiceMath extends libFableServiceBase
 		}
 
 		return tmpModeValueSet;
+	}
+
+	/**
+	 * Calculates the variance of a given value set using precise mode calculation.
+	 *
+	 * @param {Array<string|number>} pValueSet - The array of values to calculate the variance from.
+	 * @param {boolean} [pIsPopulation=false] - Whether to calculate population variance (true) or sample variance (false).
+	 *
+	 * @return {string} - The variance of the given value set.
+	 */
+	variancePrecise(pValueSet, pIsPopulation = false)
+	{
+		let tmpValueSet = pValueSet;
+		if (!Array.isArray(tmpValueSet) && typeof tmpValueSet === 'object')
+		{
+			tmpValueSet = Object.keys(tmpValueSet).map((pKey) => tmpValueSet[pKey]);
+		}
+		const tmpMeanValue = this.meanPrecise(tmpValueSet);
+		const tmpVarianceSum = tmpValueSet.reduce((pAccumulator, pValue) =>
+		{
+			const tmpDiff = this.subtractPrecise(pValue, tmpMeanValue);
+			const tmpSquaredDiff = this.multiplyPrecise(tmpDiff, tmpDiff);
+			return this.addPrecise(pAccumulator, tmpSquaredDiff);
+		}, '0.0');
+		return this.dividePrecise(tmpVarianceSum, pIsPopulation ? tmpValueSet.length : tmpValueSet.length - 1);
+	}
+
+	/**
+	 * Calculates the variance of a given population of values using precise mode calculation.
+	 *
+	 * @param {Array<string|number>} pValueSet - The array of values to calculate the variance from.
+	 *
+	 * @return {string} - The variance of the given value set.
+	 */
+	populationVariancePrecise(pValueSet)
+	{
+		return this.variancePrecise(pValueSet, true);
+	}
+
+	/**
+	 * Calculates the standard deviation of a given value set using precise mode calculation.
+	 *
+	 * @param {Array<string|number>} pValueSet - The array of values to calculate the standard deviation from.
+	 * @param {boolean} [pIsPopulation=false] - Whether to calculate population variance (true) or sample variance (false).
+	 *
+	 * @return {string} - The standard deviation of the given value set.
+	 */
+	standardDeviationPrecise(pValueSet, pIsPopulation = false)
+	{
+		return this.sqrtPrecise(this.variancePrecise(pValueSet, pIsPopulation));
+	}
+
+	/**
+	 * Calculates the standard deviation of a given population of values using precise mode calculation.
+	 *
+	 * @param {Array<string|number>} pValueSet - The array of values to calculate the standard deviation from.
+	 *
+	 * @return {string} - The standard deviation of the given value set.
+	 */
+	populationStandardDeviationPrecise(pValueSet)
+	{
+		return this.standardDeviationPrecise(pValueSet, true);
 	}
 
 	/**
