@@ -1,7 +1,5 @@
 # MetaTemplate Service
 
-The MetaTemplate service provides advanced templating with meta-programming capabilities, extending the basic Template service with additional features for dynamic template generation and manipulation.
-
 ## Access
 
 ```javascript
