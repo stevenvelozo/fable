@@ -161,18 +161,18 @@ Basic math operations with arbitrary precision:
 
 Functions are called using parentheses:
 
-```
+```expression
 Result = functionname(arg1, arg2, ...)
 ```
 
 Variables are referenced by name:
 
-```
+```expression
 Result = X * Y + sqrt(Z)
 ```
 
 Quoted strings are supported:
 
-```
+```expression
 Result = concat("Hello ", Name)
 ```

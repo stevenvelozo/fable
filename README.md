@@ -1,7 +1,29 @@
-Fable Overview
+Fable
 =====
 
-It is tiring to setup logging and settings management in every application you write. Fable provides a single line solution to have simple logging to the console and file, with the options for plugins to things like bunyan and graylog. Add a simple configuration object and it can also write the log to a file. Or even mongodb!
+A comprehensive Node.js service dependency injection, configuration management, and logging library. Fable provides a service-oriented architecture with built-in dependency injection, making it easy to build modular, testable applications.
+
+## Features
+
+- **Service Provider Architecture** - IoC container with dependency injection
+- **Configuration Management** - Centralized settings with environment support
+- **Logging** - Flexible logging with multiple stream support
+- **UUID Generation** - Distributed unique identifier generation
+- **Math Operations** - Arbitrary precision math using big.js
+- **Date Manipulation** - Comprehensive date operations using day.js
+- **Expression Parser** - Evaluate mathematical and logical expressions
+- **REST Client** - HTTP request handling with caching
+- **Template Engine** - Variable substitution and rendering
+- **And much more...**
+
+## Documentation
+
+Comprehensive documentation is available in the [docs](./docs) folder:
+
+- [Overview](./docs/README.md) - Introduction and getting started
+- [Architecture](./docs/architecture.md) - System design and patterns
+- [Services Reference](./docs/services/README.md) - All available services
+- [ExpressionParser Functions](./docs/services/expression-parser-functions/README.md) - 90+ built-in functions
 
 ## Install
 
@@ -293,3 +315,66 @@ var uuid = fable.getUUID();
 
 // The uuid variable now contains a unique string.
 ```
+
+---------------------------------------
+
+## Available Services
+
+Fable provides a rich set of services organized into three categories:
+
+### Pre-initialized Services
+
+Available immediately on any Fable instance:
+
+- **SettingsManager** - Configuration and settings management
+- **UUID** - Unique identifier generation
+- **Logging** - Flexible logging with multiple outputs
+
+### Auto-instantiated Services
+
+Created automatically on first access:
+
+- **Dates** - Date manipulation and formatting (day.js)
+- **Math** - Arbitrary precision arithmetic (big.js)
+- **Utility** - Common utility functions
+- **DataFormat** - Data transformation helpers
+- **Logic** - Conditional and comparison operations
+- **ProgressTime** - Time-based progress tracking
+- **EnvironmentData** - Environment variable access
+- **DataGeneration** - Random data generation
+
+### On-demand Services
+
+Instantiated when needed via `fable.instantiateServiceProvider()`:
+
+- **Template** - Variable substitution engine
+- **MetaTemplate** - Advanced templating with iterations
+- **RestClient** - HTTP requests with caching
+- **ExpressionParser** - Mathematical expression evaluation
+- **Operation** - Async operation management
+- **CSVParser** - CSV file parsing
+- **FilePersistence** - File system operations
+- **Manifest** - Application manifest handling
+- **ObjectCache** - In-memory object caching
+- **Anticipate** - Promise and callback helpers
+
+### Using Services
+
+```js
+const libFable = require('fable');
+const fable = new libFable();
+
+// Auto-instantiated services - just access them
+const today = fable.Dates.dayJS();
+const sum = fable.Math.addPrecise('10.5', '20.3');
+
+// On-demand services - instantiate when needed
+const template = fable.instantiateServiceProvider('Template');
+const result = template.render('Hello ${Name}!', { Name: 'World' });
+
+// ExpressionParser for complex calculations
+const parser = fable.instantiateServiceProvider('ExpressionParser');
+const value = parser.solve('SUM(1, 2, 3, 4, 5)', {});
+```
+
+See the [Services Documentation](./docs/services/README.md) for detailed information on each service.
