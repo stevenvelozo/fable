@@ -1,4 +1,4 @@
-# Fable <small>3.0</small>
+# Fable <small>3</small>
 
 > A service dependency injection, configuration, and logging library for Node.js and browsers
 
