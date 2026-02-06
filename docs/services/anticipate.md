@@ -6,10 +6,10 @@ The Anticipate service provides asynchronous operation sequencing, allowing you 
 
 ```javascript
 // On-demand service - instantiate when needed
-const anticipate = fable.instantiateServiceProvider('Anticipate');
+const tmpAnticipate = fable.instantiateServiceProvider('Anticipate');
 
 // Or use the factory method (creates unregistered instance)
-const anticipate = fable.newAnticipate();
+const tmpAnticipate = fable.newAnticipate();
 ```
 
 ## Basic Usage
@@ -17,143 +17,189 @@ const anticipate = fable.newAnticipate();
 ### Sequential Operations
 
 ```javascript
-const anticipate = fable.newAnticipate();
+const tmpAnticipate = fable.newAnticipate();
 
-anticipate
-    .queue('Step 1',
-        (fComplete) => {
-            console.log('Executing step 1');
-            setTimeout(() => fComplete(), 100);
-        })
-    .queue('Step 2',
-        (fComplete) => {
-            console.log('Executing step 2');
-            setTimeout(() => fComplete(), 100);
-        })
-    .queue('Step 3',
-        (fComplete) => {
-            console.log('Executing step 3');
-            fComplete();
-        })
-    .execute((pError) => {
-        if (pError) {
-            console.error('Failed:', pError);
-        } else {
-            console.log('All steps completed');
-        }
-    });
+tmpAnticipate.anticipate(function (fCallback)
+{
+	console.log('Executing step 1');
+	setTimeout(function ()
+	{
+		console.log('Step 1 done');
+		fCallback();
+	}, 100);
+});
+tmpAnticipate.anticipate(function (fCallback)
+{
+	console.log('Executing step 2');
+	setTimeout(function ()
+	{
+		console.log('Step 2 done');
+		fCallback();
+	}, 100);
+});
+tmpAnticipate.anticipate(function (fCallback)
+{
+	console.log('Executing step 3');
+	fCallback();
+});
+tmpAnticipate.wait(function (pError)
+{
+	if (pError)
+	{
+		console.error('Failed:', pError);
+	}
+	else
+	{
+		console.log('All steps completed');
+	}
+});
 ```
 
-### Passing Data Between Steps
+### Sharing State Between Steps
+
+Since Anticipate callbacks receive only `fCallback`, use closure scope or external variables to share data between steps:
 
 ```javascript
-const anticipate = fable.newAnticipate();
+const tmpAnticipate = fable.newAnticipate();
+let tmpUser = null;
+let tmpPreferences = null;
 
-anticipate
-    .queue('Fetch User',
-        (fComplete, pData) => {
-            fetchUser(123, (user) => {
-                pData.user = user;
-                fComplete();
-            });
-        })
-    .queue('Load Preferences',
-        (fComplete, pData) => {
-            loadPreferences(pData.user.id, (prefs) => {
-                pData.preferences = prefs;
-                fComplete();
-            });
-        })
-    .queue('Render',
-        (fComplete, pData) => {
-            render(pData.user, pData.preferences);
-            fComplete();
-        })
-    .execute();
+tmpAnticipate.anticipate(function (fCallback)
+{
+	fetchUser(123, function (pUser)
+	{
+		tmpUser = pUser;
+		fCallback();
+	});
+});
+tmpAnticipate.anticipate(function (fCallback)
+{
+	loadPreferences(tmpUser.id, function (pPrefs)
+	{
+		tmpPreferences = pPrefs;
+		fCallback();
+	});
+});
+tmpAnticipate.anticipate(function (fCallback)
+{
+	render(tmpUser, tmpPreferences);
+	fCallback();
+});
+tmpAnticipate.wait(function (pError)
+{
+	if (pError)
+	{
+		console.error('Workflow failed:', pError);
+	}
+});
 ```
 
 ## API Reference
 
-### queue(pStepName, fStepFunction)
+### anticipate(fAsynchronousFunction)
 
-Add a step to the queue:
+Add an asynchronous operation to the queue. Operations run sequentially by default (one at a time).
 
 ```javascript
-anticipate.queue('Step Name', (fComplete, pData) => {
-    // Do work
-    fComplete();  // Call when done
+tmpAnticipate.anticipate(function (fCallback)
+{
+	// Do async work
+	fCallback();  // Call when done, or fCallback(pError) to signal failure
 });
 ```
 
-Parameters for step function:
-- `fComplete` - Callback to signal completion
-- `pData` - Shared data object for passing state between steps
+The step function receives one parameter:
+- `fCallback` — Callback to signal completion. Pass an error to bail out: `fCallback(new Error('something failed'))`
 
-### execute(fCallback)
+### wait(fCallback)
 
-Execute all queued steps:
+Register a callback to run when all queued operations complete (or when an error occurs):
 
 ```javascript
-anticipate.execute((pError) => {
-    if (pError) {
-        console.error('Error:', pError);
-    }
+tmpAnticipate.wait(function (pError)
+{
+	if (pError)
+	{
+		console.error('Error:', pError);
+	}
 });
 ```
 
-### clear()
+### maxOperations
 
-Clear all queued steps:
+Control concurrency. Default is `1` (sequential). Set higher for parallel execution:
 
 ```javascript
-anticipate.clear();
+const tmpAnticipate = fable.newAnticipate();
+tmpAnticipate.maxOperations = 5;  // Run up to 5 operations concurrently
 ```
 
 ## Error Handling
 
-### Passing Errors
+### Error Bailout
+
+When an operation passes an error to its callback, remaining queued operations are skipped and the `wait` callback fires immediately with the error:
 
 ```javascript
-anticipate.queue('Risky Operation',
-    (fComplete, pData) => {
-        doRiskyThing((error, result) => {
-            if (error) {
-                fComplete(error);  // Pass error to callback
-            } else {
-                pData.result = result;
-                fComplete();
-            }
-        });
-    })
-.execute((pError) => {
-    if (pError) {
-        console.error('Pipeline failed:', pError);
-    }
+const tmpAnticipate = fable.newAnticipate();
+let tmpPostErrorRan = false;
+
+tmpAnticipate.anticipate(function (fCallback)
+{
+	console.log('Step 1 running');
+	fCallback();
+});
+tmpAnticipate.anticipate(function (fCallback)
+{
+	console.log('Step 2 failing');
+	fCallback(new Error('Something went wrong'));
+});
+tmpAnticipate.anticipate(function (fCallback)
+{
+	// This will NOT run because the previous step errored
+	tmpPostErrorRan = true;
+	fCallback();
+});
+tmpAnticipate.wait(function (pError)
+{
+	console.log('Error:', pError);          // Error: Something went wrong
+	console.log('Step 3 ran:', tmpPostErrorRan);  // false
 });
 ```
 
 ### Error Recovery
 
+To handle errors without bailing out, catch them inside the step and continue:
+
 ```javascript
-anticipate
-    .queue('Try Operation',
-        (fComplete, pData) => {
-            try {
-                riskyOperation();
-                fComplete();
-            } catch (e) {
-                pData.error = e;
-                fComplete();  // Continue despite error
-            }
-        })
-    .queue('Check Result',
-        (fComplete, pData) => {
-            if (pData.error) {
-                console.log('Recovering from:', pData.error);
-            }
-            fComplete();
-        })
-    .execute();
+const tmpAnticipate = fable.newAnticipate();
+let tmpRecoveredError = null;
+
+tmpAnticipate.anticipate(function (fCallback)
+{
+	try
+	{
+		riskyOperation();
+		fCallback();
+	}
+	catch (pError)
+	{
+		tmpRecoveredError = pError;
+		fCallback();  // No error passed — pipeline continues
+	}
+});
+tmpAnticipate.anticipate(function (fCallback)
+{
+	if (tmpRecoveredError)
+	{
+		console.log('Recovered from:', tmpRecoveredError);
+	}
+	fCallback();
+});
+tmpAnticipate.wait(function (pError)
+{
+	console.log('Pipeline completed');
+});
 ```
 
 ## Use Cases
@@ -161,108 +207,111 @@ anticipate
 ### Database Migrations
 
 ```javascript
-const migrate = fable.newAnticipate();
+const tmpMigrate = fable.newAnticipate();
 
-migrate
-    .queue('Create users table',
-        (fComplete) => {
-            db.query('CREATE TABLE users...', fComplete);
-        })
-    .queue('Create posts table',
-        (fComplete) => {
-            db.query('CREATE TABLE posts...', fComplete);
-        })
-    .queue('Add indexes',
-        (fComplete) => {
-            db.query('CREATE INDEX...', fComplete);
-        })
-    .execute((err) => {
-        if (err) console.error('Migration failed:', err);
-        else console.log('Migration complete');
-    });
+tmpMigrate.anticipate(function (fCallback)
+{
+	db.query('CREATE TABLE users...', fCallback);
+});
+tmpMigrate.anticipate(function (fCallback)
+{
+	db.query('CREATE TABLE posts...', fCallback);
+});
+tmpMigrate.anticipate(function (fCallback)
+{
+	db.query('CREATE INDEX...', fCallback);
+});
+tmpMigrate.wait(function (pError)
+{
+	if (pError) console.error('Migration failed:', pError);
+	else console.log('Migration complete');
+});
 ```
 
 ### API Request Chains
 
 ```javascript
-const workflow = fable.newAnticipate();
+const tmpWorkflow = fable.newAnticipate();
+let tmpToken = null;
+let tmpData = null;
 
-workflow
-    .queue('Authenticate',
-        (fComplete, pData) => {
-            api.login(credentials, (token) => {
-                pData.token = token;
-                fComplete();
-            });
-        })
-    .queue('Fetch Data',
-        (fComplete, pData) => {
-            api.getData(pData.token, (data) => {
-                pData.data = data;
-                fComplete();
-            });
-        })
-    .queue('Process',
-        (fComplete, pData) => {
-            process(pData.data);
-            fComplete();
-        })
-    .execute();
+tmpWorkflow.anticipate(function (fCallback)
+{
+	api.login(credentials, function (pToken)
+	{
+		tmpToken = pToken;
+		fCallback();
+	});
+});
+tmpWorkflow.anticipate(function (fCallback)
+{
+	api.getData(tmpToken, function (pData)
+	{
+		tmpData = pData;
+		fCallback();
+	});
+});
+tmpWorkflow.anticipate(function (fCallback)
+{
+	process(tmpData);
+	fCallback();
+});
+tmpWorkflow.wait(function (pError)
+{
+	if (pError) console.error('Workflow failed:', pError);
+});
+```
+
+### Parallel Operations
+
+```javascript
+const tmpParallel = fable.newAnticipate();
+tmpParallel.maxOperations = 3;  // Run up to 3 at a time
+
+tmpParallel.anticipate(function (fCallback)
+{
+	fetchFromServiceA(function () { fCallback(); });
+});
+tmpParallel.anticipate(function (fCallback)
+{
+	fetchFromServiceB(function () { fCallback(); });
+});
+tmpParallel.anticipate(function (fCallback)
+{
+	fetchFromServiceC(function () { fCallback(); });
+});
+tmpParallel.wait(function (pError)
+{
+	console.log('All fetches complete');
+});
 ```
 
 ### Build Pipeline
 
 ```javascript
-const build = fable.newAnticipate();
+const tmpBuild = fable.newAnticipate();
 
-build
-    .queue('Clean',
-        (fComplete) => {
-            cleanBuildDir(fComplete);
-        })
-    .queue('Compile',
-        (fComplete) => {
-            compile(fComplete);
-        })
-    .queue('Bundle',
-        (fComplete) => {
-            bundle(fComplete);
-        })
-    .queue('Minify',
-        (fComplete) => {
-            minify(fComplete);
-        })
-    .execute((err) => {
-        if (err) throw err;
-        console.log('Build complete');
-    });
-```
-
-## Comparison with async.waterfall
-
-Anticipate is similar to `async.waterfall` but provides:
-- Named steps for better debugging
-- Shared data object instead of passing arguments
-- Chainable API
-
-```javascript
-// async.waterfall
-async.waterfall([
-    (callback) => { callback(null, 'one'); },
-    (arg1, callback) => { callback(null, 'two'); }
-], callback);
-
-// Anticipate
-fable.newAnticipate()
-    .queue('First', (fComplete, pData) => {
-        pData.result = 'one';
-        fComplete();
-    })
-    .queue('Second', (fComplete, pData) => {
-        pData.result = 'two';
-        fComplete();
-    })
-    .execute(callback);
+tmpBuild.anticipate(function (fCallback)
+{
+	cleanBuildDir(fCallback);
+});
+tmpBuild.anticipate(function (fCallback)
+{
+	compile(fCallback);
+});
+tmpBuild.anticipate(function (fCallback)
+{
+	bundle(fCallback);
+});
+tmpBuild.anticipate(function (fCallback)
+{
+	minify(fCallback);
+});
+tmpBuild.wait(function (pError)
+{
+	if (pError) throw pError;
+	console.log('Build complete');
+});
 ```
 
 ## Multiple Instances
@@ -270,10 +319,13 @@ fable.newAnticipate()
 Create multiple independent workflows:
 
 ```javascript
-const userWorkflow = fable.newAnticipate();
-const orderWorkflow = fable.newAnticipate();
+const tmpUserWorkflow = fable.newAnticipate();
+const tmpOrderWorkflow = fable.newAnticipate();
 
-// Execute concurrently
-userWorkflow.queue(...).execute();
-orderWorkflow.queue(...).execute();
+// These run independently
+tmpUserWorkflow.anticipate(function (fCallback) { /* ... */ fCallback(); });
+tmpUserWorkflow.wait(function (pError) { /* ... */ });
+
+tmpOrderWorkflow.anticipate(function (fCallback) { /* ... */ fCallback(); });
+tmpOrderWorkflow.wait(function (pError) { /* ... */ });
 ```

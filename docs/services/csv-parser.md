@@ -1,229 +1,152 @@
 # CSVParser Service
 
-The CSVParser service provides robust CSV parsing with support for multi-line quoted fields, escaped quotes, and configurable delimiters.
+The CSVParser service provides line-by-line CSV parsing with support for multi-line quoted fields, escaped quotes, and configurable delimiters. It is designed for streaming line-by-line parsing rather than whole-string parsing.
 
 ## Access
 
 ```javascript
 // On-demand service - instantiate when needed
-const csvParser = fable.instantiateServiceProvider('CSVParser');
+const csvParser = fable.instantiateServiceProvider('CSVParser', {}, 'CSV Parser-123');
 ```
 
 ## Basic Usage
 
-### Parse CSV String
+### Line-by-Line Parsing
+
+The primary method is `parseCSVLine()`, which processes one line at a time and returns a parsed record (or `false` if the line is part of a multi-line quoted field or is the header row):
+
+```javascript
+const libFS = require('fs');
+const libReadline = require('readline');
+
+const csvParser = fable.instantiateServiceProvider('CSVParser');
+const records = [];
+
+const rl = libReadline.createInterface({
+    input: libFS.createReadStream('data.csv'),
+    crlfDelay: Infinity
+});
+
+rl.on('line', (line) => {
+    let record = csvParser.parseCSVLine(line);
+    if (record) {
+        records.push(record);
+    }
+});
+
+rl.on('close', () => {
+    console.log(`Parsed ${records.length} records`);
+    // records[0] is an object like { name: 'John', age: '30', city: 'New York' }
+});
+```
+
+### Using FilePersistence Wrapper
+
+The FilePersistence service provides a convenience method for CSV reading:
+
+```javascript
+fable.instantiateServiceProvider('FilePersistence');
+
+fable.FilePersistence.readFileCSV('data.csv', {},
+    (record) => {
+        // Called for each parsed record (as a JSON object)
+        console.log(record.name, record.age);
+    },
+    () => {
+        // Called when parsing is complete
+        console.log('Done!');
+    });
+```
+
+## How Parsing Works
+
+The CSVParser is stateful and processes lines sequentially:
+
+1. The first line is treated as a header row by default (sets column names)
+2. Each subsequent line is parsed and emitted as a JSON object keyed by header names
+3. Multi-line quoted fields are accumulated across calls to `parseCSVLine()` until the closing quote is found
+
+### Return Values from `parseCSVLine()`
+
+- Returns a **JSON object** (keyed by header names) for a successfully parsed data row
+- Returns **`false`** for header rows (when `EmitHeader` is `false`, the default)
+- Returns **`false`** when in the middle of a multi-line quoted field
+
+## Configuration Properties
+
+Set these properties on the parser instance after creation:
 
 ```javascript
 const csvParser = fable.instantiateServiceProvider('CSVParser');
 
-const csvData = `name,age,city
-John,30,New York
-Jane,25,Los Angeles`;
-
-const rows = csvParser.parseCSV(csvData);
-// Returns:
-// [
-//   ['name', 'age', 'city'],
-//   ['John', '30', 'New York'],
-//   ['Jane', '25', 'Los Angeles']
-// ]
+csvParser.Delimiter = ';';           // Default: ','
+csvParser.QuoteCharacter = "'";      // Default: '"'
+csvParser.HasHeader = true;          // Default: true - first line is header
+csvParser.HeaderLineIndex = 0;       // Default: 0 - which line is the header
+csvParser.EmitJSON = true;           // Default: true - emit objects vs arrays
+csvParser.EmitHeader = false;        // Default: false - return header row or skip it
+csvParser.EscapedQuoteString = '&quot;';  // Default: '&quot;' - replacement for escaped quotes
 ```
 
-### Parse to Objects
+## Methods
+
+### `parseCSVLine(lineString)`
+
+Parse a single line of CSV. Returns a record object, an array, or `false`.
+
+### `setHeader(headerArray)`
+
+Manually set column headers (an array of strings):
 
 ```javascript
-const csvData = `name,age,city
-John,30,New York
-Jane,25,Los Angeles`;
+csvParser.setHeader(['name', 'age', 'city']);
+```
 
-const objects = csvParser.parseCSVToObjects(csvData);
-// Returns:
-// [
-//   { name: 'John', age: '30', city: 'New York' },
-//   { name: 'Jane', age: '25', city: 'Los Angeles' }
-// ]
+### `marshalRowToJSON(rowArray)`
+
+Convert a row array into a JSON object using the current headers:
+
+```javascript
+csvParser.setHeader(['name', 'age']);
+csvParser.marshalRowToJSON(['John', '30']);
+// Returns { name: 'John', age: '30' }
+```
+
+### `resetRowState()`
+
+Reset the current row accumulation state. Useful if you need to discard a partially parsed row.
+
+### `emitRow(formatAsJSON)`
+
+Emit the currently accumulated row. If `formatAsJSON` is true (default), returns a JSON object; otherwise returns the raw array.
+
+## Parser State Properties
+
+```javascript
+csvParser.LinesParsed   // Total number of lines processed
+csvParser.RowsEmitted   // Total number of data rows emitted
+csvParser.InQuote       // Whether currently inside a quoted field
+csvParser.Header        // Current header array
+csvParser.HeaderFieldNames  // Trimmed header field names used as object keys
 ```
 
 ## Handling Special Cases
 
-### Quoted Fields
+### Multi-line Quoted Fields
 
-Fields containing commas or newlines should be quoted:
-
-```javascript
-const csv = `name,description
-Product,"A great product, with commas"
-Service,"Multi-line
-description here"`;
-
-const rows = csvParser.parseCSV(csv);
-// Correctly handles quoted commas and newlines
-```
+The parser handles fields that span multiple lines when enclosed in quotes. It tracks quote state across calls to `parseCSVLine()` and accumulates the field until the closing quote is found.
 
 ### Escaped Quotes
 
-Double quotes within fields are escaped with another double quote:
+Double quotes within a quoted field (e.g., `""`) are replaced with the `EscapedQuoteString` value (default `&quot;`).
 
-```javascript
-const csv = `name,quote
-John,"He said ""Hello"""`;
+### Extra Columns
 
-const rows = csvParser.parseCSV(csv);
-// Returns: [['name', 'quote'], ['John', 'He said "Hello"']]
-```
-
-### Empty Fields
-
-```javascript
-const csv = `a,b,c
-1,,3
-,2,`;
-
-const rows = csvParser.parseCSV(csv);
-// Returns: [['a', 'b', 'c'], ['1', '', '3'], ['', '2', '']]
-```
-
-## Configuration
-
-### Custom Delimiter
-
-```javascript
-const csvParser = fable.instantiateServiceProvider('CSVParser', {
-    delimiter: ';'  // Use semicolon instead of comma
-});
-
-const csv = `name;age;city
-John;30;New York`;
-
-const rows = csvParser.parseCSV(csv);
-```
-
-### Custom Quote Character
-
-```javascript
-const csvParser = fable.instantiateServiceProvider('CSVParser', {
-    quote: "'"  // Use single quotes
-});
-
-const csv = `name,description
-Product,'Has a comma, inside'`;
-
-const rows = csvParser.parseCSV(csv);
-```
-
-## Parsing Files
-
-### With FilePersistence Service
-
-```javascript
-const filePersistence = fable.instantiateServiceProvider('FilePersistence');
-
-filePersistence.readFile('data.csv', 'utf8', (error, content) => {
-    if (error) throw error;
-
-    const csvParser = fable.instantiateServiceProvider('CSVParser');
-    const data = csvParser.parseCSVToObjects(content);
-
-    console.log('Parsed rows:', data.length);
-});
-```
-
-## Generating CSV
-
-### Array to CSV
-
-```javascript
-const data = [
-    ['name', 'age', 'city'],
-    ['John', '30', 'New York'],
-    ['Jane', '25', 'Los Angeles']
-];
-
-const csv = csvParser.generateCSV(data);
-// Returns:
-// name,age,city
-// John,30,New York
-// Jane,25,Los Angeles
-```
-
-### Objects to CSV
-
-```javascript
-const objects = [
-    { name: 'John', age: 30, city: 'New York' },
-    { name: 'Jane', age: 25, city: 'Los Angeles' }
-];
-
-const csv = csvParser.generateCSVFromObjects(objects);
-// Returns CSV with headers from object keys
-```
-
-## Use Cases
-
-### Data Import
-
-```javascript
-function importUsers(csvContent) {
-    const parser = fable.instantiateServiceProvider('CSVParser');
-    const users = parser.parseCSVToObjects(csvContent);
-
-    users.forEach(user => {
-        createUser({
-            name: user.name,
-            email: user.email,
-            role: user.role || 'user'
-        });
-    });
-
-    return users.length;
-}
-```
-
-### Data Export
-
-```javascript
-function exportReport(data) {
-    const parser = fable.instantiateServiceProvider('CSVParser');
-    return parser.generateCSVFromObjects(data.map(item => ({
-        date: item.date,
-        amount: item.amount.toFixed(2),
-        description: item.description
-    })));
-}
-```
-
-### Data Transformation
-
-```javascript
-function transformCSV(inputCSV, transformFn) {
-    const parser = fable.instantiateServiceProvider('CSVParser');
-    const data = parser.parseCSVToObjects(inputCSV);
-    const transformed = data.map(transformFn);
-    return parser.generateCSVFromObjects(transformed);
-}
-
-// Usage
-const output = transformCSV(input, (row) => ({
-    ...row,
-    fullName: `${row.firstName} ${row.lastName}`,
-    ageInMonths: parseInt(row.age) * 12
-}));
-```
-
-## Error Handling
-
-```javascript
-try {
-    const data = csvParser.parseCSV(csvContent);
-} catch (error) {
-    fable.log.error('CSV parsing failed', { error: error.message });
-    // Handle malformed CSV
-}
-```
+If a row has more columns than the header, extra columns are keyed by their numeric index (e.g., `'3'`, `'4'`).
 
 ## Notes
 
-- All values are returned as strings; convert as needed
-- Empty lines are typically skipped
-- The parser handles various line ending styles (LF, CRLF)
-- Large files should be processed in chunks for memory efficiency
+- All values are returned as strings
+- The parser is designed for streaming/line-by-line use, not whole-file-at-once parsing
+- Carriage returns (`\r`) are automatically stripped from fields
+- The parser is stateful — create a new instance for each file you parse

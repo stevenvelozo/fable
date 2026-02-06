@@ -1,35 +1,56 @@
 # ExpressionParser Service
 
-The ExpressionParser service provides mathematical expression parsing and evaluation with arbitrary precision support using postfix notation.
+The ExpressionParser service provides mathematical expression parsing and evaluation with arbitrary precision support. It converts infix expressions to postfix (Reverse Polish) notation internally and evaluates them using the Math service.
 
 ## Access
 
 ```javascript
 // On-demand service - instantiate when needed
-const parser = fable.instantiateServiceProvider('ExpressionParser');
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
 ```
 
 ## Basic Usage
 
-### Parse and Evaluate
+### The `solve()` Method
+
+The primary method is `solve()`, which parses and evaluates expressions:
 
 ```javascript
-const parser = fable.instantiateServiceProvider('ExpressionParser');
-
-// Simple arithmetic
-parser.evaluate('2 + 3');        // Returns '5'
-parser.evaluate('10 * 5');       // Returns '50'
-parser.evaluate('100 / 4');      // Returns '25'
-parser.evaluate('2 ^ 10');       // Returns '1024'
+parser.solve('1 + 1');        // Returns '2'
+parser.solve('10 * 2');       // Returns '20'
+parser.solve('100 / 4');      // Returns '25'
+parser.solve('2 ^ 10');       // Returns '1024'
 ```
 
-### Order of Operations
+### Full Signature
 
 ```javascript
-parser.evaluate('2 + 3 * 4');      // Returns '14' (not '20')
-parser.evaluate('(2 + 3) * 4');    // Returns '20'
-parser.evaluate('10 - 2 * 3');     // Returns '4'
-parser.evaluate('(10 - 2) * 3');   // Returns '24'
+parser.solve(expression, dataObject, resultObject, manifest, destinationObject);
+```
+
+- **expression** — the expression string to evaluate
+- **dataObject** — object containing variable values (optional)
+- **resultObject** — object to store solver metadata/logs (optional)
+- **manifest** — a Manyfest instance for address resolution, or `false` (optional)
+- **destinationObject** — object where named results are written (optional)
+
+### Assigning Results
+
+Use `=` to assign a result to a named destination:
+
+```javascript
+const dest = {};
+parser.solve('Area = 5 * 10', {}, {}, false, dest);
+// dest.Area === '50'
+```
+
+### Null Coalescence Assignment
+
+Use `?=` to only assign if the destination property doesn't already exist:
+
+```javascript
+parser.solve('Name ?= GETVALUE("AppData.Students[0]")', data, {}, false, dest);
+// Only sets dest.Name if it was not previously set
 ```
 
 ## Operators
@@ -38,193 +59,256 @@ parser.evaluate('(10 - 2) * 3');   // Returns '24'
 
 | Operator | Description | Example |
 |----------|-------------|---------|
-| `+` | Addition | `5 + 3` → `8` |
-| `-` | Subtraction | `5 - 3` → `2` |
-| `*` | Multiplication | `5 * 3` → `15` |
-| `/` | Division | `15 / 3` → `5` |
-| `^` | Power | `2 ^ 3` → `8` |
-| `%` | Modulo | `10 % 3` → `1` |
+| `+` | Addition | `5 + 3` → `'8'` |
+| `-` | Subtraction | `5 - 3` → `'2'` |
+| `*` | Multiplication | `5 * 3` → `'15'` |
+| `/` | Division | `15 / 3` → `'5'` |
+| `^` | Power | `2 ^ 3` → `'8'` |
 
-### Comparison Operators
+### Order of Operations
 
-| Operator | Description | Example |
-|----------|-------------|---------|
-| `>` | Greater than | `5 > 3` → `true` |
-| `<` | Less than | `5 < 3` → `false` |
-| `>=` | Greater than or equal | `5 >= 5` → `true` |
-| `<=` | Less than or equal | `5 <= 3` → `false` |
-| `==` | Equal | `5 == 5` → `true` |
+```javascript
+parser.solve('5 + 2 * 10');           // Returns '25'
+parser.solve('3.5 + 5 + 10 * 10 / 5');  // Returns '28.5'
+parser.solve('(100 - 10)');           // Returns '90'
+```
+
+### Negative Numbers
+
+```javascript
+parser.solve('Value = -3', {}, {}, false, dest);
+// dest.Value === '-3'
+
+parser.solve('Value2 = (4 + -3)', {}, {}, false, dest);
+// dest.Value2 === '1'
+```
 
 ## Variables
 
-### Using Variables
+### Using Data Objects
 
 ```javascript
-parser.evaluate('x + y', { x: 10, y: 5 });  // Returns '15'
-parser.evaluate('price * quantity', { price: 29.99, quantity: 3 });
+parser.solve('X * Y * Z', { X: 5, Y: 3.1, Z: 75 });  // Returns '1162.5'
+
+parser.solve('Area = X * Y * Z', { X: 5.867, Y: 3.1, Z: 75 }, {}, false, dest);
+// dest.Area === '1364.0775'
 ```
 
-### Nested Variables
+### Accessing Fable AppData
+
+Use `GETVALUE()` to read from `fable.AppData`:
 
 ```javascript
-parser.evaluate('user.age + 10', {
-    user: { age: 25 }
-});  // Returns '35'
+fable.AppData = { Pit: 'Bottomless' };
+parser.solve('PitSize = getvalue("AppData.Pit")', {}, {}, false, dest);
+// dest.PitSize === 'Bottomless'
+
+fable.AppData = { Students: ['Kim', 'Jim', 'Joan Jett', 'Tank Girl'] };
+parser.solve('Name = GETVALUE("AppData.Students[1]")', {}, {}, false, dest);
+// dest.Name === 'Jim'
 ```
 
-## Functions
-
-### Built-in Functions
-
-```javascript
-parser.evaluate('sqrt(16)');      // Returns '4'
-parser.evaluate('abs(-5)');       // Returns '5'
-parser.evaluate('round(3.7)');    // Returns '4'
-parser.evaluate('floor(3.7)');    // Returns '3'
-parser.evaluate('ceil(3.2)');     // Returns '4'
-```
+## Built-in Functions
 
 ### Math Functions
 
 ```javascript
-parser.evaluate('sin(0)');        // Sine
-parser.evaluate('cos(0)');        // Cosine
-parser.evaluate('tan(0)');        // Tangent
-parser.evaluate('log(100, 10)');  // Logarithm
+parser.solve('sqrt(16)');           // '4'
+parser.solve('sin(rad(60))');       // '0.8660254037844386'
+parser.solve('1.5 * sqrt(8 * 2.423782342^2) / 10');  // '1.02832375808904701855'
 ```
 
-### Aggregate Functions
+### Rounding
 
 ```javascript
-parser.evaluate('sum(1, 2, 3, 4, 5)');     // Returns '15'
-parser.evaluate('avg(10, 20, 30)');        // Returns '20'
-parser.evaluate('min(5, 2, 8, 1)');        // Returns '1'
-parser.evaluate('max(5, 2, 8, 1)');        // Returns '8'
+parser.solve('ROUND(X * Y * Z)', { X: 5.867, Y: 3.1, Z: 75 });      // '1364'
+parser.solve('ROUND(X * Y * Z, 2)', { X: 5.867, Y: 3.1, Z: 75 });    // '1364.08'
+parser.solve('ROUND(X * Y * Z, 3, 3)', { X: 5.867, Y: 3.5, Z: 75.248923423 });  // '1545.2'
 ```
 
-## Complex Expressions
+### Aggregate Functions (on Arrays)
 
 ```javascript
-// Financial calculation
-parser.evaluate(
-    '(principal * rate * time) / 100',
-    { principal: 1000, rate: 5, time: 2 }
-);  // Simple interest
-
-// Percentage calculation
-parser.evaluate(
-    '(score / total) * 100',
-    { score: 85, total: 100 }
-);  // Returns '85'
-
-// Compound expression
-parser.evaluate(
-    'sqrt(x^2 + y^2)',
-    { x: 3, y: 4 }
-);  // Returns '5' (Pythagorean theorem)
+parser.solve('SUM(ItemCosts)', { ItemCosts: [100, 200, 50, 45, 5] });     // '400'
+parser.solve('MEAN(ItemCosts)', { ItemCosts: [100, 200, 50, 45, 5] });    // '80'
+parser.solve('MEDIAN(ItemCosts)', { ItemCosts: [100, 200, 50, 45, 5] });  // '50'
+parser.solve('COUNT(ItemCosts)', { ItemCosts: [100, 200, 50, 45, 5] });   // '5'
+parser.solve('STDEV(Values)', { Values: [1,2,3,4,5,6,7,8,9,10,11] });     // ~3.3166
+parser.solve('STDEVP(Values)', { Values: [1,2,3,4,5,6,7,8,9,10,11] });    // ~3.1623
 ```
 
-## Use Cases
-
-### Spreadsheet-like Calculations
+### String Functions
 
 ```javascript
-function calculateCell(formula, cells) {
-    const parser = fable.instantiateServiceProvider('ExpressionParser');
-    return parser.evaluate(formula, cells);
-}
+parser.solve('Names = concat(AppData.Cities[].city)', fable);
+// Concatenates all city names (skipping non-string values)
 
-const cells = {
-    A1: 100,
-    A2: 200,
-    A3: 300
-};
+parser.solve('JoinedNames = join("&comma; ", AppData.CityNames)', fable);
+// Joins with separator, resolving HTML entities
 
-calculateCell('A1 + A2 + A3', cells);  // Returns '600'
-calculateCell('avg(A1, A2, A3)', cells);  // Returns '200'
+parser.solve('NameList = STRINGGETSEGMENTS(Names, ",")', { Names: 'Jane,John' });
+// Returns ['Jane', 'John']
 ```
 
-### Rule Engine
+### Conditional Functions
+
+#### When (truthy check)
 
 ```javascript
-function evaluateRule(rule, data) {
-    const parser = fable.instantiateServiceProvider('ExpressionParser');
-    const result = parser.evaluate(rule, data);
-    return result === 'true' || result === '1';
-}
-
-const rules = [
-    { name: 'Senior Discount', condition: 'age >= 65' },
-    { name: 'Bulk Discount', condition: 'quantity >= 10' },
-    { name: 'VIP', condition: 'totalPurchases > 1000' }
-];
-
-const customer = { age: 70, quantity: 5, totalPurchases: 1500 };
-
-rules.forEach(rule => {
-    if (evaluateRule(rule.condition, customer)) {
-        console.log(`Apply: ${rule.name}`);
-    }
-});
+parser.solve('Name = When(AppData.Cities[0].city, AppData.Cities[0].city)', fable, {}, false, dest);
+// If first arg is truthy, returns second arg; otherwise returns ''
 ```
 
-### Dynamic Pricing
+#### If (comparison)
 
 ```javascript
-function calculatePrice(formula, context) {
-    const parser = fable.instantiateServiceProvider('ExpressionParser');
-    return parser.evaluate(formula, context);
-}
+parser.solve('GTE = If(latitude, "<", "50", "west", "east")', data, {}, false, dest);
+// If latitude < 50, returns 'west', else 'east'
 
-const pricing = {
-    formula: 'basePrice * (1 - discount/100) * quantity',
-    basePrice: 50,
-    discount: 10,
-    quantity: 5
-};
-
-const total = calculatePrice(pricing.formula, pricing);
-// Returns '225' (50 * 0.9 * 5)
+// Supports ==, ===, <, >, LT, LTE, GT, GTE operators
+parser.solve('Equals = If(city, "==", "New York", "yes", "no")', data, {}, false, dest);
 ```
 
-### Form Validation
+### Date Functions
 
 ```javascript
-function validateField(validation, value) {
-    const parser = fable.instantiateServiceProvider('ExpressionParser');
-    return parser.evaluate(validation, { value }) === 'true';
-}
+parser.solve('Result = datemilliseconddifference("2023-08-10T05:00:00.000Z", "2023-08-11T05:00:00.000Z")');
+// Returns '86400000'
 
-// Check if age is between 18 and 120
-validateField('value >= 18 && value <= 120', 25);  // true
-validateField('value >= 18 && value <= 120', 15);  // false
+parser.solve('Result = datehourdifference(StartDate, EndDate)', { StartDate: '2023-08-10T05:00:00.000Z', EndDate: '2023-08-11T05:00:00.000Z' });
+// Returns '24'
+
+parser.solve('DATEFROMPARTS(2025, 4, 1)');
+// Returns '2025-04-01T00:00:00.000Z'
+
+parser.solve('DATEADDDAYS(DATEFROMPARTS(2025, 4, 1, 13, 03, 51, 761), 87)');
+// Returns '2025-06-27T13:03:51.761Z'
 ```
 
-## Arbitrary Precision
+Also available: `dateseconddifference`, `dateminutedifference`, `datedaydifference`, `dateweekdifference`, `datemonthdifference`, `dateyeardifference`.
 
-The ExpressionParser uses the Math service for arbitrary precision:
+### Histogram and Aggregation Functions
 
 ```javascript
-// Large number calculations
-parser.evaluate('99999999999999999999 + 1');
+// Count distribution by field
+parser.solve('Result = distributionhistogram("AppData.Cities", "state")', fable, {}, false, dest);
+// dest.Result = { Alabama: 12, Colorado: 21, ... }
 
-// Precise decimal operations
-parser.evaluate('0.1 + 0.2');  // Returns '0.3' (not 0.30000000000000004)
+// Sum a numeric field grouped by another field
+parser.solve('Result = aggregationHistogram("AppData.Cities", "state", "population")', fable, {}, false, dest);
+// dest.Result = { Alabama: '1279813', ... }
 ```
 
-## Error Handling
+### Data Generation Functions
 
 ```javascript
-try {
-    const result = parser.evaluate('invalid expression');
-} catch (error) {
-    fable.log.error('Expression error', { error: error.message });
-}
+parser.solve('RandomIntValue = RANDOMINTEGER()');
+parser.solve('RandomIntValueBetween = RANDOMINTEGERBETWEEN(10, 13)');
+parser.solve('RandomFloatValue = randomFloat()');
+parser.solve('RandomFloatValueBetween = randomFloatBetween(10.5, 13.78)');
+```
+
+### Array Functions
+
+```javascript
+parser.solve('SLICE(W, 0, 1)', { W: ['3', '4', '5'] });  // Returns ['5'] (first element)
+parser.solve('FLATTEN(AppData.Cities[].population, AppData.Cities[].latitude)', fable);
+```
+
+## Advanced Features
+
+### MAP Expressions
+
+Map over arrays to transform values:
+
+```javascript
+// Simple map
+parser.solve('Result = MAP VAR x FROM Values : x + 100',
+    { Values: [1, 2, 3, 4, 5] }, {}, manifest, dest);
+// dest.Result === ['101', '102', '103', '104', '105']
+
+// Multi-variable map (cross product)
+parser.solve('Result = MAP VAR city FROM Cities VAR x FROM Values : city.population + (x * 1000000000000000)',
+    data, {}, manifest, dest);
+```
+
+### SERIES Expressions
+
+Generate series of computed values:
+
+```javascript
+parser.solve('Result = SERIES FROM 13.2 TO 25 STEP 0.2 : 1000 + (n / 2)',
+    {}, {}, manifest, dest);
+// dest.Result[0] === '1006.6'
+
+// With stepIndex variable
+parser.solve('Result = SERIES FROM 13.2 TO 25 STEP 0.5 : (1000 * stepIndex) + n',
+    {}, {}, manifest, dest);
+
+// Variables can be used for FROM, TO, STEP
+parser.solve('XValues = SERIES FROM StartValue TO EndValue STEP StepValue : (BaseValue * stepIndex) + n',
+    appData, {}, manifest, appData);
+```
+
+### MONTECARLO Expressions
+
+Run Monte Carlo simulations:
+
+```javascript
+parser.solve('Result = MONTECARLO SAMPLECOUNT 1000 VAR x PT x 50 PT x 100 : 10000000 + x',
+    {}, {}, manifest, dest);
+// dest.Result.Samples.length === 1000
+
+// Multi-variable Rosenbrock function
+parser.solve('Result = MONTECARLO SAMPLECOUNT 5000 VAR x PT x -3 PT x 3 VAR y PT y -1 PT y 5 : (1 - x)^2 + 100 * (y - x^2)^2',
+    {}, {}, manifest, dest);
+```
+
+### ITERATIVESERIES
+
+Run cumulative computations over arrays:
+
+```javascript
+parser.solve('Result = ITERATIVESERIES(Values, "Value", "Resultant", 1, "add")',
+    { Values: [{ Value: 10 }, { Value: 20 }, { Value: 5 }] });
+// Returns [{ Value: 10, Resultant: '10' }, { Value: 20, Resultant: '30' }, { Value: 5, Resultant: '35' }]
+```
+
+### Linear Regression
+
+```javascript
+// Compute regression coefficients
+parser.solve('Coefficients = LINEST(FLATTEN(AppData.Cities[].latitude), FLATTEN(AppData.Cities[].population))',
+    fable, results, false, fable.AppData);
+
+// Predict from coefficients
+parser.solve('Predicted = PREDICT(Coefficients, vector)', data, results, false, dest);
+```
+
+### Custom Solver Functions
+
+Register custom functions that can be called from expressions:
+
+```javascript
+fable.MonkeyFunction = (pParameter) => { return `Monkey says hello to ${pParameter}`; };
+parser.addSolverFunction('monkeypatchedfunction', 'fable.MonkeyFunction', 'Documentation string');
+
+parser.solve('Result = monkeypatchedfunction("Jerry")', fable, {}, false, dest);
+// dest.Result === 'Monkey says hello to Jerry'
+```
+
+## Logging and Debugging
+
+```javascript
+// Access solver result logs
+parser.Messaging.logFunctionSolve(resultObject);
 ```
 
 ## Notes
 
 - Uses postfix (Reverse Polish) notation internally for evaluation
-- Supports arbitrary precision arithmetic via fable.Math
-- Variables are accessed using the Manifest service's path notation
-- Comparison operators return `'true'` or `'false'` as strings
+- All numeric results are returned as strings for arbitrary precision
+- Variables are resolved from the dataObject using Manyfest path notation
+- Mismatched parentheses cause the expression to fail without mutating the destination
+- Non-numeric values used in arithmetic are treated as zero
+- The `===` operator in `If()` does exact string comparison; `==` uses epsilon comparison for numbers

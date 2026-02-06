@@ -1,6 +1,6 @@
 # ProgressTrackerSet Service
 
-The ProgressTrackerSet service manages multiple related progress trackers for batch operations, providing coordinated progress tracking across parallel or sequential tasks.
+The ProgressTrackerSet service manages named progress trackers for tracking the completion of batch operations, including elapsed time, average operation time, and estimated completion time.
 
 ## Access
 
@@ -11,266 +11,212 @@ const trackerSet = fable.instantiateServiceProvider('ProgressTrackerSet');
 
 ## Basic Usage
 
-### Create Trackers
+### Create and Start a Tracker
 
 ```javascript
 const trackerSet = fable.instantiateServiceProvider('ProgressTrackerSet');
 
-// Create individual trackers
-const downloadTracker = trackerSet.createTracker('download', 100);  // 100 files
-const processTracker = trackerSet.createTracker('process', 100);    // 100 items
-const uploadTracker = trackerSet.createTracker('upload', 100);      // 100 uploads
+// Create a tracker with 100 total operations
+trackerSet.createProgressTracker('download', 100);
+
+// Start the tracker (begins timing)
+trackerSet.startProgressTracker('download');
 ```
 
-### Update Progress
+### Increment Progress
 
 ```javascript
-// Update individual trackers
-downloadTracker.increment();
-downloadTracker.increment(10);  // Increment by 10
+// Increment by 1
+trackerSet.incrementProgressTracker('download');
 
-// Get individual progress
-console.log(`Download: ${downloadTracker.percentComplete}%`);
+// Increment by a specific amount
+trackerSet.incrementProgressTracker('download', 10);
 ```
 
-### Get Overall Progress
+### End the Tracker
 
 ```javascript
-const overall = trackerSet.getOverallProgress();
-console.log(`Total progress: ${overall}%`);
+trackerSet.endProgressTracker('download');
 ```
 
-## Tracker Operations
-
-### Create Tracker
+### Get Status
 
 ```javascript
-const tracker = trackerSet.createTracker(name, total);
-// name: Unique identifier for this tracker
-// total: Total number of items to track
+// Get a human-readable status string
+const status = trackerSet.getProgressTrackerStatusString('download');
+// e.g., "ProgressTracker download is 45.000% completed - 45 / 100 operations over 2s 150ms (median 47ms per). Estimated completion: 2s 585ms"
+
+// Get just the percent complete
+const percent = trackerSet.getProgressTrackerPercentCompleteString('download');
+// e.g., "45.000%"
+
+// Get completed count
+const count = trackerSet.getProgressTrackerCompletedOperationCountString('download');
+// e.g., "45"
+
+// Log status directly
+trackerSet.logProgressTrackerStatus('download');
 ```
 
-### Get Tracker
+## Methods
+
+### `createProgressTracker(hash, totalOperations)`
+
+Create a new progress tracker. Default hash is `'Default'`, default total is `100`.
 
 ```javascript
-const tracker = trackerSet.getTracker('download');
+const tracker = trackerSet.createProgressTracker('import-records', 500);
 ```
 
-### Remove Tracker
+Returns the tracker data object.
+
+### `startProgressTracker(hash)`
+
+Start timing a progress tracker. Creates the tracker if it doesn't exist.
 
 ```javascript
-trackerSet.removeTracker('download');
+trackerSet.startProgressTracker('import-records');
 ```
 
-### List All Trackers
+### `endProgressTracker(hash)`
+
+Mark the tracker as complete, recording the end timestamp.
 
 ```javascript
-const trackers = trackerSet.getAllTrackers();
-trackers.forEach(tracker => {
-    console.log(`${tracker.name}: ${tracker.percentComplete}%`);
-});
+trackerSet.endProgressTracker('import-records');
 ```
 
-## Progress Calculation
+### `incrementProgressTracker(hash, amount)`
 
-### Weighted Progress
+Increment the current operation count. Defaults to incrementing by 1. Auto-starts the tracker if not started.
 
 ```javascript
-// Different trackers can have different weights based on their total
-const smallTask = trackerSet.createTracker('small', 10);   // 10 items
-const largeTask = trackerSet.createTracker('large', 1000); // 1000 items
-
-smallTask.increment(5);   // 50% of small task
-largeTask.increment(100); // 10% of large task
-
-// Overall considers totals
-const overall = trackerSet.getOverallProgress();
-// Weighted average: (5 + 100) / (10 + 1000) = ~10.4%
+trackerSet.incrementProgressTracker('import-records');
+trackerSet.incrementProgressTracker('import-records', 5);
 ```
 
-### Status Summary
+### `updateProgressTracker(hash, currentOperations)`
+
+Set the current operation count to an absolute value.
 
 ```javascript
-const status = trackerSet.getStatus();
-// Returns:
+trackerSet.updateProgressTracker('import-records', 250);
+```
+
+### `setProgressTrackerTotalOperations(hash, total)`
+
+Change the total number of expected operations.
+
+```javascript
+trackerSet.setProgressTrackerTotalOperations('import-records', 1000);
+```
+
+### `getProgressTracker(hash)`
+
+Get a ProgressTracker wrapper object for a given hash. This provides convenience methods for working with the tracker:
+
+```javascript
+const tracker = trackerSet.getProgressTracker('import-records');
+tracker.incrementProgressTracker(1);
+tracker.setProgressTrackerTotalOperations(500);
+```
+
+### `getProgressTrackerData(hash)`
+
+Get the raw tracker data object:
+
+```javascript
+const data = trackerSet.getProgressTrackerData('import-records');
 // {
-//   trackers: {
-//     download: { current: 50, total: 100, percent: 50 },
-//     process: { current: 30, total: 100, percent: 30 }
-//   },
-//   overall: 40
+//     Hash: 'import-records',
+//     StartTimeStamp: 1700000000000,
+//     EndTimeStamp: -1,
+//     PercentComplete: 45,
+//     ElapsedTime: 2150,
+//     AverageOperationTime: 47.78,
+//     EstimatedCompletionTime: 2585,
+//     TotalCount: 100,
+//     CurrentCount: 45
 // }
 ```
 
+## Tracker Data Properties
+
+Each tracker data object contains:
+
+| Property | Description |
+|----------|-------------|
+| `Hash` | The tracker's identifier |
+| `StartTimeStamp` | When the tracker was started (ms) |
+| `EndTimeStamp` | When the tracker was ended (ms), `-1` if not ended |
+| `PercentComplete` | Percentage complete (0-100, capped unless `AllowTruePercentComplete` is set) |
+| `ElapsedTime` | Total elapsed time in milliseconds |
+| `AverageOperationTime` | Average time per operation in milliseconds |
+| `EstimatedCompletionTime` | Estimated remaining time in milliseconds |
+| `TotalCount` | Total number of expected operations |
+| `CurrentCount` | Number of completed operations |
+| `AllowTruePercentComplete` | If true, PercentComplete can exceed 100% |
+
 ## Use Cases
 
-### Parallel File Processing
+### Batch Processing with Progress
 
 ```javascript
-async function processFiles(files) {
+function processBatch(fable, items, fCallback) {
     const trackerSet = fable.instantiateServiceProvider('ProgressTrackerSet');
 
-    // Group files by type
-    const images = files.filter(f => f.type === 'image');
-    const documents = files.filter(f => f.type === 'document');
+    trackerSet.createProgressTracker('batch', items.length);
+    trackerSet.startProgressTracker('batch');
 
-    const imageTracker = trackerSet.createTracker('images', images.length);
-    const docTracker = trackerSet.createTracker('documents', documents.length);
+    let tmpAnticipate = fable.newAnticipate();
 
-    // Process in parallel
-    await Promise.all([
-        processImages(images, imageTracker),
-        processDocuments(documents, docTracker)
-    ]);
+    for (let i = 0; i < items.length; i++) {
+        tmpAnticipate.anticipate((fNext) => {
+            processItem(items[i], () => {
+                trackerSet.incrementProgressTracker('batch');
 
-    console.log('All files processed');
-}
+                if (i % 100 === 0) {
+                    trackerSet.logProgressTrackerStatus('batch');
+                }
 
-async function processImages(images, tracker) {
-    for (const image of images) {
-        await processImage(image);
-        tracker.increment();
-        reportProgress();
-    }
-}
-```
-
-### Multi-Stage Pipeline
-
-```javascript
-async function dataPipeline(data) {
-    const trackerSet = fable.instantiateServiceProvider('ProgressTrackerSet');
-
-    // Create trackers for each stage
-    const stages = ['extract', 'transform', 'validate', 'load'];
-    const trackers = {};
-
-    stages.forEach(stage => {
-        trackers[stage] = trackerSet.createTracker(stage, data.length);
-    });
-
-    // Execute stages
-    const extracted = await extractData(data, trackers.extract);
-    const transformed = await transformData(extracted, trackers.transform);
-    const validated = await validateData(transformed, trackers.validate);
-    await loadData(validated, trackers.load);
-
-    return trackerSet.getStatus();
-}
-```
-
-### Batch Import with Categories
-
-```javascript
-function importRecords(records) {
-    const trackerSet = fable.instantiateServiceProvider('ProgressTrackerSet');
-
-    // Group by category
-    const byCategory = groupBy(records, 'category');
-
-    // Create tracker for each category
-    Object.entries(byCategory).forEach(([category, items]) => {
-        trackerSet.createTracker(category, items.length);
-    });
-
-    // Process each category
-    Object.entries(byCategory).forEach(([category, items]) => {
-        const tracker = trackerSet.getTracker(category);
-
-        items.forEach(item => {
-            importRecord(item);
-            tracker.increment();
-
-            // Log progress periodically
-            if (tracker.current % 100 === 0) {
-                logProgress(trackerSet);
-            }
+                fNext();
+            });
         });
-    });
+    }
 
-    return trackerSet.getStatus();
-}
-
-function logProgress(trackerSet) {
-    const status = trackerSet.getStatus();
-    console.log(`Overall: ${status.overall}%`);
-    Object.entries(status.trackers).forEach(([name, tracker]) => {
-        console.log(`  ${name}: ${tracker.percent}%`);
+    tmpAnticipate.wait(() => {
+        trackerSet.endProgressTracker('batch');
+        trackerSet.logProgressTrackerStatus('batch');
+        fCallback();
     });
 }
 ```
 
-### Download Manager
+### Integration with Operation Service
+
+The Operation service uses ProgressTrackerSet internally. Each step gets its own progress tracker, and the overall operation has one too. Inside a step, use `this.ProgressTracker`:
 
 ```javascript
-class DownloadManager {
-    constructor() {
-        this.trackerSet = fable.instantiateServiceProvider('ProgressTrackerSet');
-    }
+operation.addStep(
+    function (fStepComplete) {
+        this.ProgressTracker.setProgressTrackerTotalOperations(items.length);
 
-    addDownload(url, size) {
-        const id = fable.getUUID();
-        this.trackerSet.createTracker(id, size);
-        this.startDownload(url, id);
-        return id;
-    }
+        items.forEach((item) => {
+            processItem(item);
+            this.ProgressTracker.incrementProgressTracker(1);
+            this.logProgressTrackerStatus();
+        });
 
-    updateProgress(id, bytesReceived) {
-        const tracker = this.trackerSet.getTracker(id);
-        if (tracker) {
-            tracker.setCurrent(bytesReceived);
-        }
-    }
-
-    completeDownload(id) {
-        this.trackerSet.removeTracker(id);
-    }
-
-    getProgress() {
-        return this.trackerSet.getStatus();
-    }
-}
-```
-
-## Progress Events
-
-### Monitor Progress Changes
-
-```javascript
-// Poll for progress updates
-const interval = setInterval(() => {
-    const status = trackerSet.getStatus();
-    updateUI(status);
-
-    if (status.overall >= 100) {
-        clearInterval(interval);
-        onComplete();
-    }
-}, 100);
-```
-
-## Integration with Operation Service
-
-```javascript
-const operation = fable.instantiateServiceProvider('Operation');
-const trackerSet = fable.instantiateServiceProvider('ProgressTrackerSet');
-
-operation.addPhase('process', 'Process Data', (pPhase, fComplete) => {
-    const tracker = trackerSet.createTracker('process', items.length);
-
-    items.forEach(item => {
-        processItem(item);
-        tracker.increment();
-        pPhase.setProgress(tracker.percentComplete);
-    });
-
-    fComplete();
-});
+        fStepComplete();
+    },
+    {}, 'Process', 'Process all items', 'PROCESS'
+);
 ```
 
 ## Notes
 
-- Overall progress is calculated as weighted average based on totals
-- Trackers can be added/removed dynamically
-- Each tracker maintains its own current count and total
-- Thread-safe for single-threaded JavaScript environments
+- All hash parameters default to `'Default'` if not provided
+- Trackers that don't exist are auto-created with a warning when accessed
+- `PercentComplete` is capped at 100% unless `AllowTruePercentComplete` is set on the tracker data
+- Timing uses ProgressTime service internally
+- Status strings include elapsed time, operation counts, and estimated completion

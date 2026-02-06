@@ -1,12 +1,12 @@
 # Operation Service
 
-The Operation service provides phased operation execution with progress tracking, designed for complex multi-step workflows.
+The Operation service provides phased step execution with built-in progress tracking and logging, designed for complex multi-step workflows.
 
 ## Access
 
 ```javascript
 // On-demand service - instantiate when needed
-const operation = fable.instantiateServiceProvider('Operation');
+const operation = fable.instantiateServiceProvider('Operation', { Name: 'My Operation' }, 'MY-OP-1');
 ```
 
 ## Basic Usage
@@ -15,38 +15,46 @@ const operation = fable.instantiateServiceProvider('Operation');
 
 ```javascript
 const operation = fable.instantiateServiceProvider('Operation', {
-    Name: 'DataImport',
-    Description: 'Import user data from CSV'
-});
+    Name: 'Data Import'
+}, 'IMPORT-123');
 ```
 
-### Add Phases
+### Add Steps
+
+Use `addStep()` to register sequential steps. Each step function receives a completion callback and runs with a bound context:
 
 ```javascript
-operation.addPhase('validate', 'Validate Input', (pPhase, fComplete) => {
-    // Validation logic
-    if (isValid(inputData)) {
-        fComplete();
-    } else {
-        fComplete(new Error('Validation failed'));
-    }
-});
+operation.addStep(
+    function (fStepComplete) {
+        this.log.info('Validating input...');
+        // ... validation logic ...
+        fStepComplete();
+    },
+    {},                    // Step metadata (accessible as this.metadata / this.options)
+    'Validate',            // Step name
+    'Validate input data', // Step description
+    'VALIDATE-STEP'        // Step GUID (optional)
+);
 
-operation.addPhase('process', 'Process Records', (pPhase, fComplete) => {
-    // Processing logic
-    processRecords(records, fComplete);
-});
-
-operation.addPhase('finalize', 'Finalize Import', (pPhase, fComplete) => {
-    // Cleanup and finalization
-    finalizeImport(fComplete);
-});
+operation.addStep(
+    function (fStepComplete) {
+        this.log.info('Processing records...');
+        // ... processing logic ...
+        fStepComplete();
+    },
+    {},
+    'Process',
+    'Process all records',
+    'PROCESS-STEP'
+);
 ```
 
-### Execute Operation
+### Execute the Operation
+
+Steps execute sequentially in the order they were added:
 
 ```javascript
-operation.execute((pError, pResult) => {
+operation.execute((pError) => {
     if (pError) {
         fable.log.error('Operation failed', { error: pError.message });
     } else {
@@ -55,220 +63,145 @@ operation.execute((pError, pResult) => {
 });
 ```
 
+## Step Context
+
+Inside a step function, `this` is bound to a context object with these properties:
+
+| Property | Description |
+|----------|-------------|
+| `this.log` | Logger (writes to both fable.log and operation state log) |
+| `this.fable` | Reference to the Fable instance |
+| `this.options` | Step metadata object (same as `this.metadata`) |
+| `this.metadata` | Step metadata object |
+| `this.ProgressTracker` | Progress tracker for this step |
+| `this.logProgressTrackerStatus()` | Log the current progress status |
+| `this.OperationState` | The full operation state object |
+| `this.StepState` | This step's state entry |
+
 ## Progress Tracking
 
-### Track Phase Progress
+### Set Total Operations for a Step
 
 ```javascript
-operation.addPhase('import', 'Import Records', (pPhase, fComplete) => {
-    const total = records.length;
+operation.addStep(
+    function (fStepComplete) {
+        // ... step work ...
+        fStepComplete();
+    },
+    {}, 'Process Records', 'Process all records', 'PROCESS-STEP'
+);
 
-    records.forEach((record, index) => {
-        importRecord(record);
-        pPhase.setProgress((index + 1) / total * 100);
-    });
-
-    fComplete();
-});
+// Set expected total operations for the step
+operation.setStepTotalOperations('PROCESS-STEP', 100);
 ```
 
-### Get Operation Status
+### Increment Progress Within a Step
 
 ```javascript
-const status = operation.getStatus();
-console.log({
-    currentPhase: status.currentPhase,
-    progress: status.progress,
-    elapsed: status.elapsedTime
-});
+operation.addStep(
+    function (fStepComplete) {
+        this.ProgressTracker.setProgressTrackerTotalOperations(items.length);
+
+        let tmpAnticipate = this.fable.newAnticipate();
+
+        for (let i = 0; i < items.length; i++) {
+            tmpAnticipate.anticipate((fWorkComplete) => {
+                processItem(items[i]);
+                this.ProgressTracker.incrementProgressTracker(1);
+                this.logProgressTrackerStatus();
+                fWorkComplete();
+            });
+        }
+
+        tmpAnticipate.wait(fStepComplete);
+    },
+    {}, 'Process Items', 'Process each item with tracking', 'ITEMS-STEP'
+);
 ```
 
-## Phase Context
+## Operation State and Logging
 
-### Pass Data Between Phases
+The operation maintains a structured state object:
 
 ```javascript
-operation.addPhase('load', 'Load Data', (pPhase, fComplete) => {
-    const data = loadData();
-    operation.context.data = data;
-    fComplete();
-});
-
-operation.addPhase('transform', 'Transform Data', (pPhase, fComplete) => {
-    const data = operation.context.data;
-    operation.context.transformed = transformData(data);
-    fComplete();
-});
-
-operation.addPhase('save', 'Save Data', (pPhase, fComplete) => {
-    const transformed = operation.context.transformed;
-    saveData(transformed, fComplete);
-});
+operation.state.Metadata.UUID    // Unique identifier
+operation.state.Metadata.Name    // Operation name
+operation.state.Status.StepCount // Number of registered steps
+operation.state.Steps            // Array of step state entries
+operation.state.Log              // Array of log strings
+operation.state.Errors           // Array of error strings
 ```
 
-## Error Handling
+### Built-in Log Methods
 
-### Phase-Level Errors
+The operation provides logging methods that write to both fable.log and the operation's internal log:
 
 ```javascript
-operation.addPhase('risky', 'Risky Operation', (pPhase, fComplete) => {
-    try {
-        riskyOperation();
-        fComplete();
-    } catch (error) {
-        fComplete(error);  // Operation stops here
-    }
-});
-
-operation.execute((pError) => {
-    if (pError) {
-        console.log('Failed at phase:', operation.getFailedPhase());
-    }
-});
+operation.log.trace('Trace message');
+operation.log.debug('Debug message');
+operation.log.info('Info message');
+operation.log.warn('Warning message');
+operation.log.error('Error message');    // Also writes to state.Errors
+operation.log.fatal('Fatal message');    // Also writes to state.Errors
 ```
 
-### Continue on Error
+### Logging with Data
 
 ```javascript
-operation.addPhase('optional', 'Optional Step', (pPhase, fComplete) => {
-    try {
-        optionalStep();
-    } catch (error) {
-        fable.log.warn('Optional step failed, continuing');
-    }
-    fComplete();  // Continue regardless
-});
+operation.log.debug('Processing', { TestData: 'Ignition Complete' });
+// Appends JSON stringified data to the log
 ```
 
 ## Use Cases
 
-### ETL Pipeline
+### Multi-Step Async Workflow
 
 ```javascript
-function createETLOperation(source, destination) {
+function createImportOperation(fable, records) {
     const operation = fable.instantiateServiceProvider('Operation', {
-        Name: 'ETL Pipeline'
+        Name: 'Record Import'
     });
 
-    operation.addPhase('extract', 'Extract Data', (pPhase, fComplete) => {
-        extractData(source, (error, data) => {
-            if (error) return fComplete(error);
-            operation.context.rawData = data;
-            fComplete();
-        });
-    });
+    operation.addStep(
+        function (fStepComplete) {
+            this.log.info(`Importing ${records.length} records...`);
 
-    operation.addPhase('transform', 'Transform Data', (pPhase, fComplete) => {
-        const transformed = transformData(operation.context.rawData);
-        operation.context.transformedData = transformed;
-        fComplete();
-    });
+            this.ProgressTracker.setProgressTrackerTotalOperations(records.length);
 
-    operation.addPhase('load', 'Load Data', (pPhase, fComplete) => {
-        loadData(destination, operation.context.transformedData, fComplete);
-    });
+            let tmpAnticipate = this.fable.newAnticipate();
+
+            for (let i = 0; i < records.length; i++) {
+                tmpAnticipate.anticipate((fWorkComplete) => {
+                    importRecord(records[i], () => {
+                        this.ProgressTracker.incrementProgressTracker(1);
+                        this.logProgressTrackerStatus();
+                        fWorkComplete();
+                    });
+                });
+            }
+
+            tmpAnticipate.wait(fStepComplete);
+        },
+        {}, 'Import', 'Import all records', 'IMPORT'
+    );
+
+    operation.addStep(
+        function (fStepComplete) {
+            this.log.info('Finalizing...');
+            finalizeImport(fStepComplete);
+        },
+        {}, 'Finalize', 'Finalize the import'
+    );
 
     return operation;
 }
 ```
 
-### Deployment Pipeline
-
-```javascript
-const deployment = fable.instantiateServiceProvider('Operation', {
-    Name: 'Deployment'
-});
-
-deployment.addPhase('build', 'Build Application', async (pPhase, fComplete) => {
-    await runBuild();
-    fComplete();
-});
-
-deployment.addPhase('test', 'Run Tests', async (pPhase, fComplete) => {
-    const results = await runTests();
-    if (!results.success) {
-        return fComplete(new Error('Tests failed'));
-    }
-    fComplete();
-});
-
-deployment.addPhase('deploy', 'Deploy to Server', async (pPhase, fComplete) => {
-    await deployToServer();
-    fComplete();
-});
-
-deployment.addPhase('verify', 'Verify Deployment', async (pPhase, fComplete) => {
-    const healthy = await healthCheck();
-    if (!healthy) {
-        return fComplete(new Error('Health check failed'));
-    }
-    fComplete();
-});
-```
-
-### Data Migration
-
-```javascript
-const migration = fable.instantiateServiceProvider('Operation', {
-    Name: 'Database Migration'
-});
-
-migration.addPhase('backup', 'Backup Database', (pPhase, fComplete) => {
-    createBackup((error, backupId) => {
-        if (error) return fComplete(error);
-        migration.context.backupId = backupId;
-        fComplete();
-    });
-});
-
-migration.addPhase('migrate', 'Run Migration Scripts', (pPhase, fComplete) => {
-    runMigrations(fComplete);
-});
-
-migration.addPhase('validate', 'Validate Data', (pPhase, fComplete) => {
-    validateMigration((error, valid) => {
-        if (error || !valid) {
-            // Trigger rollback
-            migration.context.needsRollback = true;
-            return fComplete(error || new Error('Validation failed'));
-        }
-        fComplete();
-    });
-});
-
-migration.execute((error) => {
-    if (error && migration.context.needsRollback) {
-        rollbackFromBackup(migration.context.backupId);
-    }
-});
-```
-
-## Integration with ProgressTrackerSet
-
-```javascript
-const operation = fable.instantiateServiceProvider('Operation', {
-    Name: 'Batch Process'
-});
-
-const progressSet = fable.instantiateServiceProvider('ProgressTrackerSet');
-
-operation.addPhase('process', 'Process Items', (pPhase, fComplete) => {
-    const tracker = progressSet.createTracker('items', items.length);
-
-    items.forEach(item => {
-        processItem(item);
-        tracker.increment();
-        pPhase.setProgress(tracker.percentComplete);
-    });
-
-    fComplete();
-});
-```
-
 ## Notes
 
-- Phases execute sequentially in the order they were added
-- Each phase receives a phase object and completion callback
-- Operation context persists across all phases
-- Use `fComplete(error)` to halt operation on error
-- Progress can be tracked at both phase and operation levels
+- Steps execute sequentially in the order they were added
+- An operation can only be executed once; calling `execute()` again returns an error
+- Step functions are bound to a custom context (not the operation itself)
+- The service type is `'PhasedOperation'`
+- Each step gets its own progress tracker automatically
+- The operation tracks an overall progress tracker across all steps

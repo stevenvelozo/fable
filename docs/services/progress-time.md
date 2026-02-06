@@ -1,6 +1,6 @@
 # ProgressTime Service
 
-The ProgressTime service provides execution timing and progress tracking utilities.
+The ProgressTime service provides named timestamp creation and delta measurement for tracking execution timing.
 
 ## Access
 
@@ -11,224 +11,157 @@ fable.ProgressTime
 
 ## Basic Timing
 
-### Start/End Timing
+### Create a Timestamp
 
 ```javascript
-fable.ProgressTime.start('operation');
+// Create a 'Default' timestamp (no hash specified)
+fable.ProgressTime.createTimeStamp();
 
-// ... do work ...
-
-const elapsed = fable.ProgressTime.end('operation');
-console.log(`Operation took ${elapsed}ms`);
+// Create a named timestamp
+fable.ProgressTime.createTimeStamp('MyOperation');
 ```
 
-### Lap Timing
+### Get Elapsed Time (Delta)
+
+Measure milliseconds elapsed since a timestamp was created:
 
 ```javascript
-fable.ProgressTime.start('process');
+fable.ProgressTime.createTimeStamp();
 
-// Phase 1
-// ... work ...
-fable.ProgressTime.lap('process', 'Phase 1');
+// ... do some work ...
 
-// Phase 2
-// ... work ...
-fable.ProgressTime.lap('process', 'Phase 2');
+const elapsed = fable.ProgressTime.getTimeStampDelta();
+// Returns milliseconds since 'Default' timestamp was created
 
-// Phase 3
-// ... work ...
-const total = fable.ProgressTime.end('process');
+// With a named timestamp
+fable.ProgressTime.createTimeStamp('DatabaseQuery');
+// ... query ...
+const queryTime = fable.ProgressTime.getTimeStampDelta('DatabaseQuery');
+// Returns milliseconds since 'DatabaseQuery' was created
 ```
 
-## Progress Tracking
+Returns `-1` if the timestamp doesn't exist.
 
-### Create Progress Tracker
+### Get Duration Between Two Timestamps
 
 ```javascript
-const progress = fable.ProgressTime.createProgressTracker('import', 1000);
-// Track progress for 1000 total items
+fable.ProgressTime.createTimeStamp('Start');
 
-progress.increment();  // Mark one item complete
-progress.increment(10); // Mark 10 items complete
+// ... some time passes ...
 
-console.log(`Progress: ${progress.percentComplete}%`);
+fable.ProgressTime.createTimeStamp('End');
+
+const duration = fable.ProgressTime.getDurationBetweenTimestamps('Start', 'End');
+// Returns milliseconds between the two timestamps
 ```
 
-### Track with Logging
+## Timestamp Management
+
+### Get Timestamp Value
 
 ```javascript
-const progress = fable.ProgressTime.createProgressTracker('export', totalRecords);
-
-records.forEach((record, index) => {
-    processRecord(record);
-    progress.increment();
-
-    // Log every 10%
-    if (progress.percentComplete % 10 === 0) {
-        fable.log.info(`Export progress: ${progress.percentComplete}%`);
-    }
-});
+const value = fable.ProgressTime.getTimeStampValue('MyOperation');
+// Returns the raw millisecond timestamp, or -1 if not found
 ```
 
-## Timestamp Utilities
-
-### Get Current Timestamp
+### Remove a Timestamp
 
 ```javascript
-const now = fable.ProgressTime.getTimestamp();
-// Returns milliseconds since epoch
+fable.ProgressTime.removeTimeStamp('MyOperation');
+// Returns true if removed, false if it didn't exist
 ```
 
-### Get Formatted Time
+### Update a Timestamp
 
 ```javascript
-const formatted = fable.ProgressTime.getFormattedTime();
-// Returns human-readable timestamp
+fable.ProgressTime.updateTimeStampValue('MyOperation');
+// Updates to current time
+
+fable.ProgressTime.updateTimeStampValue('MyOperation', 1700000000000);
+// Updates to a specific millisecond value
+```
+
+### Access All Timestamps
+
+```javascript
+fable.ProgressTime.timeStamps
+// { Default: 1700000000000, MyOperation: 1700000001000, ... }
+```
+
+## Formatted Output
+
+### Get Delta Message
+
+```javascript
+const message = fable.ProgressTime.getTimeStampDeltaMessage();
+// Returns something like: 'Elapsed for Default:  2s 150ms'
+
+const customMessage = fable.ProgressTime.getTimeStampDeltaMessage('DatabaseQuery', 'DB query took');
+// Returns something like: 'DB query took 523ms'
+```
+
+### Log Delta
+
+```javascript
+fable.ProgressTime.logTimeStampDelta();
+// Logs via fable.log.info: 'Elapsed for Default:  2s 150ms'
+
+fable.ProgressTime.logTimeStampDelta('DatabaseQuery', 'DB query completed in');
+// Logs: 'DB query completed in 523ms'
+```
+
+### Format Duration
+
+```javascript
+fable.ProgressTime.formatTimeDuration(3661150);
+// Returns '1h 1m 1s 150ms'
+
+fable.ProgressTime.formatTimeDuration(523);
+// Returns '523ms'
+
+fable.ProgressTime.formatTimeDuration(65000);
+// Returns '1m 5s 0ms'
 ```
 
 ## Use Cases
 
-### Performance Profiling
-
-```javascript
-function profileFunction(fn, name) {
-    return function(...args) {
-        fable.ProgressTime.start(name);
-        const result = fn.apply(this, args);
-        const elapsed = fable.ProgressTime.end(name);
-        fable.log.debug(`${name} completed in ${elapsed}ms`);
-        return result;
-    };
-}
-
-// Usage
-const profiledSort = profileFunction(sortArray, 'sortArray');
-profiledSort(largeArray);
-```
-
-### Batch Processing Progress
-
-```javascript
-async function processBatch(items) {
-    const tracker = fable.ProgressTime.createProgressTracker('batch', items.length);
-
-    fable.ProgressTime.start('batch-process');
-
-    for (const item of items) {
-        await processItem(item);
-        tracker.increment();
-
-        if (tracker.current % 100 === 0) {
-            fable.log.info('Batch progress', {
-                completed: tracker.current,
-                total: tracker.total,
-                percent: tracker.percentComplete,
-                elapsed: fable.ProgressTime.lap('batch-process', `${tracker.current} items`)
-            });
-        }
-    }
-
-    const totalTime = fable.ProgressTime.end('batch-process');
-    fable.log.info(`Batch complete in ${totalTime}ms`);
-}
-```
-
-### API Request Timing
-
-```javascript
-function timedRequest(url) {
-    const requestId = fable.getUUID();
-
-    fable.ProgressTime.start(`request-${requestId}`);
-
-    return fetch(url)
-        .then(response => {
-            const elapsed = fable.ProgressTime.end(`request-${requestId}`);
-            fable.log.debug('Request completed', { url, elapsed });
-            return response;
-        });
-}
-```
-
-### Long-Running Task Progress
-
-```javascript
-class LongRunningTask {
-    constructor(totalSteps) {
-        this.tracker = fable.ProgressTime.createProgressTracker('task', totalSteps);
-        this.startTime = fable.ProgressTime.getTimestamp();
-    }
-
-    completeStep() {
-        this.tracker.increment();
-    }
-
-    getStatus() {
-        const elapsed = fable.ProgressTime.getTimestamp() - this.startTime;
-        const rate = this.tracker.current / (elapsed / 1000);
-        const remaining = (this.tracker.total - this.tracker.current) / rate;
-
-        return {
-            completed: this.tracker.current,
-            total: this.tracker.total,
-            percentComplete: this.tracker.percentComplete,
-            elapsedMs: elapsed,
-            estimatedRemainingSeconds: remaining
-        };
-    }
-}
-```
-
 ### Multi-Phase Operations
 
 ```javascript
-async function multiPhaseOperation() {
-    const phases = ['init', 'process', 'validate', 'cleanup'];
+fable.ProgressTime.createTimeStamp('Total');
+fable.ProgressTime.createTimeStamp('Phase1');
 
-    fable.ProgressTime.start('total');
+// ... Phase 1 work ...
 
-    for (const phase of phases) {
-        fable.ProgressTime.start(phase);
+fable.ProgressTime.logTimeStampDelta('Phase1', 'Phase 1');
+fable.ProgressTime.createTimeStamp('Phase2');
 
-        switch (phase) {
-            case 'init':
-                await initialize();
-                break;
-            case 'process':
-                await process();
-                break;
-            case 'validate':
-                await validate();
-                break;
-            case 'cleanup':
-                await cleanup();
-                break;
-        }
+// ... Phase 2 work ...
 
-        const phaseTime = fable.ProgressTime.end(phase);
-        fable.log.info(`Phase ${phase} completed`, { duration: phaseTime });
-    }
-
-    const totalTime = fable.ProgressTime.end('total');
-    fable.log.info('Operation complete', { totalDuration: totalTime });
-}
+fable.ProgressTime.logTimeStampDelta('Phase2', 'Phase 2');
+fable.ProgressTime.logTimeStampDelta('Total', 'Total time');
 ```
 
-## Integration with DataFormat
-
-Use DataFormat for formatted time output:
+### Request Timing
 
 ```javascript
-const start = fable.ProgressTime.getTimestamp();
-// ... work ...
-const end = fable.ProgressTime.getTimestamp();
+function timeRequest(name) {
+    fable.ProgressTime.createTimeStamp(name);
+    return () => {
+        fable.ProgressTime.logTimeStampDelta(name, `Request ${name}`);
+        fable.ProgressTime.removeTimeStamp(name);
+    };
+}
 
-const formatted = fable.DataFormat.formatTimeDelta(start, end);
-console.log(`Duration: ${formatted}`);  // "00:01:23.456"
+const done = timeRequest('api-call');
+// ... do request ...
+done();
+// Logs: 'Request api-call  245ms'
 ```
 
 ## Notes
 
-- Timing uses JavaScript's high-resolution timestamp when available
-- Progress trackers are lightweight and can be created freely
-- Consider using ProgressTrackerSet for tracking multiple related operations
+- Timestamps use `+new Date()` for millisecond precision
+- The default hash is `'Default'` when no hash string is provided
+- `getTimeStampDelta()` and `getTimeStampValue()` return `-1` when the requested hash doesn't exist
+- Consider using ProgressTrackerSet for tracking multiple related operations with progress counts

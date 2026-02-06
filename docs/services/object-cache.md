@@ -1,6 +1,6 @@
 # ObjectCache Service
 
-The ObjectCache service (powered by [cachetrax](https://github.com/stevenvelozo/cachetrax)) provides in-memory object caching with expiration support.
+The ObjectCache service (powered by [cachetrax](https://github.com/stevenvelozo/cachetrax)) provides in-memory object caching with size-based and time-based expiration, backed by a linked list for efficient eviction.
 
 ## Access
 
@@ -15,262 +15,157 @@ const sessionCache = fable.instantiateServiceProvider('ObjectCache', {}, 'sessio
 
 ## Basic Operations
 
-### Set Value
+### Put (Add or Update)
 
 ```javascript
-cache.set('key', { name: 'John', age: 30 });
+cache.put('some-data', 'my-key');
+// Stores 'some-data' with hash 'my-key'
+// If 'my-key' already exists, updates the stored datum
+
+cache.put({ name: 'John', age: 30 }, 'user-123');
+// Stores an object with hash 'user-123'
 ```
 
-### Get Value
+### Read
 
 ```javascript
-const user = cache.get('key');
-// Returns { name: 'John', age: 30 } or undefined if not found
+const data = cache.read('my-key');
+// Returns the stored datum, or false if not found
 ```
 
-### Check Existence
+### Expire (Remove)
 
 ```javascript
-if (cache.has('key')) {
-    console.log('Key exists');
-}
+cache.expire('my-key');
+// Removes the entry from the cache and returns the removed node
+// Returns false if the key doesn't exist
 ```
 
-### Delete Value
+### Touch (Refresh)
 
 ```javascript
-cache.delete('key');
+cache.touch('my-key');
+// Moves the entry to the tail of the list and resets its timestamp
+// Useful for keeping frequently accessed items fresh
 ```
 
-### Clear All
+## Size-Based Expiration
+
+### maxLength
+
+Set `maxLength` to automatically evict the oldest entry when the cache exceeds the limit:
 
 ```javascript
-cache.clear();
+cache.maxLength = 2;
+
+cache.put('A', 'ABC');
+cache.put('D', 'DEF');
+// Cache: [ABC, DEF] (length 2)
+
+cache.put('G', 'GHI');
+// ABC is automatically evicted
+// Cache: [DEF, GHI] (length 2)
 ```
 
-## Expiration
+Setting `maxLength` to `0` (the default) disables automatic size-based eviction on insert. To enforce a new smaller `maxLength` on existing entries, call `prune()`.
 
-### Set with TTL
+## Time-Based Expiration
+
+### maxAge
+
+Set `maxAge` (in milliseconds) to expire entries older than the specified age when `prune()` is called:
 
 ```javascript
-// Cache for 5 minutes (300000 milliseconds)
-cache.set('session', sessionData, 300000);
+cache.maxAge = 60000; // 1 minute
 ```
 
-### Check if Expired
+## Pruning
+
+### prune(callback)
+
+Prune the cache based on both `maxAge` and `maxLength` rules. Expired entries are removed first, then size limits are enforced:
 
 ```javascript
-const isExpired = cache.isExpired('session');
-```
+cache.maxLength = 2;
 
-### Get or Compute
-
-```javascript
-// Get from cache or compute if missing/expired
-function getCachedUser(userId) {
-    let user = cache.get(`user:${userId}`);
-
-    if (!user) {
-        user = fetchUserFromDatabase(userId);
-        cache.set(`user:${userId}`, user, 60000); // Cache for 1 minute
-    }
-
-    return user;
-}
-```
-
-## Cache Statistics
-
-### Get Size
-
-```javascript
-const count = cache.size();
-console.log(`Cache contains ${count} items`);
-```
-
-### Get All Keys
-
-```javascript
-const keys = cache.keys();
-keys.forEach(key => console.log(key));
-```
-
-## Use Cases
-
-### API Response Caching
-
-```javascript
-const apiCache = fable.instantiateServiceProvider('ObjectCache', {}, 'api-cache');
-
-async function fetchWithCache(url) {
-    const cached = apiCache.get(url);
-    if (cached) {
-        return cached;
-    }
-
-    const response = await fetch(url);
-    const data = await response.json();
-
-    // Cache for 5 minutes
-    apiCache.set(url, data, 300000);
-
-    return data;
-}
-```
-
-### Session Management
-
-```javascript
-const sessions = fable.instantiateServiceProvider('ObjectCache', {}, 'sessions');
-
-function createSession(userId) {
-    const sessionId = fable.getUUID();
-    const session = {
-        userId,
-        createdAt: Date.now(),
-        data: {}
-    };
-
-    // Session expires in 30 minutes
-    sessions.set(sessionId, session, 1800000);
-
-    return sessionId;
-}
-
-function getSession(sessionId) {
-    return sessions.get(sessionId);
-}
-
-function destroySession(sessionId) {
-    sessions.delete(sessionId);
-}
-```
-
-### Memoization
-
-```javascript
-const memoCache = fable.instantiateServiceProvider('ObjectCache', {}, 'memo');
-
-function memoize(fn, keyGenerator) {
-    return function(...args) {
-        const key = keyGenerator ? keyGenerator(...args) : JSON.stringify(args);
-
-        if (memoCache.has(key)) {
-            return memoCache.get(key);
-        }
-
-        const result = fn.apply(this, args);
-        memoCache.set(key, result);
-        return result;
-    };
-}
-
-// Usage
-const expensiveCalculation = memoize((n) => {
-    // Complex computation
-    return fibonacci(n);
+// After adding many entries...
+cache.prune((removedRecords) => {
+    console.log(`Pruned ${removedRecords.length} entries`);
+    // Cache is now within maxLength
 });
 ```
 
-### Rate Limiting
+### pruneBasedOnExpiration(callback, removedRecords)
+
+Prune only entries older than `maxAge`:
 
 ```javascript
-const rateLimiter = fable.instantiateServiceProvider('ObjectCache', {}, 'rate-limits');
+cache.maxAge = 30000; // 30 seconds
+cache.pruneBasedOnExpiration((removed) => {
+    console.log(`Expired ${removed.length} old entries`);
+});
+```
 
-function checkRateLimit(clientId, maxRequests = 100, windowMs = 60000) {
-    const key = `rate:${clientId}`;
-    let count = rateLimiter.get(key) || 0;
+### pruneBasedOnLength(callback, removedRecords)
 
-    if (count >= maxRequests) {
-        return false; // Rate limited
+Prune only based on `maxLength`, popping entries from the head (oldest) of the list:
+
+```javascript
+cache.pruneBasedOnLength((removed) => {
+    console.log(`Evicted ${removed.length} entries for length`);
+});
+```
+
+### pruneCustom(callback, pruneFunction, removedRecords)
+
+Prune entries using a custom function. The function receives `(datum, hash, node)` and should return `true` to expire the entry:
+
+```javascript
+cache.pruneCustom(
+    (removed) => { console.log(`Custom pruned ${removed.length}`); },
+    (datum, hash, node) => {
+        // Expire entries where datum starts with 'temp'
+        return typeof datum === 'string' && datum.startsWith('temp');
     }
-
-    count++;
-    rateLimiter.set(key, count, windowMs);
-    return true;
-}
+);
 ```
 
-### Database Query Caching
+## Low-Level Access
+
+### getNode(hash)
+
+Get the full linked list node (including metadata) for a hash:
 
 ```javascript
-const queryCache = fable.instantiateServiceProvider('ObjectCache', {}, 'db-queries');
-
-async function cachedQuery(query, params, ttl = 60000) {
-    const cacheKey = `query:${query}:${JSON.stringify(params)}`;
-
-    const cached = queryCache.get(cacheKey);
-    if (cached) {
-        fable.log.debug('Cache hit', { query });
-        return cached;
-    }
-
-    fable.log.debug('Cache miss', { query });
-    const result = await database.query(query, params);
-    queryCache.set(cacheKey, result, ttl);
-
-    return result;
-}
+const node = cache.getNode('my-key');
+// node.Datum — the stored data
+// node.Hash — the hash key
+// node.Metadata.Created — timestamp (ms) when the entry was created
 ```
 
-## Multiple Cache Instances
+### RecordMap
 
-Create separate caches for different purposes:
+Access the record map directly (a plain object mapping hashes to data):
 
 ```javascript
-// User data cache (longer TTL)
-const userCache = fable.instantiateServiceProvider('ObjectCache', {}, 'users');
-
-// Session cache (shorter TTL)
-const sessionCache = fable.instantiateServiceProvider('ObjectCache', {}, 'sessions');
-
-// Request cache (very short TTL)
-const requestCache = fable.instantiateServiceProvider('ObjectCache', {}, 'requests');
+const allRecords = cache.RecordMap;
+// { 'my-key': 'some-data', 'user-123': { name: 'John', age: 30 } }
 ```
 
-## Cache Invalidation Patterns
+### Internal List
 
-### Invalidate by Key
-
-```javascript
-function updateUser(userId, userData) {
-    saveToDatabase(userData);
-    cache.delete(`user:${userId}`);
-}
-```
-
-### Invalidate by Pattern
+The cache is backed by a linked list accessible via `cache._List`:
 
 ```javascript
-function invalidateUserCaches(userId) {
-    const keys = cache.keys();
-    keys.forEach(key => {
-        if (key.startsWith(`user:${userId}:`)) {
-            cache.delete(key);
-        }
-    });
-}
-```
-
-### Time-Based Refresh
-
-```javascript
-function getWithRefresh(key, fetchFn, ttl) {
-    const cached = cache.get(key);
-
-    if (!cached || cache.isExpired(key)) {
-        const fresh = fetchFn();
-        cache.set(key, fresh, ttl);
-        return fresh;
-    }
-
-    return cached;
-}
+cache._List.length  // Number of entries in the cache
+cache._List.head    // First (oldest) node
+cache._List.tail    // Last (newest) node
 ```
 
 ## Notes
 
 - Cache is in-memory only; data is lost on restart
-- No size limits by default; monitor memory usage
-- TTL is in milliseconds
-- Expired items may not be immediately removed from memory
+- `maxLength` of `0` means no automatic size limit
+- `maxAge` of `0` means no automatic time-based expiration
+- Automatic eviction on `put()` only removes one entry at a time; use `prune()` for bulk cleanup
+- Each node tracks its creation time in `node.Metadata.Created`

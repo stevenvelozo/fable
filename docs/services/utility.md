@@ -45,6 +45,15 @@ const listTemplate = fable.Utility.template(`
 listTemplate({ items: ['Apple', 'Banana', 'Cherry'] });
 ```
 
+### Immediate Rendering
+
+Pass data as the second argument to render immediately instead of getting a function:
+
+```javascript
+fable.Utility.template('There are <%= Count %> things....', { Count: 1000 });
+// Returns the string 'There are 1000 things....' directly (not a function)
+```
+
 ### Hashed Templates
 
 Register templates for reuse:
@@ -112,13 +121,17 @@ fable.Utility.objectValuesToArray({ a: 1, b: 2, c: 3 });
 
 ### Generate Objects from Sets
 
+Takes pairs of `(propertyName, valuesObject)` and zips them into an array of objects. Values are extracted from each object using `objectValuesToArray`:
+
 ```javascript
 fable.Utility.generateArrayOfObjectsFromSets(
-    'name', ['Alice', 'Bob'],
-    'age', [25, 30]
+    'x', { a: 1, b: 2, c: 3 },
+    'y', { d: 4, e: 5, f: 6 }
 );
-// Returns [{ name: 'Alice', age: 25 }, { name: 'Bob', age: 30 }]
+// Returns [{ x: 1, y: 4 }, { x: 2, y: 5 }, { x: 3, y: 6 }]
 ```
+
+If value sets have different lengths, missing values are omitted from the result objects.
 
 ## Value Access by Hash/Address
 
