@@ -125,9 +125,11 @@ class ExpressionParserValueMarshal extends libExpressionParserOperationBase
 					}
 					catch(pError)
 					{
-						tmpResults.ExpressionParserLog.push(`ERROR: ExpressionParser.substituteValuesInTokenizedObjects found a non-numeric value for the state address ${tmpToken.Token} at index ${i}`);
-						//this.log.error(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
-						tmpToken.Resolved = false;
+						// TODO: Should we allow this to be a function?  Good god the complexity and beauty of that...
+						tmpToken.Resolved = true;
+						tmpToken.Value = tmpValue;
+						tmpResults.ExpressionParserLog.push(`INFO: ExpressionParser.substituteValuesInTokenizedObjects found a non-numeric value for the state address ${tmpToken.Token} at index ${i}; using raw value.`);
+						//this.log.warn(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
 					}
 				}
 			}
