@@ -834,6 +834,9 @@ suite
 									_Parser.solve('NamesArgs = concat("cat", "dog", "waffle")', testFable, tmpResultsObject, false, tmpDestinationObject);
 									Expect(tmpDestinationObject.NamesArgs).to.equal('catdogwaffle');
 
+									_Parser.solve('NamesArgs = concat("cat", AppData.Cities[0].city, {AppData.Cities[1].city})', testFable, tmpResultsObject, false, tmpDestinationObject);
+									Expect(tmpDestinationObject.NamesArgs).to.equal('catNew YorkLos Angeles');
+
 									testFable.AppData.CityName = 'New York';
 									_Parser.solve('RawNamesArgs = concatRaw(AppData.CityName, "arg name")', testFable, tmpResultsObject, false, tmpDestinationObject);
 									Expect(tmpDestinationObject.RawNamesArgs).to.equal('New Yorkarg name');
