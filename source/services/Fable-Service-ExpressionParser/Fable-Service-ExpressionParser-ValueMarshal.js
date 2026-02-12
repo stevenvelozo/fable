@@ -107,7 +107,7 @@ class ExpressionParserValueMarshal extends libExpressionParserOperationBase
 					tmpAddress = tmpAddress.substring(1, tmpAddress.length-1);
 				}
 				let tmpValue = tmpManifest.getValueAtAddress(tmpDataSource, tmpAddress);
-				if (!tmpValue)
+				if (tmpValue == null)
 				{
 					tmpResults.ExpressionParserLog.push(`WARNING: ExpressionParser.substituteValuesInTokenizedObjects found no value for the state address ${tmpToken.Token} at index ${i}`);
 					//this.log.warn(tmpResults.ExpressionParserLog[tmpResults.ExpressionParserLog.length-1]);
