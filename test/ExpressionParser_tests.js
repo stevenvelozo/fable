@@ -472,6 +472,10 @@ suite
 									tmpResult = _Parser.solve('Name = GETVALUE("AppData.Students[4]")', tmpDataObject, tmpSolveResults, false, tmpResultObject);
 									Expect(tmpResultObject.Name).to.equal(undefined);
 
+									tmpResult = _Parser.solve('SETVALUE("AppData.Students[3]", "Dan")', tmpDataObject, tmpSolveResults, false, tmpResultObject);
+									tmpResult = _Parser.solve('Name = GETVALUE("AppData.Students[3]")', tmpDataObject, tmpSolveResults, false, tmpResultObject);
+									Expect(tmpResultObject.Name).to.equal('Dan');
+
 									return fDone();
 								}
 							);

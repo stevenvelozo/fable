@@ -177,6 +177,11 @@
 		"Address": "fable.Utility.getInternalValueByHash"
 	},
 
+	"setvalue": {
+		"Name": "Set Value to Application State or Services (AppData, etc.)",
+		"Address": "fable.Utility.setInternalValueByHash"
+	},
+
 	"objectkeystoarray": {
 		"Name": "Get Array of an Object's keys",
 		"Address": "fable.Utility.objectKeysToArray"

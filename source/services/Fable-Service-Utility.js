@@ -104,6 +104,18 @@ class FableServiceUtility extends libFableServiceBase
 	}
 
 	/**
+	 * Set a value from fable/pict by hash/address
+	 *
+	 * @param {string} pValueAddress - The manyfest hash/address of the value to get
+	 * @param {any} pValue - The value to set
+	 */
+	setInternalValueByHash(pValueAddress, pValue)
+	{
+		// Get the value from the internal manifest and return it
+		return this.setValueByHash(this.fable, pValueAddress, pValue);
+	}
+
+	/**
 	 * Get a value from an object by hash/address
 	 * @param {object} pObject - The object to get the value from
 	 * @param {string} pValueAddress - The manyfest hash/address of the value to get
