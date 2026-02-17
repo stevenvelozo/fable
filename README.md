@@ -378,3 +378,18 @@ const value = parser.solve('SUM(1, 2, 3, 4, 5)', {});
 ```
 
 See the [Services Documentation](./docs/services/README.md) for detailed information on each service.
+
+## Related Packages
+
+- [fable-log](https://github.com/stevenvelozo/fable-log) - Logging services
+- [fable-settings](https://github.com/stevenvelozo/fable-settings) - Settings management
+- [fable-serviceproviderbase](https://github.com/stevenvelozo/fable-serviceproviderbase) - Service provider base class
+- [fable-uuid](https://github.com/stevenvelozo/fable-uuid) - UUID generation service
+
+## License
+
+MIT
+
+## Contributing
+
+Pull requests are welcome. For details on our code of conduct, contribution process, and testing requirements, see the [Retold Contributing Guide](https://github.com/stevenvelozo/retold/blob/main/docs/contributing.md).
