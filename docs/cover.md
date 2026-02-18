@@ -7,5 +7,5 @@
 - Pluggable logging with multiple destinations
 - Works in both Node.js and browser environments
 
+[Get Started](README.md)
 [GitHub](https://github.com/stevenvelozo/fable)
-[Get Started](#fable)

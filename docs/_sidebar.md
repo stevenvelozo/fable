@@ -1,6 +1,6 @@
 - Getting Started
 
-  - [Introduction](/)
+  - [Introduction](README.md)
   - [Architecture](architecture.md)
 
 - Core Services
