@@ -1,6 +1,6 @@
 {
   "name": "fable",
-  "version": "3.1.55",
+  "version": "3.1.57",
   "description": "A service dependency injection, configuration and logging library.",
   "main": "source/Fable.js",
   "scripts": {
@@ -50,21 +50,21 @@
   },
   "homepage": "https://github.com/stevenvelozo/fable",
   "devDependencies": {
-    "quackage": "^1.0.50"
+    "quackage": "^1.0.51"
   },
   "dependencies": {
     "async.eachlimit": "^0.5.2",
     "async.waterfall": "^0.5.2",
     "big.js": "^7.0.1",
     "cachetrax": "^1.0.4",
-    "cookie": "^1.0.2",
+    "cookie": "^1.1.1",
     "data-arithmatic": "^1.0.7",
     "dayjs": "^1.11.19",
-    "fable-log": "^3.0.16",
-    "fable-serviceproviderbase": "^3.0.17",
-    "fable-settings": "^3.0.14",
-    "fable-uuid": "^3.0.11",
-    "manyfest": "^1.0.44",
+    "fable-log": "^3.0.17",
+    "fable-serviceproviderbase": "^3.0.18",
+    "fable-settings": "^3.0.15",
+    "fable-uuid": "^3.0.12",
+    "manyfest": "^1.0.46",
     "simple-get": "^4.0.1"
   }
 }
