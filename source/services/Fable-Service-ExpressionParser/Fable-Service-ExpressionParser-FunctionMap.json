@@ -493,5 +493,14 @@
 	"stringgetsegments": {
 		"Name": "Get Segments from a String",
 		"Address": "fable.DataFormat.stringGetSegments"
+	},
+
+	"bezierpoint": {
+		"Name": "Evaluate a Point on a Cubic Bezier Curve at Parameter t",
+		"Address": "fable.Math.bezierPoint"
+	},
+	"beziercurvefit": {
+		"Name": "Fit a Cubic Bezier Curve to a Set of Data Points",
+		"Address": "fable.Math.bezierCurveFit"
 	}
 }

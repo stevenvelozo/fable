@@ -600,6 +600,99 @@ suite
 						return fDone();
 					}
 				);
+
+				test
+				(
+					'Bezier Point Evaluation',
+					function(fDone)
+					{
+						let testFable = new libFable();
+
+						// At t=0, should return P0
+						Expect(testFable.Math.bezierPoint(0, 10, 20, 30, 0)).to.equal('0');
+						// At t=1, should return P3
+						Expect(testFable.Math.bezierPoint(0, 10, 20, 30, 1)).to.equal('30');
+						// At t=0.5 for a symmetric curve P0=0, P1=10, P2=20, P3=30 (this is actually a line)
+						Expect(testFable.Math.bezierPoint(0, 10, 20, 30, '0.5')).to.equal('15');
+
+						// A known cubic bezier: P0=0, P1=0, P2=100, P3=100 at t=0.5
+						// B(0.5) = 0.125*0 + 0.375*0 + 0.375*100 + 0.125*100 = 50
+						Expect(testFable.Math.bezierPoint(0, 0, 100, 100, '0.5')).to.equal('50');
+
+						// Non-symmetric: P0=1, P1=2, P2=4, P3=5 at t=0.25
+						// B(0.25) = (0.75)^3*1 + 3*(0.75)^2*0.25*2 + 3*0.75*(0.25)^2*4 + (0.25)^3*5
+						// = 0.421875*1 + 3*0.5625*0.25*2 + 3*0.75*0.0625*4 + 0.015625*5
+						// = 0.421875 + 0.84375 + 0.5625 + 0.078125 = 1.90625
+						Expect(testFable.Math.bezierPoint(1, 2, 4, 5, '0.25')).to.equal('1.90625');
+
+						return fDone();
+					}
+				);
+
+				test
+				(
+					'Bezier Curve Fit',
+					function(fDone)
+					{
+						let testFable = new libFable();
+
+						// Fit a straight line: should get control points roughly on the line
+						let tmpLineResult = testFable.Math.bezierCurveFit([0, 1, 2, 3], [0, 1, 2, 3]);
+						Expect(tmpLineResult).to.be.an('array');
+						Expect(tmpLineResult.length).to.equal(4);
+						// P0 should be [0, 0]
+						Expect(tmpLineResult[0][0]).to.equal('0');
+						Expect(tmpLineResult[0][1]).to.equal('0');
+						// P3 should be [3, 3]
+						Expect(tmpLineResult[3][0]).to.equal('3');
+						Expect(tmpLineResult[3][1]).to.equal('3');
+						// Interior control points should be roughly on the line too
+						Expect(Number(tmpLineResult[1][0])).to.be.closeTo(1, 0.5);
+						Expect(Number(tmpLineResult[1][1])).to.be.closeTo(1, 0.5);
+						Expect(Number(tmpLineResult[2][0])).to.be.closeTo(2, 0.5);
+						Expect(Number(tmpLineResult[2][1])).to.be.closeTo(2, 0.5);
+
+						// Two-point degenerate case: should place P1, P2 at 1/3 and 2/3
+						let tmpTwoPointResult = testFable.Math.bezierCurveFit([0, 9], [0, 9]);
+						Expect(tmpTwoPointResult[0][0]).to.equal('0');
+						Expect(tmpTwoPointResult[0][1]).to.equal('0');
+						Expect(tmpTwoPointResult[3][0]).to.equal('9');
+						Expect(tmpTwoPointResult[3][1]).to.equal('9');
+						Expect(tmpTwoPointResult[1][0]).to.equal('3');
+						Expect(tmpTwoPointResult[1][1]).to.equal('3');
+						Expect(tmpTwoPointResult[2][0]).to.equal('6');
+						Expect(tmpTwoPointResult[2][1]).to.equal('6');
+
+						// Bad input: not arrays
+						let tmpBadResult = testFable.Math.bezierCurveFit('bad', 'input');
+						Expect(tmpBadResult).to.be.an('array');
+						Expect(tmpBadResult.length).to.equal(4);
+
+						// Bad input: too few points
+						let tmpSingleResult = testFable.Math.bezierCurveFit([1], [1]);
+						Expect(tmpSingleResult).to.be.an('array');
+						Expect(tmpSingleResult.length).to.equal(4);
+
+						// Curved data: a parabola y = x^2 from 0 to 4
+						let tmpXValues = [0, 1, 2, 3, 4];
+						let tmpYValues = [0, 1, 4, 9, 16];
+						let tmpCurveResult = testFable.Math.bezierCurveFit(tmpXValues, tmpYValues);
+						// P0 should be [0, 0], P3 should be [4, 16]
+						Expect(tmpCurveResult[0][0]).to.equal('0');
+						Expect(tmpCurveResult[0][1]).to.equal('0');
+						Expect(tmpCurveResult[3][0]).to.equal('4');
+						Expect(tmpCurveResult[3][1]).to.equal('16');
+						// The fitted curve should approximate the data at the midpoint
+						let tmpMidX = testFable.Math.bezierPoint(tmpCurveResult[0][0], tmpCurveResult[1][0], tmpCurveResult[2][0], tmpCurveResult[3][0], '0.5');
+						let tmpMidY = testFable.Math.bezierPoint(tmpCurveResult[0][1], tmpCurveResult[1][1], tmpCurveResult[2][1], tmpCurveResult[3][1], '0.5');
+						// At the midpoint parameter, the curve should be somewhere reasonable
+						// Note: bezier parameter t=0.5 does not correspond to the geometric midpoint for non-linear data
+						Expect(Number(tmpMidX)).to.be.closeTo(2, 1);
+						Expect(Number(tmpMidY)).to.be.closeTo(4, 5);
+
+						return fDone();
+					}
+				);
 			}
 		);
 	}

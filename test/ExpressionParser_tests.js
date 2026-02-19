@@ -747,6 +747,50 @@ suite
 							);
 						test
 							(
+								'Bezier Curve Functions',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+									let tmpResultsObject = {};
+									let tmpDestinationObject = {};
+
+									// Test bezierPoint through the expression parser
+									// bezierPoint(P0, P1, P2, P3, t) at t=0 should return P0
+									_Parser.solve('PointAtZero = BEZIERPOINT(0, 10, 20, 30, 0)', testFable, tmpResultsObject, false, tmpDestinationObject);
+									Expect(tmpDestinationObject.PointAtZero).to.equal('0');
+
+									// bezierPoint at t=1 should return P3
+									_Parser.solve('PointAtOne = BEZIERPOINT(0, 10, 20, 30, 1)', testFable, tmpResultsObject, false, tmpDestinationObject);
+									Expect(tmpDestinationObject.PointAtOne).to.equal('30');
+
+									// bezierPoint at t=0.5 for a linear distribution P0=0, P1=10, P2=20, P3=30
+									_Parser.solve('PointAtHalf = BEZIERPOINT(0, 10, 20, 30, 0.5)', testFable, tmpResultsObject, false, tmpDestinationObject);
+									Expect(tmpDestinationObject.PointAtHalf).to.equal('15');
+
+									// Test bezierCurveFit through the expression parser with data arrays
+									testFable.AppData =
+									{
+										XValues: [0, 1, 2, 3],
+										YValues: [0, 1, 2, 3]
+									};
+
+									_Parser.solve('FitResult = BEZIERCURVEFIT(AppData.XValues, AppData.YValues)', testFable, tmpResultsObject, false, tmpDestinationObject);
+									Expect(tmpDestinationObject.FitResult).to.be.an('array');
+									Expect(tmpDestinationObject.FitResult.length).to.equal(4);
+									// P0 should be [0, 0]
+									Expect(tmpDestinationObject.FitResult[0][0]).to.equal('0');
+									Expect(tmpDestinationObject.FitResult[0][1]).to.equal('0');
+									// P3 should be [3, 3]
+									Expect(tmpDestinationObject.FitResult[3][0]).to.equal('3');
+									Expect(tmpDestinationObject.FitResult[3][1]).to.equal('3');
+
+									return fDone();
+								}
+							);
+						test
+							(
 								'plumbing histogram into aggregation',
 								() =>
 								{

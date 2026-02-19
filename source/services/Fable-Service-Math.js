@@ -1863,6 +1863,185 @@ class FableServiceMath extends libFableServiceBase
 				return this.addPrecise(sum, this.multiplyPrecise(b, tmpIndependentVariableVector[i]));
 			}, pRegressionCoefficients[0]);
 	}
+
+	/**
+	 * Evaluate a point on a cubic bezier curve at parameter t.
+	 *
+	 * B(t) = (1-t)^3*P0 + 3*(1-t)^2*t*P1 + 3*(1-t)*t^2*P2 + t^3*P3
+	 *
+	 * @param {number|string} pP0 - First control point value
+	 * @param {number|string} pP1 - Second control point value
+	 * @param {number|string} pP2 - Third control point value
+	 * @param {number|string} pP3 - Fourth control point value
+	 * @param {number|string} pT - Parameter t in [0,1]
+	 *
+	 * @return {string} - The bezier curve value at parameter t
+	 */
+	bezierPoint(pP0, pP1, pP2, pP3, pT)
+	{
+		let tmpT = this.parsePrecise(pT, 0);
+		let tmpOneMinusT = this.subtractPrecise(1, tmpT);
+
+		// (1-t)^3 * P0
+		let tmpTerm0 = this.multiplyPrecise(this.powerPrecise(tmpOneMinusT, 3), pP0);
+		// 3 * (1-t)^2 * t * P1
+		let tmpTerm1 = this.multiplyPrecise(this.multiplyPrecise(this.multiplyPrecise(3, this.powerPrecise(tmpOneMinusT, 2)), tmpT), pP1);
+		// 3 * (1-t) * t^2 * P2
+		let tmpTerm2 = this.multiplyPrecise(this.multiplyPrecise(this.multiplyPrecise(3, tmpOneMinusT), this.powerPrecise(tmpT, 2)), pP2);
+		// t^3 * P3
+		let tmpTerm3 = this.multiplyPrecise(this.powerPrecise(tmpT, 3), pP3);
+
+		return this.addPrecise(this.addPrecise(tmpTerm0, tmpTerm1), this.addPrecise(tmpTerm2, tmpTerm3));
+	}
+
+	/**
+	 * Fit a cubic bezier curve to a set of data points using least-squares optimization.
+	 *
+	 * Given arrays of X and Y values representing data points, this function finds the four
+	 * control points (P0, P1, P2, P3) of a cubic bezier curve that best fits the data.
+	 *
+	 * The first and last control points are pinned to the first and last data points.
+	 * The interior control points (P1, P2) are found by least-squares minimization of
+	 * the squared distances between the data points and the curve.
+	 *
+	 * Parameter t values are assigned by chord-length parameterization: each data point
+	 * gets a t value proportional to its cumulative distance along the polyline.
+	 *
+	 * @param {Array<number|string>} pXValues - Array of x coordinates
+	 * @param {Array<number|string>} pYValues - Array of y coordinates
+	 *
+	 * @return {Array<Array<string>>} - Four control points as [[x0,y0], [x1,y1], [x2,y2], [x3,y3]]
+	 */
+	bezierCurveFit(pXValues, pYValues)
+	{
+		if (!Array.isArray(pXValues) || !Array.isArray(pYValues))
+		{
+			this.log.warn('bezierCurveFit: pXValues and pYValues must be arrays');
+			return [[0, 0], [0, 0], [0, 0], [0, 0]];
+		}
+
+		let tmpN = Math.min(pXValues.length, pYValues.length);
+
+		if (tmpN < 2)
+		{
+			this.log.warn('bezierCurveFit: need at least 2 data points');
+			return [[0, 0], [0, 0], [0, 0], [0, 0]];
+		}
+
+		// Pin P0 and P3 to the first and last data points
+		let tmpP0x = this.parsePrecise(pXValues[0], 0);
+		let tmpP0y = this.parsePrecise(pYValues[0], 0);
+		let tmpP3x = this.parsePrecise(pXValues[tmpN - 1], 0);
+		let tmpP3y = this.parsePrecise(pYValues[tmpN - 1], 0);
+
+		if (tmpN === 2)
+		{
+			// With only two points, place control points at 1/3 and 2/3 along the line
+			let tmpP1x = this.addPrecise(tmpP0x, this.dividePrecise(this.subtractPrecise(tmpP3x, tmpP0x), 3));
+			let tmpP1y = this.addPrecise(tmpP0y, this.dividePrecise(this.subtractPrecise(tmpP3y, tmpP0y), 3));
+			let tmpP2x = this.addPrecise(tmpP0x, this.multiplyPrecise(this.dividePrecise(this.subtractPrecise(tmpP3x, tmpP0x), 3), 2));
+			let tmpP2y = this.addPrecise(tmpP0y, this.multiplyPrecise(this.dividePrecise(this.subtractPrecise(tmpP3y, tmpP0y), 3), 2));
+			return [
+				[tmpP0x.toString(), tmpP0y.toString()],
+				[tmpP1x.toString(), tmpP1y.toString()],
+				[tmpP2x.toString(), tmpP2y.toString()],
+				[tmpP3x.toString(), tmpP3y.toString()]
+			];
+		}
+
+		// Compute chord-length parameterization for t values
+		let tmpDistances = [0];
+		for (let i = 1; i < tmpN; i++)
+		{
+			let tmpDx = this.subtractPrecise(pXValues[i], pXValues[i - 1]);
+			let tmpDy = this.subtractPrecise(pYValues[i], pYValues[i - 1]);
+			let tmpDist = this.sqrtPrecise(this.addPrecise(this.multiplyPrecise(tmpDx, tmpDx), this.multiplyPrecise(tmpDy, tmpDy)));
+			tmpDistances.push(this.addPrecise(tmpDistances[i - 1], tmpDist));
+		}
+
+		let tmpTotalLength = tmpDistances[tmpN - 1];
+		let tmpTValues = [];
+		for (let i = 0; i < tmpN; i++)
+		{
+			if (this.comparePrecise(tmpTotalLength, 0) == 0)
+			{
+				tmpTValues.push(this.dividePrecise(i, tmpN - 1));
+			}
+			else
+			{
+				tmpTValues.push(this.dividePrecise(tmpDistances[i], tmpTotalLength));
+			}
+		}
+
+		// Build the least-squares system for interior control points P1 and P2.
+		// For each data point i with parameter t_i:
+		//   B(t_i) = (1-t)^3*P0 + 3*(1-t)^2*t*P1 + 3*(1-t)*t^2*P2 + t^3*P3
+		//
+		// We want to minimize sum of |DataPoint_i - B(t_i)|^2 over P1 and P2.
+		// Let A1(t) = 3*(1-t)^2*t and A2(t) = 3*(1-t)*t^2.
+		// Then: A1(t)*P1 + A2(t)*P2 = DataPoint - (1-t)^3*P0 - t^3*P3
+		//
+		// This gives a 2x2 linear system (solved independently for x and y).
+
+		let tmpC11 = 0, tmpC12 = 0, tmpC22 = 0;
+		let tmpRx1 = 0, tmpRx2 = 0;
+		let tmpRy1 = 0, tmpRy2 = 0;
+
+		for (let i = 0; i < tmpN; i++)
+		{
+			let tmpT = tmpTValues[i];
+			let tmpOneMinusT = this.subtractPrecise(1, tmpT);
+
+			// Basis functions for P1 and P2
+			let tmpA1 = this.multiplyPrecise(this.multiplyPrecise(3, this.powerPrecise(tmpOneMinusT, 2)), tmpT);
+			let tmpA2 = this.multiplyPrecise(this.multiplyPrecise(3, tmpOneMinusT), this.powerPrecise(tmpT, 2));
+
+			// Build normal equations: C * [P1; P2] = R
+			tmpC11 = this.addPrecise(tmpC11, this.multiplyPrecise(tmpA1, tmpA1));
+			tmpC12 = this.addPrecise(tmpC12, this.multiplyPrecise(tmpA1, tmpA2));
+			tmpC22 = this.addPrecise(tmpC22, this.multiplyPrecise(tmpA2, tmpA2));
+
+			// Right-hand side: DataPoint - (1-t)^3*P0 - t^3*P3
+			let tmpB0 = this.powerPrecise(tmpOneMinusT, 3);
+			let tmpB3 = this.powerPrecise(tmpT, 3);
+
+			let tmpResidualX = this.subtractPrecise(this.subtractPrecise(pXValues[i], this.multiplyPrecise(tmpB0, tmpP0x)), this.multiplyPrecise(tmpB3, tmpP3x));
+			let tmpResidualY = this.subtractPrecise(this.subtractPrecise(pYValues[i], this.multiplyPrecise(tmpB0, tmpP0y)), this.multiplyPrecise(tmpB3, tmpP3y));
+
+			tmpRx1 = this.addPrecise(tmpRx1, this.multiplyPrecise(tmpA1, tmpResidualX));
+			tmpRx2 = this.addPrecise(tmpRx2, this.multiplyPrecise(tmpA2, tmpResidualX));
+			tmpRy1 = this.addPrecise(tmpRy1, this.multiplyPrecise(tmpA1, tmpResidualY));
+			tmpRy2 = this.addPrecise(tmpRy2, this.multiplyPrecise(tmpA2, tmpResidualY));
+		}
+
+		// Solve the 2x2 system: [[C11, C12], [C12, C22]] * [P1, P2] = [R1, R2]
+		let tmpDet = this.subtractPrecise(this.multiplyPrecise(tmpC11, tmpC22), this.multiplyPrecise(tmpC12, tmpC12));
+
+		let tmpP1x, tmpP1y, tmpP2x, tmpP2y;
+
+		if (this.comparePrecise(this.absPrecise(tmpDet), '1e-20') < 0)
+		{
+			// Degenerate case: place control points at 1/3 and 2/3 along the line
+			tmpP1x = this.addPrecise(tmpP0x, this.dividePrecise(this.subtractPrecise(tmpP3x, tmpP0x), 3));
+			tmpP1y = this.addPrecise(tmpP0y, this.dividePrecise(this.subtractPrecise(tmpP3y, tmpP0y), 3));
+			tmpP2x = this.addPrecise(tmpP0x, this.multiplyPrecise(this.dividePrecise(this.subtractPrecise(tmpP3x, tmpP0x), 3), 2));
+			tmpP2y = this.addPrecise(tmpP0y, this.multiplyPrecise(this.dividePrecise(this.subtractPrecise(tmpP3y, tmpP0y), 3), 2));
+		}
+		else
+		{
+			tmpP1x = this.dividePrecise(this.subtractPrecise(this.multiplyPrecise(tmpC22, tmpRx1), this.multiplyPrecise(tmpC12, tmpRx2)), tmpDet);
+			tmpP1y = this.dividePrecise(this.subtractPrecise(this.multiplyPrecise(tmpC22, tmpRy1), this.multiplyPrecise(tmpC12, tmpRy2)), tmpDet);
+			tmpP2x = this.dividePrecise(this.subtractPrecise(this.multiplyPrecise(tmpC11, tmpRx2), this.multiplyPrecise(tmpC12, tmpRx1)), tmpDet);
+			tmpP2y = this.dividePrecise(this.subtractPrecise(this.multiplyPrecise(tmpC11, tmpRy2), this.multiplyPrecise(tmpC12, tmpRy1)), tmpDet);
+		}
+
+		return [
+			[tmpP0x.toString(), tmpP0y.toString()],
+			[tmpP1x.toString(), tmpP1y.toString()],
+			[tmpP2x.toString(), tmpP2y.toString()],
+			[tmpP3x.toString(), tmpP3y.toString()]
+		];
+	}
 }
 
 module.exports = FableServiceMath;

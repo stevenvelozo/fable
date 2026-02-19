@@ -8,6 +8,7 @@
 			{ "Equation":"Result = 1 * sqrt(16)", "ExpectedResult":"4" },
 			{ "Equation":"Result = sqrt(100 * (C + 30)) + sin(Depth - Width) / 10", "ExpectedResult":"41.32965489638783839821" },
 			{ "Equation":"Result = 3.5 + 50 + 10 * 10 / 5 - 1.5", "ExpectedResult":"72" },
-			{ "Equation":"concataddr(Cities[].Name)", "ExpectedResult":"City1City2" }
+			{ "Equation":"concataddr(Cities[].Name)", "ExpectedResult":"City1City2" },
+			{ "Equation":"BezierMidpoint = BEZIERPOINT(0, 10, 20, 30, 0.5)", "ExpectedResult":"15" }
 		]
 }
