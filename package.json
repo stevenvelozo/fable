@@ -50,7 +50,7 @@
   },
   "homepage": "https://github.com/stevenvelozo/fable",
   "devDependencies": {
-    "quackage": "^1.0.51"
+    "quackage": "^1.0.56"
   },
   "dependencies": {
     "async.eachlimit": "^0.5.2",
@@ -64,7 +64,7 @@
     "fable-serviceproviderbase": "^3.0.18",
     "fable-settings": "^3.0.15",
     "fable-uuid": "^3.0.12",
-    "manyfest": "^1.0.46",
+    "manyfest": "^1.0.47",
     "simple-get": "^4.0.1"
   }
 }
