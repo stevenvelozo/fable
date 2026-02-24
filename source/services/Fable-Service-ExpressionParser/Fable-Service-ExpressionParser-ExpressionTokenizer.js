@@ -8,6 +8,68 @@ class ExpressionTokenizer extends libExpressionParserOperationBase
 		this.serviceType = 'ExpressionParser-Tokenizer';
 	}
 
+	/**
+	 * Recompose an expression string from an array of tokens.
+	 *
+	 * This is the inverse of tokenize -- it takes an array of token strings
+	 * and reconstructs a valid expression string with appropriate spacing.
+	 *
+	 * @param {Array<string>} pTokens - The array of token strings to recompose.
+	 * @return {string} The recomposed expression string.
+	 */
+	recompose(pTokens)
+	{
+		if (!Array.isArray(pTokens) || pTokens.length === 0)
+		{
+			return '';
+		}
+
+		let tmpResult = '';
+
+		for (let i = 0; i < pTokens.length; i++)
+		{
+			let tmpToken = pTokens[i];
+
+			if (i > 0)
+			{
+				let tmpPreviousToken = pTokens[i - 1];
+
+				// Determine if we need a space before this token
+				let tmpNeedSpace = true;
+
+				// No space after opening paren
+				if (tmpPreviousToken === '(')
+				{
+					tmpNeedSpace = false;
+				}
+				// No space before closing paren
+				if (tmpToken === ')')
+				{
+					tmpNeedSpace = false;
+				}
+				// No space before opening paren when it follows a function name (not an operator or closing paren)
+				if (tmpToken === '(' && !(tmpPreviousToken in this.ExpressionParser.tokenMap))
+				{
+					tmpNeedSpace = false;
+				}
+				// No space before comma
+				if (tmpToken === ',')
+				{
+					tmpNeedSpace = false;
+				}
+
+				if (tmpNeedSpace)
+				{
+					tmpResult += ' ';
+				}
+			}
+
+			tmpResult += tmpToken;
+		}
+
+		return tmpResult;
+	}
+
 	tokenize(pExpression, pResultObject)
 	{
 		let tmpResults = (typeof(pResultObject) === 'object') ? pResultObject : { ExpressionParserLog: [] };
