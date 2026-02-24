@@ -174,12 +174,14 @@
 
 	"getvalue": {
 		"Name": "Get Value from Application State or Services (AppData, etc.)",
-		"Address": "fable.Utility.getInternalValueByHash"
+		"Address": "fable.Utility.getInternalValueByHash",
+		"AddressParameterIndices": [0]
 	},
 
 	"setvalue": {
 		"Name": "Set Value to Application State or Services (AppData, etc.)",
-		"Address": "fable.Utility.setInternalValueByHash"
+		"Address": "fable.Utility.setInternalValueByHash",
+		"AddressParameterIndices": [0]
 	},
 
 	"objectkeystoarray": {
@@ -227,17 +229,20 @@
 
 	"findfirstvaluebyexactmatch": {
 		"Name": "find + map on array of objects",
-		"Address": "fable.Utility.findFirstValueByExactMatchInternal"
+		"Address": "fable.Utility.findFirstValueByExactMatchInternal",
+		"AddressParameterIndices": [0, 1, 3]
 	},
 
 	"findfirstvaluebystringincludes": {
 		"Name": "find + map on array of objects",
-		"Address": "fable.Utility.findFirstValueByStringIncludesInternal"
+		"Address": "fable.Utility.findFirstValueByStringIncludesInternal",
+		"AddressParameterIndices": [0, 1, 3]
 	},
 
 	"match": {
 		"Name": "Implementation of sheets MATCH() function",
-		"Address": "fable.Utility.findIndexInternal"
+		"Address": "fable.Utility.findIndexInternal",
+		"AddressParameterIndices": [1]
 	},
 
 	"resolvehtmlentities": {
@@ -317,11 +322,13 @@
 
 	"getvaluearray": {
 		"Name": "Get Value Array from Application State or Services (AppData, etc.)",
-		"Address": "fable.Utility.createValueArrayByHashParametersFromInternal"
+		"Address": "fable.Utility.createValueArrayByHashParametersFromInternal",
+		"AddressParameterIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 	},
 	"getvalueobject": {
 		"Name": "Get Value Object from Application State or Services (AppData, etc.)",
-		"Address": "fable.Utility.createValueObjectByHashParametersFromInternal"
+		"Address": "fable.Utility.createValueObjectByHashParametersFromInternal",
+		"AddressParameterIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 	},
 
 	"cleanvaluearray": {
@@ -445,7 +452,8 @@
 
 	"createvalueobjectbyhashes": {
 		"Name": "Create Value Object by Hashes",
-		"Address": "fable.Utility.createValueObjectByHashes"
+		"Address": "fable.Utility.createValueObjectByHashes",
+		"AddressParameterIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 	},
 
 	"polynomialregression": {

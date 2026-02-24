@@ -188,6 +188,76 @@ suite
 						return fDone();
 					}
 				);
+				test
+				(
+					'getvalue should have AddressParameterIndices [0] in the FunctionMap.',
+					(fDone) =>
+					{
+						let _Parser = getExpressionParser();
+						Expect(_Parser.functionMap['getvalue']).to.be.an('object');
+						Expect(_Parser.functionMap['getvalue'].AddressParameterIndices).to.deep.equal([0]);
+						return fDone();
+					}
+				);
+				test
+				(
+					'setvalue should have AddressParameterIndices [0] in the FunctionMap.',
+					(fDone) =>
+					{
+						let _Parser = getExpressionParser();
+						Expect(_Parser.functionMap['setvalue']).to.be.an('object');
+						Expect(_Parser.functionMap['setvalue'].AddressParameterIndices).to.deep.equal([0]);
+						return fDone();
+					}
+				);
+				test
+				(
+					'getvaluearray and getvalueobject should have AddressParameterIndices for variadic hash parameters.',
+					(fDone) =>
+					{
+						let _Parser = getExpressionParser();
+						Expect(_Parser.functionMap['getvaluearray'].AddressParameterIndices).to.be.an('array');
+						Expect(_Parser.functionMap['getvaluearray'].AddressParameterIndices).to.include(0);
+						Expect(_Parser.functionMap['getvaluearray'].AddressParameterIndices).to.include(1);
+						Expect(_Parser.functionMap['getvalueobject'].AddressParameterIndices).to.be.an('array');
+						Expect(_Parser.functionMap['getvalueobject'].AddressParameterIndices).to.include(0);
+						Expect(_Parser.functionMap['getvalueobject'].AddressParameterIndices).to.include(1);
+						return fDone();
+					}
+				);
+				test
+				(
+					'findfirstvaluebyexactmatch should have AddressParameterIndices [0, 1, 3].',
+					(fDone) =>
+					{
+						let _Parser = getExpressionParser();
+						Expect(_Parser.functionMap['findfirstvaluebyexactmatch'].AddressParameterIndices).to.deep.equal([0, 1, 3]);
+						Expect(_Parser.functionMap['findfirstvaluebystringincludes'].AddressParameterIndices).to.deep.equal([0, 1, 3]);
+						return fDone();
+					}
+				);
+				test
+				(
+					'match should have AddressParameterIndices [1].',
+					(fDone) =>
+					{
+						let _Parser = getExpressionParser();
+						Expect(_Parser.functionMap['match'].AddressParameterIndices).to.deep.equal([1]);
+						return fDone();
+					}
+				);
+				test
+				(
+					'createvalueobjectbyhashes should have AddressParameterIndices for variadic hash parameters.',
+					(fDone) =>
+					{
+						let _Parser = getExpressionParser();
+						Expect(_Parser.functionMap['createvalueobjectbyhashes'].AddressParameterIndices).to.be.an('array');
+						Expect(_Parser.functionMap['createvalueobjectbyhashes'].AddressParameterIndices).to.include(0);
+						Expect(_Parser.functionMap['createvalueobjectbyhashes'].AddressParameterIndices).to.include(1);
+						return fDone();
+					}
+				);
 			}
 		);
 	}
