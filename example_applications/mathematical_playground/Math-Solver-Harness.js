@@ -92,4 +92,27 @@ _Fable.ExpressionParser.Messaging.logFunctionOutcome(tmpExpressionParseOutcome);
 // Step 6: Look at the results.
 console.log(`Outcome object: ${JSON.stringify(tmpSolverResultsObject)}`);
 console.log(`Result of ${tmpExpression} solve: ${tmpResultValue}`);
+
+
+/* * * * * * * * * * * * * * * * *
+ *
+ * Excel-compatible SLOPE and INTERCEPT functions
+ *
+ */
+_Fable.log.info(`Beginning Slope and Intercept Exercises....`);
+
+// Simple linear regression: given monthly sales data, find the trend line
+// SalesMonths = [1, 2, 3, 4, 5, 6], SalesRevenue = [150, 200, 250, 310, 350, 400]
+let tmpSlopeInterceptResults = {};
+_ExpressionParser.solve('TrendSlope = SLOPE(SalesRevenue, SalesMonths)', _AppData, tmpSlopeInterceptResults, false, tmpSlopeInterceptResults);
+_ExpressionParser.solve('TrendIntercept = INTERCEPT(SalesRevenue, SalesMonths)', _AppData, tmpSlopeInterceptResults, false, tmpSlopeInterceptResults);
+
+console.log(`Sales trend line: Revenue = ${tmpSlopeInterceptResults.TrendIntercept} + ${tmpSlopeInterceptResults.TrendSlope} * Month`);
+console.log(`  Slope (revenue per month): ${tmpSlopeInterceptResults.TrendSlope}`);
+console.log(`  Intercept (baseline): ${tmpSlopeInterceptResults.TrendIntercept}`);
+
+// Predict next month's revenue using slope and intercept
+_ExpressionParser.solve('Month7Prediction = TrendIntercept + TrendSlope * 7', tmpSlopeInterceptResults, tmpSlopeInterceptResults, false, tmpSlopeInterceptResults);
+console.log(`  Predicted month 7 revenue: ${tmpSlopeInterceptResults.Month7Prediction}`);
+
 console.log('QED');

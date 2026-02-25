@@ -456,6 +456,15 @@
 		"AddressParameterIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 	},
 
+	"slope": {
+		"Name": "Slope of Linear Regression Line (Excel SLOPE equivalent)",
+		"Address": "fable.Math.slopePrecise"
+	},
+	"intercept": {
+		"Name": "Y-Intercept of Linear Regression Line (Excel INTERCEPT equivalent)",
+		"Address": "fable.Math.interceptPrecise"
+	},
+
 	"polynomialregression": {
 		"Name": "Perform an nth degree Polynomial Regression on a Set of X and Y Values",
 		"Address": "fable.Math.polynomialRegression"

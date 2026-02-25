@@ -1287,6 +1287,77 @@ suite
 									*/
 								}
 							);
+						test
+							(
+								'Slope and Intercept (Excel SLOPE/INTERCEPT equivalents)',
+								() =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+									// Direct Math service tests
+									// Known data: y = 2x + 1 (slope=2, intercept=1)
+									let tmpXValues = [1, 2, 3, 4, 5];
+									let tmpYValues = [3, 5, 7, 9, 11];
+
+									let tmpSlope = testFable.Math.slopePrecise(tmpYValues, tmpXValues);
+									Expect(tmpSlope).to.equal('2');
+
+									let tmpIntercept = testFable.Math.interceptPrecise(tmpYValues, tmpXValues);
+									Expect(tmpIntercept).to.equal('1');
+
+									// Test with non-perfect linear data (Excel example)
+									// x: 1, 2, 3, 4, 5
+									// y: 2, 4, 5, 4, 5
+									let tmpXValues2 = [1, 2, 3, 4, 5];
+									let tmpYValues2 = [2, 4, 5, 4, 5];
+
+									let tmpSlope2 = testFable.Math.slopePrecise(tmpYValues2, tmpXValues2);
+									Expect(Number(tmpSlope2)).to.be.closeTo(0.6, 0.0001);
+
+									let tmpIntercept2 = testFable.Math.interceptPrecise(tmpYValues2, tmpXValues2);
+									Expect(Number(tmpIntercept2)).to.be.closeTo(2.2, 0.0001);
+
+									// Edge case: single point
+									let tmpSlopeSingle = testFable.Math.slopePrecise([5], [3]);
+									Expect(tmpSlopeSingle).to.equal('0');
+
+									// Through the expression parser with set concatenation
+									testFable.AppData =
+									{
+										XData: [1, 2, 3, 4, 5],
+										YData: [3, 5, 7, 9, 11]
+									};
+
+									let tmpSolverResult = {};
+									_Parser.solve('SlopeResult = SLOPE(AppData.YData, AppData.XData)', testFable, tmpSolverResult, false, tmpSolverResult);
+									Expect(tmpSolverResult.SlopeResult).to.equal('2');
+
+									_Parser.solve('InterceptResult = INTERCEPT(AppData.YData, AppData.XData)', testFable, tmpSolverResult, false, tmpSolverResult);
+									Expect(tmpSolverResult.InterceptResult).to.equal('1');
+
+									// Solver with inline sets
+									let tmpInlineResult = {};
+									_Parser.solve('InlineSlope = SLOPE(3,5,7,9,11, 1,2,3,4,5)', testFable, tmpInlineResult, false, tmpInlineResult);
+									testFable.log.info('Inline slope result:', tmpInlineResult.InlineSlope);
+
+									// Solver with non-perfect data
+									testFable.AppData.YData2 = [2, 4, 5, 4, 5];
+									_Parser.solve('Slope2 = SLOPE(AppData.YData2, AppData.XData)', testFable, tmpSolverResult, false, tmpSolverResult);
+									Expect(Number(tmpSolverResult.Slope2)).to.be.closeTo(0.6, 0.0001);
+
+									_Parser.solve('Intercept2 = INTERCEPT(AppData.YData2, AppData.XData)', testFable, tmpSolverResult, false, tmpSolverResult);
+									Expect(Number(tmpSolverResult.Intercept2)).to.be.closeTo(2.2, 0.0001);
+
+									// Verify slope and intercept reconstruct the regression line
+									// y_predicted = intercept + slope * x
+									for (let i = 0; i < tmpXValues2.length; i++)
+									{
+										let tmpPredicted = testFable.Math.addPrecise(tmpSolverResult.Intercept2, testFable.Math.multiplyPrecise(tmpSolverResult.Slope2, tmpXValues2[i]));
+										testFable.log.info(`x=${tmpXValues2[i]}, y=${tmpYValues2[i]}, predicted=${tmpPredicted}`);
+									}
+								}
+							);
 					}
 				);
 		}

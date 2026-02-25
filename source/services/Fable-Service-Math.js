@@ -1865,6 +1865,83 @@ class FableServiceMath extends libFableServiceBase
 	}
 
 	/**
+	 * Calculates the slope of a linear regression line through paired data points.
+	 * Equivalent to Excel's SLOPE function.
+	 *
+	 * Formula: slope = (n * Σ(xy) - Σx * Σy) / (n * Σ(x²) - (Σx)²)
+	 *
+	 * @param {Array<number|string>} pYValues - The dependent data points (known y's).
+	 * @param {Array<number|string>} pXValues - The independent data points (known x's).
+	 *
+	 * @return {string} The slope of the regression line.
+	 */
+	slopePrecise(pYValues, pXValues)
+	{
+		let tmpYValues = Array.isArray(pYValues) ? pYValues : [pYValues];
+		let tmpXValues = Array.isArray(pXValues) ? pXValues : [pXValues];
+		let tmpN = Math.min(tmpYValues.length, tmpXValues.length);
+
+		if (tmpN < 2)
+		{
+			return '0';
+		}
+
+		let tmpSumX = '0';
+		let tmpSumY = '0';
+		let tmpSumXY = '0';
+		let tmpSumX2 = '0';
+
+		for (let i = 0; i < tmpN; i++)
+		{
+			let tmpX = this.parsePrecise(tmpXValues[i], NaN);
+			let tmpY = this.parsePrecise(tmpYValues[i], NaN);
+			if (isNaN(tmpX) || isNaN(tmpY))
+			{
+				continue;
+			}
+			tmpSumX = this.addPrecise(tmpSumX, tmpX);
+			tmpSumY = this.addPrecise(tmpSumY, tmpY);
+			tmpSumXY = this.addPrecise(tmpSumXY, this.multiplyPrecise(tmpX, tmpY));
+			tmpSumX2 = this.addPrecise(tmpSumX2, this.multiplyPrecise(tmpX, tmpX));
+		}
+
+		// slope = (n * Σ(xy) - Σx * Σy) / (n * Σ(x²) - (Σx)²)
+		let tmpNumerator = this.subtractPrecise(this.multiplyPrecise(tmpN, tmpSumXY), this.multiplyPrecise(tmpSumX, tmpSumY));
+		let tmpDenominator = this.subtractPrecise(this.multiplyPrecise(tmpN, tmpSumX2), this.multiplyPrecise(tmpSumX, tmpSumX));
+
+		if (this.comparePrecise(tmpDenominator, 0) == 0)
+		{
+			return '0';
+		}
+
+		return this.dividePrecise(tmpNumerator, tmpDenominator);
+	}
+
+	/**
+	 * Calculates the y-intercept of a linear regression line through paired data points.
+	 * Equivalent to Excel's INTERCEPT function.
+	 *
+	 * Formula: intercept = ȳ - slope * x̄
+	 *
+	 * @param {Array<number|string>} pYValues - The dependent data points (known y's).
+	 * @param {Array<number|string>} pXValues - The independent data points (known x's).
+	 *
+	 * @return {string} The y-intercept of the regression line.
+	 */
+	interceptPrecise(pYValues, pXValues)
+	{
+		let tmpYValues = Array.isArray(pYValues) ? pYValues : [pYValues];
+		let tmpXValues = Array.isArray(pXValues) ? pXValues : [pXValues];
+
+		let tmpSlope = this.slopePrecise(tmpYValues, tmpXValues);
+		let tmpMeanY = this.meanPrecise(tmpYValues);
+		let tmpMeanX = this.meanPrecise(tmpXValues);
+
+		// intercept = ȳ - slope * x̄
+		return this.subtractPrecise(tmpMeanY, this.multiplyPrecise(tmpSlope, tmpMeanX));
+	}
+
+	/**
 	 * Evaluate a point on a cubic bezier curve at parameter t.
 	 *
 	 * B(t) = (1-t)^3*P0 + 3*(1-t)^2*t*P1 + 3*(1-t)*t^2*P2 + t^3*P3
