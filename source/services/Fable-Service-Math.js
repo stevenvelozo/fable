@@ -1865,23 +1865,94 @@ class FableServiceMath extends libFableServiceBase
 	}
 
 	/**
+	 * Resolves paired Y/X value arrays from flexible argument patterns.
+	 *
+	 * The expression parser's SetConcatArray spreads comma-separated arguments
+	 * as individual function parameters.  This helper normalizes three calling
+	 * conventions into a clean paired-value result:
+	 *
+	 *   1. Two arrays:  SLOPE(yArray, xArray)
+	 *   2. Spread scalars:  SLOPE(y1,y2,...,yN, x1,x2,...,xN) — split in half
+	 *   3. One flat array:  SLOPE([y1,...,yN,x1,...,xN]) — split in half
+	 *
+	 * Non-numeric values are filtered; only pairs where both Y and X parse
+	 * are kept.
+	 *
+	 * @param {...*} pArguments - Flexible: (yArr, xArr) | (y1,y2,...,x1,x2,...) | (flatArr)
+	 *
+	 * @return {Object} { cleanX, cleanY, n }
+	 */
+	cleanPairedValues(...pArguments)
+	{
+		let tmpYValues;
+		let tmpXValues;
+
+		if (pArguments.length === 2 && Array.isArray(pArguments[0]) && Array.isArray(pArguments[1]))
+		{
+			// Two arrays: SLOPE(yArray, xArray)
+			tmpYValues = pArguments[0];
+			tmpXValues = pArguments[1];
+		}
+		else if (pArguments.length === 1 && Array.isArray(pArguments[0]))
+		{
+			// Single flat array — split in half
+			let tmpFlat = pArguments[0];
+			let tmpHalf = Math.floor(tmpFlat.length / 2);
+			tmpYValues = tmpFlat.slice(0, tmpHalf);
+			tmpXValues = tmpFlat.slice(tmpHalf);
+		}
+		else if (pArguments.length > 2)
+		{
+			// Many spread scalars from expression parser — split in half
+			let tmpHalf = Math.floor(pArguments.length / 2);
+			tmpYValues = pArguments.slice(0, tmpHalf);
+			tmpXValues = pArguments.slice(tmpHalf);
+		}
+		else
+		{
+			// Two scalars or other degenerate input
+			tmpYValues = Array.isArray(pArguments[0]) ? pArguments[0] : [pArguments[0]];
+			tmpXValues = Array.isArray(pArguments[1]) ? pArguments[1] : [pArguments[1]];
+		}
+
+		let tmpPairCount = Math.min(tmpYValues.length, tmpXValues.length);
+
+		let tmpCleanX = [];
+		let tmpCleanY = [];
+
+		for (let i = 0; i < tmpPairCount; i++)
+		{
+			let tmpX = this.parsePrecise(tmpXValues[i], NaN);
+			let tmpY = this.parsePrecise(tmpYValues[i], NaN);
+			if (!isNaN(tmpX) && !isNaN(tmpY))
+			{
+				tmpCleanX.push(tmpX);
+				tmpCleanY.push(tmpY);
+			}
+		}
+
+		return { cleanX: tmpCleanX, cleanY: tmpCleanY, n: tmpCleanX.length };
+	}
+
+	/**
 	 * Calculates the slope of a linear regression line through paired data points.
 	 * Equivalent to Excel's SLOPE function.
 	 *
 	 * Formula: slope = (n * Σ(xy) - Σx * Σy) / (n * Σ(x²) - (Σx)²)
 	 *
-	 * @param {Array<number|string>} pYValues - The dependent data points (known y's).
-	 * @param {Array<number|string>} pXValues - The independent data points (known x's).
+	 * Calling conventions (all work through the expression parser):
+	 *   SLOPE(yArray, xArray)                — two resolved arrays
+	 *   SLOPE(y1,y2,...,yN, x1,x2,...,xN)    — inline scalars, split in half
+	 *
+	 * @param {...*} pArguments - Y values followed by X values (see cleanPairedValues).
 	 *
 	 * @return {string} The slope of the regression line.
 	 */
-	slopePrecise(pYValues, pXValues)
+	slopePrecise(...pArguments)
 	{
-		let tmpYValues = Array.isArray(pYValues) ? pYValues : [pYValues];
-		let tmpXValues = Array.isArray(pXValues) ? pXValues : [pXValues];
-		let tmpN = Math.min(tmpYValues.length, tmpXValues.length);
+		let tmpPaired = this.cleanPairedValues(...pArguments);
 
-		if (tmpN < 2)
+		if (tmpPaired.n < 2)
 		{
 			return '0';
 		}
@@ -1891,23 +1962,17 @@ class FableServiceMath extends libFableServiceBase
 		let tmpSumXY = '0';
 		let tmpSumX2 = '0';
 
-		for (let i = 0; i < tmpN; i++)
+		for (let i = 0; i < tmpPaired.n; i++)
 		{
-			let tmpX = this.parsePrecise(tmpXValues[i], NaN);
-			let tmpY = this.parsePrecise(tmpYValues[i], NaN);
-			if (isNaN(tmpX) || isNaN(tmpY))
-			{
-				continue;
-			}
-			tmpSumX = this.addPrecise(tmpSumX, tmpX);
-			tmpSumY = this.addPrecise(tmpSumY, tmpY);
-			tmpSumXY = this.addPrecise(tmpSumXY, this.multiplyPrecise(tmpX, tmpY));
-			tmpSumX2 = this.addPrecise(tmpSumX2, this.multiplyPrecise(tmpX, tmpX));
+			tmpSumX = this.addPrecise(tmpSumX, tmpPaired.cleanX[i]);
+			tmpSumY = this.addPrecise(tmpSumY, tmpPaired.cleanY[i]);
+			tmpSumXY = this.addPrecise(tmpSumXY, this.multiplyPrecise(tmpPaired.cleanX[i], tmpPaired.cleanY[i]));
+			tmpSumX2 = this.addPrecise(tmpSumX2, this.multiplyPrecise(tmpPaired.cleanX[i], tmpPaired.cleanX[i]));
 		}
 
 		// slope = (n * Σ(xy) - Σx * Σy) / (n * Σ(x²) - (Σx)²)
-		let tmpNumerator = this.subtractPrecise(this.multiplyPrecise(tmpN, tmpSumXY), this.multiplyPrecise(tmpSumX, tmpSumY));
-		let tmpDenominator = this.subtractPrecise(this.multiplyPrecise(tmpN, tmpSumX2), this.multiplyPrecise(tmpSumX, tmpSumX));
+		let tmpNumerator = this.subtractPrecise(this.multiplyPrecise(tmpPaired.n, tmpSumXY), this.multiplyPrecise(tmpSumX, tmpSumY));
+		let tmpDenominator = this.subtractPrecise(this.multiplyPrecise(tmpPaired.n, tmpSumX2), this.multiplyPrecise(tmpSumX, tmpSumX));
 
 		if (this.comparePrecise(tmpDenominator, 0) == 0)
 		{
@@ -1923,19 +1988,21 @@ class FableServiceMath extends libFableServiceBase
 	 *
 	 * Formula: intercept = ȳ - slope * x̄
 	 *
-	 * @param {Array<number|string>} pYValues - The dependent data points (known y's).
-	 * @param {Array<number|string>} pXValues - The independent data points (known x's).
+	 * Calling conventions (all work through the expression parser):
+	 *   INTERCEPT(yArray, xArray)                — two resolved arrays
+	 *   INTERCEPT(y1,y2,...,yN, x1,x2,...,xN)    — inline scalars, split in half
+	 *
+	 * @param {...*} pArguments - Y values followed by X values (see cleanPairedValues).
 	 *
 	 * @return {string} The y-intercept of the regression line.
 	 */
-	interceptPrecise(pYValues, pXValues)
+	interceptPrecise(...pArguments)
 	{
-		let tmpYValues = Array.isArray(pYValues) ? pYValues : [pYValues];
-		let tmpXValues = Array.isArray(pXValues) ? pXValues : [pXValues];
+		let tmpPaired = this.cleanPairedValues(...pArguments);
 
-		let tmpSlope = this.slopePrecise(tmpYValues, tmpXValues);
-		let tmpMeanY = this.meanPrecise(tmpYValues);
-		let tmpMeanX = this.meanPrecise(tmpXValues);
+		let tmpSlope = this.slopePrecise(tmpPaired.cleanY, tmpPaired.cleanX);
+		let tmpMeanY = this.meanPrecise(tmpPaired.cleanY);
+		let tmpMeanX = this.meanPrecise(tmpPaired.cleanX);
 
 		// intercept = ȳ - slope * x̄
 		return this.subtractPrecise(tmpMeanY, this.multiplyPrecise(tmpSlope, tmpMeanX));

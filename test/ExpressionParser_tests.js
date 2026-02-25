@@ -1336,10 +1336,38 @@ suite
 									_Parser.solve('InterceptResult = INTERCEPT(AppData.YData, AppData.XData)', testFable, tmpSolverResult, false, tmpSolverResult);
 									Expect(tmpSolverResult.InterceptResult).to.equal('1');
 
-									// Solver with inline sets
+									// Solver with inline scalars (split in half: first 5 = Y, last 5 = X)
 									let tmpInlineResult = {};
 									_Parser.solve('InlineSlope = SLOPE(3,5,7,9,11, 1,2,3,4,5)', testFable, tmpInlineResult, false, tmpInlineResult);
-									testFable.log.info('Inline slope result:', tmpInlineResult.InlineSlope);
+									Expect(tmpInlineResult.InlineSlope).to.equal('2');
+
+									_Parser.solve('InlineIntercept = INTERCEPT(3,5,7,9,11, 1,2,3,4,5)', testFable, tmpInlineResult, false, tmpInlineResult);
+									Expect(tmpInlineResult.InlineIntercept).to.equal('1');
+
+									// Solver chain: SERIES produces string arrays, then SLOPE/INTERCEPT consume them
+									let tmpChainData = {};
+									_Parser.solve('XValues = SERIES FROM 1 TO 5 STEP 1 : n + 0', tmpChainData, {}, false, tmpChainData);
+									_Parser.solve('YValues = SERIES FROM 1 TO 5 STEP 1 : 2 * n + 1', tmpChainData, {}, false, tmpChainData);
+									// Verify the arrays are string-typed (expression parser produces strings)
+									Expect(tmpChainData.XValues[0]).to.equal('1');
+									Expect(typeof tmpChainData.XValues[0]).to.equal('string');
+									Expect(tmpChainData.YValues[0]).to.equal('3');
+									Expect(typeof tmpChainData.YValues[0]).to.equal('string');
+
+									_Parser.solve('ChainSlope = SLOPE(YValues, XValues)', tmpChainData, {}, false, tmpChainData);
+									Expect(tmpChainData.ChainSlope).to.equal('2');
+
+									_Parser.solve('ChainIntercept = INTERCEPT(YValues, XValues)', tmpChainData, {}, false, tmpChainData);
+									Expect(tmpChainData.ChainIntercept).to.equal('1');
+
+									// String arrays at AppData addresses
+									testFable.AppData.XStrings = ['1', '2', '3', '4', '5'];
+									testFable.AppData.YStrings = ['3', '5', '7', '9', '11'];
+									_Parser.solve('StringSlope = SLOPE(AppData.YStrings, AppData.XStrings)', testFable, tmpSolverResult, false, tmpSolverResult);
+									Expect(tmpSolverResult.StringSlope).to.equal('2');
+
+									_Parser.solve('StringIntercept = INTERCEPT(AppData.YStrings, AppData.XStrings)', testFable, tmpSolverResult, false, tmpSolverResult);
+									Expect(tmpSolverResult.StringIntercept).to.equal('1');
 
 									// Solver with non-perfect data
 									testFable.AppData.YData2 = [2, 4, 5, 4, 5];
@@ -1350,12 +1378,8 @@ suite
 									Expect(Number(tmpSolverResult.Intercept2)).to.be.closeTo(2.2, 0.0001);
 
 									// Verify slope and intercept reconstruct the regression line
-									// y_predicted = intercept + slope * x
-									for (let i = 0; i < tmpXValues2.length; i++)
-									{
-										let tmpPredicted = testFable.Math.addPrecise(tmpSolverResult.Intercept2, testFable.Math.multiplyPrecise(tmpSolverResult.Slope2, tmpXValues2[i]));
-										testFable.log.info(`x=${tmpXValues2[i]}, y=${tmpYValues2[i]}, predicted=${tmpPredicted}`);
-									}
+									_Parser.solve('Predicted = ChainIntercept + ChainSlope * 6', tmpChainData, {}, false, tmpChainData);
+									Expect(tmpChainData.Predicted).to.equal('13');
 								}
 							);
 					}
