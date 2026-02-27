@@ -50,7 +50,7 @@
   },
   "homepage": "https://github.com/stevenvelozo/fable",
   "devDependencies": {
-    "quackage": "^1.0.56"
+    "quackage": "^1.0.58"
   },
   "dependencies": {
     "async.eachlimit": "^0.5.2",
