@@ -22,5 +22,40 @@
 	"BezierYValues": [0, 1, 4, 9, 16],
 
 	"SalesMonths": [1, 2, 3, 4, 5, 6],
-	"SalesRevenue": [150, 200, 250, 310, 350, 400]
+	"SalesRevenue": [150, 200, 250, 310, 350, 400],
+
+	"FibonacciRows": [
+		{ "Fib": 0 },
+		{ "Fib": 1 },
+		{ "Fib": 1 },
+		{ "Fib": 2 },
+		{ "Fib": 3 },
+		{ "Fib": 5 },
+		{ "Fib": 8 },
+		{ "Fib": 13 },
+		{ "Fib": 21 },
+		{ "Fib": 34 }
+	],
+
+	"StockPrices": [
+		{ "Date": "2025-01-01", "Close": 100.00, "Volume": 5000 },
+		{ "Date": "2025-01-02", "Close": 102.50, "Volume": 6200 },
+		{ "Date": "2025-01-03", "Close": 101.00, "Volume": 4800 },
+		{ "Date": "2025-01-06", "Close": 105.00, "Volume": 7100 },
+		{ "Date": "2025-01-07", "Close": 108.50, "Volume": 8300 },
+		{ "Date": "2025-01-08", "Close": 107.00, "Volume": 5500 },
+		{ "Date": "2025-01-09", "Close": 110.00, "Volume": 6800 },
+		{ "Date": "2025-01-10", "Close": 112.50, "Volume": 7200 }
+	],
+
+	"TemperatureReadings": [
+		{ "Hour": 0, "Temp": 58.0 },
+		{ "Hour": 3, "Temp": 55.5 },
+		{ "Hour": 6, "Temp": 54.0 },
+		{ "Hour": 9, "Temp": 60.5 },
+		{ "Hour": 12, "Temp": 68.0 },
+		{ "Hour": 15, "Temp": 72.5 },
+		{ "Hour": 18, "Temp": 67.0 },
+		{ "Hour": 21, "Temp": 61.5 }
+	]
 }

@@ -13,6 +13,7 @@ class ExpressionTokenizerDirectiveMutation extends libExpressionParserOperationB
 				'SERIES': { Name: 'Series', Code: 'SERIES', From: null, To: null, Step: null },
 				'MONTECARLO': { Name: 'Monte Carlo Simulation', SampleCount: '1', Code: 'MONTECARLO', Values: {} },
 				'MAP': { Name: 'Map', Code: 'MAP', Values: {}, ValueKeys: [] },
+				'MULTIROWMAP': { Name: 'Multi-Row Map', Code: 'MULTIROWMAP', RowsAddress: null, SeriesStart: null, SeriesStep: null, Values: {}, ValueKeys: [] },
 			});
 
 		this.defaultDirective = this.directiveTypes.SOLVE;
@@ -84,7 +85,7 @@ class ExpressionTokenizerDirectiveMutation extends libExpressionParserOperationB
 						let tmpVariableToken = pTokens[i + 1];
 						if (typeof(tmpVariableToken) === 'string' && (tmpVariableToken.length > 0))
 						{
-							tmpNewMonteCarloDirectiveDescription.Values[tmpVariableToken] = 
+							tmpNewMonteCarloDirectiveDescription.Values[tmpVariableToken] =
 							{
 								Token: tmpVariableToken,
 								Easing: 'Linear', // could be parametric, logarithmic, bezier, uniform, normal, etc.
@@ -169,7 +170,7 @@ class ExpressionTokenizerDirectiveMutation extends libExpressionParserOperationB
 						if (typeof(tmpVariableToken) === 'string' && (tmpVariableToken.length > 0))
 						{
 							tmpNewMapDirectiveDescription.ValueKeys.push(tmpVariableToken);
-							tmpNewMapDirectiveDescription.Values[tmpVariableToken] = 
+							tmpNewMapDirectiveDescription.Values[tmpVariableToken] =
 							{
 								Token: tmpVariableToken,
 								Address: pTokens[i + 3],
@@ -186,6 +187,156 @@ class ExpressionTokenizerDirectiveMutation extends libExpressionParserOperationB
 		}
 
 		return tmpNewMapDirectiveDescription;
+	}
+
+	parseMultiRowMapDirective(pTokens)
+	{
+		// Parse MULTIROWMAP directive tokens.
+		// Syntax: MULTIROWMAP ROWS FROM <address> [SERIESSTART <n>] [SERIESSTEP <n>] VAR <name> FROM <property> OFFSET <n> DEFAULT <defaultValue> ...
+		// OFFSET defaults to 0 (current row) if not specified.
+		// DEFAULT defaults to '0' if not specified.
+		// OFFSET 0 = current row, OFFSET -1 = previous row, OFFSET -2 = two rows back, etc.
+		// Positive OFFSET values look forward (e.g., OFFSET 1 = next row, OFFSET 2 = two rows ahead).
+		// SERIESSTART defaults to 0 (first row). Negative values count from the end (e.g., -2 = second-to-last row).
+		// SERIESSTEP defaults to 1. Use -1 to iterate backwards through rows.
+		let tmpNewDirectiveDescription = JSON.parse(JSON.stringify(this.directiveTypes.MULTIROWMAP));
+
+		for (let i = 0; i < pTokens.length; i++)
+		{
+			let tmpToken = pTokens[i].toUpperCase();
+			switch(tmpToken)
+			{
+				case 'ROWS':
+					// Expect ROWS FROM <address>
+					if (((i + 2) < pTokens.length) && (pTokens[i + 1].toUpperCase() === 'FROM'))
+					{
+						tmpNewDirectiveDescription.RowsAddress = pTokens[i + 2];
+						i = i + 2;
+					}
+					break;
+
+				case 'SERIESSTART':
+					if ((i + 1) < pTokens.length)
+					{
+						// Handle negative values which get tokenized as separate - and number tokens
+						let tmpStartValue = pTokens[i + 1];
+						if ((tmpStartValue === '-') && ((i + 2) < pTokens.length))
+						{
+							tmpStartValue = '-' + pTokens[i + 2];
+							i = i + 2;
+						}
+						else
+						{
+							i = i + 1;
+						}
+						tmpNewDirectiveDescription.SeriesStart = tmpStartValue;
+					}
+					break;
+
+				case 'SERIESSTEP':
+					if ((i + 1) < pTokens.length)
+					{
+						// Handle negative values which get tokenized as separate - and number tokens
+						let tmpStepValue = pTokens[i + 1];
+						if ((tmpStepValue === '-') && ((i + 2) < pTokens.length))
+						{
+							tmpStepValue = '-' + pTokens[i + 2];
+							i = i + 2;
+						}
+						else
+						{
+							i = i + 1;
+						}
+						tmpNewDirectiveDescription.SeriesStep = tmpStepValue;
+					}
+					break;
+
+				case 'VARIABLE':
+				case 'VAR':
+				case 'V':
+					// Expect: VAR <name> FROM <property> [OFFSET <n>] [DEFAULT <defaultValue>]
+					if (((i + 3) < pTokens.length) && (pTokens[i + 2].toUpperCase() === 'FROM'))
+					{
+						let tmpVariableName = pTokens[i + 1];
+						let tmpProperty = pTokens[i + 3];
+
+						if (typeof(tmpVariableName) === 'string' && (tmpVariableName.length > 0))
+						{
+							let tmpVariableDescriptor = {
+								Token: tmpVariableName,
+								Property: tmpProperty,
+								RowOffset: 0,
+								Default: '0',
+							};
+
+							let tmpCurrentIndex = i + 3;
+
+							// Scan forward for OFFSET and DEFAULT in any order
+							while (tmpCurrentIndex + 1 < pTokens.length)
+							{
+								let tmpNextToken = pTokens[tmpCurrentIndex + 1].toUpperCase();
+								if (tmpNextToken === 'OFFSET')
+								{
+									if (tmpCurrentIndex + 2 < pTokens.length)
+									{
+										// Handle negative offsets which get tokenized as separate - and number tokens
+										let tmpOffsetValue = pTokens[tmpCurrentIndex + 2];
+										if ((tmpOffsetValue === '-') && (tmpCurrentIndex + 3 < pTokens.length))
+										{
+											tmpOffsetValue = '-' + pTokens[tmpCurrentIndex + 3];
+											tmpCurrentIndex = tmpCurrentIndex + 3;
+										}
+										else
+										{
+											tmpCurrentIndex = tmpCurrentIndex + 2;
+										}
+										tmpVariableDescriptor.RowOffset = parseInt(tmpOffsetValue);
+										if (isNaN(tmpVariableDescriptor.RowOffset))
+										{
+											tmpVariableDescriptor.RowOffset = 0;
+										}
+									}
+								}
+								else if (tmpNextToken === 'DEFAULT')
+								{
+									if (tmpCurrentIndex + 2 < pTokens.length)
+									{
+										// Handle negative defaults which get tokenized as separate - and number tokens
+										let tmpDefaultValue = pTokens[tmpCurrentIndex + 2];
+										if ((tmpDefaultValue === '-') && (tmpCurrentIndex + 3 < pTokens.length))
+										{
+											tmpDefaultValue = '-' + pTokens[tmpCurrentIndex + 3];
+											tmpCurrentIndex = tmpCurrentIndex + 3;
+										}
+										else
+										{
+											tmpCurrentIndex = tmpCurrentIndex + 2;
+										}
+										tmpVariableDescriptor.Default = tmpDefaultValue;
+									}
+								}
+								else
+								{
+									// Not a recognized sub-keyword for this variable; stop scanning
+									break;
+								}
+							}
+
+							i = tmpCurrentIndex;
+
+							tmpNewDirectiveDescription.ValueKeys.push(tmpVariableName);
+							tmpNewDirectiveDescription.Values[tmpVariableName] = tmpVariableDescriptor;
+						}
+					}
+					break;
+
+				default:
+					// Ignore other tokens
+					break;
+			}
+		}
+
+		return tmpNewDirectiveDescription;
 	}
 
 	parseDirectives(pResultObject)
@@ -257,6 +408,9 @@ class ExpressionTokenizerDirectiveMutation extends libExpressionParserOperationB
 							break;
 						case 'MAP':
 							tmpResults.SolverDirectives = this.parseMapDirective(tmpResults.SolverDirectiveTokens);
+							break;
+						case 'MULTIROWMAP':
+							tmpResults.SolverDirectives = this.parseMultiRowMapDirective(tmpResults.SolverDirectiveTokens);
 							break;
 						default:
 							// No further parsing needed

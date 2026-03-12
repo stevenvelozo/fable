@@ -115,4 +115,111 @@ console.log(`  Intercept (baseline): ${tmpSlopeInterceptResults.TrendIntercept}`
 _ExpressionParser.solve('Month7Prediction = TrendIntercept + TrendSlope * 7', tmpSlopeInterceptResults, tmpSlopeInterceptResults, false, tmpSlopeInterceptResults);
 console.log(`  Predicted month 7 revenue: ${tmpSlopeInterceptResults.Month7Prediction}`);
 
+/* * * * * * * * * * * * * * * * *
+ *
+ * MULTIROWMAP: Multi-Row Lookback Series Solver
+ *
+ * MULTIROWMAP lets you iterate over an array of objects (rows) and reference
+ * values from the current row, previous rows, and even future rows.
+ *
+ * Syntax:
+ *   Result = MULTIROWMAP ROWS FROM <address>
+ *     [SERIESSTART <n>]
+ *     [SERIESSTEP <n>]
+ *     VAR <name> FROM <property> [OFFSET <n>] [DEFAULT <value>]
+ *     ...
+ *     : <expression>
+ *
+ * OFFSET 0 (default) = current row
+ * OFFSET -1 = previous row, OFFSET -2 = two rows back, etc.
+ * OFFSET 1 = next row, OFFSET 2 = two rows ahead, etc.
+ * DEFAULT provides a fallback when the referenced row is out of bounds.
+ * SERIESSTART controls which row index to start iterating from (negative counts from end).
+ * SERIESSTEP controls the iteration step (default 1, use -1 to go backwards).
+ *
+ */
+_Fable.log.info(`Beginning MULTIROWMAP Exercises....`);
+
+let tmpMultiRowResults = {};
+
+// --- Example 1: Fibonacci Verification ---
+// Verify that each value in a Fibonacci sequence equals the sum of the two previous values
+_ExpressionParser.solve(
+	'FibCheck = MULTIROWMAP ROWS FROM FibonacciRows VAR Current FROM Fib VAR Prev1 FROM Fib OFFSET -1 DEFAULT 0 VAR Prev2 FROM Fib OFFSET -2 DEFAULT 0 : Current - (Prev1 + Prev2)',
+	_AppData, {}, false, tmpMultiRowResults);
+console.log(`\nFibonacci verification (should be 0 from row 2 onward):`);
+console.log(`  FibCheck: [${tmpMultiRowResults.FibCheck.join(', ')}]`);
+
+// --- Example 2: Stock Price Day-over-Day Change ---
+// Calculate the daily price change for a stock
+_ExpressionParser.solve(
+	'DailyChange = MULTIROWMAP ROWS FROM StockPrices VAR Today FROM Close VAR Yesterday FROM Close OFFSET -1 DEFAULT 0 : Today - Yesterday',
+	_AppData, {}, false, tmpMultiRowResults);
+console.log(`\nStock daily price change:`);
+console.log(`  DailyChange: [${tmpMultiRowResults.DailyChange.join(', ')}]`);
+
+// --- Example 3: 3-Period Moving Average ---
+// Compute a 3-day moving average of stock closing prices
+_ExpressionParser.solve(
+	'MA3 = MULTIROWMAP ROWS FROM StockPrices VAR c0 FROM Close VAR c1 FROM Close OFFSET -1 DEFAULT 0 VAR c2 FROM Close OFFSET -2 DEFAULT 0 : (c0 + c1 + c2) / 3',
+	_AppData, {}, false, tmpMultiRowResults);
+console.log(`\n3-period moving average of stock prices:`);
+console.log(`  MA3: [${tmpMultiRowResults.MA3.join(', ')}]`);
+
+// --- Example 4: Forward-Looking (Next Row Reference) ---
+// For each temperature reading, compute the difference to the next reading
+_ExpressionParser.solve(
+	'TempChange = MULTIROWMAP ROWS FROM TemperatureReadings VAR Current FROM Temp VAR Next FROM Temp OFFSET 1 DEFAULT 0 : Next - Current',
+	_AppData, {}, false, tmpMultiRowResults);
+console.log(`\nTemperature change to next reading (forward lookback):`);
+console.log(`  TempChange: [${tmpMultiRowResults.TempChange.join(', ')}]`);
+
+// --- Example 5: Central Difference (Both Directions) ---
+// Approximate the derivative using central difference: (next - prev) / 2
+_ExpressionParser.solve(
+	'TempDerivative = MULTIROWMAP ROWS FROM TemperatureReadings VAR Prev FROM Temp OFFSET -1 DEFAULT 0 VAR Next FROM Temp OFFSET 1 DEFAULT 0 : (Next - Prev) / 2',
+	_AppData, {}, false, tmpMultiRowResults);
+console.log(`\nTemperature central difference derivative:`);
+console.log(`  TempDerivative: [${tmpMultiRowResults.TempDerivative.join(', ')}]`);
+
+// --- Example 6: Second Derivative (Two-Row Lookback) ---
+// Approximate the second derivative: current - 2*prev + twoprev
+_ExpressionParser.solve(
+	'TempAcceleration = MULTIROWMAP ROWS FROM TemperatureReadings VAR Current FROM Temp VAR Prev FROM Temp OFFSET -1 DEFAULT 0 VAR TwoBack FROM Temp OFFSET -2 DEFAULT 0 : Current - 2 * Prev + TwoBack',
+	_AppData, {}, false, tmpMultiRowResults);
+console.log(`\nTemperature second derivative (acceleration):`);
+console.log(`  TempAcceleration: [${tmpMultiRowResults.TempAcceleration.join(', ')}]`);
+
+// --- Example 7: SERIESSTART - Skip Initial Rows ---
+// Start the moving average from row 2 so all three periods have valid data
+_ExpressionParser.solve(
+	'MA3Valid = MULTIROWMAP ROWS FROM StockPrices SERIESSTART 2 VAR c0 FROM Close VAR c1 FROM Close OFFSET -1 DEFAULT 0 VAR c2 FROM Close OFFSET -2 DEFAULT 0 : (c0 + c1 + c2) / 3',
+	_AppData, {}, false, tmpMultiRowResults);
+console.log(`\n3-period MA starting from row 2 (all periods valid):`);
+console.log(`  MA3Valid: [${tmpMultiRowResults.MA3Valid.join(', ')}]`);
+
+// --- Example 8: SERIESSTEP -1 - Iterate Backwards ---
+// Read stock prices in reverse chronological order
+_ExpressionParser.solve(
+	'ReversePrices = MULTIROWMAP ROWS FROM StockPrices SERIESSTART -1 SERIESSTEP -1 VAR Price FROM Close : Price + 0',
+	_AppData, {}, false, tmpMultiRowResults);
+console.log(`\nStock prices in reverse order:`);
+console.log(`  ReversePrices: [${tmpMultiRowResults.ReversePrices.join(', ')}]`);
+
+// --- Example 9: SERIESSTEP 2 - Every Other Row ---
+// Sample every other temperature reading
+_ExpressionParser.solve(
+	'EveryOtherTemp = MULTIROWMAP ROWS FROM TemperatureReadings SERIESSTEP 2 VAR t FROM Temp : t + 0',
+	_AppData, {}, false, tmpMultiRowResults);
+console.log(`\nEvery other temperature reading:`);
+console.log(`  EveryOtherTemp: [${tmpMultiRowResults.EveryOtherTemp.join(', ')}]`);
+
+// --- Example 10: Three-Row Lookback with Multiple Properties ---
+// Weighted volume change: compare current volume to 3 days ago, scaled by price ratio
+_ExpressionParser.solve(
+	'WeightedVolChange = MULTIROWMAP ROWS FROM StockPrices VAR CurVol FROM Volume VAR CurPrice FROM Close VAR OldVol FROM Volume OFFSET -3 DEFAULT 0 VAR OldPrice FROM Close OFFSET -3 DEFAULT 1 : (CurVol - OldVol) * (CurPrice / OldPrice)',
+	_AppData, {}, false, tmpMultiRowResults);
+console.log(`\nWeighted volume change (3-day lookback with price ratio):`);
+console.log(`  WeightedVolChange: [${tmpMultiRowResults.WeightedVolChange.join(', ')}]`);
+
 console.log('QED');

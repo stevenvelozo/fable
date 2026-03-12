@@ -264,6 +264,65 @@ parser.solve('Result = MONTECARLO SAMPLECOUNT 5000 VAR x PT x -3 PT x 3 VAR y PT
     {}, {}, manifest, dest);
 ```
 
+### MULTIROWMAP Expressions
+
+Iterate over an array of objects (rows) with multi-row lookback and lookahead. Each variable can reference the current row or any row at a relative offset, with configurable defaults for out-of-bounds access.
+
+```javascript
+// Syntax:
+// Result = MULTIROWMAP ROWS FROM <address>
+//   [SERIESSTART <n>] [SERIESSTEP <n>]
+//   VAR <name> FROM <property> [OFFSET <n>] [DEFAULT <value>]
+//   ... : <expression>
+
+// Basic: compute area from each row's Width and Height
+parser.solve('Areas = MULTIROWMAP ROWS FROM Rows VAR w FROM Width VAR h FROM Height : w * h',
+    { Rows: [{Width:10,Height:20}, {Width:30,Height:40}] }, {}, manifest, dest);
+// dest.Areas === ['200', '1200']
+
+// Previous row lookback (day-over-day change)
+parser.solve('Change = MULTIROWMAP ROWS FROM Prices VAR Today FROM Close VAR Yesterday FROM Close OFFSET -1 DEFAULT 0 : Today - Yesterday',
+    data, {}, manifest, dest);
+
+// Two-row lookback (Fibonacci verification)
+parser.solve('Check = MULTIROWMAP ROWS FROM FibRows VAR Cur FROM Fib VAR P1 FROM Fib OFFSET -1 DEFAULT 0 VAR P2 FROM Fib OFFSET -2 DEFAULT 0 : Cur - (P1 + P2)',
+    data, {}, manifest, dest);
+
+// Forward lookback (next row reference)
+parser.solve('NextDiff = MULTIROWMAP ROWS FROM Rows VAR Cur FROM Value VAR Next FROM Value OFFSET 1 DEFAULT 0 : Next - Cur',
+    data, {}, manifest, dest);
+
+// Central difference (both directions)
+parser.solve('Deriv = MULTIROWMAP ROWS FROM Rows VAR Prev FROM Value OFFSET -1 DEFAULT 0 VAR Next FROM Value OFFSET 1 DEFAULT 0 : (Next - Prev) / 2',
+    data, {}, manifest, dest);
+
+// SERIESSTART: skip initial rows (start from row 2)
+parser.solve('MA = MULTIROWMAP ROWS FROM Prices SERIESSTART 2 VAR c0 FROM Close VAR c1 FROM Close OFFSET -1 DEFAULT 0 VAR c2 FROM Close OFFSET -2 DEFAULT 0 : (c0 + c1 + c2) / 3',
+    data, {}, manifest, dest);
+
+// Negative SERIESSTART: start from 2 rows before end
+parser.solve('LastTwo = MULTIROWMAP ROWS FROM Rows SERIESSTART -2 VAR v FROM Value : v + 0',
+    data, {}, manifest, dest);
+
+// SERIESSTEP -1: iterate backwards
+parser.solve('Reversed = MULTIROWMAP ROWS FROM Rows SERIESSTART -1 SERIESSTEP -1 VAR v FROM Value : v + 0',
+    data, {}, manifest, dest);
+
+// SERIESSTEP 2: every other row
+parser.solve('Sampled = MULTIROWMAP ROWS FROM Rows SERIESSTEP 2 VAR v FROM Value : v + 0',
+    data, {}, manifest, dest);
+```
+
+**Available variables in MULTIROWMAP expressions:**
+- `stepIndex` — iteration counter (0, 1, 2, ...)
+- `rowIndex` — actual array index of the current row
+- Any VAR-mapped variable names
+
+**OFFSET values:**
+- `0` (default) — current row
+- `-1` — previous row, `-2` — two rows back, `-3` — three back, etc.
+- `1` — next row, `2` — two ahead, etc.
+
 ### ITERATIVESERIES
 
 Run cumulative computations over arrays:

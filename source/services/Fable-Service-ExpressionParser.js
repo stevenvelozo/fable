@@ -456,6 +456,149 @@ class FableServiceExpressionParser extends libFableServiceBase
 
 			return tmpValueArray;
 		}
+		else if (tmpResultsObject.SolverDirectives.Code == 'MULTIROWMAP')
+		{
+			// MULTIROWMAP iterates over an array of objects (rows), allowing each expression to reference
+			// the current row and any number of previous/future rows via configurable offsets.
+			// Optional SERIESSTART and SERIESSTEP control which rows are iterated and in what direction.
+			const tmpDirectiveValues = tmpResultsObject.SolverDirectives.Values;
+			const tmpDirectiveValueKeys = tmpResultsObject.SolverDirectives.ValueKeys;
+			const tmpRowsAddress = tmpResultsObject.SolverDirectives.RowsAddress;
+			let tmpValueArray = [];
+
+			// Resolve the rows array from the data source
+			let tmpRows = null;
+			if (tmpRowsAddress)
+			{
+				tmpRows = tmpManifest.getValueByHash(tmpDataSourceObject, tmpRowsAddress);
+			}
+
+			if (!Array.isArray(tmpRows) || tmpRows.length < 1)
+			{
+				tmpResultsObject.ExpressionParserLog.push(`ExpressionParser.solve detected invalid MULTIROWMAP directive parameters.  ROWS FROM address must resolve to a non-empty array.`);
+				this.log.warn(tmpResultsObject.ExpressionParserLog[tmpResultsObject.ExpressionParserLog.length-1]);
+				return undefined;
+			}
+
+			// Resolve SeriesStart: default to 0 (first row).  Negative values count from end.
+			let tmpSeriesStart = 0;
+			if (tmpResultsObject.SolverDirectives.SeriesStart !== null)
+			{
+				tmpSeriesStart = parseInt(tmpResultsObject.SolverDirectives.SeriesStart);
+				if (isNaN(tmpSeriesStart))
+				{
+					// Try to resolve as a variable from the data source
+					let tmpStartToken = this.fable.ExpressionParser.Postfix.getTokenContainerObject(tmpResultsObject.SolverDirectives.SeriesStart, 'Token.Symbol');
+					this.substituteValuesInTokenizedObjects([tmpStartToken], tmpDataSourceObject, tmpResultsObject, tmpManifest);
+					if (tmpStartToken.Resolved)
+					{
+						tmpSeriesStart = parseInt(tmpStartToken.Value);
+					}
+					if (isNaN(tmpSeriesStart))
+					{
+						tmpSeriesStart = 0;
+					}
+				}
+			}
+			// Handle negative start (count from end)
+			if (tmpSeriesStart < 0)
+			{
+				tmpSeriesStart = tmpRows.length + tmpSeriesStart;
+			}
+			// Clamp to valid range
+			tmpSeriesStart = Math.max(0, Math.min(tmpSeriesStart, tmpRows.length - 1));
+
+			// Resolve SeriesStep: default to 1
+			let tmpSeriesStep = 1;
+			if (tmpResultsObject.SolverDirectives.SeriesStep !== null)
+			{
+				tmpSeriesStep = parseInt(tmpResultsObject.SolverDirectives.SeriesStep);
+				if (isNaN(tmpSeriesStep))
+				{
+					// Try to resolve as a variable from the data source
+					let tmpStepToken = this.fable.ExpressionParser.Postfix.getTokenContainerObject(tmpResultsObject.SolverDirectives.SeriesStep, 'Token.Symbol');
+					this.substituteValuesInTokenizedObjects([tmpStepToken], tmpDataSourceObject, tmpResultsObject, tmpManifest);
+					if (tmpStepToken.Resolved)
+					{
+						tmpSeriesStep = parseInt(tmpStepToken.Value);
+					}
+					if (isNaN(tmpSeriesStep))
+					{
+						tmpSeriesStep = 1;
+					}
+				}
+			}
+			if (tmpSeriesStep === 0)
+			{
+				tmpResultsObject.ExpressionParserLog.push(`ExpressionParser.solve detected invalid MULTIROWMAP directive parameters.  SERIESSTEP cannot be zero.`);
+				this.log.warn(tmpResultsObject.ExpressionParserLog[tmpResultsObject.ExpressionParserLog.length-1]);
+				return undefined;
+			}
+
+			let tmpStepCounter = 0;
+			for (let i = tmpSeriesStart; (tmpSeriesStep > 0) ? (i < tmpRows.length) : (i >= 0); i += tmpSeriesStep)
+			{
+				// Build the data source for this iteration with the mapped variables
+				let tmpRowStepDataSourceObject = Object.assign({}, tmpDataSourceObject);
+				tmpRowStepDataSourceObject.stepIndex = tmpStepCounter;
+				tmpRowStepDataSourceObject.rowIndex = i;
+
+				for (let j = 0; j < tmpDirectiveValueKeys.length; j++)
+				{
+					const tmpVariableKey = tmpDirectiveValueKeys[j];
+					const tmpVariableDescription = tmpDirectiveValues[tmpVariableKey];
+					const tmpTargetRowIndex = i + tmpVariableDescription.RowOffset;
+
+					// Check if the target row index is within bounds
+					if (tmpTargetRowIndex < 0 || tmpTargetRowIndex >= tmpRows.length)
+					{
+						// Out of bounds -- use the default value
+						tmpRowStepDataSourceObject[tmpVariableKey] = tmpVariableDescription.Default;
+					}
+					else
+					{
+						const tmpTargetRow = tmpRows[tmpTargetRowIndex];
+						if (tmpVariableDescription.Property === null)
+						{
+							// No property specified, use the whole row
+							tmpRowStepDataSourceObject[tmpVariableKey] = tmpTargetRow;
+						}
+						else
+						{
+							// Look up the property on the target row
+							let tmpValue = tmpManifest.getValueByHash(tmpTargetRow, tmpVariableDescription.Property);
+							if (tmpValue == null)
+							{
+								tmpValue = tmpVariableDescription.Default;
+							}
+							tmpRowStepDataSourceObject[tmpVariableKey] = tmpValue;
+						}
+					}
+				}
+
+				let tmpMutatedValues = this.substituteValuesInTokenizedObjects(tmpResultsObject.PostfixTokenObjects, tmpRowStepDataSourceObject, tmpResultsObject, tmpManifest);
+
+				tmpValueArray.push( this.solvePostfixedExpression( tmpResultsObject.PostfixSolveList, tmpDataDestinationObject, tmpResultsObject, tmpManifest) );
+
+				for (let j = 0; j < tmpMutatedValues.length; j++)
+				{
+					tmpMutatedValues[j].Resolved = false;
+				}
+
+				tmpStepCounter++;
+			}
+
+			// Do the assignment
+			let tmpAssignmentManifestHash = tmpResultsObject.PostfixedAssignmentAddress;
+			if ((tmpResultsObject.OriginalRawTokens[1] === '=') && (typeof(tmpResultsObject.OriginalRawTokens[0]) === 'string') && (tmpResultsObject.OriginalRawTokens[0].length > 0))
+			{
+				tmpAssignmentManifestHash = tmpResultsObject.OriginalRawTokens[0];
+			}
+
+			tmpManifest.setValueByHash(tmpDataDestinationObject, tmpAssignmentManifestHash, tmpValueArray);
+
+			return tmpValueArray;
+		}
 		else if (tmpResultsObject.SolverDirectives.Code == 'MONTECARLO')
 		{
 			const [ tmpSampleCount ] = this._prepareDirectiveParameters([

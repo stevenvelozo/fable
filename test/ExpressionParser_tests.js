@@ -1384,5 +1384,774 @@ suite
 							);
 					}
 				);
+			suite
+				(
+					'Multi-Row Map Expressions',
+					function ()
+					{
+						test
+							(
+								'Test basic MULTIROWMAP with current row',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+									let tmpManifest = testFable.newManyfest();
+
+									let tmpDataSourceObject = {
+										Rows: [
+											{ Width: 10, Height: 20 },
+											{ Width: 30, Height: 40 },
+											{ Width: 50, Height: 60 },
+										]
+									};
+									let tmpDataDestinationObject = {};
+
+									// Simple: reference current row values (OFFSET 0 is default)
+									let tmpResult = _Parser.solve(
+										'Areas = MULTIROWMAP ROWS FROM Rows VAR w FROM Width VAR h FROM Height : w * h',
+										tmpDataSourceObject, {}, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpResult).to.be.an('array');
+									Expect(tmpResult.length).to.equal(3);
+									Expect(tmpResult[0]).to.equal('200');
+									Expect(tmpResult[1]).to.equal('1200');
+									Expect(tmpResult[2]).to.equal('3000');
+
+									return fDone();
+								}
+							);
+						test
+							(
+								'Test MULTIROWMAP with previous row lookback (OFFSET -1)',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+									let tmpManifest = testFable.newManyfest();
+
+									let tmpDataSourceObject = {
+										Rows: [
+											{ Value: 100 },
+											{ Value: 200 },
+											{ Value: 300 },
+											{ Value: 400 },
+										]
+									};
+									let tmpDataDestinationObject = {};
+
+									// Reference the current row and the previous row's value
+									let tmpResult = _Parser.solve(
+										'Deltas = MULTIROWMAP ROWS FROM Rows VAR Current FROM Value OFFSET 0 VAR Previous FROM Value OFFSET -1 DEFAULT 0 : Current - Previous',
+										tmpDataSourceObject, {}, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpResult).to.be.an('array');
+									Expect(tmpResult.length).to.equal(4);
+									// Row 0: 100 - 0 (default) = 100
+									Expect(tmpResult[0]).to.equal('100');
+									// Row 1: 200 - 100 = 100
+									Expect(tmpResult[1]).to.equal('100');
+									// Row 2: 300 - 200 = 100
+									Expect(tmpResult[2]).to.equal('100');
+									// Row 3: 400 - 300 = 100
+									Expect(tmpResult[3]).to.equal('100');
+
+									return fDone();
+								}
+							);
+						test
+							(
+								'Test MULTIROWMAP with two-row lookback (OFFSET -2)',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+									let tmpManifest = testFable.newManyfest();
+
+									let tmpDataSourceObject = {
+										Rows: [
+											{ Value: 5 },
+											{ Value: 10 },
+											{ Value: 20 },
+											{ Value: 35 },
+											{ Value: 55 },
+										]
+									};
+									let tmpDataDestinationObject = {};
+
+									// Second derivative: current - 2*previous + two-back
+									let tmpResult = _Parser.solve(
+										'SecondDeriv = MULTIROWMAP ROWS FROM Rows VAR Current FROM Value OFFSET 0 VAR Prev FROM Value OFFSET -1 DEFAULT 0 VAR TwoBack FROM Value OFFSET -2 DEFAULT 0 : Current - 2 * Prev + TwoBack',
+										tmpDataSourceObject, {}, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpResult).to.be.an('array');
+									Expect(tmpResult.length).to.equal(5);
+									// Row 0: 5 - 2*0 + 0 = 5
+									Expect(tmpResult[0]).to.equal('5');
+									// Row 1: 10 - 2*5 + 0 = 0
+									Expect(tmpResult[1]).to.equal('0');
+									// Row 2: 20 - 2*10 + 5 = 5
+									Expect(tmpResult[2]).to.equal('5');
+									// Row 3: 35 - 2*20 + 10 = 5
+									Expect(tmpResult[3]).to.equal('5');
+									// Row 4: 55 - 2*35 + 20 = 5
+									Expect(tmpResult[4]).to.equal('5');
+
+									return fDone();
+								}
+							);
+						test
+							(
+								'Test MULTIROWMAP with three-row lookback (OFFSET -3)',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+									let tmpManifest = testFable.newManyfest();
+
+									let tmpDataSourceObject = {
+										Rows: [
+											{ Value: 1 },
+											{ Value: 2 },
+											{ Value: 4 },
+											{ Value: 8 },
+											{ Value: 16 },
+										]
+									};
+									let tmpDataDestinationObject = {};
+
+									// Sum of current + three rows back
+									let tmpResult = _Parser.solve(
+										'ThreeBackSum = MULTIROWMAP ROWS FROM Rows VAR Current FROM Value VAR ThreeBack FROM Value OFFSET -3 DEFAULT 0 : Current + ThreeBack',
+										tmpDataSourceObject, {}, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpResult).to.be.an('array');
+									Expect(tmpResult.length).to.equal(5);
+									// Row 0: 1 + 0 (default, no row at -3) = 1
+									Expect(tmpResult[0]).to.equal('1');
+									// Row 1: 2 + 0 (default, no row at -2) = 2
+									Expect(tmpResult[1]).to.equal('2');
+									// Row 2: 4 + 0 (default, no row at -1) = 4
+									Expect(tmpResult[2]).to.equal('4');
+									// Row 3: 8 + 1 (row 0) = 9
+									Expect(tmpResult[3]).to.equal('9');
+									// Row 4: 16 + 2 (row 1) = 18
+									Expect(tmpResult[4]).to.equal('18');
+
+									return fDone();
+								}
+							);
+						test
+							(
+								'Test MULTIROWMAP Fibonacci sequence',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+									let tmpManifest = testFable.newManyfest();
+
+									// Fibonacci: each row = sum of two previous rows
+									// Seed: first two rows have the starting values
+									let tmpDataSourceObject = {
+										FibRows: [
+											{ Fib: 0 },
+											{ Fib: 1 },
+											{ Fib: 1 },
+											{ Fib: 2 },
+											{ Fib: 3 },
+											{ Fib: 5 },
+											{ Fib: 8 },
+											{ Fib: 13 },
+										]
+									};
+									let tmpDataDestinationObject = {};
+
+									// Verify: for each row, check that Current == Prev1 + Prev2 (except seed rows)
+									let tmpResult = _Parser.solve(
+										'FibCheck = MULTIROWMAP ROWS FROM FibRows VAR Current FROM Fib VAR Prev1 FROM Fib OFFSET -1 DEFAULT 0 VAR Prev2 FROM Fib OFFSET -2 DEFAULT 0 : Current - (Prev1 + Prev2)',
+										tmpDataSourceObject, {}, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpResult).to.be.an('array');
+									Expect(tmpResult.length).to.equal(8);
+									// Row 0: 0 - (0 + 0) = 0 (seed)
+									Expect(tmpResult[0]).to.equal('0');
+									// Row 1: 1 - (0 + 0) = 1 (seed)
+									Expect(tmpResult[1]).to.equal('1');
+									// Row 2 onwards should all be 0 since each is the sum of previous two
+									Expect(tmpResult[2]).to.equal('0');
+									Expect(tmpResult[3]).to.equal('0');
+									Expect(tmpResult[4]).to.equal('0');
+									Expect(tmpResult[5]).to.equal('0');
+									Expect(tmpResult[6]).to.equal('0');
+									Expect(tmpResult[7]).to.equal('0');
+
+									return fDone();
+								}
+							);
+						test
+							(
+								'Test MULTIROWMAP with custom default values',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+									let tmpManifest = testFable.newManyfest();
+
+									let tmpDataSourceObject = {
+										Rows: [
+											{ Value: 10 },
+											{ Value: 20 },
+											{ Value: 30 },
+										]
+									};
+									let tmpDataDestinationObject = {};
+
+									// Use negative default for previous row
+									let tmpResult = _Parser.solve(
+										'WithDefaults = MULTIROWMAP ROWS FROM Rows VAR Current FROM Value VAR Previous FROM Value OFFSET -1 DEFAULT -1 : Current + Previous',
+										tmpDataSourceObject, {}, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpResult).to.be.an('array');
+									Expect(tmpResult.length).to.equal(3);
+									// Row 0: 10 + (-1) = 9
+									Expect(tmpResult[0]).to.equal('9');
+									// Row 1: 20 + 10 = 30
+									Expect(tmpResult[1]).to.equal('30');
+									// Row 2: 30 + 20 = 50
+									Expect(tmpResult[2]).to.equal('50');
+
+									return fDone();
+								}
+							);
+						test
+							(
+								'Test MULTIROWMAP with multiple properties from same row offset',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+									let tmpManifest = testFable.newManyfest();
+
+									let tmpDataSourceObject = {
+										Measurements: [
+											{ Width: 10, Height: 5, Depth: 2 },
+											{ Width: 20, Height: 10, Depth: 4 },
+											{ Width: 30, Height: 15, Depth: 6 },
+											{ Width: 40, Height: 20, Depth: 8 },
+										]
+									};
+									let tmpDataDestinationObject = {};
+
+									// Compare volume change: current volume minus previous volume
+									let tmpResult = _Parser.solve(
+										'VolumeDelta = MULTIROWMAP ROWS FROM Measurements VAR w FROM Width VAR h FROM Height VAR d FROM Depth VAR pw FROM Width OFFSET -1 DEFAULT 0 VAR ph FROM Height OFFSET -1 DEFAULT 0 VAR pd FROM Depth OFFSET -1 DEFAULT 0 : (w * h * d) - (pw * ph * pd)',
+										tmpDataSourceObject, {}, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpResult).to.be.an('array');
+									Expect(tmpResult.length).to.equal(4);
+									// Row 0: (10*5*2) - (0*0*0) = 100 - 0 = 100
+									Expect(tmpResult[0]).to.equal('100');
+									// Row 1: (20*10*4) - (10*5*2) = 800 - 100 = 700
+									Expect(tmpResult[1]).to.equal('700');
+									// Row 2: (30*15*6) - (20*10*4) = 2700 - 800 = 1900
+									Expect(tmpResult[2]).to.equal('1900');
+									// Row 3: (40*20*8) - (30*15*6) = 6400 - 2700 = 3700
+									Expect(tmpResult[3]).to.equal('3700');
+
+									return fDone();
+								}
+							);
+						test
+							(
+								'Test MULTIROWMAP with stepIndex variable',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+									let tmpManifest = testFable.newManyfest();
+
+									let tmpDataSourceObject = {
+										Rows: [
+											{ Value: 100 },
+											{ Value: 200 },
+											{ Value: 300 },
+										]
+									};
+									let tmpDataDestinationObject = {};
+
+									// Use stepIndex (row index) in the expression
+									let tmpResult = _Parser.solve(
+										'Indexed = MULTIROWMAP ROWS FROM Rows VAR v FROM Value : v + stepIndex * 1000',
+										tmpDataSourceObject, {}, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpResult).to.be.an('array');
+									Expect(tmpResult.length).to.equal(3);
+									Expect(tmpResult[0]).to.equal('100');
+									Expect(tmpResult[1]).to.equal('1200');
+									Expect(tmpResult[2]).to.equal('2300');
+
+									return fDone();
+								}
+							);
+						test
+							(
+								'Test MULTIROWMAP moving average',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+									let tmpManifest = testFable.newManyfest();
+
+									let tmpDataSourceObject = {
+										Prices: [
+											{ Close: 100 },
+											{ Close: 110 },
+											{ Close: 105 },
+											{ Close: 115 },
+											{ Close: 120 },
+										]
+									};
+									let tmpDataDestinationObject = {};
+
+									// 3-period moving average: (current + prev + two-back) / 3
+									let tmpResult = _Parser.solve(
+										'MA3 = MULTIROWMAP ROWS FROM Prices VAR c0 FROM Close VAR c1 FROM Close OFFSET -1 DEFAULT 0 VAR c2 FROM Close OFFSET -2 DEFAULT 0 : (c0 + c1 + c2) / 3',
+										tmpDataSourceObject, {}, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpResult).to.be.an('array');
+									Expect(tmpResult.length).to.equal(5);
+									// Row 2 onwards has three valid values for a true 3-period MA
+									// Row 2: (105 + 110 + 100) / 3 = 105
+									Expect(tmpResult[2]).to.equal('105');
+									// Row 3: (115 + 105 + 110) / 3 = 110
+									Expect(tmpResult[3]).to.equal('110');
+									// Row 4: (120 + 115 + 105) / 3 = 113.33...
+									Expect(Number(tmpResult[4])).to.be.closeTo(113.333, 0.01);
+
+									return fDone();
+								}
+							);
+						test
+							(
+								'Test MULTIROWMAP returns undefined for invalid rows address',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+									let tmpManifest = testFable.newManyfest();
+
+									let tmpDataSourceObject = {};
+									let tmpDataDestinationObject = {};
+
+									// No valid rows
+									let tmpResult = _Parser.solve(
+										'Bad = MULTIROWMAP ROWS FROM NonExistent VAR v FROM Value : v + 1',
+										tmpDataSourceObject, {}, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpResult).to.be.undefined;
+
+									return fDone();
+								}
+							);
+						test
+							(
+								'Test MULTIROWMAP with forward row lookback (positive OFFSET)',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+									let tmpManifest = testFable.newManyfest();
+
+									let tmpDataSourceObject = {
+										Rows: [
+											{ Value: 10 },
+											{ Value: 20 },
+											{ Value: 30 },
+											{ Value: 40 },
+											{ Value: 50 },
+										]
+									};
+									let tmpDataDestinationObject = {};
+
+									// Look ahead: current value minus next row's value
+									let tmpResult = _Parser.solve(
+										'ForwardDelta = MULTIROWMAP ROWS FROM Rows VAR Current FROM Value VAR Next FROM Value OFFSET 1 DEFAULT 0 : Next - Current',
+										tmpDataSourceObject, {}, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpResult).to.be.an('array');
+									Expect(tmpResult.length).to.equal(5);
+									// Row 0: 20 - 10 = 10
+									Expect(tmpResult[0]).to.equal('10');
+									// Row 1: 30 - 20 = 10
+									Expect(tmpResult[1]).to.equal('10');
+									// Row 2: 40 - 30 = 10
+									Expect(tmpResult[2]).to.equal('10');
+									// Row 3: 50 - 40 = 10
+									Expect(tmpResult[3]).to.equal('10');
+									// Row 4: 0 (default) - 50 = -50
+									Expect(tmpResult[4]).to.equal('-50');
+
+									return fDone();
+								}
+							);
+						test
+							(
+								'Test MULTIROWMAP with forward lookback two rows ahead (OFFSET 2)',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+									let tmpManifest = testFable.newManyfest();
+
+									let tmpDataSourceObject = {
+										Rows: [
+											{ Value: 1 },
+											{ Value: 2 },
+											{ Value: 3 },
+											{ Value: 4 },
+											{ Value: 5 },
+										]
+									};
+									let tmpDataDestinationObject = {};
+
+									// Look two ahead
+									let tmpResult = _Parser.solve(
+										'TwoAhead = MULTIROWMAP ROWS FROM Rows VAR Current FROM Value VAR Future FROM Value OFFSET 2 DEFAULT 99 : Future + Current',
+										tmpDataSourceObject, {}, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpResult).to.be.an('array');
+									Expect(tmpResult.length).to.equal(5);
+									// Row 0: 3 + 1 = 4
+									Expect(tmpResult[0]).to.equal('4');
+									// Row 1: 4 + 2 = 6
+									Expect(tmpResult[1]).to.equal('6');
+									// Row 2: 5 + 3 = 8
+									Expect(tmpResult[2]).to.equal('8');
+									// Row 3: 99 (default) + 4 = 103
+									Expect(tmpResult[3]).to.equal('103');
+									// Row 4: 99 (default) + 5 = 104
+									Expect(tmpResult[4]).to.equal('104');
+
+									return fDone();
+								}
+							);
+						test
+							(
+								'Test MULTIROWMAP with SERIESSTART to skip initial rows',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+									let tmpManifest = testFable.newManyfest();
+
+									let tmpDataSourceObject = {
+										Rows: [
+											{ Value: 100 },
+											{ Value: 200 },
+											{ Value: 300 },
+											{ Value: 400 },
+											{ Value: 500 },
+										]
+									};
+									let tmpDataDestinationObject = {};
+
+									// Start from row 2
+									let tmpResult = _Parser.solve(
+										'FromRow2 = MULTIROWMAP ROWS FROM Rows SERIESSTART 2 VAR v FROM Value : v + 0',
+										tmpDataSourceObject, {}, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpResult).to.be.an('array');
+									Expect(tmpResult.length).to.equal(3);
+									Expect(tmpResult[0]).to.equal('300');
+									Expect(tmpResult[1]).to.equal('400');
+									Expect(tmpResult[2]).to.equal('500');
+
+									return fDone();
+								}
+							);
+						test
+							(
+								'Test MULTIROWMAP with negative SERIESSTART (count from end)',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+									let tmpManifest = testFable.newManyfest();
+
+									let tmpDataSourceObject = {
+										Rows: [
+											{ Value: 10 },
+											{ Value: 20 },
+											{ Value: 30 },
+											{ Value: 40 },
+											{ Value: 50 },
+										]
+									};
+									let tmpDataDestinationObject = {};
+
+									// Start from 2 rows before the end
+									let tmpResult = _Parser.solve(
+										'LastTwo = MULTIROWMAP ROWS FROM Rows SERIESSTART -2 VAR v FROM Value : v + 0',
+										tmpDataSourceObject, {}, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpResult).to.be.an('array');
+									Expect(tmpResult.length).to.equal(2);
+									Expect(tmpResult[0]).to.equal('40');
+									Expect(tmpResult[1]).to.equal('50');
+
+									return fDone();
+								}
+							);
+						test
+							(
+								'Test MULTIROWMAP with SERIESSTEP -1 (iterate backwards)',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+									let tmpManifest = testFable.newManyfest();
+
+									let tmpDataSourceObject = {
+										Rows: [
+											{ Value: 10 },
+											{ Value: 20 },
+											{ Value: 30 },
+											{ Value: 40 },
+											{ Value: 50 },
+										]
+									};
+									let tmpDataDestinationObject = {};
+
+									// Iterate backwards from the last row
+									let tmpResult = _Parser.solve(
+										'Reversed = MULTIROWMAP ROWS FROM Rows SERIESSTART -1 SERIESSTEP -1 VAR v FROM Value : v + 0',
+										tmpDataSourceObject, {}, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpResult).to.be.an('array');
+									Expect(tmpResult.length).to.equal(5);
+									Expect(tmpResult[0]).to.equal('50');
+									Expect(tmpResult[1]).to.equal('40');
+									Expect(tmpResult[2]).to.equal('30');
+									Expect(tmpResult[3]).to.equal('20');
+									Expect(tmpResult[4]).to.equal('10');
+
+									return fDone();
+								}
+							);
+						test
+							(
+								'Test MULTIROWMAP with SERIESSTEP 2 (skip every other row)',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+									let tmpManifest = testFable.newManyfest();
+
+									let tmpDataSourceObject = {
+										Rows: [
+											{ Value: 10 },
+											{ Value: 20 },
+											{ Value: 30 },
+											{ Value: 40 },
+											{ Value: 50 },
+											{ Value: 60 },
+										]
+									};
+									let tmpDataDestinationObject = {};
+
+									// Every other row
+									let tmpResult = _Parser.solve(
+										'EveryOther = MULTIROWMAP ROWS FROM Rows SERIESSTEP 2 VAR v FROM Value : v + 0',
+										tmpDataSourceObject, {}, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpResult).to.be.an('array');
+									Expect(tmpResult.length).to.equal(3);
+									Expect(tmpResult[0]).to.equal('10');
+									Expect(tmpResult[1]).to.equal('30');
+									Expect(tmpResult[2]).to.equal('50');
+
+									return fDone();
+								}
+							);
+						test
+							(
+								'Test MULTIROWMAP backwards with lookback still works',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+									let tmpManifest = testFable.newManyfest();
+
+									let tmpDataSourceObject = {
+										Rows: [
+											{ Value: 10 },
+											{ Value: 20 },
+											{ Value: 30 },
+											{ Value: 40 },
+										]
+									};
+									let tmpDataDestinationObject = {};
+
+									// Going backwards, previous row (OFFSET -1) means the row with a LOWER index
+									// which is actually the next row in reverse iteration order
+									let tmpResult = _Parser.solve(
+										'BackwardsWithLook = MULTIROWMAP ROWS FROM Rows SERIESSTART -1 SERIESSTEP -1 VAR Current FROM Value VAR Prev FROM Value OFFSET -1 DEFAULT 0 : Current - Prev',
+										tmpDataSourceObject, {}, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpResult).to.be.an('array');
+									Expect(tmpResult.length).to.equal(4);
+									// Row 3 (first in reverse): 40 - 30 = 10
+									Expect(tmpResult[0]).to.equal('10');
+									// Row 2: 30 - 20 = 10
+									Expect(tmpResult[1]).to.equal('10');
+									// Row 1: 20 - 10 = 10
+									Expect(tmpResult[2]).to.equal('10');
+									// Row 0: 10 - 0 (default) = 10
+									Expect(tmpResult[3]).to.equal('10');
+
+									return fDone();
+								}
+							);
+						test
+							(
+								'Test MULTIROWMAP with SERIESSTART and SERIESSTEP combined',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+									let tmpManifest = testFable.newManyfest();
+
+									let tmpDataSourceObject = {
+										Rows: [
+											{ Value: 10 },
+											{ Value: 20 },
+											{ Value: 30 },
+											{ Value: 40 },
+											{ Value: 50 },
+											{ Value: 60 },
+											{ Value: 70 },
+											{ Value: 80 },
+										]
+									};
+									let tmpDataDestinationObject = {};
+
+									// Start at row 1, step by 3
+									let tmpResult = _Parser.solve(
+										'SteppedStart = MULTIROWMAP ROWS FROM Rows SERIESSTART 1 SERIESSTEP 3 VAR v FROM Value : v + 0',
+										tmpDataSourceObject, {}, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpResult).to.be.an('array');
+									// Rows: 1, 4, 7 => Values: 20, 50, 80
+									Expect(tmpResult.length).to.equal(3);
+									Expect(tmpResult[0]).to.equal('20');
+									Expect(tmpResult[1]).to.equal('50');
+									Expect(tmpResult[2]).to.equal('80');
+
+									return fDone();
+								}
+							);
+						test
+							(
+								'Test MULTIROWMAP with both forward and backward lookback simultaneously',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+									let tmpManifest = testFable.newManyfest();
+
+									let tmpDataSourceObject = {
+										Rows: [
+											{ Value: 10 },
+											{ Value: 20 },
+											{ Value: 30 },
+											{ Value: 40 },
+											{ Value: 50 },
+										]
+									};
+									let tmpDataDestinationObject = {};
+
+									// Central difference: (next - previous) / 2
+									let tmpResult = _Parser.solve(
+										'CentralDiff = MULTIROWMAP ROWS FROM Rows VAR Prev FROM Value OFFSET -1 DEFAULT 0 VAR Next FROM Value OFFSET 1 DEFAULT 0 : (Next - Prev) / 2',
+										tmpDataSourceObject, {}, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpResult).to.be.an('array');
+									Expect(tmpResult.length).to.equal(5);
+									// Row 0: (20 - 0) / 2 = 10
+									Expect(tmpResult[0]).to.equal('10');
+									// Row 1: (30 - 10) / 2 = 10
+									Expect(tmpResult[1]).to.equal('10');
+									// Row 2: (40 - 20) / 2 = 10
+									Expect(tmpResult[2]).to.equal('10');
+									// Row 3: (50 - 30) / 2 = 10
+									Expect(tmpResult[3]).to.equal('10');
+									// Row 4: (0 - 40) / 2 = -20
+									Expect(tmpResult[4]).to.equal('-20');
+
+									return fDone();
+								}
+							);
+						test
+							(
+								'Test MULTIROWMAP with rowIndex and stepIndex variables',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+									let tmpManifest = testFable.newManyfest();
+
+									let tmpDataSourceObject = {
+										Rows: [
+											{ Value: 100 },
+											{ Value: 200 },
+											{ Value: 300 },
+											{ Value: 400 },
+											{ Value: 500 },
+										]
+									};
+									let tmpDataDestinationObject = {};
+
+									// With SERIESSTART, rowIndex is the actual array index, stepIndex is the iteration count
+									let tmpResult = _Parser.solve(
+										'IndexTest = MULTIROWMAP ROWS FROM Rows SERIESSTART 2 VAR v FROM Value : v + rowIndex * 1000 + stepIndex',
+										tmpDataSourceObject, {}, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpResult).to.be.an('array');
+									Expect(tmpResult.length).to.equal(3);
+									// stepIndex=0, rowIndex=2: 300 + 2000 + 0 = 2300
+									Expect(tmpResult[0]).to.equal('2300');
+									// stepIndex=1, rowIndex=3: 400 + 3000 + 1 = 3401
+									Expect(tmpResult[1]).to.equal('3401');
+									// stepIndex=2, rowIndex=4: 500 + 4000 + 2 = 4502
+									Expect(tmpResult[2]).to.equal('4502');
+
+									return fDone();
+								}
+							);
+						test
+							(
+								'Test MULTIROWMAP SERIESSTEP zero returns undefined',
+								(fDone) =>
+								{
+									let testFable = new libFable();
+									let _Parser = testFable.instantiateServiceProviderIfNotExists('ExpressionParser');
+									let tmpManifest = testFable.newManyfest();
+
+									let tmpDataSourceObject = {
+										Rows: [{ Value: 1 }]
+									};
+									let tmpDataDestinationObject = {};
+
+									let tmpResult = _Parser.solve(
+										'BadStep = MULTIROWMAP ROWS FROM Rows SERIESSTEP 0 VAR v FROM Value : v + 0',
+										tmpDataSourceObject, {}, tmpManifest, tmpDataDestinationObject);
+
+									Expect(tmpResult).to.be.undefined;
+
+									return fDone();
+								}
+							);
+					}
+				);
 		}
 	);
