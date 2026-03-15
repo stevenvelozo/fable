@@ -112,6 +112,7 @@ class FableServiceExpressionParser extends libFableServiceBase
 
 		// Wire each sub service into this instance of the solver.
 		this.Tokenizer.connectExpressionParser(this);
+		this.Tokenizer.TokenizerDirectiveMutation.connectExpressionParser(this);
 		this.Linter.connectExpressionParser(this);
 		this.Postfix.connectExpressionParser(this);
 		this.ValueMarshal.connectExpressionParser(this);

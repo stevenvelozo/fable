@@ -2155,3 +2155,293 @@ suite
 				);
 		}
 	);
+
+suite
+	(
+		'Comparison Operators',
+		function ()
+		{
+			suite
+				(
+					'Greater Than',
+					function ()
+					{
+						test
+							(
+								'Basic greater than comparisons.',
+								(fDone) =>
+								{
+									let _Parser = getExpressionParser();
+									Expect(_Parser.solve('Result = 5 > 3')).to.equal('1');
+									Expect(_Parser.solve('Result = 3 > 5')).to.equal('0');
+									Expect(_Parser.solve('Result = 5 > 5')).to.equal('0');
+									return fDone();
+								}
+							);
+					}
+				);
+			suite
+				(
+					'Greater Than or Equal',
+					function ()
+					{
+						test
+							(
+								'Basic greater than or equal comparisons.',
+								(fDone) =>
+								{
+									let _Parser = getExpressionParser();
+									Expect(_Parser.solve('Result = 5 >= 3')).to.equal('1');
+									Expect(_Parser.solve('Result = 3 >= 5')).to.equal('0');
+									Expect(_Parser.solve('Result = 5 >= 5')).to.equal('1');
+									return fDone();
+								}
+							);
+					}
+				);
+			suite
+				(
+					'Less Than',
+					function ()
+					{
+						test
+							(
+								'Basic less than comparisons.',
+								(fDone) =>
+								{
+									let _Parser = getExpressionParser();
+									Expect(_Parser.solve('Result = 3 < 5')).to.equal('1');
+									Expect(_Parser.solve('Result = 5 < 3')).to.equal('0');
+									Expect(_Parser.solve('Result = 5 < 5')).to.equal('0');
+									return fDone();
+								}
+							);
+					}
+				);
+			suite
+				(
+					'Less Than or Equal',
+					function ()
+					{
+						test
+							(
+								'Basic less than or equal comparisons.',
+								(fDone) =>
+								{
+									let _Parser = getExpressionParser();
+									Expect(_Parser.solve('Result = 3 <= 5')).to.equal('1');
+									Expect(_Parser.solve('Result = 5 <= 3')).to.equal('0');
+									Expect(_Parser.solve('Result = 5 <= 5')).to.equal('1');
+									return fDone();
+								}
+							);
+					}
+				);
+			suite
+				(
+					'Equal',
+					function ()
+					{
+						test
+							(
+								'Basic equality comparisons.',
+								(fDone) =>
+								{
+									let _Parser = getExpressionParser();
+									Expect(_Parser.solve('Result = 5 == 5')).to.equal('1');
+									Expect(_Parser.solve('Result = 5 == 3')).to.equal('0');
+									return fDone();
+								}
+							);
+					}
+				);
+			suite
+				(
+					'Not Equal',
+					function ()
+					{
+						test
+							(
+								'Basic inequality comparisons.',
+								(fDone) =>
+								{
+									let _Parser = getExpressionParser();
+									Expect(_Parser.solve('Result = 5 != 3')).to.equal('1');
+									Expect(_Parser.solve('Result = 5 != 5')).to.equal('0');
+									return fDone();
+								}
+							);
+					}
+				);
+			suite
+				(
+					'Comparison with Arithmetic',
+					function ()
+					{
+						test
+							(
+								'Arithmetic is evaluated before comparison.',
+								(fDone) =>
+								{
+									let _Parser = getExpressionParser();
+									// 2 + 3 = 5, 1 + 2 = 3, so 5 > 3 = 1
+									Expect(_Parser.solve('Result = 2 + 3 > 1 + 2')).to.equal('1');
+									// 1 + 1 = 2, 3 + 1 = 4, so 2 > 4 = 0
+									Expect(_Parser.solve('Result = 1 + 1 > 3 + 1')).to.equal('0');
+									// 10 - 5 = 5, 2 * 3 = 6, so 5 < 6 = 1
+									Expect(_Parser.solve('Result = 10 - 5 < 2 * 3')).to.equal('1');
+									return fDone();
+								}
+							);
+						test
+							(
+								'Comparison with variables.',
+								(fDone) =>
+								{
+									let _Parser = getExpressionParser();
+									let tmpData = { Height: 10, Width: 5 };
+									let tmpDestination = {};
+									_Parser.solve('Result = Height > Width', tmpData, {}, false, tmpDestination);
+									Expect(tmpDestination.Result).to.equal('1');
+									_Parser.solve('Result = Width > Height', tmpData, {}, false, tmpDestination);
+									Expect(tmpDestination.Result).to.equal('0');
+									_Parser.solve('Result = Height == Width', tmpData, {}, false, tmpDestination);
+									Expect(tmpDestination.Result).to.equal('0');
+									_Parser.solve('Result = Height != Width', tmpData, {}, false, tmpDestination);
+									Expect(tmpDestination.Result).to.equal('1');
+									return fDone();
+								}
+							);
+					}
+				);
+		}
+	);
+
+suite
+	(
+		'Ternary Operator',
+		function ()
+		{
+			suite
+				(
+					'Basic Ternary',
+					function ()
+					{
+						test
+							(
+								'True branch is selected when condition is truthy.',
+								(fDone) =>
+								{
+									let _Parser = getExpressionParser();
+									Expect(_Parser.solve('Result = 5 > 3 ? 100 :: 200')).to.equal('100');
+									return fDone();
+								}
+							);
+						test
+							(
+								'False branch is selected when condition is falsy.',
+								(fDone) =>
+								{
+									let _Parser = getExpressionParser();
+									Expect(_Parser.solve('Result = 3 > 5 ? 100 :: 200')).to.equal('200');
+									return fDone();
+								}
+							);
+						test
+							(
+								'Ternary with equality comparison.',
+								(fDone) =>
+								{
+									let _Parser = getExpressionParser();
+									Expect(_Parser.solve('Result = 5 == 5 ? 10 :: 20')).to.equal('10');
+									Expect(_Parser.solve('Result = 5 == 3 ? 10 :: 20')).to.equal('20');
+									return fDone();
+								}
+							);
+					}
+				);
+			suite
+				(
+					'Ternary with Variables',
+					function ()
+					{
+						test
+							(
+								'Ternary selects based on variable comparison.',
+								(fDone) =>
+								{
+									let _Parser = getExpressionParser();
+									let tmpData = { Height: 10, Width: 5, A: 42, B: 99 };
+									let tmpDestination = {};
+									_Parser.solve('SomeValue = Height > Width ? A :: B', tmpData, {}, false, tmpDestination);
+									Expect(tmpDestination.SomeValue).to.equal('42');
+									_Parser.solve('SomeValue = Width > Height ? A :: B', tmpData, {}, false, tmpDestination);
+									Expect(tmpDestination.SomeValue).to.equal('99');
+									return fDone();
+								}
+							);
+					}
+				);
+			suite
+				(
+					'Ternary with Arithmetic in Branches',
+					function ()
+					{
+						test
+							(
+								'Arithmetic expressions work in ternary branches.',
+								(fDone) =>
+								{
+									let _Parser = getExpressionParser();
+									let tmpData = { A: 10, B: 5 };
+									let tmpDestination = {};
+									// A > B is true, so A + 1 = 11
+									_Parser.solve('Result = A > B ? A + 1 :: B + 1', tmpData, {}, false, tmpDestination);
+									Expect(tmpDestination.Result).to.equal('11');
+									// B > A is false, so B + 1 = 6
+									_Parser.solve('Result = B > A ? A + 1 :: B + 1', tmpData, {}, false, tmpDestination);
+									Expect(tmpDestination.Result).to.equal('6');
+									return fDone();
+								}
+							);
+						test
+							(
+								'Arithmetic expressions work in the ternary condition.',
+								(fDone) =>
+								{
+									let _Parser = getExpressionParser();
+									// 2 + 3 = 5, 1 + 2 = 3, so 5 > 3 = true, result is 100
+									Expect(_Parser.solve('Result = 2 + 3 > 1 + 2 ? 100 :: 200')).to.equal('100');
+									// 1 + 1 = 2, 3 + 1 = 4, so 2 > 4 = false, result is 200
+									Expect(_Parser.solve('Result = 1 + 1 > 3 + 1 ? 100 :: 200')).to.equal('200');
+									return fDone();
+								}
+							);
+					}
+				);
+			suite
+				(
+					'Nested Ternary',
+					function ()
+					{
+						test
+							(
+								'Nested ternary with parenthesized inner ternary.',
+								(fDone) =>
+								{
+									let _Parser = getExpressionParser();
+									let tmpData = { A: 5, B: 3 };
+									let tmpDestination = {};
+									// A > 0 is true, then B > 0 is true, so result is 1
+									_Parser.solve('Result = A > 0 ? (B > 0 ? 1 :: 2) :: 3', tmpData, {}, false, tmpDestination);
+									Expect(tmpDestination.Result).to.equal('1');
+									// A > 0 is true, then B > 10 is false, so result is 2
+									_Parser.solve('Result = A > 0 ? (B > 10 ? 1 :: 2) :: 3', tmpData, {}, false, tmpDestination);
+									Expect(tmpDestination.Result).to.equal('2');
+									return fDone();
+								}
+							);
+					}
+				);
+		}
+	);

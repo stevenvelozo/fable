@@ -1,0 +1,178 @@
+{
+	"Name": "Parser Acid Test",
+	"Description": "Stress tests for operator precedence, parenthesis handling, comparison operators, and ternary syntax. Catches common parser bugs.",
+	"Expressions":
+		[
+			{
+				"Category": "PEMDAS / Order of Operations",
+				"Description": "Multiplication before addition: 2 + 3*4 = 14",
+				"Equation": "Result = 2 + 3 * 4",
+				"ExpectedResult": "14"
+			},
+			{
+				"Category": "PEMDAS / Order of Operations",
+				"Description": "Parentheses override: (2+3)*4 = 20",
+				"Equation": "Result = (2 + 3) * 4",
+				"ExpectedResult": "20"
+			},
+			{
+				"Category": "PEMDAS / Order of Operations",
+				"Description": "Exponent before multiply: 2^3 * 4 = 32",
+				"Equation": "Result = 2^3 * 4",
+				"ExpectedResult": "32"
+			},
+			{
+				"Category": "PEMDAS / Order of Operations",
+				"Description": "Mixed all precedences: 2^3 + 4*5 - 6/3 = 26",
+				"Equation": "Result = 2^3 + 4 * 5 - 6 / 3",
+				"ExpectedResult": "26"
+			},
+			{
+				"Category": "PEMDAS / Order of Operations",
+				"Description": "Division before subtraction: 100 - 50 / 5 = 90",
+				"Equation": "Result = 100 - 50 / 5",
+				"ExpectedResult": "90"
+			},
+			{
+				"Category": "Parenthesis Nesting",
+				"Description": "Deep nesting: ((((1+2)*3)-4)/5) = 1",
+				"Equation": "Result = ((((1 + 2) * 3) - 4) / 5)",
+				"ExpectedResult": "1"
+			},
+			{
+				"Category": "Parenthesis Nesting",
+				"Description": "Redundant parentheses: ((((42)))) = 42",
+				"Equation": "Result = ((((42))))",
+				"ExpectedResult": "42"
+			},
+			{
+				"Category": "Left-to-Right Associativity",
+				"Description": "Subtraction is left-to-right: 10 - 3 - 2 = 5",
+				"Equation": "Result = 10 - 3 - 2",
+				"ExpectedResult": "5"
+			},
+			{
+				"Category": "Left-to-Right Associativity",
+				"Description": "Division is left-to-right: 20 / 4 / 5 = 1",
+				"Equation": "Result = 20 / 4 / 5",
+				"ExpectedResult": "1"
+			},
+			{
+				"Category": "Negative Numbers",
+				"Description": "(-3)^2 = 9 (parenthesized negative base)",
+				"Equation": "Result = (-3)^2",
+				"ExpectedResult": "9"
+			},
+			{
+				"Category": "Negative Numbers",
+				"Description": "Addition with negative: 4 + -3 = 1",
+				"Equation": "Result = 4 + -3",
+				"ExpectedResult": "1"
+			},
+			{
+				"Category": "Exponentiation",
+				"Description": "2^3^2 = 64 (left-to-right in this parser)",
+				"Equation": "Result = 2^3^2",
+				"ExpectedResult": "64"
+			},
+			{
+				"Category": "Comparison Operators",
+				"Description": "Greater than true: 5 > 3 = 1",
+				"Equation": "Result = 5 > 3",
+				"ExpectedResult": "1"
+			},
+			{
+				"Category": "Comparison Operators",
+				"Description": "Greater than false: 3 > 5 = 0",
+				"Equation": "Result = 3 > 5",
+				"ExpectedResult": "0"
+			},
+			{
+				"Category": "Comparison Operators",
+				"Description": "Equal true: 5 == 5 = 1",
+				"Equation": "Result = 5 == 5",
+				"ExpectedResult": "1"
+			},
+			{
+				"Category": "Comparison Operators",
+				"Description": "Not equal false: 5 != 5 = 0",
+				"Equation": "Result = 5 != 5",
+				"ExpectedResult": "0"
+			},
+			{
+				"Category": "Comparison Operators",
+				"Description": "GTE boundary: 3 >= 3 = 1",
+				"Equation": "Result = 3 >= 3",
+				"ExpectedResult": "1"
+			},
+			{
+				"Category": "Comparison Operators",
+				"Description": "LTE false: 3 <= 2 = 0",
+				"Equation": "Result = 3 <= 2",
+				"ExpectedResult": "0"
+			},
+			{
+				"Category": "Comparison Operators",
+				"Description": "Negative comparison: (-3) < 0 = 1",
+				"Equation": "Result = (-3) < 0",
+				"ExpectedResult": "1"
+			},
+			{
+				"Category": "Comparison Precedence",
+				"Description": "Arithmetic before comparison: 2+3 > 1+2 = 1",
+				"Equation": "Result = 2 + 3 > 1 + 2",
+				"ExpectedResult": "1"
+			},
+			{
+				"Category": "Ternary Operator",
+				"Description": "True branch: 5>3 ? 10+20 :: 30+40 = 30",
+				"Equation": "Result = 5 > 3 ? 10 + 20 :: 30 + 40",
+				"ExpectedResult": "30"
+			},
+			{
+				"Category": "Ternary Operator",
+				"Description": "False branch: 3>5 ? 10+20 :: 30+40 = 70",
+				"Equation": "Result = 3 > 5 ? 10 + 20 :: 30 + 40",
+				"ExpectedResult": "70"
+			},
+			{
+				"Category": "Ternary Operator",
+				"Description": "Nested ternary: 1>0 ? (2>3 ? 100 :: 200) :: 300 = 200",
+				"Equation": "Result = 1 > 0 ? (2 > 3 ? 100 :: 200) :: 300",
+				"ExpectedResult": "200"
+			},
+			{
+				"Category": "Ternary Operator",
+				"Description": "Ternary with variables (absolute value pattern)",
+				"Equation": "Result = X > 0 ? X :: 0 - X",
+				"ExpectedResult": "5",
+				"Data": { "X": -5 }
+			},
+			{
+				"Category": "Ternary Operator",
+				"Description": "Ternary with variables (positive input)",
+				"Equation": "Result = X > 0 ? X :: 0 - X",
+				"ExpectedResult": "5",
+				"Data": { "X": 5 }
+			},
+			{
+				"Category": "Ternary Operator",
+				"Description": "Equality comparison in ternary",
+				"Equation": "Result = 0 == 0 ? 1 :: 0",
+				"ExpectedResult": "1"
+			},
+			{
+				"Category": "Functions with Comparisons",
+				"Description": "Function result in comparison via variable",
+				"Equation": "Result = SUM(Vals) > 5",
+				"ExpectedResult": "1",
+				"Data": { "Vals": [1, 2, 3] }
+			},
+			{
+				"Category": "Complex Expressions",
+				"Description": "All arithmetic operators in one expression",
+				"Equation": "Result = (10 + 5) * 2 - 8 / 4 + 3^2 % 5",
+				"ExpectedResult": "37"
+			}
+		]
+}

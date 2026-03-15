@@ -1,0 +1,198 @@
+{
+	"Name": "Spreadsheet Function Conformance",
+	"Description": "Excel/OpenFormula-compatible function tests. Verifies statistical, rounding, and regression functions against known reference values.",
+	"Expressions":
+		[
+			{
+				"Category": "Aggregation",
+				"Description": "SUM of five values",
+				"Equation": "Result = SUM(Vals)",
+				"ExpectedResult": "150",
+				"Data": { "Vals": [10, 20, 30, 40, 50] }
+			},
+			{
+				"Category": "Aggregation",
+				"Description": "AVG of five values",
+				"Equation": "Result = AVG(Vals)",
+				"ExpectedResult": "30",
+				"Data": { "Vals": [10, 20, 30, 40, 50] }
+			},
+			{
+				"Category": "Aggregation",
+				"Description": "MEAN is equivalent to AVG",
+				"Equation": "Result = MEAN(Vals)",
+				"ExpectedResult": "30",
+				"Data": { "Vals": [10, 20, 30, 40, 50] }
+			},
+			{
+				"Category": "Aggregation",
+				"Description": "MEDIAN of odd-count dataset",
+				"Equation": "Result = MEDIAN(Vals)",
+				"ExpectedResult": "30",
+				"Data": { "Vals": [10, 20, 30, 40, 50] }
+			},
+			{
+				"Category": "Aggregation",
+				"Description": "MEDIAN of even-count dataset (average of middle two)",
+				"Equation": "Result = MEDIAN(Vals)",
+				"ExpectedResult": "25",
+				"Data": { "Vals": [10, 20, 30, 40] }
+			},
+			{
+				"Category": "Aggregation",
+				"Description": "MEDIAN of single element",
+				"Equation": "Result = MEDIAN(Vals)",
+				"ExpectedResult": "42",
+				"Data": { "Vals": [42] }
+			},
+			{
+				"Category": "Aggregation",
+				"Description": "MIN of dataset",
+				"Equation": "Result = MIN(Vals)",
+				"ExpectedResult": "10",
+				"Data": { "Vals": [10, 20, 30, 40, 50] }
+			},
+			{
+				"Category": "Aggregation",
+				"Description": "MAX of dataset",
+				"Equation": "Result = MAX(Vals)",
+				"ExpectedResult": "50",
+				"Data": { "Vals": [10, 20, 30, 40, 50] }
+			},
+			{
+				"Category": "Aggregation",
+				"Description": "MAX of identical values",
+				"Equation": "Result = MAX(Vals)",
+				"ExpectedResult": "5",
+				"Data": { "Vals": [5, 5, 5] }
+			},
+			{
+				"Category": "Aggregation",
+				"Description": "MIN of single element",
+				"Equation": "Result = MIN(Vals)",
+				"ExpectedResult": "42",
+				"Data": { "Vals": [42] }
+			},
+			{
+				"Category": "Aggregation",
+				"Description": "COUNT of dataset",
+				"Equation": "Result = COUNT(Vals)",
+				"ExpectedResult": "5",
+				"Data": { "Vals": [10, 20, 30, 40, 50] }
+			},
+			{
+				"Category": "Variance and Standard Deviation",
+				"Description": "Sample variance (VAR) — Excel reference: 2,4,4,4,5,5,7,9 = 4.571429",
+				"Equation": "Result = ROUND(VAR(Vals), 4)",
+				"ExpectedResult": "4.5714",
+				"Data": { "Vals": [2, 4, 4, 4, 5, 5, 7, 9] }
+			},
+			{
+				"Category": "Variance and Standard Deviation",
+				"Description": "Population variance (VARP) — Excel reference: 2,4,4,4,5,5,7,9 = 4",
+				"Equation": "Result = VARP(Vals)",
+				"ExpectedResult": "4",
+				"Data": { "Vals": [2, 4, 4, 4, 5, 5, 7, 9] }
+			},
+			{
+				"Category": "Variance and Standard Deviation",
+				"Description": "Sample standard deviation (STDEV) — Excel reference: 2.138090",
+				"Equation": "Result = ROUND(STDEV(Vals), 4)",
+				"ExpectedResult": "2.1381",
+				"Data": { "Vals": [2, 4, 4, 4, 5, 5, 7, 9] }
+			},
+			{
+				"Category": "Variance and Standard Deviation",
+				"Description": "Population standard deviation (STDEVP) — Excel reference: 2",
+				"Equation": "Result = STDEVP(Vals)",
+				"ExpectedResult": "2",
+				"Data": { "Vals": [2, 4, 4, 4, 5, 5, 7, 9] }
+			},
+			{
+				"Category": "Rounding",
+				"Description": "ROUND to nearest integer",
+				"Equation": "Result = ROUND(3.14159)",
+				"ExpectedResult": "3"
+			},
+			{
+				"Category": "Rounding",
+				"Description": "ROUND half-up: 2.5 rounds to 3",
+				"Equation": "Result = ROUND(2.5)",
+				"ExpectedResult": "3"
+			},
+			{
+				"Category": "Rounding",
+				"Description": "ROUND to 1 decimal place",
+				"Equation": "Result = ROUND(2.55, 1)",
+				"ExpectedResult": "2.6"
+			},
+			{
+				"Category": "Rounding",
+				"Description": "ROUND to 2 decimal places",
+				"Equation": "Result = ROUND(3.14159, 2)",
+				"ExpectedResult": "3.14"
+			},
+			{
+				"Category": "Rounding",
+				"Description": "ROUND to 4 decimal places",
+				"Equation": "Result = ROUND(3.14159, 4)",
+				"ExpectedResult": "3.1416"
+			},
+			{
+				"Category": "Rounding",
+				"Description": "TOFIXED pads with zeros",
+				"Equation": "Result = TOFIXED(3.1, 4)",
+				"ExpectedResult": "3.1000"
+			},
+			{
+				"Category": "Rounding",
+				"Description": "ABS of negative number",
+				"Equation": "Result = ABS(-5)",
+				"ExpectedResult": "5"
+			},
+			{
+				"Category": "Rounding",
+				"Description": "ABS of positive number (identity)",
+				"Equation": "Result = ABS(5)",
+				"ExpectedResult": "5"
+			},
+			{
+				"Category": "Rounding",
+				"Description": "FLOOR rounds down",
+				"Equation": "Result = FLOOR(3.7)",
+				"ExpectedResult": "3"
+			},
+			{
+				"Category": "Rounding",
+				"Description": "FLOOR of negative rounds toward negative infinity",
+				"Equation": "Result = FLOOR(-3.2)",
+				"ExpectedResult": "-4"
+			},
+			{
+				"Category": "Rounding",
+				"Description": "CEIL rounds up",
+				"Equation": "Result = CEIL(3.2)",
+				"ExpectedResult": "4"
+			},
+			{
+				"Category": "Rounding",
+				"Description": "CEIL of negative rounds toward zero",
+				"Equation": "Result = CEIL(-3.7)",
+				"ExpectedResult": "-3"
+			},
+			{
+				"Category": "Linear Regression",
+				"Description": "SLOPE of perfect linear data y=2x (slope=2)",
+				"Equation": "Result = SLOPE(Y, X)",
+				"ExpectedResult": "2",
+				"Data": { "Y": [2, 4, 6, 8, 10], "X": [1, 2, 3, 4, 5] }
+			},
+			{
+				"Category": "Linear Regression",
+				"Description": "INTERCEPT of perfect linear data y=2x (intercept=0)",
+				"Equation": "Result = INTERCEPT(Y, X)",
+				"ExpectedResult": "0",
+				"Data": { "Y": [2, 4, 6, 8, 10], "X": [1, 2, 3, 4, 5] }
+			}
+		]
+}

@@ -223,3 +223,111 @@ console.log(`\nWeighted volume change (3-day lookback with price ratio):`);
 console.log(`  WeightedVolChange: [${tmpMultiRowResults.WeightedVolChange.join(', ')}]`);
 
 console.log('QED');
+
+/* * * * * * * * * * * * * * * * *
+ *
+ * Third-Party Test Suite Runner
+ *
+ * Run with: node Math-Solver-Harness.js --test-suite <name>
+ * Valid names: identities, spreadsheet, precision, acidtest, all
+ *
+ */
+let SUITE_MAP =
+	{
+		'identities': 'TestSuite-Identities.json',
+		'spreadsheet': 'TestSuite-Spreadsheet.json',
+		'precision': 'TestSuite-Precision.json',
+		'acidtest': 'TestSuite-AcidTest.json'
+	};
+
+let tmpRequestedSuites = [];
+for (let i = 0; i < process.argv.length; i++)
+{
+	if (process.argv[i] === '--test-suite' && i + 1 < process.argv.length)
+	{
+		let tmpSuiteName = process.argv[i + 1].toLowerCase();
+		if (tmpSuiteName === 'all')
+		{
+			tmpRequestedSuites = Object.keys(SUITE_MAP);
+		}
+		else if (tmpSuiteName in SUITE_MAP)
+		{
+			tmpRequestedSuites.push(tmpSuiteName);
+		}
+		else
+		{
+			console.log(`\x1b[31mUnknown test suite: ${tmpSuiteName}\x1b[0m`);
+			console.log(`Valid suites: ${Object.keys(SUITE_MAP).join(', ')}, all`);
+		}
+		i++;
+	}
+}
+
+if (tmpRequestedSuites.length > 0)
+{
+	let tmpTotalPass = 0;
+	let tmpTotalFail = 0;
+	let tmpSuiteSummaries = [];
+
+	for (let s = 0; s < tmpRequestedSuites.length; s++)
+	{
+		let tmpSuiteKey = tmpRequestedSuites[s];
+		let tmpSuiteData = require(`./${SUITE_MAP[tmpSuiteKey]}`);
+		let tmpSuitePass = 0;
+		let tmpSuiteFail = 0;
+		let tmpCurrentCategory = '';
+
+		console.log(`\n\x1b[1m=== ${tmpSuiteData.Name} ===\x1b[0m`);
+		console.log(`${tmpSuiteData.Description}\n`);
+
+		for (let i = 0; i < tmpSuiteData.Expressions.length; i++)
+		{
+			let tmpTest = tmpSuiteData.Expressions[i];
+			if (tmpTest.Category && tmpTest.Category !== tmpCurrentCategory)
+			{
+				tmpCurrentCategory = tmpTest.Category;
+				console.log(`  \x1b[4m${tmpCurrentCategory}\x1b[0m`);
+			}
+
+			let tmpData = tmpTest.Data || _AppData;
+			let tmpResultObject = {};
+			let tmpResultValue;
+			try
+			{
+				tmpResultValue = _ExpressionParser.solve(tmpTest.Equation, tmpData, tmpResultObject, false);
+			}
+			catch (pError)
+			{
+				tmpResultValue = `ERROR: ${pError.message}`;
+			}
+
+			let tmpPassed = (String(tmpResultValue) === String(tmpTest.ExpectedResult));
+			if (tmpPassed)
+			{
+				tmpSuitePass++;
+				console.log(`    \x1b[32m PASS\x1b[0m ${tmpTest.Description}`);
+			}
+			else
+			{
+				tmpSuiteFail++;
+				console.log(`    \x1b[31m FAIL\x1b[0m ${tmpTest.Description}`);
+				console.log(`          Expected: ${tmpTest.ExpectedResult}`);
+				console.log(`          Got:      ${tmpResultValue}`);
+			}
+		}
+
+		tmpTotalPass += tmpSuitePass;
+		tmpTotalFail += tmpSuiteFail;
+		tmpSuiteSummaries.push({ Name: tmpSuiteData.Name, Pass: tmpSuitePass, Fail: tmpSuiteFail, Total: tmpSuitePass + tmpSuiteFail });
+	}
+
+	console.log(`\n\x1b[1m=== Test Suite Summary ===\x1b[0m`);
+	for (let i = 0; i < tmpSuiteSummaries.length; i++)
+	{
+		let tmpSummary = tmpSuiteSummaries[i];
+		let tmpColor = tmpSummary.Fail > 0 ? '\x1b[31m' : '\x1b[32m';
+		console.log(`  ${tmpColor}${tmpSummary.Pass}/${tmpSummary.Total}\x1b[0m ${tmpSummary.Name}`);
+	}
+	let tmpOverallColor = tmpTotalFail > 0 ? '\x1b[31m' : '\x1b[32m';
+	console.log(`\n  ${tmpOverallColor}Total: ${tmpTotalPass}/${tmpTotalPass + tmpTotalFail} passed\x1b[0m`);
+}

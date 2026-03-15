@@ -1,0 +1,147 @@
+{
+	"Name": "Mathematical Identities",
+	"Description": "Classic mathematical identities from NIST DLMF and standard references. Tests correctness of trig, logarithmic, and algebraic operations.",
+	"Expressions":
+		[
+			{
+				"Category": "Pythagorean Identity",
+				"Description": "sin^2(30) + cos^2(30) = 1",
+				"Equation": "Result = ROUND(sin(rad(30))^2 + cos(rad(30))^2, 10)",
+				"ExpectedResult": "1"
+			},
+			{
+				"Category": "Pythagorean Identity",
+				"Description": "sin^2(45) + cos^2(45) = 1",
+				"Equation": "Result = ROUND(sin(rad(45))^2 + cos(rad(45))^2, 10)",
+				"ExpectedResult": "1"
+			},
+			{
+				"Category": "Pythagorean Identity",
+				"Description": "sin^2(60) + cos^2(60) = 1",
+				"Equation": "Result = ROUND(sin(rad(60))^2 + cos(rad(60))^2, 10)",
+				"ExpectedResult": "1"
+			},
+			{
+				"Category": "Double Angle Formula",
+				"Description": "2*sin(30)*cos(30) = sin(60)",
+				"Equation": "Result = ROUND(2 * sin(rad(30)) * cos(rad(30)), 10)",
+				"ExpectedResult": "0.8660254038"
+			},
+			{
+				"Category": "Double Angle Formula",
+				"Description": "sin(60) directly for comparison",
+				"Equation": "Result = ROUND(sin(rad(60)), 10)",
+				"ExpectedResult": "0.8660254038"
+			},
+			{
+				"Category": "Tangent Identity",
+				"Description": "tan(45) = 1",
+				"Equation": "Result = ROUND(tan(rad(45)), 10)",
+				"ExpectedResult": "1"
+			},
+			{
+				"Category": "Power and Root",
+				"Description": "sqrt(x)^2 = x (within rounding)",
+				"Equation": "Result = ROUND(sqrt(7)^2, 10)",
+				"ExpectedResult": "7"
+			},
+			{
+				"Category": "Power and Root",
+				"Description": "sqrt(144) = 12 (perfect square)",
+				"Equation": "Result = sqrt(144)",
+				"ExpectedResult": "12"
+			},
+			{
+				"Category": "Power and Root",
+				"Description": "x^0 = 1 for any nonzero x",
+				"Equation": "Result = 5^0",
+				"ExpectedResult": "1"
+			},
+			{
+				"Category": "Power and Root",
+				"Description": "x^1 = x",
+				"Equation": "Result = 7^1",
+				"ExpectedResult": "7"
+			},
+			{
+				"Category": "Power and Root",
+				"Description": "x^2 * x^3 = x^5 (exponent addition)",
+				"Equation": "Result = 2^2 * 2^3",
+				"ExpectedResult": "32"
+			},
+			{
+				"Category": "Algebraic Identity",
+				"Description": "(a+b)(a-b) = a^2 - b^2 (difference of squares)",
+				"Equation": "Result = (A + B) * (A - B)",
+				"ExpectedResult": "40",
+				"Data": { "A": 7, "B": 3 }
+			},
+			{
+				"Category": "Algebraic Identity",
+				"Description": "a^2 - b^2 directly for comparison",
+				"Equation": "Result = A^2 - B^2",
+				"ExpectedResult": "40",
+				"Data": { "A": 7, "B": 3 }
+			},
+			{
+				"Category": "Algebraic Identity",
+				"Description": "(a+b)^2 = a^2 + 2ab + b^2",
+				"Equation": "Result = (3 + 4)^2",
+				"ExpectedResult": "49"
+			},
+			{
+				"Category": "Algebraic Identity",
+				"Description": "a^2 + 2ab + b^2 directly for comparison",
+				"Equation": "Result = 3^2 + 2 * 3 * 4 + 4^2",
+				"ExpectedResult": "49"
+			},
+			{
+				"Category": "Reciprocal Identity",
+				"Description": "1/(1/x) = x (within rounding)",
+				"Equation": "Result = ROUND(1 / (1 / 7), 10)",
+				"ExpectedResult": "7"
+			},
+			{
+				"Category": "Constants",
+				"Description": "Pi starts with 3.14159265",
+				"Equation": "Result = ROUND(pi(), 8)",
+				"ExpectedResult": "3.14159265"
+			},
+			{
+				"Category": "Constants",
+				"Description": "Euler's number starts with 2.71828183",
+				"Equation": "Result = ROUND(euler(), 8)",
+				"ExpectedResult": "2.71828183"
+			},
+			{
+				"Category": "Logarithmic Identity",
+				"Description": "log(1) = 0",
+				"Equation": "Result = log(1)",
+				"ExpectedResult": "0.000000000"
+			},
+			{
+				"Category": "Logarithmic Identity",
+				"Description": "exp(0) = 1",
+				"Equation": "Result = exp(0)",
+				"ExpectedResult": "1"
+			},
+			{
+				"Category": "Additive Identity",
+				"Description": "x + 0 = x",
+				"Equation": "Result = 42 + 0",
+				"ExpectedResult": "42"
+			},
+			{
+				"Category": "Multiplicative Identity",
+				"Description": "x * 1 = x",
+				"Equation": "Result = 42 * 1",
+				"ExpectedResult": "42"
+			},
+			{
+				"Category": "Multiplicative Zero",
+				"Description": "x * 0 = 0",
+				"Equation": "Result = 42 * 0",
+				"ExpectedResult": "0"
+			}
+		]
+}

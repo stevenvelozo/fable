@@ -46,7 +46,7 @@
 			"Name": "Set Concatenate",
 			"Token": ",",
 			"Function": "fable.Math.setConcatenate",
-			"Precedence": 5,
+			"Precedence": 6,
 			"Type": "Operator"
 		},
 
@@ -99,5 +99,69 @@
 			"Function": "fable.Math.subtractPrecise",
 			"Precedence": 4,
 			"Type": "Operator"
+		},
+
+	">":
+		{
+			"Name": "Greater Than",
+			"Token": ">",
+			"Function": "fable.Math.greaterThanOperator",
+			"Precedence": 5,
+			"Type": "Operator"
+		},
+	">=":
+		{
+			"Name": "Greater Than or Equal",
+			"Token": ">=",
+			"Function": "fable.Math.greaterThanOrEqualOperator",
+			"Precedence": 5,
+			"Type": "Operator"
+		},
+	"<":
+		{
+			"Name": "Less Than",
+			"Token": "<",
+			"Function": "fable.Math.lessThanOperator",
+			"Precedence": 5,
+			"Type": "Operator"
+		},
+	"<=":
+		{
+			"Name": "Less Than or Equal",
+			"Token": "<=",
+			"Function": "fable.Math.lessThanOrEqualOperator",
+			"Precedence": 5,
+			"Type": "Operator"
+		},
+	"==":
+		{
+			"Name": "Equal",
+			"Token": "==",
+			"Function": "fable.Math.equalOperator",
+			"Precedence": 5,
+			"Type": "Operator"
+		},
+	"!=":
+		{
+			"Name": "Not Equal",
+			"Token": "!=",
+			"Function": "fable.Math.notEqualOperator",
+			"Precedence": 5,
+			"Type": "Operator"
+		},
+
+	"?":
+		{
+			"Name": "Ternary Condition",
+			"Token": "?",
+			"Precedence": 0,
+			"Type": "Ternary"
+		},
+	"::":
+		{
+			"Name": "Ternary Separator",
+			"Token": "::",
+			"Precedence": 0,
+			"Type": "Ternary"
 		}
 }

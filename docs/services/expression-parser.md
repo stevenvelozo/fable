@@ -64,6 +64,67 @@ parser.solve('Name ?= GETVALUE("AppData.Students[0]")', data, {}, false, dest);
 | `*` | Multiplication | `5 * 3` → `'15'` |
 | `/` | Division | `15 / 3` → `'5'` |
 | `^` | Power | `2 ^ 3` → `'8'` |
+| `%` | Modulus | `10 % 3` → `'1'` |
+
+### Comparison Operators
+
+Comparison operators evaluate to `'1'` (true) or `'0'` (false). They bind looser than arithmetic, so `2 + 3 > 1 + 2` evaluates the math first.
+
+| Operator | Description | Example |
+|----------|-------------|---------|
+| `>` | Greater than | `5 > 3` → `'1'` |
+| `>=` | Greater than or equal | `5 >= 5` → `'1'` |
+| `<` | Less than | `3 < 5` → `'1'` |
+| `<=` | Less than or equal | `3 <= 3` → `'1'` |
+| `==` | Equal | `5 == 5` → `'1'` |
+| `!=` | Not equal | `5 != 3` → `'1'` |
+
+```javascript
+parser.solve('Result = 5 > 3', {}, {}, false, dest);
+// dest.Result === '1'
+
+parser.solve('Result = 2 + 3 > 1 + 2', {}, {}, false, dest);
+// dest.Result === '1' (evaluates as (2+3) > (1+2), i.e. 5 > 3)
+
+parser.solve('Result = Height > Width', { Height: 10, Width: 5 }, {}, false, dest);
+// dest.Result === '1'
+```
+
+### Ternary Operator
+
+The ternary operator provides inline conditional expressions using `?` and `::` syntax:
+
+```
+condition ? trueValue :: falseValue
+```
+
+The condition is typically a comparison expression. If it evaluates to a truthy value (non-zero, non-empty), the true branch is returned; otherwise the false branch is returned.
+
+```javascript
+parser.solve('Result = 5 > 3 ? 100 :: 200', {}, {}, false, dest);
+// dest.Result === '100'
+
+parser.solve('Result = 3 > 5 ? 100 :: 200', {}, {}, false, dest);
+// dest.Result === '200'
+
+parser.solve('Winner = Height > Width ? Height :: Width',
+    { Height: 10, Width: 5 }, {}, false, dest);
+// dest.Winner === '10'
+
+// Arithmetic in branches
+parser.solve('Result = A > B ? A + 1 :: B + 1',
+    { A: 10, B: 5 }, {}, false, dest);
+// dest.Result === '11'
+
+// Nested ternary (use parentheses for inner ternary)
+parser.solve('Result = A > 0 ? (B > 0 ? 1 :: 2) :: 3',
+    { A: 1, B: 1 }, {}, false, dest);
+// dest.Result === '1'
+```
+
+The ternary operator uses `::` (double colon) instead of `:` for the false branch separator because `:` is already used as the Expression Begin token in directives like `MAP`, `SERIES`, etc.
+
+Internally, `condition ? trueValue :: falseValue` is desugared to `ternary((condition), trueValue, falseValue)` before evaluation. See the [ternary function documentation](./expression-parser-functions/ternary.md) for details.
 
 ### Order of Operations
 
@@ -151,6 +212,17 @@ parser.solve('NameList = STRINGGETSEGMENTS(Names, ",")', { Names: 'Jane,John' })
 ```
 
 ### Conditional Functions
+
+#### Ternary Operator (inline conditional)
+
+The preferred way to write inline conditionals is with the ternary operator:
+
+```javascript
+parser.solve('Label = Score >= 70 ? "Pass" :: "Fail"', { Score: 85 }, {}, false, dest);
+// dest.Label === 'Pass'
+```
+
+See [Ternary Operator](#ternary-operator) above and the [ternary function reference](./expression-parser-functions/ternary.md).
 
 #### When (truthy check)
 

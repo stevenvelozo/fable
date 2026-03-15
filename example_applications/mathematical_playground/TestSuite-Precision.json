@@ -1,0 +1,127 @@
+{
+	"Name": "Numeric Precision Stress Tests",
+	"Description": "Tests that catch IEEE 754 floating-point errors. The expression parser uses big.js for arbitrary precision, so these should all pass cleanly.",
+	"Expressions":
+		[
+			{
+				"Category": "IEEE 754 Traps",
+				"Description": "0.1 + 0.2 = 0.3 (classic IEEE 754 failure)",
+				"Equation": "Result = 0.1 + 0.2",
+				"ExpectedResult": "0.3"
+			},
+			{
+				"Category": "IEEE 754 Traps",
+				"Description": "0.3 - 0.1 = 0.2",
+				"Equation": "Result = 0.3 - 0.1",
+				"ExpectedResult": "0.2"
+			},
+			{
+				"Category": "IEEE 754 Traps",
+				"Description": "0.7 + 0.1 = 0.8",
+				"Equation": "Result = 0.7 + 0.1",
+				"ExpectedResult": "0.8"
+			},
+			{
+				"Category": "IEEE 754 Traps",
+				"Description": "-0.1 + -0.2 = -0.3",
+				"Equation": "Result = -0.1 + -0.2",
+				"ExpectedResult": "-0.3"
+			},
+			{
+				"Category": "IEEE 754 Traps",
+				"Description": "1.0 - 0.9 - 0.1 = 0 (catastrophic cancellation)",
+				"Equation": "Result = 1.0 - 0.9 - 0.1",
+				"ExpectedResult": "0"
+			},
+			{
+				"Category": "Large Numbers",
+				"Description": "Large integer multiplication",
+				"Equation": "Result = 99999999999999 * 99999999999999",
+				"ExpectedResult": "9.999999999999800000000000001e+27"
+			},
+			{
+				"Category": "Large Numbers",
+				"Description": "Large integer addition",
+				"Equation": "Result = 123456789012345 + 987654321098765",
+				"ExpectedResult": "1111111110111110"
+			},
+			{
+				"Category": "Large Numbers",
+				"Description": "2^53 exact (JavaScript MAX_SAFE_INTEGER + 1)",
+				"Equation": "Result = 2^53",
+				"ExpectedResult": "9007199254740992"
+			},
+			{
+				"Category": "Small Number Precision",
+				"Description": "Subtraction preserving small difference",
+				"Equation": "Result = 1000000.001 - 1000000",
+				"ExpectedResult": "0.001"
+			},
+			{
+				"Category": "Small Number Precision",
+				"Description": "Very small number multiplication",
+				"Equation": "Result = 0.000001 * 0.000001",
+				"ExpectedResult": "1e-12"
+			},
+			{
+				"Category": "Division Precision",
+				"Description": "1/3 * 3 approaches 1 (repeating decimal)",
+				"Equation": "Result = ROUND(1 / 3 * 3, 10)",
+				"ExpectedResult": "1"
+			},
+			{
+				"Category": "Division Precision",
+				"Description": "Large number / same number = 1 (within rounding)",
+				"Equation": "Result = ROUND(1000000 / 7 * 7, 10)",
+				"ExpectedResult": "1000000"
+			},
+			{
+				"Category": "Division Precision",
+				"Description": "1 / 1000000 = 0.000001",
+				"Equation": "Result = 1 / 1000000",
+				"ExpectedResult": "0.000001"
+			},
+			{
+				"Category": "Chained Operations",
+				"Description": "Add then subtract should cancel exactly",
+				"Equation": "Result = ((((1 + 0.0001) - 0.0001) * 10000) / 10000)",
+				"ExpectedResult": "1"
+			},
+			{
+				"Category": "Modulus",
+				"Description": "10 % 3 = 1",
+				"Equation": "Result = 10 % 3",
+				"ExpectedResult": "1"
+			},
+			{
+				"Category": "Modulus",
+				"Description": "7.5 % 2.5 = 0 (exact division)",
+				"Equation": "Result = 7.5 % 2.5",
+				"ExpectedResult": "0"
+			},
+			{
+				"Category": "Power Precision",
+				"Description": "3^7 = 2187",
+				"Equation": "Result = 3^7",
+				"ExpectedResult": "2187"
+			},
+			{
+				"Category": "Power Precision",
+				"Description": "10^10 = 10000000000",
+				"Equation": "Result = 10^10",
+				"ExpectedResult": "10000000000"
+			},
+			{
+				"Category": "Negative Number Precision",
+				"Description": "(-1)^2 = 1",
+				"Equation": "Result = (-1)^2",
+				"ExpectedResult": "1"
+			},
+			{
+				"Category": "Negative Number Precision",
+				"Description": "(-2) * (-3) = 6",
+				"Equation": "Result = (-2) * (-3)",
+				"ExpectedResult": "6"
+			}
+		]
+}

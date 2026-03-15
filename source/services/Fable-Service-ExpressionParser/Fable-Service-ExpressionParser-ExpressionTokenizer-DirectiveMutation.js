@@ -339,9 +339,152 @@ class ExpressionTokenizerDirectiveMutation extends libExpressionParserOperationB
 		return tmpNewDirectiveDescription;
 	}
 
+	rewriteTernaryOperators(pResultObject)
+	{
+		let tmpTokens = pResultObject.RawTokens;
+
+		// Scan right-to-left so nested ternaries (innermost first) are handled correctly.
+		for (let i = tmpTokens.length - 1; i >= 0; i--)
+		{
+			if (tmpTokens[i] !== '?')
+			{
+				continue;
+			}
+
+			// Found a ? token at index i.
+			// Walk left to find the start of the condition expression.
+			// The condition starts after the previous comma, open parenthesis, assignment operator, or beginning of tokens.
+			let tmpConditionStart = 0;
+			let tmpParenDepth = 0;
+			for (let j = i - 1; j >= 0; j--)
+			{
+				if (tmpTokens[j] === ')')
+				{
+					tmpParenDepth++;
+				}
+				else if (tmpTokens[j] === '(')
+				{
+					if (tmpParenDepth > 0)
+					{
+						tmpParenDepth--;
+					}
+					else
+					{
+						// We hit an unmatched open paren — condition starts after it
+						tmpConditionStart = j + 1;
+						break;
+					}
+				}
+				else if (tmpParenDepth === 0)
+				{
+					let tmpTokenDescriptor = this.ExpressionParser.tokenMap[tmpTokens[j]];
+					if (tmpTokenDescriptor && (tmpTokenDescriptor.Type === 'Assignment' || tmpTokens[j] === ','))
+					{
+						tmpConditionStart = j + 1;
+						break;
+					}
+				}
+			}
+
+			// Walk right from ? to find the matching :: at the same parenthesis depth.
+			let tmpSeparatorIndex = -1;
+			tmpParenDepth = 0;
+			for (let j = i + 1; j < tmpTokens.length; j++)
+			{
+				if (tmpTokens[j] === '(')
+				{
+					tmpParenDepth++;
+				}
+				else if (tmpTokens[j] === ')')
+				{
+					if (tmpParenDepth > 0)
+					{
+						tmpParenDepth--;
+					}
+					else
+					{
+						// Hit closing paren at our depth — no :: found in this group
+						break;
+					}
+				}
+				else if (tmpTokens[j] === '::' && tmpParenDepth === 0)
+				{
+					tmpSeparatorIndex = j;
+					break;
+				}
+			}
+
+			if (tmpSeparatorIndex === -1)
+			{
+				pResultObject.ExpressionParserLog.push(`ExpressionParser.rewriteTernaryOperators found a ? at token index ${i} with no matching :: separator.`);
+				this.log.warn(pResultObject.ExpressionParserLog[pResultObject.ExpressionParserLog.length - 1]);
+				continue;
+			}
+
+			// Walk right from :: to find the end of the false branch.
+			// The false branch ends at the next comma, close parenthesis, or end of tokens at the same depth.
+			let tmpFalseBranchEnd = tmpTokens.length;
+			tmpParenDepth = 0;
+			for (let j = tmpSeparatorIndex + 1; j < tmpTokens.length; j++)
+			{
+				if (tmpTokens[j] === '(')
+				{
+					tmpParenDepth++;
+				}
+				else if (tmpTokens[j] === ')')
+				{
+					if (tmpParenDepth > 0)
+					{
+						tmpParenDepth--;
+					}
+					else
+					{
+						// Unmatched close paren — false branch ends here
+						tmpFalseBranchEnd = j;
+						break;
+					}
+				}
+				else if (tmpParenDepth === 0)
+				{
+					if (tmpTokens[j] === ',')
+					{
+						tmpFalseBranchEnd = j;
+						break;
+					}
+				}
+			}
+
+			// Extract the three segments
+			let tmpConditionTokens = tmpTokens.slice(tmpConditionStart, i);
+			let tmpTrueBranchTokens = tmpTokens.slice(i + 1, tmpSeparatorIndex);
+			let tmpFalseBranchTokens = tmpTokens.slice(tmpSeparatorIndex + 1, tmpFalseBranchEnd);
+
+			// Build the replacement: ternary((condition), trueBranch, falseBranch)
+			// The condition is wrapped in its own parentheses to ensure correct
+			// precedence grouping when arithmetic appears on both sides of a comparison.
+			let tmpReplacementTokens = ['ternary', '(', '('];
+			tmpReplacementTokens = tmpReplacementTokens.concat(tmpConditionTokens);
+			tmpReplacementTokens.push(')');
+			tmpReplacementTokens.push(',');
+			tmpReplacementTokens = tmpReplacementTokens.concat(tmpTrueBranchTokens);
+			tmpReplacementTokens.push(',');
+			tmpReplacementTokens = tmpReplacementTokens.concat(tmpFalseBranchTokens);
+			tmpReplacementTokens.push(')');
+
+			// Splice the replacement into the token array
+			tmpTokens.splice(tmpConditionStart, tmpFalseBranchEnd - tmpConditionStart, ...tmpReplacementTokens);
+
+			// Adjust i to re-scan from the start of what we just inserted (in case of nested ternaries in the condition)
+			i = tmpConditionStart;
+		}
+	}
+
 	parseDirectives(pResultObject)
 	{
 		let tmpResults = (typeof(pResultObject) === 'object') ? pResultObject : { ExpressionParserLog: [] };
+
+		// Rewrite ternary operators before directive parsing
+		this.rewriteTernaryOperators(tmpResults);
 
 		tmpResults.SolverDirectives = this.defaultDirective;
 		tmpResults.SolverDirectiveTokens = [];

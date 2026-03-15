@@ -461,6 +461,84 @@ class FableServiceMath extends libFableServiceBase
 	}
 
 	/**
+	 * Comparison operator: returns "1" if left > right, "0" otherwise.
+	 * For use as an infix operator in the expression parser.
+	 *
+	 * @param {number|string} pLeftValue - The left value to compare.
+	 * @param {number|string} pRightValue - The right value to compare.
+	 * @returns {string} - "1" if left > right, "0" otherwise.
+	 */
+	greaterThanOperator(pLeftValue, pRightValue)
+	{
+		return this.gtPrecise(pLeftValue, pRightValue) ? '1' : '0';
+	}
+
+	/**
+	 * Comparison operator: returns "1" if left >= right, "0" otherwise.
+	 * For use as an infix operator in the expression parser.
+	 *
+	 * @param {number|string} pLeftValue - The left value to compare.
+	 * @param {number|string} pRightValue - The right value to compare.
+	 * @returns {string} - "1" if left >= right, "0" otherwise.
+	 */
+	greaterThanOrEqualOperator(pLeftValue, pRightValue)
+	{
+		return this.gtePrecise(pLeftValue, pRightValue) ? '1' : '0';
+	}
+
+	/**
+	 * Comparison operator: returns "1" if left < right, "0" otherwise.
+	 * For use as an infix operator in the expression parser.
+	 *
+	 * @param {number|string} pLeftValue - The left value to compare.
+	 * @param {number|string} pRightValue - The right value to compare.
+	 * @returns {string} - "1" if left < right, "0" otherwise.
+	 */
+	lessThanOperator(pLeftValue, pRightValue)
+	{
+		return this.ltPrecise(pLeftValue, pRightValue) ? '1' : '0';
+	}
+
+	/**
+	 * Comparison operator: returns "1" if left <= right, "0" otherwise.
+	 * For use as an infix operator in the expression parser.
+	 *
+	 * @param {number|string} pLeftValue - The left value to compare.
+	 * @param {number|string} pRightValue - The right value to compare.
+	 * @returns {string} - "1" if left <= right, "0" otherwise.
+	 */
+	lessThanOrEqualOperator(pLeftValue, pRightValue)
+	{
+		return this.ltePrecise(pLeftValue, pRightValue) ? '1' : '0';
+	}
+
+	/**
+	 * Comparison operator: returns "1" if left == right, "0" otherwise.
+	 * For use as an infix operator in the expression parser.
+	 *
+	 * @param {number|string} pLeftValue - The left value to compare.
+	 * @param {number|string} pRightValue - The right value to compare.
+	 * @returns {string} - "1" if left == right, "0" otherwise.
+	 */
+	equalOperator(pLeftValue, pRightValue)
+	{
+		return this.comparePrecise(pLeftValue, pRightValue) == 0 ? '1' : '0';
+	}
+
+	/**
+	 * Comparison operator: returns "1" if left != right, "0" otherwise.
+	 * For use as an infix operator in the expression parser.
+	 *
+	 * @param {number|string} pLeftValue - The left value to compare.
+	 * @param {number|string} pRightValue - The right value to compare.
+	 * @returns {string} - "1" if left != right, "0" otherwise.
+	 */
+	notEqualOperator(pLeftValue, pRightValue)
+	{
+		return this.comparePrecise(pLeftValue, pRightValue) != 0 ? '1' : '0';
+	}
+
+	/**
 	 * Converts degrees to radians with arbitrary precision.
 	 *
 	 * @param {number|string} pDegrees - The degrees to convert to radians.

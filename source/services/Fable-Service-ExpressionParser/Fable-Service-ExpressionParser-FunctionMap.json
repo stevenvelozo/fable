@@ -285,6 +285,11 @@
 		"Address": "fable.Logic.when"
 	},
 
+	"ternary": {
+		"Name": "numeric-aware ternary selection (used by ? :: operator desugaring)",
+		"Address": "fable.Logic.ternary"
+	},
+
 	"entryinset": {
 		"Name": "Entry in Set",
 		"Address": "fable.Math.entryInSet"
@@ -465,10 +470,6 @@
 		"Address": "fable.Math.interceptPrecise"
 	},
 
-	"polynomialregression": {
-		"Name": "Perform an nth degree Polynomial Regression on a Set of X and Y Values",
-		"Address": "fable.Math.polynomialRegression"
-	},
 	"leastsquares": {
 		"Name": "Perform a Least Squares Regression on a Set of Independent Variable Vectors and a Dependent Variable Vector",
 		"Address": "fable.Math.leastSquares"

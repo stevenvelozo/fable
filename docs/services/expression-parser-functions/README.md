@@ -84,6 +84,7 @@ Basic math operations with arbitrary precision:
 ### Value Access
 
 - [getvalue](./getvalue.md) - Get value from application state
+- [setvalue](./setvalue.md) - Set value to application state
 - [getvaluearray](./getvaluearray.md) - Get array of values
 - [getvalueobject](./getvalueobject.md) - Get value object
 - [createvalueobjectbyhashes](./createvalueobjectbyhashes.md) - Create object from hashes
@@ -110,6 +111,7 @@ Basic math operations with arbitrary precision:
 
 - [if](./if.md) - Conditional comparison
 - [when](./when.md) - Truthy check
+- [ternary](./ternary.md) - Numeric-aware ternary selection (`? ::` operator)
 
 ### Date Functions
 
@@ -143,6 +145,8 @@ Basic math operations with arbitrary precision:
 
 ### Regression and Matrix Functions
 
+- [slope](./slope.md) - Slope of linear regression line
+- [intercept](./intercept.md) - Y-intercept of linear regression line
 - [polynomialregression](./polynomialregression.md) - Polynomial regression
 - [leastsquares](./leastsquares.md) / [linest](./linest.md) - Least squares regression
 - [predict](./predict.md) - Predict from regression model
@@ -151,6 +155,11 @@ Basic math operations with arbitrary precision:
 - [matrixvectormultiply](./matrixvectormultiply.md) - Multiply matrix by vector
 - [matrixinverse](./matrixinverse.md) - Inverse matrix
 - [gaussianelimination](./gaussianelimination.md) - Gaussian elimination
+
+### Bezier Curves
+
+- [bezierpoint](./bezierpoint.md) - Evaluate point on cubic Bezier curve
+- [beziercurvefit](./beziercurvefit.md) - Fit cubic Bezier curve to data points
 
 ### Other Utilities
 

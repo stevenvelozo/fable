@@ -215,7 +215,7 @@ class ExpressionTokenizer extends libExpressionParserOperationBase
 						{
 							if (tmpCurrentToken.length > 0)
 							{
-								tmpResults.RawTokens.push(tmpTokenKey);
+								tmpResults.RawTokens.push(tmpCurrentToken);
 							}
 							tmpCurrentToken = '';
 							tmpCurrentTokenType = false;

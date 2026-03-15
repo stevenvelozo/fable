@@ -126,6 +126,39 @@ class FableServiceLogic extends libFableServiceBase
 		}
 		return pOnTrue;
 	}
+
+	/**
+	 * Numeric-aware ternary selection for the expression parser.
+	 * Treats 0, "0", "", null, undefined, false, NaN, empty arrays, and empty objects as falsy.
+	 * Used by the ternary operator desugaring (condition ? trueVal :: falseVal).
+	 *
+	 * @param {any} pCondition - The condition to evaluate
+	 * @param {any} pOnTrue - The value to return if the condition is truthy
+	 * @param {any} [pOnFalse = ''] - The value to return if the condition is falsy
+	 * @return {any} - The selected value
+	 */
+	ternary(pCondition, pOnTrue, pOnFalse = '')
+	{
+		// Standard JS falsy check
+		if (!pCondition)
+		{
+			return pOnFalse;
+		}
+		// Numeric zero as a string (from comparison operators returning "0")
+		if (pCondition === '0')
+		{
+			return pOnFalse;
+		}
+		if (Array.isArray(pCondition) && pCondition.length < 1)
+		{
+			return pOnFalse;
+		}
+		if (typeof pCondition === 'object' && Object.keys(pCondition).length < 1)
+		{
+			return pOnFalse;
+		}
+		return pOnTrue;
+	}
 }
 
 module.exports = FableServiceLogic;
