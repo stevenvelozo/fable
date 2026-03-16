@@ -305,6 +305,111 @@ class FableServiceRestClient extends libFableServiceBase
 		return this.executeJSONRequest(pOptions, fCallback);
 	}
 
+	/**
+	 * Upload binary data via POST.
+	 *
+	 * Accepts Buffer, Blob, or File as the body. In the browser, Blob/File
+	 * bodies are converted to Buffer (via ArrayBuffer) before being passed
+	 * to simple-get so the stream-http shim can send them correctly.
+	 *
+	 * The response body is read as a string (servers typically return JSON
+	 * status for upload endpoints).
+	 *
+	 * @param {Record<string, any>} pOptions - Request options (url, body, headers, method)
+	 * @param {(pError?: Error, pResponse: any, pBody?: any) => void} fCallback - Callback (pError, pResponse, pBody)
+	 * @param {(pProgress: number) => void} [fOnProgress] - Optional progress callback (0.0 to 1.0); called with 1.0 on completion
+	 */
+	executeBinaryUpload(pOptions, fCallback, fOnProgress)
+	{
+		// Blob/File → Buffer conversion for simple-get compatibility
+		let tmpBody = pOptions.body;
+
+		if (typeof Blob !== 'undefined' && tmpBody instanceof Blob)
+		{
+			let tmpSelf = this;
+			tmpBody.arrayBuffer()
+				.then(
+					(pArrayBuffer) =>
+					{
+						pOptions.body = Buffer.from(pArrayBuffer);
+						tmpSelf._executeBinaryUploadInternal(pOptions, fCallback, fOnProgress);
+					})
+				.catch(
+					(pError) =>
+					{
+						return fCallback(pError);
+					});
+			return;
+		}
+
+		// Already a Buffer, string, or stream — proceed directly
+		return this._executeBinaryUploadInternal(pOptions, fCallback, fOnProgress);
+	}
+
+	/**
+	 * Internal binary upload implementation using simple-get.
+	 *
+	 * @param {Record<string, any>} pOptions - Request options with body already as Buffer
+	 * @param {(pError?: Error, pResponse: any, pBody?: any) => void} fCallback - Callback (pError, pResponse, pBody)
+	 * @param {(pProgress: number) => void} [fOnProgress] - Optional progress callback (0.0 to 1.0); called with 1.0 on completion
+	 * @private
+	 */
+	_executeBinaryUploadInternal(pOptions, fCallback, fOnProgress)
+	{
+		let tmpOptions = this.preRequest(pOptions);
+
+		tmpOptions.RequestStartTime = this.fable.log.getTimeStamp();
+
+		if (this.TraceLog)
+		{
+			this.fable.log.debug(`Beginning ${tmpOptions.method} binary upload to ${tmpOptions.url} at ${tmpOptions.RequestStartTime}`);
+		}
+
+		tmpOptions.json = false;
+
+		return libSimpleGet(tmpOptions,
+			(pError, pResponse) =>
+			{
+				if (pError)
+				{
+					return fCallback(pError, pResponse);
+				}
+
+				if (this.TraceLog)
+				{
+					let tmpConnectTime = this.fable.log.getTimeStamp();
+					this.fable.log.debug(`--> Binary upload ${tmpOptions.method} connected in ${this.dataFormat.formatTimeDelta(tmpOptions.RequestStartTime, tmpConnectTime)}ms code ${pResponse.statusCode}`);
+				}
+
+				let tmpData = '';
+
+				pResponse.on('data', (pChunk) =>
+					{
+						if (this.TraceLog)
+						{
+							let tmpChunkTime = this.fable.log.getTimeStamp();
+							this.fable.log.debug(`--> Binary upload ${tmpOptions.method} response chunk size ${pChunk.length}b received in ${this.dataFormat.formatTimeDelta(tmpOptions.RequestStartTime, tmpChunkTime)}ms`);
+						}
+						tmpData += pChunk;
+					});
+
+				pResponse.on('end', () =>
+					{
+						if (this.TraceLog)
+						{
+							let tmpCompletionTime = this.fable.log.getTimeStamp();
+							this.fable.log.debug(`==> Binary upload ${tmpOptions.method} completed in ${this.dataFormat.formatTimeDelta(tmpOptions.RequestStartTime, tmpCompletionTime)}ms`);
+						}
+						// Signal completion via progress callback
+						if (typeof fOnProgress === 'function')
+						{
+							fOnProgress(1.0);
+						}
+						return fCallback(pError, pResponse, tmpData);
+					});
+			});
+	}
+
 	getRawText(pOptionsOrURL, fCallback)
 	{
 		let tmpRequestOptions = (typeof(pOptionsOrURL) == 'object') ? pOptionsOrURL : {};
