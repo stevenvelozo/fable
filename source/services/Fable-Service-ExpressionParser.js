@@ -42,7 +42,8 @@ class FableServiceExpressionParser extends libFableServiceBase
 		this.log;
 
 		// The configuration for tokens that the solver recognizes, with precedence and friendly names.
-		this.tokenMap = require('./Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-TokenMap.json');
+		// Clone the JSON so each instance gets its own tokenMap (require() caches and returns the same object reference).
+		this.tokenMap = JSON.parse(JSON.stringify(require('./Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-TokenMap.json')));
 
 		// Keep track of maximum token precedence
 		this.tokenMaxPrecedence = 4;
@@ -86,7 +87,8 @@ class FableServiceExpressionParser extends libFableServiceBase
 		}
 
 		// The configuration for which functions are available to the solver.
-		this.functionMap = require('./Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-FunctionMap.json');
+		// Clone the JSON so each instance gets its own functionMap (require() caches and returns the same object reference).
+		this.functionMap = JSON.parse(JSON.stringify(require('./Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-FunctionMap.json')));
 
 		this.serviceType = 'ExpressionParser';
 
