@@ -7,6 +7,7 @@
 */
 
 var libFable = require('../source/Fable.js');
+var libHTTP = require('http');
 
 var Chai = require("chai");
 var Expect = Chai.expect;
@@ -144,5 +145,44 @@ suite
 							);
 					}
 				);
+
+				suite
+					(
+						'Error Handling',
+						function ()
+						{
+							test
+								(
+									'Handle a non-JSON response without crashing.',
+									function (fTestComplete)
+									{
+										// Spin up a tiny HTTP server that returns plain text with a 414 status
+										var tmpServer = libHTTP.createServer(function (pReq, pRes)
+										{
+											pRes.writeHead(414, { 'Content-Type': 'text/plain' });
+											pRes.end('URI too long\n');
+										});
+
+										tmpServer.listen(0, function ()
+										{
+											var tmpPort = tmpServer.address().port;
+											var testFable = new libFable();
+											var tmpRestClient = testFable.instantiateServiceProvider('RestClient', {}, 'RestClient-ErrorTest');
+
+											tmpRestClient.getJSON('http://localhost:' + tmpPort + '/anything',
+												function (pError, pResponse, pBody)
+												{
+													Expect(pError).to.be.an.instanceof(Error);
+													Expect(pError.message).to.contain('414');
+													Expect(pError.message).to.contain('URI too long');
+													Expect(pBody).to.equal(null);
+													tmpServer.close();
+													fTestComplete();
+												});
+										});
+									}
+								);
+						}
+					);
 		}
 	);

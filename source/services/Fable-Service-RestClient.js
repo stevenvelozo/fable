@@ -232,7 +232,17 @@ class FableServiceRestClient extends libFableServiceBase
 							let tmpCompletionTime = this.fable.log.getTimeStamp();
 							this.fable.log.debug(`==> JSON ${tmpOptions.method} completed - received in ${this.dataFormat.formatTimeDelta(tmpOptions.RequestStartTime, tmpCompletionTime)}ms`);
 						}
-						return fCallback(pError, pResponse, JSON.parse(tmpJSONData));
+						let tmpParsedJSON;
+						try
+						{
+							tmpParsedJSON = JSON.parse(tmpJSONData);
+						}
+						catch (pParseError)
+						{
+							let tmpStatusCode = pResponse ? pResponse.statusCode : 'unknown';
+							return fCallback(new Error(`JSON parse failed (HTTP ${tmpStatusCode}): ${tmpJSONData.substring(0, 200)}`), pResponse, null);
+						}
+						return fCallback(pError, pResponse, tmpParsedJSON);
 					});
 			});
 	}
