@@ -1,5 +1,5 @@
 {
-	"Generated": "2026-02-18T03:53:26.559Z",
+	"Generated": "2026-04-10T01:56:11.654Z",
 	"GitHubOrg": "stevenvelozo",
 	"DefaultBranch": "master",
 	"Groups": [
@@ -41,23 +41,6 @@
 			]
 		},
 		{
-			"Name": "Coverage",
-			"Key": "coverage",
-			"Description": "",
-			"Modules": [
-				{
-					"Name": "lcov-report",
-					"Repo": "lcov-report",
-					"Group": "coverage",
-					"Branch": "master",
-					"HasDocs": false,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": []
-				}
-			]
-		},
-		{
 			"Name": "Dist",
 			"Key": "dist",
 			"Description": "",
@@ -80,6 +63,18 @@
 			"Description": "",
 			"Modules": [
 				{
+					"Name": "css",
+					"Repo": "css",
+					"Group": "docs",
+					"Branch": "master",
+					"HasDocs": true,
+					"HasCover": false,
+					"Sidebar": [],
+					"DocFiles": [
+						"css/docuserve.css"
+					]
+				},
+				{
 					"Name": "services",
 					"Repo": "services",
 					"Group": "docs",
@@ -101,6 +96,8 @@
 						"services/expression-parser-functions/aggregationhistogrambyobject.md",
 						"services/expression-parser-functions/arrayconcat.md",
 						"services/expression-parser-functions/avg.md",
+						"services/expression-parser-functions/beziercurvefit.md",
+						"services/expression-parser-functions/bezierpoint.md",
 						"services/expression-parser-functions/bucketset.md",
 						"services/expression-parser-functions/ceil.md",
 						"services/expression-parser-functions/cleanvaluearray.md",
@@ -148,6 +145,7 @@
 						"services/expression-parser-functions/getvaluearray.md",
 						"services/expression-parser-functions/getvalueobject.md",
 						"services/expression-parser-functions/if.md",
+						"services/expression-parser-functions/intercept.md",
 						"services/expression-parser-functions/iterativeseries.md",
 						"services/expression-parser-functions/join.md",
 						"services/expression-parser-functions/joinraw.md",
@@ -182,8 +180,10 @@
 						"services/expression-parser-functions/resolvehtmlentities.md",
 						"services/expression-parser-functions/round.md",
 						"services/expression-parser-functions/setconcatenate.md",
+						"services/expression-parser-functions/setvalue.md",
 						"services/expression-parser-functions/sin.md",
 						"services/expression-parser-functions/slice.md",
+						"services/expression-parser-functions/slope.md",
 						"services/expression-parser-functions/smallestinset.md",
 						"services/expression-parser-functions/sorthistogram.md",
 						"services/expression-parser-functions/sorthistogrambykeys.md",
@@ -197,6 +197,7 @@
 						"services/expression-parser-functions/subtractingsummation.md",
 						"services/expression-parser-functions/sum.md",
 						"services/expression-parser-functions/tan.md",
+						"services/expression-parser-functions/ternary.md",
 						"services/expression-parser-functions/tofixed.md",
 						"services/expression-parser-functions/var.md",
 						"services/expression-parser-functions/vara.md",
