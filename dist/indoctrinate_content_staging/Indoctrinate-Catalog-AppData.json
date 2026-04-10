@@ -4,7 +4,7 @@
     ],
     "SourceContentCatalog": {
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.babelrc": {
-            "UUID": "1f1bd41e-1ab2-4c10-91a7-5fb051c47d5c",
+            "UUID": "9765fd9e-578b-486f-b7aa-ae1a123d067f",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.babelrc",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/.babelrc",
@@ -39,7 +39,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.browserslistrc": {
-            "UUID": "2eecabab-0d5d-48d1-9669-f4aa8219ab98",
+            "UUID": "9a40e518-3946-422e-a132-822ab0443cac",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.browserslistrc",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/.browserslistrc",
@@ -74,7 +74,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.browserslistrc-BACKUP": {
-            "UUID": "c9754266-9643-46db-bb39-40719b08f21f",
+            "UUID": "182926a7-6826-4366-8a6d-7ea4b911d417",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.browserslistrc-BACKUP",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/.browserslistrc-BACKUP",
@@ -109,7 +109,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.browserslistrc_compatible": {
-            "UUID": "f2c49716-3105-494e-ad82-d91c6ecfa90a",
+            "UUID": "76722fcd-9fac-4678-8921-deaf0dd05726",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.browserslistrc_compatible",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/.browserslistrc_compatible",
@@ -144,7 +144,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.browserslistrc_default": {
-            "UUID": "5bf3f654-04c9-44ab-98c4-b1b4a5adb5a6",
+            "UUID": "3e0ffdab-84eb-4fad-97a7-cc44ae0841c6",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.browserslistrc_default",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/.browserslistrc_default",
@@ -179,7 +179,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.config/code-server/config.yaml": {
-            "UUID": "b0c1eee4-c2ef-4b09-b092-a3691dd5ab57",
+            "UUID": "93330eaf-c7ba-4f9e-a796-c63c854f44f3",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.config/code-server/config.yaml",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/.config/code-server/config.yaml",
@@ -217,7 +217,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.config/configstore/update-notifier-npm-check-updates.json": {
-            "UUID": "6030e5c8-f2ae-42cd-a726-d5ceadb66458",
+            "UUID": "277e4d02-e7f6-4983-9ad5-0cc719c585f4",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.config/configstore/update-notifier-npm-check-updates.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/.config/configstore/update-notifier-npm-check-updates.json",
@@ -259,7 +259,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.config/configstore/update-notifier-npm.json": {
-            "UUID": "205b3b7b-a124-4c3b-97f5-042ca9805280",
+            "UUID": "164cd298-c9a5-45c7-8152-e8b5a1a007da",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.config/configstore/update-notifier-npm.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/.config/configstore/update-notifier-npm.json",
@@ -299,7 +299,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.config/vscode-sqltools/runningInfo.json": {
-            "UUID": "c4d9057f-4b53-4834-8ea8-1763f1a9926a",
+            "UUID": "2878267c-821d-40df-8382-22b63164917f",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.config/vscode-sqltools/runningInfo.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/.config/vscode-sqltools/runningInfo.json",
@@ -337,7 +337,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.gitignore": {
-            "UUID": "f03dea75-88eb-48df-8d32-8b07e66d57b0",
+            "UUID": "f3bb39b4-928c-4a7e-a6c3-ba37fb86a3bc",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.gitignore",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/.gitignore",
@@ -372,7 +372,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.gulpfile-quackage-config.json": {
-            "UUID": "cf96f824-57e3-4f27-bb54-0dd8bc7c7025",
+            "UUID": "38089349-a95f-486b-bb82-1e49f9e4e5ac",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.gulpfile-quackage-config.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/.gulpfile-quackage-config.json",
@@ -410,7 +410,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.gulpfile-quackage.js": {
-            "UUID": "3e1f80f3-c0f9-42bf-a5a1-a36eb534f12a",
+            "UUID": "1c577b47-3cdc-477c-bef5-4c2855ccb285",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.gulpfile-quackage.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/.gulpfile-quackage.js",
@@ -447,7 +447,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.quackage.json": {
-            "UUID": "eaa81c6f-2657-47b3-be18-0e3ee1d5e78a",
+            "UUID": "449719ae-d6e2-4923-b728-05f981d9e948",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.quackage.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/.quackage.json",
@@ -483,7 +483,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.travis.yml": {
-            "UUID": "2629db97-d5cc-437a-aae6-364ec0e95ec3",
+            "UUID": "04d78b92-b78d-45d6-898c-52c79a24a4df",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.travis.yml",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/.travis.yml",
@@ -519,7 +519,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.vscode/launch.json": {
-            "UUID": "f4d7a524-eb19-4856-b2ea-269034ce938e",
+            "UUID": "d59b04b8-34a5-4ce6-affd-3c413daacfdc",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.vscode/launch.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/.vscode/launch.json",
@@ -556,7 +556,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.vscode/settings.json": {
-            "UUID": "89e12da6-2a1d-48ef-8687-865a83ac71ae",
+            "UUID": "b7424dd3-68bc-4ceb-874b-1503c1e0f6f7",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/.vscode/settings.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/.vscode/settings.json",
@@ -593,7 +593,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/CONTRIBUTING.md": {
-            "UUID": "2eed8bf3-4a36-4c1e-8bd5-9a377c1dadf4",
+            "UUID": "f68ea35a-ddcb-491e-96de-cbec42e520ad",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/CONTRIBUTING.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/CONTRIBUTING.md",
@@ -629,7 +629,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/Dockerfile_LUXURYCode": {
-            "UUID": "7dcd8b51-6196-4686-a377-beb1308e531d",
+            "UUID": "007c7670-3f8e-44d9-8171-e17e16b03c30",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/Dockerfile_LUXURYCode",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/Dockerfile_LUXURYCode",
@@ -666,7 +666,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/LICENSE": {
-            "UUID": "caf5aee1-55bb-4edb-9792-2a077195a6a4",
+            "UUID": "e231de9b-6be7-4696-b2f2-ed39429cfac0",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/LICENSE",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/LICENSE",
@@ -702,7 +702,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/README.md": {
-            "UUID": "6e33ae23-5d54-4f77-b295-f1728b13ccc6",
+            "UUID": "d9f9785c-7fcb-4230-bbef-8e1bbad58c1f",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/README.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/README.md",
@@ -738,7 +738,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/config/Fable-Config-DEFAULT.json": {
-            "UUID": "964c71a8-68c5-4521-a135-f62d739d84cd",
+            "UUID": "4822fd60-230c-45a8-836f-7d9bc227d19f",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/config/Fable-Config-DEFAULT.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/config/Fable-Config-DEFAULT.json",
@@ -777,7 +777,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/debug/Example-ProgressTime.js": {
-            "UUID": "72029fe0-39a9-4b32-8773-fb7c82544317",
+            "UUID": "1fa7f0c3-ff04-4a44-b50d-51b7093507a3",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/debug/Example-ProgressTime.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/debug/Example-ProgressTime.js",
@@ -815,7 +815,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/debug/Harness.js": {
-            "UUID": "b4d9fe46-ce66-482a-a418-cb58007822bf",
+            "UUID": "2046c35b-3f11-4eb7-a20d-2d1acc5811b4",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/debug/Harness.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/debug/Harness.js",
@@ -852,7 +852,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/dist/fable.js": {
-            "UUID": "acf48b7b-b191-4fb6-b512-592fc5ffe4ba",
+            "UUID": "f4c9b571-7ab1-4c1a-ab55-ed13e0715836",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/dist/fable.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/dist/fable.js",
@@ -889,7 +889,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/dist/fable.js.map": {
-            "UUID": "e6b6089e-f79c-45ae-8b59-e5fcaea1e9e2",
+            "UUID": "c5c69ac2-b483-4d56-b2d4-4794b5eea8eb",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/dist/fable.js.map",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/dist/fable.js.map",
@@ -927,7 +927,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/dist/fable.min.js": {
-            "UUID": "9c1b545b-91ac-4ff3-b558-fb016dd88b87",
+            "UUID": "89656c6a-e7ef-430f-a2b9-c44f687cd44f",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/dist/fable.min.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/dist/fable.min.js",
@@ -965,7 +965,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/dist/fable.min.js.map": {
-            "UUID": "44aca12f-5db0-4b07-9bc5-a10e6179902b",
+            "UUID": "fde27156-5183-4d6b-a2b7-334c74eb28a7",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/dist/fable.min.js.map",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/dist/fable.min.js.map",
@@ -1004,7 +1004,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/dist/indoctrinate_content_staging/Indoctrinate-Catalog-AppData.json": {
-            "UUID": "b5589603-9111-4ad2-89f6-17e475ac2346",
+            "UUID": "3911142e-aa1f-41d9-ae58-47a44ae36e9e",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/dist/indoctrinate_content_staging/Indoctrinate-Catalog-AppData.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/dist/indoctrinate_content_staging/Indoctrinate-Catalog-AppData.json",
@@ -1038,13 +1038,13 @@
             "FSTAT": {
                 "Size": 474,
                 "Created": "2026-04-10T01:56:11.209Z",
-                "Modified": "2026-04-10T03:20:04.129Z",
-                "Accessed": "2026-04-10T02:06:51.661Z",
+                "Modified": "2026-04-10T17:19:38.112Z",
+                "Accessed": "2026-04-10T03:21:33.086Z",
                 "Mode": 33188
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/.nojekyll": {
-            "UUID": "8f23f67a-052f-44ce-a738-9337da07d4e6",
+            "UUID": "7fe60ee9-7a92-4726-99d2-3fa7ecb47cdb",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/.nojekyll",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/.nojekyll",
@@ -1073,13 +1073,13 @@
             ],
             "FSTAT": {
                 "Created": "2026-03-10T01:07:25.461Z",
-                "Modified": "2026-04-10T02:05:24.191Z",
+                "Modified": "2026-04-10T03:20:04.290Z",
                 "Accessed": "2026-03-10T01:07:25.461Z",
                 "Mode": 33188
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/README.md": {
-            "UUID": "284f5222-25d5-4aae-b738-1763edf2af12",
+            "UUID": "20ae79b6-a3ec-4afd-8c58-7729650446fe",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/README.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/README.md",
@@ -1116,7 +1116,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/_cover.md": {
-            "UUID": "b33f3cfd-6721-4a9e-9837-127b9ad79721",
+            "UUID": "e1d87324-58e5-4068-9fb2-a8d36a8bedae",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/_cover.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/_cover.md",
@@ -1153,7 +1153,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/_sidebar.md": {
-            "UUID": "a07564f8-f969-4f9e-a46b-3519631419b1",
+            "UUID": "ac70140d-eaed-4949-92e8-fb46c5152cd8",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/_sidebar.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/_sidebar.md",
@@ -1190,7 +1190,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/_topbar.md": {
-            "UUID": "de133237-e28e-4a40-b2f3-d39a875ec5ee",
+            "UUID": "f835c6af-8631-49e5-896d-cf05565def67",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/_topbar.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/_topbar.md",
@@ -1227,7 +1227,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/architecture.md": {
-            "UUID": "5d2c97c5-674e-4244-96e8-cdb0ea172e4a",
+            "UUID": "b1617bfb-19c7-4822-9d77-a4e6feb5a91b",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/architecture.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/architecture.md",
@@ -1264,7 +1264,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/css/docuserve.css": {
-            "UUID": "128d3afa-b526-4c87-a3d3-34b55972b8c0",
+            "UUID": "e53cf886-9b74-4e34-8549-acfc1c0c1be2",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/css/docuserve.css",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/css/docuserve.css",
@@ -1296,13 +1296,13 @@
             "FSTAT": {
                 "Size": 1263,
                 "Created": "2026-03-10T01:07:25.461Z",
-                "Modified": "2026-04-10T02:05:24.188Z",
-                "Accessed": "2026-04-10T02:05:24.273Z",
+                "Modified": "2026-04-10T03:20:04.287Z",
+                "Accessed": "2026-04-10T03:20:04.400Z",
                 "Mode": 33188
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/index.html": {
-            "UUID": "cb267cdc-f6d6-4bc5-bc55-523b5c3155e1",
+            "UUID": "19aa7201-40b1-466f-9d2a-9e1b714fe447",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/index.html",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/index.html",
@@ -1333,13 +1333,13 @@
             "FSTAT": {
                 "Size": 1652,
                 "Created": "2026-03-10T01:07:25.462Z",
-                "Modified": "2026-04-10T02:05:24.187Z",
-                "Accessed": "2026-04-10T02:05:24.272Z",
+                "Modified": "2026-04-10T03:20:04.286Z",
+                "Accessed": "2026-04-10T03:20:04.400Z",
                 "Mode": 33188
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/retold-catalog.json": {
-            "UUID": "03bb52b2-f8fe-46fa-871f-86481fcc2d61",
+            "UUID": "0c09a94f-6d0c-48da-bcb4-b58848493760",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/retold-catalog.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/retold-catalog.json",
@@ -1371,13 +1371,13 @@
             "FSTAT": {
                 "Size": 10564,
                 "Created": "2026-04-10T01:56:11.210Z",
-                "Modified": "2026-04-10T03:20:03.899Z",
-                "Accessed": "2026-04-10T03:20:04.133Z",
+                "Modified": "2026-04-10T17:19:37.885Z",
+                "Accessed": "2026-04-10T17:19:38.115Z",
                 "Mode": 33188
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/retold-keyword-index.json": {
-            "UUID": "64dd07ea-fefa-4b63-b2f7-5885bb54c276",
+            "UUID": "a94eee50-3449-4d3d-b4da-76371661c32a",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/retold-keyword-index.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/retold-keyword-index.json",
@@ -1410,13 +1410,13 @@
             "FSTAT": {
                 "Size": 1106824,
                 "Created": "2026-04-10T01:56:11.210Z",
-                "Modified": "2026-04-10T02:05:24.117Z",
-                "Accessed": "2026-04-10T02:06:51.668Z",
+                "Modified": "2026-04-10T03:20:04.214Z",
+                "Accessed": "2026-04-10T03:21:33.094Z",
                 "Mode": 33188
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/README.md": {
-            "UUID": "4ebcdd53-8230-48f9-9b03-53050dec3cad",
+            "UUID": "a1689242-f074-43ad-9b43-59e058c46693",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/README.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/README.md",
@@ -1454,7 +1454,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/anticipate.md": {
-            "UUID": "09ce433a-3e59-4e8b-9cf3-d651bc40ea34",
+            "UUID": "667a5e31-4e88-4660-841e-96ba59dbccaa",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/anticipate.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/anticipate.md",
@@ -1492,7 +1492,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/csv-parser.md": {
-            "UUID": "e763f2eb-719e-403c-8315-24f114e4c101",
+            "UUID": "00da78eb-f2d1-422d-b289-85b14df586cb",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/csv-parser.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/csv-parser.md",
@@ -1531,7 +1531,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/data-format.md": {
-            "UUID": "33b4e0fd-533b-4611-a869-6a2dea8ce687",
+            "UUID": "54f487cc-cafc-4819-bc61-3873c4e26531",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/data-format.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/data-format.md",
@@ -1570,7 +1570,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/data-generation.md": {
-            "UUID": "5beabcae-1f88-452b-ba76-c3a9ca1174b7",
+            "UUID": "f0b3c7dd-c11c-42e4-8335-52403f11838c",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/data-generation.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/data-generation.md",
@@ -1609,7 +1609,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/dates.md": {
-            "UUID": "c349e543-5adc-464b-a3e3-53d846a164e1",
+            "UUID": "cbcb8ed4-83a4-4d2f-b84f-f9fc03c873a2",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/dates.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/dates.md",
@@ -1647,7 +1647,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/environment-data.md": {
-            "UUID": "116db8e6-7d43-49d1-b1de-82315bdab8a3",
+            "UUID": "8d51941b-b755-40e9-823c-ccbc3043aa02",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/environment-data.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/environment-data.md",
@@ -1686,7 +1686,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/README.md": {
-            "UUID": "147d3bac-175e-45c6-809f-5dd0b724f47b",
+            "UUID": "2fa74fe8-9071-4282-889f-66a2f839f57d",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/README.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/README.md",
@@ -1725,7 +1725,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/abs.md": {
-            "UUID": "94e28fc0-2122-42c5-82c4-3332615652ab",
+            "UUID": "53d35c03-81fb-4a80-b7f9-7c7f44426b7d",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/abs.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/abs.md",
@@ -1764,7 +1764,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/aggregationhistogram.md": {
-            "UUID": "47e2401e-4e17-474b-a1f4-71a532ad77ef",
+            "UUID": "5c10d7e4-20d3-4b11-81ef-8d68f5a2ef02",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/aggregationhistogram.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/aggregationhistogram.md",
@@ -1803,7 +1803,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/aggregationhistogrambyobject.md": {
-            "UUID": "310f07ab-0f1d-475b-a8f0-ec54caaec261",
+            "UUID": "273541d2-5326-4443-9677-7544d224d562",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/aggregationhistogrambyobject.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/aggregationhistogrambyobject.md",
@@ -1842,7 +1842,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/arrayconcat.md": {
-            "UUID": "b8ff8289-9e2f-446d-9009-a705525e6c01",
+            "UUID": "a1a96ba5-e772-4949-a248-2b548c4056f8",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/arrayconcat.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/arrayconcat.md",
@@ -1881,7 +1881,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/avg.md": {
-            "UUID": "04209276-e66a-436c-b07f-b0b962e6039b",
+            "UUID": "70057a3a-496a-4070-9e48-e6fc669fc773",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/avg.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/avg.md",
@@ -1920,7 +1920,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/beziercurvefit.md": {
-            "UUID": "ab6b1ccf-663d-41eb-b533-ebaabcd73254",
+            "UUID": "9c38365c-f133-4077-80c1-f3889cc375f3",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/beziercurvefit.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/beziercurvefit.md",
@@ -1959,7 +1959,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/bezierpoint.md": {
-            "UUID": "eda0f23c-6337-4a51-8de7-72bd2e567dd8",
+            "UUID": "5cf996cd-b7dc-485f-8f6d-36f92ef04210",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/bezierpoint.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/bezierpoint.md",
@@ -1998,7 +1998,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/bucketset.md": {
-            "UUID": "08143d63-940b-498b-834f-011ea14c738b",
+            "UUID": "116b916f-e218-4738-9611-a3931847a0c1",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/bucketset.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/bucketset.md",
@@ -2037,7 +2037,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/ceil.md": {
-            "UUID": "46e63d9d-8afc-4070-ba20-9a27eac7b93c",
+            "UUID": "e0955850-9653-482f-9eb0-93d6508d5c80",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/ceil.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/ceil.md",
@@ -2076,7 +2076,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/cleanvaluearray.md": {
-            "UUID": "6d6c95f9-10e2-4fd2-883e-bd57e1ec5418",
+            "UUID": "77ed8780-ccaa-466f-a7c1-61b834370d8f",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/cleanvaluearray.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/cleanvaluearray.md",
@@ -2115,7 +2115,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/cleanvalueobject.md": {
-            "UUID": "6b9e1ffa-7d4e-470a-abce-b8b724a03c98",
+            "UUID": "745645c1-3419-4b3c-a9c6-b362b4dc40b2",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/cleanvalueobject.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/cleanvalueobject.md",
@@ -2154,7 +2154,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/compare.md": {
-            "UUID": "dc289bb0-60a4-4121-bc30-08a55ab3898d",
+            "UUID": "b3d9a1c8-834d-4c0d-9512-4defbca33609",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/compare.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/compare.md",
@@ -2193,7 +2193,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/concat.md": {
-            "UUID": "174ae6eb-e7b7-46fc-8061-4c89665ccb0d",
+            "UUID": "70122aba-42ec-4b77-8777-55e6ceda87a0",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/concat.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/concat.md",
@@ -2232,7 +2232,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/concatraw.md": {
-            "UUID": "2e9618e4-f577-431b-a137-3881f7848d4b",
+            "UUID": "b4d9c386-51b0-420d-bd5d-70840c7dcd02",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/concatraw.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/concatraw.md",
@@ -2271,7 +2271,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/cos.md": {
-            "UUID": "41e18aff-b780-489f-a840-457087ca9c01",
+            "UUID": "8d35260b-59ce-4b9a-a2bd-b388b502aad5",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/cos.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/cos.md",
@@ -2310,7 +2310,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/count.md": {
-            "UUID": "d01f6a8a-8f06-43b8-bfd9-a93c33ee8b68",
+            "UUID": "6bcc8205-7667-4e54-bad4-1b9b3c5bca32",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/count.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/count.md",
@@ -2349,7 +2349,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/countset.md": {
-            "UUID": "04e81f70-81c5-4ba1-aa4d-3ffbf2e25807",
+            "UUID": "a22d4cbd-a9fa-4b82-84b3-0ce58459c8f4",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/countset.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/countset.md",
@@ -2388,7 +2388,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/countsetelements.md": {
-            "UUID": "30b1ab2f-efb2-4110-bf80-808d56334b42",
+            "UUID": "b7a08f54-93c5-4d15-b162-b90f340debac",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/countsetelements.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/countsetelements.md",
@@ -2427,7 +2427,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/createarrayfromabsolutevalues.md": {
-            "UUID": "2a6418f4-87fa-4a18-99a5-ef4362de586a",
+            "UUID": "95f4a0f4-f6c3-4228-a9b8-c9885285705e",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/createarrayfromabsolutevalues.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/createarrayfromabsolutevalues.md",
@@ -2466,7 +2466,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/createvalueobjectbyhashes.md": {
-            "UUID": "2faedb8a-cf63-410e-82ee-9ffb879ea906",
+            "UUID": "cd2c0efb-2852-4660-9958-28c2cb885737",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/createvalueobjectbyhashes.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/createvalueobjectbyhashes.md",
@@ -2505,7 +2505,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/cumulativesummation.md": {
-            "UUID": "aa7d885c-a3ad-4ddc-9a54-dd6e98159d05",
+            "UUID": "b9dbd15d-04e7-4735-b1a0-7a6eb267d709",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/cumulativesummation.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/cumulativesummation.md",
@@ -2544,7 +2544,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateadddays.md": {
-            "UUID": "b8ca6570-6fcb-4c83-a330-b79a50d55a80",
+            "UUID": "f5bba6e2-9dee-45f9-95f9-22b069de9679",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateadddays.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateadddays.md",
@@ -2583,7 +2583,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateaddhours.md": {
-            "UUID": "211f2957-d87f-4e10-80e4-24052cd4d131",
+            "UUID": "d5b60ceb-3658-459e-9b4b-d758b0a6c5ab",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateaddhours.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateaddhours.md",
@@ -2622,7 +2622,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateaddmilliseconds.md": {
-            "UUID": "f72dfcd8-6344-4195-9e24-e2da52978bce",
+            "UUID": "65a1dbaa-df34-47d0-80be-3edfffb40089",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateaddmilliseconds.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateaddmilliseconds.md",
@@ -2661,7 +2661,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateaddminutes.md": {
-            "UUID": "f6dd499e-13af-4a37-a48e-333a9ecf86d5",
+            "UUID": "710e1c9c-32e3-4991-b5f1-8df83ee3f41c",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateaddminutes.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateaddminutes.md",
@@ -2700,7 +2700,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateaddmonths.md": {
-            "UUID": "e86ce83b-4b36-47c5-8abf-83fc56c7c4b9",
+            "UUID": "c5f09547-05e1-4ddc-9965-d8febf1a25a5",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateaddmonths.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateaddmonths.md",
@@ -2739,7 +2739,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateaddseconds.md": {
-            "UUID": "e10e6e7e-25e1-46c6-95ac-96cd1e32032d",
+            "UUID": "c94f828b-7226-4dae-88c7-f5d5e5030c60",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateaddseconds.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateaddseconds.md",
@@ -2778,7 +2778,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateaddweeks.md": {
-            "UUID": "213e22a9-1bfe-4dfb-b0fc-22ae1780a288",
+            "UUID": "a7b1d8ec-f7cd-4e5b-8da9-8a7d0f535d22",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateaddweeks.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateaddweeks.md",
@@ -2817,7 +2817,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateaddyears.md": {
-            "UUID": "558125d8-fccc-4b37-8cef-0b58375a0954",
+            "UUID": "f5ecbcbe-8c72-4de1-ace1-bd37121b2e7f",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateaddyears.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateaddyears.md",
@@ -2856,7 +2856,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/datedaydifference.md": {
-            "UUID": "0889ab7b-172f-486c-aa19-3869210e7fe6",
+            "UUID": "d162f89a-c5f3-44a9-b3e6-33a798b657d9",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/datedaydifference.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/datedaydifference.md",
@@ -2895,7 +2895,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/datefromparts.md": {
-            "UUID": "66f0adbe-58b9-4258-9de8-22f532b48327",
+            "UUID": "dc53fd6b-82c4-49a9-9c26-938e29b6eef7",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/datefromparts.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/datefromparts.md",
@@ -2934,7 +2934,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/datehourdifference.md": {
-            "UUID": "d49d6191-0087-4771-9846-e72927471398",
+            "UUID": "7382cbed-876d-4120-b5b1-95081847c98e",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/datehourdifference.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/datehourdifference.md",
@@ -2973,7 +2973,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/datemathadd.md": {
-            "UUID": "11d15b13-3413-4ae3-abf1-67c44163bc06",
+            "UUID": "d4479720-7c45-4f89-9893-8e9a54404d29",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/datemathadd.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/datemathadd.md",
@@ -3012,7 +3012,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/datemilliseconddifference.md": {
-            "UUID": "d2bdde1b-ff4a-4f14-add8-2b48accc984a",
+            "UUID": "4f0ed55a-7727-4342-a182-e78028fe3ec8",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/datemilliseconddifference.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/datemilliseconddifference.md",
@@ -3051,7 +3051,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateminutedifference.md": {
-            "UUID": "fe8cc001-c0fd-44b7-8554-9b592770aaad",
+            "UUID": "1a0516b9-b730-464c-8040-08f9e83bf728",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateminutedifference.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateminutedifference.md",
@@ -3090,7 +3090,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/datemonthdifference.md": {
-            "UUID": "f1335cfd-db49-4d08-9ade-11366e4da143",
+            "UUID": "cc795aaa-6e00-41b4-a280-c10d163052ad",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/datemonthdifference.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/datemonthdifference.md",
@@ -3129,7 +3129,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateseconddifference.md": {
-            "UUID": "1cf6729b-212b-437a-8785-8baabe8a08ed",
+            "UUID": "3246085c-bdbb-4225-ba5d-56e7266af265",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateseconddifference.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateseconddifference.md",
@@ -3168,7 +3168,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateweekdifference.md": {
-            "UUID": "5cdc3a59-4dee-4f3e-881c-bcc6ab453457",
+            "UUID": "7177ce21-1155-4242-af28-66fc10112349",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateweekdifference.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateweekdifference.md",
@@ -3207,7 +3207,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateyeardifference.md": {
-            "UUID": "a969fae2-ecb8-433f-9fd9-5d8c305c3c90",
+            "UUID": "0f51addd-9f1a-4838-b0bd-128656de6e46",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateyeardifference.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/dateyeardifference.md",
@@ -3246,7 +3246,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/distributionhistogram.md": {
-            "UUID": "ee490c08-e027-4853-b85d-173e38255db1",
+            "UUID": "06a27645-c5db-4702-82e4-c9f226d0ef6f",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/distributionhistogram.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/distributionhistogram.md",
@@ -3285,7 +3285,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/distributionhistogrambyobject.md": {
-            "UUID": "85c5d936-99e2-4f36-97aa-fae793c836b0",
+            "UUID": "9753a229-aff4-48a8-a697-f0791bb55da5",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/distributionhistogrambyobject.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/distributionhistogrambyobject.md",
@@ -3324,7 +3324,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/entryinset.md": {
-            "UUID": "b48ba7d8-2013-4ec5-beec-902540d17f61",
+            "UUID": "794b1eb3-4cef-44bc-a67d-f5961c31e46d",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/entryinset.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/entryinset.md",
@@ -3363,7 +3363,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/euler.md": {
-            "UUID": "a1c0bb39-83ae-4074-8afc-f6fc60bcd61a",
+            "UUID": "4042f37b-ba32-40d9-b5a5-cfac01ea4090",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/euler.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/euler.md",
@@ -3402,7 +3402,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/exp.md": {
-            "UUID": "c30e212f-e379-425d-bd81-1557b9cef8b1",
+            "UUID": "8dfa4cc4-0f4a-40b8-b684-d6bf17c3c7af",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/exp.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/exp.md",
@@ -3441,7 +3441,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/findfirstvaluebyexactmatch.md": {
-            "UUID": "87d2d70f-a77f-471c-a20f-536867938586",
+            "UUID": "ee8f5015-da91-4a32-8a8f-7ba35ed1e348",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/findfirstvaluebyexactmatch.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/findfirstvaluebyexactmatch.md",
@@ -3480,7 +3480,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/findfirstvaluebystringincludes.md": {
-            "UUID": "365d79bc-e9e6-4077-8231-503636e17878",
+            "UUID": "8facc0ab-5cc8-4bb6-967f-b81a427e057a",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/findfirstvaluebystringincludes.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/findfirstvaluebystringincludes.md",
@@ -3519,7 +3519,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/flatten.md": {
-            "UUID": "f8c4a93d-dd9f-4d91-8021-bfc6fd04a30a",
+            "UUID": "46b757f8-756f-41c2-8f82-304b33686b34",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/flatten.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/flatten.md",
@@ -3558,7 +3558,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/floor.md": {
-            "UUID": "9f8730e0-2afc-463d-9bae-a9f21cb14d5f",
+            "UUID": "14398263-8768-4c62-bd47-88d44de15fe2",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/floor.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/floor.md",
@@ -3597,7 +3597,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/gaussianelimination.md": {
-            "UUID": "8fa6f33e-5023-4de8-b23a-f2357ab6adf9",
+            "UUID": "023540dc-2ea8-4c77-af8d-c44e441762fa",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/gaussianelimination.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/gaussianelimination.md",
@@ -3636,7 +3636,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/generatearrayofobjectsfromsets.md": {
-            "UUID": "28f7b41f-1515-4e0a-93e0-9203c8546299",
+            "UUID": "171adf05-e4d5-4e2f-94c7-68ebd6546cd7",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/generatearrayofobjectsfromsets.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/generatearrayofobjectsfromsets.md",
@@ -3675,7 +3675,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/getvalue.md": {
-            "UUID": "071e955b-79af-4e51-a2a7-4ee6848a61af",
+            "UUID": "17590fb8-50e6-4399-9228-36154d15a1bb",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/getvalue.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/getvalue.md",
@@ -3714,7 +3714,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/getvaluearray.md": {
-            "UUID": "a8908de5-b7ec-475d-9ff7-460f6701e16e",
+            "UUID": "337f316a-bc42-401f-af25-278b344575b3",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/getvaluearray.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/getvaluearray.md",
@@ -3753,7 +3753,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/getvalueobject.md": {
-            "UUID": "86f13b5b-8a8c-413c-8a59-4d66aa5bcb29",
+            "UUID": "a277a279-09e8-4936-95a8-ed8c071df148",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/getvalueobject.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/getvalueobject.md",
@@ -3792,7 +3792,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/if.md": {
-            "UUID": "ee56c309-c8f3-4e8e-bc8d-8d467c51c1cc",
+            "UUID": "cfedfa4e-3d00-4c16-b492-f4161486ba4f",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/if.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/if.md",
@@ -3831,7 +3831,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/intercept.md": {
-            "UUID": "3494cbcd-f6d5-4032-83c5-6413dffa63db",
+            "UUID": "2d48fc33-638f-47d8-ac2d-1cb363bea6a4",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/intercept.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/intercept.md",
@@ -3870,7 +3870,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/iterativeseries.md": {
-            "UUID": "89c8dab3-abd0-479e-929b-f844597e9171",
+            "UUID": "2ca0ef44-8abf-4876-931c-899719f7af8a",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/iterativeseries.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/iterativeseries.md",
@@ -3909,7 +3909,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/join.md": {
-            "UUID": "cd7fbd2a-3274-4d4f-94e2-2574bdc2709f",
+            "UUID": "89fd2514-dbe1-49ab-afdc-ed1b4986bb8a",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/join.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/join.md",
@@ -3948,7 +3948,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/joinraw.md": {
-            "UUID": "844289ec-26b3-452d-9b5f-4cda91ed61e6",
+            "UUID": "c8a86ec7-a4f8-437c-9d83-4e241b6ad341",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/joinraw.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/joinraw.md",
@@ -3987,7 +3987,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/largestinset.md": {
-            "UUID": "949b4643-777d-4415-8f6a-872660f5190d",
+            "UUID": "0cca0afb-2201-431b-8bec-88762a9b89da",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/largestinset.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/largestinset.md",
@@ -4026,7 +4026,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/leastsquares.md": {
-            "UUID": "e9a1f4ef-9f76-4d19-b7d8-5687b7ca8f2e",
+            "UUID": "e3d8c609-9b07-4108-9570-cdbca01283d5",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/leastsquares.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/leastsquares.md",
@@ -4065,7 +4065,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/linest.md": {
-            "UUID": "abc81a5c-125e-406b-b49c-8ef9d8f40032",
+            "UUID": "e7479a56-e593-40d0-b73f-6cf9de1d9947",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/linest.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/linest.md",
@@ -4104,7 +4104,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/log.md": {
-            "UUID": "894c16f5-bb1d-448b-a476-dfc7d983f099",
+            "UUID": "4e44c025-d0f8-40bd-80ba-ad8471e247d8",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/log.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/log.md",
@@ -4143,7 +4143,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/match.md": {
-            "UUID": "36a43d5b-5c7f-499f-a3e1-abaf5d6f43a3",
+            "UUID": "b097fa78-b328-439f-8a7d-b498b2e28e42",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/match.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/match.md",
@@ -4182,7 +4182,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/matrixinverse.md": {
-            "UUID": "05c36a65-188c-42e8-8868-73aea504d6ed",
+            "UUID": "5b9d41ac-d7d7-4fa1-87ca-139117e9ddd0",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/matrixinverse.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/matrixinverse.md",
@@ -4221,7 +4221,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/matrixmultiply.md": {
-            "UUID": "f5655514-a318-41da-a63a-f45c13ed761a",
+            "UUID": "0d391876-d910-4340-9157-52e334cccebf",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/matrixmultiply.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/matrixmultiply.md",
@@ -4260,7 +4260,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/matrixtranspose.md": {
-            "UUID": "1230c62e-4775-448b-ba4a-6b7b7325ef62",
+            "UUID": "248ea3c3-8905-4e98-bcc0-c3d33928e4ee",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/matrixtranspose.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/matrixtranspose.md",
@@ -4299,7 +4299,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/matrixvectormultiply.md": {
-            "UUID": "3d2b4e16-6ba3-41a0-a53c-83ec4f9f19c2",
+            "UUID": "9f92a002-a2aa-4cc0-ad64-de3a93001116",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/matrixvectormultiply.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/matrixvectormultiply.md",
@@ -4338,7 +4338,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/max.md": {
-            "UUID": "02100b28-3887-4084-b43b-d43eacd577bf",
+            "UUID": "4f6e7456-f8ca-4b76-b5c2-a1662d93356f",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/max.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/max.md",
@@ -4377,7 +4377,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/mean.md": {
-            "UUID": "43eb52f2-3b8e-4dc0-b82a-d0950e2719c1",
+            "UUID": "56f9e681-2900-4524-ba0c-7126517b03cf",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/mean.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/mean.md",
@@ -4416,7 +4416,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/median.md": {
-            "UUID": "ca6144d7-172b-4941-acc8-883e78232856",
+            "UUID": "3d8027d7-07b1-4dad-88e6-2139a00c5805",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/median.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/median.md",
@@ -4455,7 +4455,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/min.md": {
-            "UUID": "ddda3bcb-2b7a-4e7c-85bf-a93d9aff9b69",
+            "UUID": "1d7301b2-e701-45ac-8e53-8a1413dc05cf",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/min.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/min.md",
@@ -4494,7 +4494,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/mode.md": {
-            "UUID": "11f7c19e-1d34-4940-bd82-682f939662ac",
+            "UUID": "c3676e9d-6fe9-467a-a966-304a7d8ec114",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/mode.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/mode.md",
@@ -4533,7 +4533,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/objectkeystoarray.md": {
-            "UUID": "048f2078-7a1b-48c3-aa74-ad528d956657",
+            "UUID": "210fbe36-8f1f-4c79-9849-f4e6d43f86ee",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/objectkeystoarray.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/objectkeystoarray.md",
@@ -4572,7 +4572,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/objectvaluessortbyexternalobjectarray.md": {
-            "UUID": "4f358242-cf4c-4e6d-a381-3051fbc29e3a",
+            "UUID": "2a972bbf-76c5-4f94-8718-7685ed2349eb",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/objectvaluessortbyexternalobjectarray.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/objectvaluessortbyexternalobjectarray.md",
@@ -4611,7 +4611,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/objectvaluestoarray.md": {
-            "UUID": "3168d770-314f-4fa6-9433-429950ab0da4",
+            "UUID": "8eb9dc25-f441-4683-9233-28243cb6d699",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/objectvaluestoarray.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/objectvaluestoarray.md",
@@ -4650,7 +4650,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/percent.md": {
-            "UUID": "b63ade09-d228-423f-9f7a-ef7a85af12ed",
+            "UUID": "abed35a7-bdaa-48f6-b08a-c941a54958a6",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/percent.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/percent.md",
@@ -4689,7 +4689,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/pi.md": {
-            "UUID": "820fea59-1a7d-4d97-be06-314478af2592",
+            "UUID": "2c743f60-b739-4aeb-99dd-5418dbef3bd2",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/pi.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/pi.md",
@@ -4728,7 +4728,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/polynomialregression.md": {
-            "UUID": "89ed1855-ff22-49ff-a7a3-481af5a2e5f7",
+            "UUID": "2d8a47c3-7833-46ba-b221-9fc4bb0db316",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/polynomialregression.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/polynomialregression.md",
@@ -4767,7 +4767,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/predict.md": {
-            "UUID": "a0ef1f61-8f81-4d2b-a340-babcce881969",
+            "UUID": "a915372c-9df0-41d0-b9ad-3a1bfd7c9fe4",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/predict.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/predict.md",
@@ -4806,7 +4806,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/rad.md": {
-            "UUID": "6df6a54c-dcd3-4ecf-ba6f-991dad595d1c",
+            "UUID": "c1a2f67e-cc47-455e-8166-bf730eec8d61",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/rad.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/rad.md",
@@ -4845,7 +4845,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/randomfloat.md": {
-            "UUID": "f19f8df5-04d9-4cad-8687-9443ff8b66e3",
+            "UUID": "dbcf48cd-1b37-4762-bc18-31bb887ff6cf",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/randomfloat.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/randomfloat.md",
@@ -4884,7 +4884,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/randomfloatbetween.md": {
-            "UUID": "710e75a4-1b37-40cd-88c9-14d278b54859",
+            "UUID": "bca0dd87-90e5-4ed5-885e-fadf82e9b312",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/randomfloatbetween.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/randomfloatbetween.md",
@@ -4923,7 +4923,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/randomfloatupto.md": {
-            "UUID": "c0e386d4-d00b-4f3e-95f6-06d4f6012a78",
+            "UUID": "b30b63b4-e5dc-4cad-9974-418e031c2209",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/randomfloatupto.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/randomfloatupto.md",
@@ -4962,7 +4962,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/randominteger.md": {
-            "UUID": "04cd9d4c-3cbd-4393-af8a-b460ae781587",
+            "UUID": "9c5acb1f-0bee-49b2-9294-10347b04a578",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/randominteger.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/randominteger.md",
@@ -5001,7 +5001,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/randomintegerbetween.md": {
-            "UUID": "d916b725-4400-4cf4-bb83-adef17ae0fc1",
+            "UUID": "9aa8461b-3af1-4983-b90c-0de5388bd694",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/randomintegerbetween.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/randomintegerbetween.md",
@@ -5040,7 +5040,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/randomintegerupto.md": {
-            "UUID": "dc9a7ed9-7571-40bd-b206-8f2b0059f3fc",
+            "UUID": "6a96a3d9-89c7-44ec-821e-d58bebfbdeff",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/randomintegerupto.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/randomintegerupto.md",
@@ -5079,7 +5079,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/resolvehtmlentities.md": {
-            "UUID": "e642df01-e6a5-492d-b40a-e7d79e0d4e87",
+            "UUID": "0aa5c8cc-4d51-4b09-a19f-d9733e88fb81",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/resolvehtmlentities.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/resolvehtmlentities.md",
@@ -5118,7 +5118,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/round.md": {
-            "UUID": "0687a596-6c91-4bf9-bfc1-4b648841b41b",
+            "UUID": "c839bf6d-b917-4ccc-8912-aed294d9db16",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/round.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/round.md",
@@ -5157,7 +5157,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/setconcatenate.md": {
-            "UUID": "2918b730-3ce2-4034-acbb-5c4153120bbf",
+            "UUID": "25a237e5-9253-425e-a0d5-ee5826e5334b",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/setconcatenate.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/setconcatenate.md",
@@ -5196,7 +5196,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/setvalue.md": {
-            "UUID": "0fd1690d-31c7-4406-8e85-cc3e7225778a",
+            "UUID": "286da242-b4b4-4115-918b-83313017a83f",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/setvalue.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/setvalue.md",
@@ -5235,7 +5235,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/sin.md": {
-            "UUID": "ee917065-10f5-4db6-af10-ea79b8092b2f",
+            "UUID": "1176ab41-7acd-4630-a4b1-53c99547709e",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/sin.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/sin.md",
@@ -5274,7 +5274,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/slice.md": {
-            "UUID": "88622459-2026-414f-a1c6-1c204d705ebf",
+            "UUID": "154f64d8-356a-49e5-adaa-b0e892c2c1cc",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/slice.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/slice.md",
@@ -5313,7 +5313,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/slope.md": {
-            "UUID": "d4714f0b-294d-4a0c-841b-2fca8ba180b5",
+            "UUID": "de27c00d-4f1c-4458-9021-1de6bedcd07c",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/slope.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/slope.md",
@@ -5352,7 +5352,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/smallestinset.md": {
-            "UUID": "a4265246-abd0-4ebf-a3fe-33f43db23d84",
+            "UUID": "a0dd2487-97b4-454c-a493-35639ad73bf9",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/smallestinset.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/smallestinset.md",
@@ -5391,7 +5391,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/sorthistogram.md": {
-            "UUID": "9de5b24c-765e-4e5e-9a65-5a87b8aad76d",
+            "UUID": "f67e7692-0512-4714-84a4-0cb41fc6d7bf",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/sorthistogram.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/sorthistogram.md",
@@ -5430,7 +5430,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/sorthistogrambykeys.md": {
-            "UUID": "7a6f01a1-dc5f-4a99-9675-cd7f49568a23",
+            "UUID": "27ff70f4-39a5-4199-bd20-fbeddee2983a",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/sorthistogrambykeys.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/sorthistogrambykeys.md",
@@ -5469,7 +5469,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/sortset.md": {
-            "UUID": "574b6023-4f63-430b-8449-1707f74903c9",
+            "UUID": "8512e488-0048-4a4a-91d3-bc7a070c729f",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/sortset.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/sortset.md",
@@ -5508,7 +5508,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/sqrt.md": {
-            "UUID": "a0ef5c61-38c2-4889-82aa-93fed4f7ec39",
+            "UUID": "f5394a6f-eac2-4444-967f-5dd081d065fa",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/sqrt.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/sqrt.md",
@@ -5547,7 +5547,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/stdev.md": {
-            "UUID": "2bf74d59-4bb2-4c3d-a13e-844cf74036b4",
+            "UUID": "f840df72-a4b7-43e5-99f2-4025d68f2251",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/stdev.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/stdev.md",
@@ -5586,7 +5586,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/stdeva.md": {
-            "UUID": "65313c70-bb36-46c5-a615-20a21245fc8b",
+            "UUID": "ecf2708e-bfe8-42dd-9a62-9f6f9e5594df",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/stdeva.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/stdeva.md",
@@ -5625,7 +5625,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/stdevp.md": {
-            "UUID": "db52dd30-8ae1-483a-9cf1-cd7d15f83a1b",
+            "UUID": "5ff3014d-1283-49c9-8222-a1079bfd1c26",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/stdevp.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/stdevp.md",
@@ -5664,7 +5664,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/stringcountsegments.md": {
-            "UUID": "c4b55f02-157f-49d3-9ef3-dbfe2eda8fa7",
+            "UUID": "cefc2913-a827-40f6-8b7c-d312af4004ba",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/stringcountsegments.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/stringcountsegments.md",
@@ -5703,7 +5703,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/stringgetsegments.md": {
-            "UUID": "0683cf49-9d53-40b5-880e-1a370a8b1a68",
+            "UUID": "1de5f0c8-c7d6-4a58-a8f0-02ea8dd5d5c4",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/stringgetsegments.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/stringgetsegments.md",
@@ -5742,7 +5742,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/subtractingsummation.md": {
-            "UUID": "5bdfcb2f-25a9-431f-946a-5937c8a36725",
+            "UUID": "7df1e402-8497-47d4-85c9-672d246d3c4d",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/subtractingsummation.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/subtractingsummation.md",
@@ -5781,7 +5781,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/sum.md": {
-            "UUID": "5c1e4fd1-5f2f-4432-9eec-9f918b4ba65e",
+            "UUID": "09434885-7a11-496d-95b5-91508a0973db",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/sum.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/sum.md",
@@ -5820,7 +5820,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/tan.md": {
-            "UUID": "863fbd49-96d1-46ad-87ce-a4df8d70002c",
+            "UUID": "088e5e0a-1b6f-447d-8411-b93a333242e2",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/tan.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/tan.md",
@@ -5859,7 +5859,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/ternary.md": {
-            "UUID": "8d930b49-2330-4def-bcd6-01315b974092",
+            "UUID": "41410ff3-98e4-4fda-ae45-164e2b52d3f0",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/ternary.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/ternary.md",
@@ -5898,7 +5898,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/tofixed.md": {
-            "UUID": "23174200-aff9-49f3-b79f-c43789e5ea2f",
+            "UUID": "75c58a74-247c-4dfb-8fc9-a6eb5fd9be86",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/tofixed.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/tofixed.md",
@@ -5937,7 +5937,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/var.md": {
-            "UUID": "115c607b-f0d5-4acb-b166-b717bec5f9ea",
+            "UUID": "650661cc-3bf4-4e1a-a9ba-2a3cc4f4d400",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/var.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/var.md",
@@ -5976,7 +5976,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/vara.md": {
-            "UUID": "3b5b6857-828f-499c-a7aa-b265e583c56c",
+            "UUID": "cf40a712-01ec-44b3-a688-1f022e1c26da",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/vara.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/vara.md",
@@ -6015,7 +6015,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/varp.md": {
-            "UUID": "80885dc9-d472-44b5-9719-6e5d61995a12",
+            "UUID": "a8608ece-20e6-4590-b43e-567f47dcefac",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/varp.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/varp.md",
@@ -6054,7 +6054,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/when.md": {
-            "UUID": "b0201281-a2d5-4b53-b57d-f11e74adc4ac",
+            "UUID": "e42bb12b-19ce-4537-ab82-c3a5c694273e",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/when.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser-functions/when.md",
@@ -6093,7 +6093,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser.md": {
-            "UUID": "9851aa08-d18c-43e8-ae6f-9f91bacf5b96",
+            "UUID": "4fddb419-4856-4b14-b9b8-0e1e4a2af63c",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/expression-parser.md",
@@ -6132,7 +6132,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/file-persistence.md": {
-            "UUID": "2967584b-c97c-4323-8e6c-87790471c02c",
+            "UUID": "74703461-ca2b-4148-9689-bf5ea40153d6",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/file-persistence.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/file-persistence.md",
@@ -6171,7 +6171,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/logging.md": {
-            "UUID": "5696f8f8-b6c6-4d98-b3a3-80b205c20b7b",
+            "UUID": "7ae439f6-3fca-486e-8437-4cb7aedc8d2d",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/logging.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/logging.md",
@@ -6209,7 +6209,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/logic.md": {
-            "UUID": "78a3ba92-1b79-4166-84a8-6c12d7313daa",
+            "UUID": "f29f47e2-b7b0-4fac-a721-6cb4261ad90c",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/logic.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/logic.md",
@@ -6247,7 +6247,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/manifest.md": {
-            "UUID": "7d885d0f-cb74-46a9-bb46-bdc4c4ff4939",
+            "UUID": "3eb4d501-4e05-48bd-a8ac-137daeca7be2",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/manifest.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/manifest.md",
@@ -6285,7 +6285,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/math.md": {
-            "UUID": "a9bd35a8-d490-4156-9626-f3312f111d8d",
+            "UUID": "8d218ada-c7c7-4fc7-b9c2-401f39cad49f",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/math.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/math.md",
@@ -6323,7 +6323,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/meta-template.md": {
-            "UUID": "74fefd59-7c16-4a16-84d2-9b75dfbeb019",
+            "UUID": "42393c38-411d-450a-8f42-3fad0ce159bd",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/meta-template.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/meta-template.md",
@@ -6362,7 +6362,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/object-cache.md": {
-            "UUID": "6f87f235-55cf-4acc-9262-8ad695c64964",
+            "UUID": "1bc41ddb-1856-49f6-891f-d257f76b6f74",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/object-cache.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/object-cache.md",
@@ -6401,7 +6401,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/operation.md": {
-            "UUID": "d2dd9d76-5f62-43e2-b100-1ed93ddc7ead",
+            "UUID": "ba64828f-92a5-48f1-81da-ed032badfa1a",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/operation.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/operation.md",
@@ -6439,7 +6439,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/progress-time.md": {
-            "UUID": "2f8399c4-ca92-4e28-a2fa-0069037c151a",
+            "UUID": "00df9d5b-9fd7-4b5b-971b-dabb7735104a",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/progress-time.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/progress-time.md",
@@ -6478,7 +6478,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/progress-tracker-set.md": {
-            "UUID": "cf597995-91ec-44d3-8fce-81ed53c1aa27",
+            "UUID": "74951332-599e-4608-b26a-0ddf05da103d",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/progress-tracker-set.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/progress-tracker-set.md",
@@ -6518,7 +6518,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/rest-client.md": {
-            "UUID": "dbb8ec18-1048-412a-b739-6ebba1304831",
+            "UUID": "588567b8-e9e2-4e43-9772-d198892af2ab",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/rest-client.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/rest-client.md",
@@ -6557,7 +6557,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/settings-manager.md": {
-            "UUID": "51273b97-a72b-47f7-81a2-e62cb7e90535",
+            "UUID": "1b7cd3af-8130-4758-adff-176c96736b4c",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/settings-manager.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/settings-manager.md",
@@ -6596,7 +6596,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/template.md": {
-            "UUID": "a0c6ded8-1a1b-4eee-b49a-518910719239",
+            "UUID": "685b420a-4af0-4368-b99c-05c5cf3b5c6a",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/template.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/template.md",
@@ -6634,7 +6634,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/utility.md": {
-            "UUID": "4e094d30-16a4-4151-80b9-7648bbdc44fb",
+            "UUID": "ed11e624-ab6f-4524-9d62-db22495272c8",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/utility.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/utility.md",
@@ -6672,7 +6672,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/uuid.md": {
-            "UUID": "fa98c346-1028-4096-8d4e-ad38aaca630c",
+            "UUID": "cf8c8f30-6682-423b-a127-dac9d32f03c3",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/uuid.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/docs/services/uuid.md",
@@ -6710,7 +6710,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/data/Fruit-Data.json": {
-            "UUID": "614b8ea2-9156-4790-af0d-af4eacd8bc9a",
+            "UUID": "5b5f6465-162d-49b6-ab3e-96b98b1ddcd4",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/data/Fruit-Data.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/data/Fruit-Data.json",
@@ -6749,7 +6749,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/data/Fruit-Manyfest.json": {
-            "UUID": "adf3c558-890a-4425-8bea-b76865b2fb53",
+            "UUID": "0176bd6f-e831-4dfd-834e-5ebd868a94a3",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/data/Fruit-Manyfest.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/data/Fruit-Manyfest.json",
@@ -6788,7 +6788,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/.vscode/launch.json": {
-            "UUID": "bceadc77-ba73-4a93-a6d9-756013b7326c",
+            "UUID": "3461e87d-7121-427a-831f-e5928604e33f",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/.vscode/launch.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/.vscode/launch.json",
@@ -6827,7 +6827,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/AppData.json": {
-            "UUID": "c763ece5-bb4d-4fcc-985e-11447af96214",
+            "UUID": "306a22c2-f2b4-483c-8919-727de4ac987c",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/AppData.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/AppData.json",
@@ -6865,7 +6865,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/Equations.json": {
-            "UUID": "2280ada4-d102-4358-bb2b-7fe4677f0674",
+            "UUID": "2ecdd362-3892-4957-96f5-38415dc45514",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/Equations.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/Equations.json",
@@ -6903,7 +6903,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/Math-Solver-Harness.js": {
-            "UUID": "83049421-7ef9-49c4-b6e8-7e0b5953398d",
+            "UUID": "0a95f50b-f720-4d25-8735-8a51ee12da79",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/Math-Solver-Harness.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/Math-Solver-Harness.js",
@@ -6943,7 +6943,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/README.md": {
-            "UUID": "265cd0ec-2cc8-41fa-90c6-a29e17d9ad96",
+            "UUID": "b35d7468-7a80-4cf0-a054-0a7575343709",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/README.md",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/README.md",
@@ -6981,7 +6981,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/TestSuite-AcidTest.json": {
-            "UUID": "3300863f-dbe5-4644-a7fc-a726a0452bc3",
+            "UUID": "073230d8-1ee6-4d4e-951f-7a26caaf9b40",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/TestSuite-AcidTest.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/TestSuite-AcidTest.json",
@@ -7020,7 +7020,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/TestSuite-Identities.json": {
-            "UUID": "968e1708-e492-4ae0-b829-8950f24bffae",
+            "UUID": "1eba81c5-10bf-4d21-8de5-394439f79506",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/TestSuite-Identities.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/TestSuite-Identities.json",
@@ -7059,7 +7059,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/TestSuite-Precision.json": {
-            "UUID": "117cb6c5-15ed-408a-a136-4923dbed0718",
+            "UUID": "209e4cdb-6626-4b95-92c8-08d04f33f3d8",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/TestSuite-Precision.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/TestSuite-Precision.json",
@@ -7098,7 +7098,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/TestSuite-Spreadsheet.json": {
-            "UUID": "950d7c0e-044a-4837-9306-ff4f985d8c10",
+            "UUID": "f933c6cf-30ae-4e0b-adc9-31dba3a3ac57",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/TestSuite-Spreadsheet.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/example_applications/mathematical_playground/TestSuite-Spreadsheet.json",
@@ -7137,7 +7137,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/gulpfile.js": {
-            "UUID": "33781653-6c6e-4169-8b2f-f53ce088299c",
+            "UUID": "642e550b-a752-4c90-a0fb-abe7f0e8f5b6",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/gulpfile.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/gulpfile.js",
@@ -7173,7 +7173,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/package-lock.json": {
-            "UUID": "44965ea0-dab7-4168-ae2e-5f13075ba01f",
+            "UUID": "dba9e489-6d03-425f-9cd9-38088041c66d",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/package-lock.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/package-lock.json",
@@ -7202,15 +7202,15 @@
                 "Default"
             ],
             "FSTAT": {
-                "Size": 584307,
+                "Size": 587646,
                 "Created": "2024-12-24T00:35:39.764Z",
-                "Modified": "2026-04-09T23:36:34.633Z",
-                "Accessed": "2026-03-13T01:47:00.107Z",
+                "Modified": "2026-04-10T17:19:36.889Z",
+                "Accessed": "2026-04-10T17:19:36.866Z",
                 "Mode": 33188
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/package.json": {
-            "UUID": "c6927105-87fe-4028-b455-67e0f703c15d",
+            "UUID": "744b4bcb-f13f-43b6-ae45-504005b6da71",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/package.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/package.json",
@@ -7273,6 +7273,7 @@
                 },
                 "homepage": "https://github.com/stevenvelozo/fable",
                 "devDependencies": {
+                    "pict-docuserve": "^0.1.5",
                     "quackage": "^1.1.0"
                 },
                 "dependencies": {
@@ -7308,15 +7309,15 @@
                 "PackageDotJSON"
             ],
             "FSTAT": {
-                "Size": 2158,
+                "Size": 2190,
                 "Created": "2026-04-10T03:19:44.622Z",
-                "Modified": "2026-04-10T03:19:44.623Z",
-                "Accessed": "2026-04-10T03:19:44.804Z",
+                "Modified": "2026-04-10T17:19:36.804Z",
+                "Accessed": "2026-04-10T17:19:37.230Z",
                 "Mode": 33188
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/Fable-Browser-Shim.js": {
-            "UUID": "81e43b3c-d8c0-4e37-ba11-d458e9a49ae8",
+            "UUID": "7a7daa1e-c7da-4a39-ac7a-6c228c70ca23",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/Fable-Browser-Shim.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/Fable-Browser-Shim.js",
@@ -7355,7 +7356,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/Fable.js": {
-            "UUID": "10d03988-7217-49fd-8081-4443cff13cf0",
+            "UUID": "80cb2ea8-a2eb-4deb-acba-ab11641ecd9e",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/Fable.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/Fable.js",
@@ -7392,7 +7393,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-Anticipate.js": {
-            "UUID": "14773bc3-c60f-4ffa-aec3-4e803ff1cbf5",
+            "UUID": "32812538-f950-4bb9-9d16-98d3f7bf386d",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-Anticipate.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-Anticipate.js",
@@ -7432,7 +7433,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-CSVParser.js": {
-            "UUID": "589fd670-a329-4416-a646-1aded9164d6b",
+            "UUID": "76a16624-e579-4863-906c-c05bdc747f05",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-CSVParser.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-CSVParser.js",
@@ -7472,7 +7473,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-DataFormat.js": {
-            "UUID": "b55a54b0-5590-4751-8f0a-541c7e69c04c",
+            "UUID": "dccafc51-6b1a-47e8-a2de-5487b37bb92b",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-DataFormat.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-DataFormat.js",
@@ -7512,7 +7513,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-DataGeneration-DefaultValues.json": {
-            "UUID": "0f18171b-a8d4-48ef-af59-2a908902e8df",
+            "UUID": "f8d03dd5-9843-40ce-bdc3-baa756b90a4f",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-DataGeneration-DefaultValues.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-DataGeneration-DefaultValues.json",
@@ -7553,7 +7554,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-DataGeneration.js": {
-            "UUID": "6fe6998c-74c1-4b13-bf9b-ce0ae0cd3840",
+            "UUID": "1cc8de76-b989-410d-b9c6-f17033449be4",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-DataGeneration.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-DataGeneration.js",
@@ -7593,7 +7594,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-DateManipulation.js": {
-            "UUID": "546ef6e5-2e9b-4dfa-afa4-e026cf4b966f",
+            "UUID": "434d3713-c4f6-455b-ba8d-9ed9cfbca3c8",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-DateManipulation.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-DateManipulation.js",
@@ -7633,7 +7634,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-EnvironmentData-Web.js": {
-            "UUID": "58897b81-eed5-417e-941b-07d1f5fc8275",
+            "UUID": "76956e64-031f-4a5d-879d-41b5afdadd1b",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-EnvironmentData-Web.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-EnvironmentData-Web.js",
@@ -7674,7 +7675,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-EnvironmentData.js": {
-            "UUID": "5957dfa6-1dc2-4a8c-9ef3-635b91308529",
+            "UUID": "0228e5d7-5e7a-4fb4-8d31-e7ef73ca32ae",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-EnvironmentData.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-EnvironmentData.js",
@@ -7714,7 +7715,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-Base.js": {
-            "UUID": "3a794f1e-bafc-43a8-b489-8fbffbc469ca",
+            "UUID": "327fc924-902f-47e0-af6f-2eef9fcadb81",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-Base.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-Base.js",
@@ -7756,7 +7757,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-ExpressionTokenizer-DirectiveMutation.js": {
-            "UUID": "4528a354-fe35-4ec8-893a-30c11c7bed70",
+            "UUID": "e207dec0-0cb2-43a4-a998-4569b775fa05",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-ExpressionTokenizer-DirectiveMutation.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-ExpressionTokenizer-DirectiveMutation.js",
@@ -7799,7 +7800,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-ExpressionTokenizer.js": {
-            "UUID": "2d3c86bb-a228-459c-b8a6-0844682d52c4",
+            "UUID": "8d04fe31-b109-4fa6-b01b-8b4f797e3666",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-ExpressionTokenizer.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-ExpressionTokenizer.js",
@@ -7841,7 +7842,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-FunctionMap.json": {
-            "UUID": "88cf58b2-fa61-46fd-8bcc-7b0ee9c702ea",
+            "UUID": "07151031-e70a-4274-ab54-fe0c4ce3b63a",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-FunctionMap.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-FunctionMap.json",
@@ -7883,7 +7884,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-Linter.js": {
-            "UUID": "023a807f-2a8c-443a-aa8e-711d9f756d64",
+            "UUID": "5bdbd2a3-6033-4de2-90ed-4ba671b0abf5",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-Linter.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-Linter.js",
@@ -7925,7 +7926,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-Messaging.js": {
-            "UUID": "bbfea175-0273-4c7c-b297-00ff50f3b22c",
+            "UUID": "611b219f-97fa-4a64-9d6e-491e6cd6f6b3",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-Messaging.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-Messaging.js",
@@ -7967,7 +7968,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-Postfix.js": {
-            "UUID": "2a55ceba-6d7f-46e1-b125-772c250bee45",
+            "UUID": "2d48320c-eb99-4a83-a2be-168724ca909d",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-Postfix.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-Postfix.js",
@@ -8009,7 +8010,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-SolvePostfixedExpression.js": {
-            "UUID": "b93ca1cd-fbfb-4d88-b396-ecacdabcc672",
+            "UUID": "af0fcd10-3910-4661-8d7b-563c6378f3ea",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-SolvePostfixedExpression.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-SolvePostfixedExpression.js",
@@ -8051,7 +8052,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-TokenMap.json": {
-            "UUID": "8426f379-558a-426c-b22f-cdd14cedd4e7",
+            "UUID": "707dcbd0-ae95-47e3-a457-b13c4bb892fd",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-TokenMap.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-TokenMap.json",
@@ -8093,7 +8094,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-ValueMarshal.js": {
-            "UUID": "2979ddbb-3d68-4bdf-ac0e-377bbaa76e34",
+            "UUID": "bae893d7-1aaf-4adb-b95f-c85001aeb7c1",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-ValueMarshal.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser/Fable-Service-ExpressionParser-ValueMarshal.js",
@@ -8135,7 +8136,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser.js": {
-            "UUID": "0a9f364e-bb7d-43c1-ac26-77838b48cd18",
+            "UUID": "113d761a-d10b-4662-b1cb-aa08a9a1a35e",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ExpressionParser.js",
@@ -8175,7 +8176,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-FilePersistence-Web.js": {
-            "UUID": "c6777dee-cedd-40ca-be7b-97d967e5fa8a",
+            "UUID": "052a0bc5-6e7f-491a-ab6f-c63b96582cd0",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-FilePersistence-Web.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-FilePersistence-Web.js",
@@ -8216,7 +8217,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-FilePersistence.js": {
-            "UUID": "8651c069-071e-4cb6-99f3-df205a4bc988",
+            "UUID": "dc8549f6-bfd4-49b1-bffa-e3b6f0119e71",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-FilePersistence.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-FilePersistence.js",
@@ -8256,7 +8257,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-Logic.js": {
-            "UUID": "f318f1b5-cfa7-40f5-b0a2-95dd90221421",
+            "UUID": "f2a043e8-09b8-45e5-9eb0-0c1c5bfc5c58",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-Logic.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-Logic.js",
@@ -8296,7 +8297,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-Math.js": {
-            "UUID": "299acebd-1477-4e23-af75-c49ddfe58b16",
+            "UUID": "3cd2da5a-27d1-47f8-b397-916ba54af151",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-Math.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-Math.js",
@@ -8336,7 +8337,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-MetaTemplate/MetaTemplate-StringParser.js": {
-            "UUID": "a04dfda2-88ca-428c-901e-619b4a5fbe2a",
+            "UUID": "d77175b9-8ea1-407e-8ebc-2a52b5c66362",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-MetaTemplate/MetaTemplate-StringParser.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-MetaTemplate/MetaTemplate-StringParser.js",
@@ -8376,7 +8377,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-MetaTemplate/MetaTemplate-WordTree.js": {
-            "UUID": "ecbcdf28-73f1-42f5-87ba-37d7d9980c45",
+            "UUID": "86023cfd-565b-44c8-ad78-855332e421ed",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-MetaTemplate/MetaTemplate-WordTree.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-MetaTemplate/MetaTemplate-WordTree.js",
@@ -8416,7 +8417,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-MetaTemplate.js": {
-            "UUID": "a914e74d-2aff-4de8-a11d-ce324488ed4e",
+            "UUID": "cc3cf933-11b3-4b05-a242-6d16f7a9a2de",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-MetaTemplate.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-MetaTemplate.js",
@@ -8456,7 +8457,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-Operation-DefaultSettings.js": {
-            "UUID": "35882823-b583-48f7-b84d-67cc331a24dd",
+            "UUID": "622a5ec4-cd2b-4d0c-aaf0-712acf1d2b90",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-Operation-DefaultSettings.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-Operation-DefaultSettings.js",
@@ -8497,7 +8498,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-Operation.js": {
-            "UUID": "754072a1-7133-49f8-bcde-15ad72ef1097",
+            "UUID": "ca1b70ab-0c9e-4535-a02a-0d023bf9f806",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-Operation.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-Operation.js",
@@ -8537,7 +8538,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ProgressTime.js": {
-            "UUID": "a6832674-d642-4d27-ad05-d457f3ff81c2",
+            "UUID": "9e62ae63-64b5-4623-a840-d49533c05b2e",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ProgressTime.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ProgressTime.js",
@@ -8577,7 +8578,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ProgressTracker/ProgressTracker.js": {
-            "UUID": "c030d924-e124-4689-abdf-f0025fce78a7",
+            "UUID": "0bc1ee4c-ca94-4e9c-950a-ebd497d5a4f4",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ProgressTracker/ProgressTracker.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ProgressTracker/ProgressTracker.js",
@@ -8616,7 +8617,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ProgressTrackerSet.js": {
-            "UUID": "eea30693-cc99-4369-86e6-ac641ca5bf67",
+            "UUID": "d968aad8-d931-41ec-8e0b-46d2534249ba",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ProgressTrackerSet.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-ProgressTrackerSet.js",
@@ -8656,7 +8657,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-RestClient.js": {
-            "UUID": "7f50ddfe-9fc7-4c6a-99a9-e210e39f7d1f",
+            "UUID": "b21993c7-405e-4ada-b16c-697688eda124",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-RestClient.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-RestClient.js",
@@ -8696,7 +8697,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-Template.js": {
-            "UUID": "9fdd6ad4-764b-49de-b010-a919c6fd00e3",
+            "UUID": "d2aacd31-2d02-4b7d-8b70-7fe32df29844",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-Template.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-Template.js",
@@ -8736,7 +8737,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-Utility.js": {
-            "UUID": "2f7f6771-21ab-4ab6-a405-209a6718f02f",
+            "UUID": "5131df89-edcb-43e2-ae41-5666e053b905",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-Utility.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-Service-Utility.js",
@@ -8776,7 +8777,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-SetConcatArray.js": {
-            "UUID": "c7c08138-5c11-4524-a41e-5572eb2ecb2a",
+            "UUID": "dfe58e11-b745-4c28-8462-951a7fb7bfcf",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-SetConcatArray.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/source/services/Fable-SetConcatArray.js",
@@ -8815,7 +8816,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/Anticipate_tests.js": {
-            "UUID": "9839ca9b-1e1c-4fcf-b0d6-c1b6b4f9a589",
+            "UUID": "c0477c15-ee5c-4620-b4ad-47afde189dad",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/Anticipate_tests.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/Anticipate_tests.js",
@@ -8853,7 +8854,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/CSVParser_tests.js": {
-            "UUID": "2705046e-35e0-45e5-8e51-999436832110",
+            "UUID": "107abbc4-05dd-4d78-8cde-5869c30d859a",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/CSVParser_tests.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/CSVParser_tests.js",
@@ -8891,7 +8892,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/Cache_tests.js": {
-            "UUID": "f18c63f9-f0a1-489d-92ac-b59c64074993",
+            "UUID": "99795f11-5eb3-4ae4-9ed6-e648884969bf",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/Cache_tests.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/Cache_tests.js",
@@ -8929,7 +8930,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/DataFormat-StringDateFormatting_tests.js": {
-            "UUID": "f1eda0ab-a385-485c-9646-ee8cd83f3069",
+            "UUID": "3185e4ac-da56-4e46-bc6f-9291a8469e7c",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/DataFormat-StringDateFormatting_tests.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/DataFormat-StringDateFormatting_tests.js",
@@ -8968,7 +8969,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/DataFormat-StringManipulation_tests.js": {
-            "UUID": "6e3b56e4-287c-4f1b-9321-077abbebb23f",
+            "UUID": "f9cea017-5119-420b-b576-2f37fe4a44cc",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/DataFormat-StringManipulation_tests.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/DataFormat-StringManipulation_tests.js",
@@ -9007,7 +9008,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/DataFormat-StringNumberFormatting_tests.js": {
-            "UUID": "1789606c-f403-45b7-ac60-ad23b128ac2a",
+            "UUID": "7b950321-4b9c-4068-adc6-ee3104006e73",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/DataFormat-StringNumberFormatting_tests.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/DataFormat-StringNumberFormatting_tests.js",
@@ -9046,7 +9047,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/DataFormat-StringTokenization_tests.js": {
-            "UUID": "471952a1-cf13-422b-a221-c5b9475f16a4",
+            "UUID": "2950c626-b894-47c9-9d89-d753840f2e38",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/DataFormat-StringTokenization_tests.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/DataFormat-StringTokenization_tests.js",
@@ -9085,7 +9086,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/DataGeneration_tests.js": {
-            "UUID": "5f290e1d-a166-4fba-a99f-085e7adc4f3e",
+            "UUID": "caf92cd0-a5ef-4c9b-a47e-30b2d7e89f8a",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/DataGeneration_tests.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/DataGeneration_tests.js",
@@ -9123,7 +9124,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/DateManipulation_tests.js": {
-            "UUID": "21eed90a-3a41-4b0f-8c57-754376b9698b",
+            "UUID": "5e13cb40-998e-465a-b87a-b3bf0a3e46e5",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/DateManipulation_tests.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/DateManipulation_tests.js",
@@ -9161,7 +9162,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/ExpressionParser_Recompose_tests.js": {
-            "UUID": "04378aa5-df8b-4a2d-95ca-4fa7dd7ef36a",
+            "UUID": "369369d4-88b6-44c6-9dc5-f61946425fb7",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/ExpressionParser_Recompose_tests.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/ExpressionParser_Recompose_tests.js",
@@ -9200,7 +9201,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/ExpressionParser_tests.js": {
-            "UUID": "f5ea3419-997b-4eb7-9c45-42cface250be",
+            "UUID": "302d6eaf-661e-4dd3-aee5-c82fafb4aa51",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/ExpressionParser_tests.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/ExpressionParser_tests.js",
@@ -9238,7 +9239,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/FableOperation_tests.js": {
-            "UUID": "86fdea67-d5d3-4710-9bc6-82d8f671f549",
+            "UUID": "5eef8d17-26cd-4954-8387-5511e315fa28",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/FableOperation_tests.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/FableOperation_tests.js",
@@ -9276,7 +9277,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/FableServiceManager_tests.js": {
-            "UUID": "6e726b49-fbbe-4d76-8b38-f5a6998c3d5c",
+            "UUID": "2187c1e8-8d13-4a0e-8e6b-357a31bb94a9",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/FableServiceManager_tests.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/FableServiceManager_tests.js",
@@ -9314,7 +9315,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/Fable_tests.js": {
-            "UUID": "9255bbc4-fb8c-499f-8425-a95818dd3b48",
+            "UUID": "7773d7b8-d06d-48b2-a865-899e59e0b0ad",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/Fable_tests.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/Fable_tests.js",
@@ -9352,7 +9353,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/FilePersistence_tests.js": {
-            "UUID": "a6061ce6-78d4-4375-b56c-c5f33677050d",
+            "UUID": "e9181b3c-83a0-47ab-b1ae-d4bb405cb5f4",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/FilePersistence_tests.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/FilePersistence_tests.js",
@@ -9390,7 +9391,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/Manifest_tests.js": {
-            "UUID": "c9f353ac-a3a9-4d25-b588-db0924f7e34e",
+            "UUID": "5e5493fc-52ad-4393-8de8-c28849572888",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/Manifest_tests.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/Manifest_tests.js",
@@ -9428,7 +9429,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/Math_test.js": {
-            "UUID": "f496a833-5430-4a20-8fde-0903d0736411",
+            "UUID": "1d050680-8176-4a40-81f3-0c07de6de733",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/Math_test.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/Math_test.js",
@@ -9466,7 +9467,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/MetaTemplating_tests.js": {
-            "UUID": "70ccbcc6-8cc6-40cc-99a6-bb43e5964dc0",
+            "UUID": "439b7de3-ee72-4a11-adc7-c8e63884990e",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/MetaTemplating_tests.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/MetaTemplating_tests.js",
@@ -9504,7 +9505,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/ProgressTime_tests.js": {
-            "UUID": "64d3158d-de1d-4c43-8570-e793a6efcf78",
+            "UUID": "18b26044-9ccd-423b-a3fd-78839388eda4",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/ProgressTime_tests.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/ProgressTime_tests.js",
@@ -9542,7 +9543,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/ProgressTracker_tests.js": {
-            "UUID": "92c6d5fc-ee35-489f-94c7-a488da6dae8c",
+            "UUID": "bf92d45a-e939-4460-b374-2c47bab026c0",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/ProgressTracker_tests.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/ProgressTracker_tests.js",
@@ -9580,7 +9581,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/RestClientBinaryUpload_test.js": {
-            "UUID": "a5e77398-8dce-4c53-a436-8c29ace98810",
+            "UUID": "1849c737-a4a8-422c-989e-2616dc1875a0",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/RestClientBinaryUpload_test.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/RestClientBinaryUpload_test.js",
@@ -9618,7 +9619,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/RestClient_test.js": {
-            "UUID": "4e7aa624-e76c-46dc-80ec-96219a0fcc71",
+            "UUID": "a966f157-2a2c-4fd0-8cab-5a4fe6683204",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/RestClient_test.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/RestClient_test.js",
@@ -9656,7 +9657,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/Utility_tests.js": {
-            "UUID": "770ab8aa-c355-4737-823f-2ed252cb6823",
+            "UUID": "e1b9cabf-24b7-44e2-bcb7-7a26594f40e0",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/Utility_tests.js",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/Utility_tests.js",
@@ -9694,7 +9695,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/data/books.csv": {
-            "UUID": "738e6688-ac03-443d-be33-93de6ee1d36c",
+            "UUID": "89ea3d5f-3784-4689-9499-ba02212ab9db",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/data/books.csv",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/data/books.csv",
@@ -9732,7 +9733,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/data/chocodata.json": {
-            "UUID": "6c36ac3d-7cff-410e-b1cb-e62ea7df2e52",
+            "UUID": "7ecaeee2-1500-4584-bf48-99b82c792964",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/data/chocodata.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/data/chocodata.json",
@@ -9770,7 +9771,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/data/cities.json": {
-            "UUID": "36f334ed-fee2-4838-b703-c0d504fc15a2",
+            "UUID": "d6dd3236-40b7-462e-b522-27c11545415f",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/fable/fable/test/data/cities.json",
             "Path": "FILE://Users/steven/Code/retold/modules/fable/fable/test/data/cities.json",
