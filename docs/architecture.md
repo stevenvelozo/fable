@@ -230,7 +230,7 @@ const manifest = fable.newManyfest(definition);
 Settings flow from initialization through all services:
 
 ```
-User Config → SettingsManager → Fable.settings → All Services
+User Config -> SettingsManager -> Fable.settings -> All Services
                     ↓
               fable-settings
               (precedent-based
@@ -249,10 +249,10 @@ this.fable.SettingsManager.settings;
 The logging system supports multiple output streams:
 
 ```
-Application Code → fable.log → Log Router → Stream 1 (console)
-                                         → Stream 2 (file)
-                                         → Stream 3 (MongoDB)
-                                         → Stream N (custom)
+Application Code -> fable.log -> Log Router -> Stream 1 (console)
+                                         -> Stream 2 (file)
+                                         -> Stream 3 (MongoDB)
+                                         -> Stream N (custom)
 ```
 
 Log levels: `trace`, `debug`, `info`, `warn`, `error`, `fatal`

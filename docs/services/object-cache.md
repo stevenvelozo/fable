@@ -138,9 +138,9 @@ Get the full linked list node (including metadata) for a hash:
 
 ```javascript
 const node = cache.getNode('my-key');
-// node.Datum — the stored data
-// node.Hash — the hash key
-// node.Metadata.Created — timestamp (ms) when the entry was created
+// node.Datum -- the stored data
+// node.Hash -- the hash key
+// node.Metadata.Created -- timestamp (ms) when the entry was created
 ```
 
 ### RecordMap

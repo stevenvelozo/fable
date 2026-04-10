@@ -70,6 +70,6 @@ FormattedPercent = TOFIXED(PERCENT(Completed, Total) * 100, 1)
 ## Notes
 
 - Always returns specified number of decimal places
-- Pads with zeros if necessary (19.9 → "19.90")
+- Pads with zeros if necessary (19.9 -> "19.90")
 - Uses the Math service's `toFixedPrecise` method
 - Returns result as string

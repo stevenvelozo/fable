@@ -109,7 +109,7 @@ tmpAnticipate.anticipate(function (fCallback)
 ```
 
 The step function receives one parameter:
-- `fCallback` — Callback to signal completion. Pass an error to bail out: `fCallback(new Error('something failed'))`
+- `fCallback` -- Callback to signal completion. Pass an error to bail out: `fCallback(new Error('something failed'))`
 
 ### wait(fCallback)
 
@@ -185,7 +185,7 @@ tmpAnticipate.anticipate(function (fCallback)
 	catch (pError)
 	{
 		tmpRecoveredError = pError;
-		fCallback();  // No error passed — pipeline continues
+		fCallback();  // No error passed -- pipeline continues
 	}
 });
 tmpAnticipate.anticipate(function (fCallback)

@@ -149,4 +149,4 @@ If a row has more columns than the header, extra columns are keyed by their nume
 - All values are returned as strings
 - The parser is designed for streaming/line-by-line use, not whole-file-at-once parsing
 - Carriage returns (`\r`) are automatically stripped from fields
-- The parser is stateful — create a new instance for each file you parse
+- The parser is stateful -- create a new instance for each file you parse

@@ -23,8 +23,8 @@ fable.EnvironmentData.Environment
 
 Fable automatically uses the appropriate implementation:
 
-- **Node.js**: `Fable-Service-EnvironmentData.js` — sets `Environment` to `'node.js'`
-- **Browser**: `Fable-Service-EnvironmentData-Web.js` — sets `Environment` to `'web'`
+- **Node.js**: `Fable-Service-EnvironmentData.js` -- sets `Environment` to `'node.js'`
+- **Browser**: `Fable-Service-EnvironmentData-Web.js` -- sets `Environment` to `'web'`
 
 ## Use Cases
 

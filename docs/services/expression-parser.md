@@ -28,11 +28,11 @@ parser.solve('2 ^ 10');       // Returns '1024'
 parser.solve(expression, dataObject, resultObject, manifest, destinationObject);
 ```
 
-- **expression** — the expression string to evaluate
-- **dataObject** — object containing variable values (optional)
-- **resultObject** — object to store solver metadata/logs (optional)
-- **manifest** — a Manyfest instance for address resolution, or `false` (optional)
-- **destinationObject** — object where named results are written (optional)
+- **expression** -- the expression string to evaluate
+- **dataObject** -- object containing variable values (optional)
+- **resultObject** -- object to store solver metadata/logs (optional)
+- **manifest** -- a Manyfest instance for address resolution, or `false` (optional)
+- **destinationObject** -- object where named results are written (optional)
 
 ### Assigning Results
 
@@ -59,12 +59,12 @@ parser.solve('Name ?= GETVALUE("AppData.Students[0]")', data, {}, false, dest);
 
 | Operator | Description | Example |
 |----------|-------------|---------|
-| `+` | Addition | `5 + 3` → `'8'` |
-| `-` | Subtraction | `5 - 3` → `'2'` |
-| `*` | Multiplication | `5 * 3` → `'15'` |
-| `/` | Division | `15 / 3` → `'5'` |
-| `^` | Power | `2 ^ 3` → `'8'` |
-| `%` | Modulus | `10 % 3` → `'1'` |
+| `+` | Addition | `5 + 3` -> `'8'` |
+| `-` | Subtraction | `5 - 3` -> `'2'` |
+| `*` | Multiplication | `5 * 3` -> `'15'` |
+| `/` | Division | `15 / 3` -> `'5'` |
+| `^` | Power | `2 ^ 3` -> `'8'` |
+| `%` | Modulus | `10 % 3` -> `'1'` |
 
 ### Comparison Operators
 
@@ -72,12 +72,12 @@ Comparison operators evaluate to `'1'` (true) or `'0'` (false). They bind looser
 
 | Operator | Description | Example |
 |----------|-------------|---------|
-| `>` | Greater than | `5 > 3` → `'1'` |
-| `>=` | Greater than or equal | `5 >= 5` → `'1'` |
-| `<` | Less than | `3 < 5` → `'1'` |
-| `<=` | Less than or equal | `3 <= 3` → `'1'` |
-| `==` | Equal | `5 == 5` → `'1'` |
-| `!=` | Not equal | `5 != 3` → `'1'` |
+| `>` | Greater than | `5 > 3` -> `'1'` |
+| `>=` | Greater than or equal | `5 >= 5` -> `'1'` |
+| `<` | Less than | `3 < 5` -> `'1'` |
+| `<=` | Less than or equal | `3 <= 3` -> `'1'` |
+| `==` | Equal | `5 == 5` -> `'1'` |
+| `!=` | Not equal | `5 != 3` -> `'1'` |
 
 ```javascript
 parser.solve('Result = 5 > 3', {}, {}, false, dest);
@@ -386,14 +386,14 @@ parser.solve('Sampled = MULTIROWMAP ROWS FROM Rows SERIESSTEP 2 VAR v FROM Value
 ```
 
 **Available variables in MULTIROWMAP expressions:**
-- `stepIndex` — iteration counter (0, 1, 2, ...)
-- `rowIndex` — actual array index of the current row
+- `stepIndex` -- iteration counter (0, 1, 2, ...)
+- `rowIndex` -- actual array index of the current row
 - Any VAR-mapped variable names
 
 **OFFSET values:**
-- `0` (default) — current row
-- `-1` — previous row, `-2` — two rows back, `-3` — three back, etc.
-- `1` — next row, `2` — two ahead, etc.
+- `0` (default) -- current row
+- `-1` -- previous row, `-2` -- two rows back, `-3` -- three back, etc.
+- `1` -- next row, `2` -- two ahead, etc.
 
 ### ITERATIVESERIES
 

@@ -42,7 +42,7 @@ Inverse = MATRIXINVERSE(Matrix3x3)
 ### Solving Equations
 
 ```expression
-// Solve Ax = b  →  x = A⁻¹b
+// Solve Ax = b  ->  x = A⁻¹b
 Solution = MATRIXVECTORMULTIPLY(MATRIXINVERSE(A), B)
 ```
 
