@@ -33,7 +33,7 @@ class FableServiceRestClient extends libFableServiceBase
 		let tmpKeepAlive = this.options.KeepAlive || this.fable.settings.RestClientKeepAlive;
 		if (tmpKeepAlive)
 		{
-			this.initializeKeepAliveAgent();
+			this.initializeKeepAliveAgent(this.options.KeepAliveAgentOptions);
 		}
 	}
 
@@ -41,10 +41,12 @@ class FableServiceRestClient extends libFableServiceBase
 	 * Initialize HTTP keep-alive agents and wire them into prepareRequestOptions.
 	 * Creates both an HTTP and HTTPS agent so the correct one is selected per-request
 	 * based on the URL protocol.
+	 *
+	 * @param {Object} [pAgentOptions] - Additional options passed to the Http/Https Agent constructors (e.g. timeout).
 	 */
-	initializeKeepAliveAgent()
+	initializeKeepAliveAgent(pAgentOptions)
 	{
-		let tmpAgentOptions = { keepAlive: true };
+		let tmpAgentOptions = Object.assign({ keepAlive: true }, pAgentOptions);
 
 		this.httpAgent = new libHttp.Agent(tmpAgentOptions);
 		this.httpsAgent = new libHttps.Agent(tmpAgentOptions);

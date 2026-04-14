@@ -181,6 +181,27 @@ suite
 								);
 							test
 								(
+									'Pass additional agent options via KeepAliveAgentOptions.',
+									function ()
+									{
+										let testFable = new libFable();
+										let tmpRestClient = testFable.instantiateServiceProvider('RestClient',
+											{
+												KeepAlive: true,
+												KeepAliveAgentOptions: { timeout: 300000 }
+											}, 'RestClient-KeepAlive-AgentOpts');
+
+										Expect(tmpRestClient.httpAgent).to.be.an('object');
+										Expect(tmpRestClient.httpsAgent).to.be.an('object');
+										Expect(tmpRestClient.httpAgent.keepAlive).to.equal(true);
+										Expect(tmpRestClient.httpsAgent.keepAlive).to.equal(true);
+										// Verify the custom timeout was passed through
+										Expect(tmpRestClient.httpAgent.options.timeout).to.equal(300000);
+										Expect(tmpRestClient.httpsAgent.options.timeout).to.equal(300000);
+									}
+								);
+						test
+								(
 									'Do not create agents when KeepAlive is not set.',
 									function ()
 									{
