@@ -148,6 +148,136 @@ suite
 
 				suite
 					(
+						'KeepAlive Agent',
+						function ()
+						{
+							test
+								(
+									'Initialize keep-alive agents via options.',
+									function ()
+									{
+										let testFable = new libFable();
+										let tmpRestClient = testFable.instantiateServiceProvider('RestClient', { KeepAlive: true }, 'RestClient-KeepAlive-Options');
+
+										Expect(tmpRestClient.httpAgent).to.be.an('object');
+										Expect(tmpRestClient.httpsAgent).to.be.an('object');
+										Expect(tmpRestClient.httpAgent.keepAlive).to.equal(true);
+										Expect(tmpRestClient.httpsAgent.keepAlive).to.equal(true);
+									}
+								);
+							test
+								(
+									'Initialize keep-alive agents via fable settings.',
+									function ()
+									{
+										let testFable = new libFable({ RestClientKeepAlive: true });
+										let tmpRestClient = testFable.instantiateServiceProvider('RestClient', {}, 'RestClient-KeepAlive-Settings');
+
+										Expect(tmpRestClient.httpAgent).to.be.an('object');
+										Expect(tmpRestClient.httpsAgent).to.be.an('object');
+										Expect(tmpRestClient.httpAgent.keepAlive).to.equal(true);
+										Expect(tmpRestClient.httpsAgent.keepAlive).to.equal(true);
+									}
+								);
+							test
+								(
+									'Do not create agents when KeepAlive is not set.',
+									function ()
+									{
+										let testFable = new libFable();
+										let tmpRestClient = testFable.instantiateServiceProvider('RestClient', {}, 'RestClient-NoKeepAlive');
+
+										Expect(tmpRestClient.httpAgent).to.equal(undefined);
+										Expect(tmpRestClient.httpsAgent).to.equal(undefined);
+									}
+								);
+							test
+								(
+									'Inject HTTP agent into request options for http URLs.',
+									function (fTestComplete)
+									{
+										var tmpServer = libHTTP.createServer(function (pReq, pRes)
+										{
+											pRes.writeHead(200, { 'Content-Type': 'application/json' });
+											pRes.end(JSON.stringify({ OK: true }));
+										});
+
+										tmpServer.listen(0, function ()
+										{
+											var tmpPort = tmpServer.address().port;
+											var testFable = new libFable();
+											var tmpRestClient = testFable.instantiateServiceProvider('RestClient', { KeepAlive: true }, 'RestClient-KeepAlive-HTTP');
+
+											// Wrap prepareRequestOptions to capture the final options
+											var tmpOriginalPrepare = tmpRestClient.prepareRequestOptions;
+											var tmpCapturedAgent = null;
+											tmpRestClient.prepareRequestOptions = function (pOptions)
+											{
+												let tmpResult = tmpOriginalPrepare(pOptions);
+												tmpCapturedAgent = tmpResult.agent;
+												return tmpResult;
+											};
+
+											tmpRestClient.getJSON('http://localhost:' + tmpPort + '/test',
+												function (pError, pResponse, pBody)
+												{
+													Expect(tmpCapturedAgent).to.equal(tmpRestClient.httpAgent);
+													Expect(pBody).to.be.an('object');
+													Expect(pBody.OK).to.equal(true);
+													tmpServer.close();
+													fTestComplete();
+												});
+										});
+									}
+								);
+							test
+								(
+									'Chain with previously set prepareRequestOptions.',
+									function (fTestComplete)
+									{
+										var tmpServer = libHTTP.createServer(function (pReq, pRes)
+										{
+											pRes.writeHead(200, { 'Content-Type': 'application/json' });
+											pRes.end(JSON.stringify({ CustomHeader: pReq.headers['x-custom'] || '' }));
+										});
+
+										tmpServer.listen(0, function ()
+										{
+											var tmpPort = tmpServer.address().port;
+											var testFable = new libFable();
+											var tmpRestClient = testFable.instantiateServiceProvider('RestClient', { KeepAlive: true }, 'RestClient-KeepAlive-Chain');
+
+											// Set a custom prepareRequestOptions AFTER keep-alive init to verify chaining
+											var tmpKeepAlivePrepare = tmpRestClient.prepareRequestOptions;
+											tmpRestClient.prepareRequestOptions = function (pOptions)
+											{
+												// Apply keep-alive first
+												let tmpResult = tmpKeepAlivePrepare(pOptions);
+												// Then add custom header
+												if (!tmpResult.headers)
+												{
+													tmpResult.headers = {};
+												}
+												tmpResult.headers['X-Custom'] = 'test-value';
+												return tmpResult;
+											};
+
+											tmpRestClient.getJSON('http://localhost:' + tmpPort + '/test',
+												function (pError, pResponse, pBody)
+												{
+													Expect(pBody).to.be.an('object');
+													Expect(pBody.CustomHeader).to.equal('test-value');
+													tmpServer.close();
+													fTestComplete();
+												});
+										});
+									}
+								);
+						}
+					);
+
+				suite
+					(
 						'Error Handling',
 						function ()
 						{

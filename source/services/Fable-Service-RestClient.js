@@ -2,6 +2,8 @@ const libFableServiceBase = require('fable-serviceproviderbase');
 
 const libSimpleGet = require('simple-get');
 const libCookie = require('cookie');
+const libHttp = require('http');
+const libHttps = require('https');
 
 class FableServiceRestClient extends libFableServiceBase
 {
@@ -24,6 +26,44 @@ class FableServiceRestClient extends libFableServiceBase
 		// This is a function that can be overridden, to allow the management
 		// of the request options before they are passed to the request library.
 		this.prepareRequestOptions = (pOptions) => { return pOptions; };
+
+		// Check for keep-alive configuration (from options or fable settings)
+		// Useful in environments where connections are slow to establish
+		// (e.g. inside poorly configured customer networks / VPNs)
+		let tmpKeepAlive = this.options.KeepAlive || this.fable.settings.RestClientKeepAlive;
+		if (tmpKeepAlive)
+		{
+			this.initializeKeepAliveAgent();
+		}
+	}
+
+	/**
+	 * Initialize HTTP keep-alive agents and wire them into prepareRequestOptions.
+	 * Creates both an HTTP and HTTPS agent so the correct one is selected per-request
+	 * based on the URL protocol.
+	 */
+	initializeKeepAliveAgent()
+	{
+		let tmpAgentOptions = { keepAlive: true };
+
+		this.httpAgent = new libHttp.Agent(tmpAgentOptions);
+		this.httpsAgent = new libHttps.Agent(tmpAgentOptions);
+
+		// Capture any previously set prepareRequestOptions so we can chain
+		let tmpPreviousPrepareRequestOptions = this.prepareRequestOptions;
+
+		this.prepareRequestOptions = (pOptions) =>
+		{
+			if (typeof pOptions.url === 'string' && pOptions.url.startsWith('http:'))
+			{
+				pOptions.agent = this.httpAgent;
+			}
+			else
+			{
+				pOptions.agent = this.httpsAgent;
+			}
+			return tmpPreviousPrepareRequestOptions(pOptions);
+		};
 	}
 
 	get simpleGet()
