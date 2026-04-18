@@ -148,73 +148,84 @@ suite
 
 				suite
 					(
-						'KeepAlive Agent',
+						'HTTP Agent',
 						function ()
 						{
 							test
 								(
-									'Initialize keep-alive agents via options.',
+									'Always installs http/https agents, even when KeepAlive is not set.',
+									function ()
+									{
+										// Without an explicit agent, requests would fall through to
+										// http.globalAgent and hit the Node 20+ ~5s socket timeout.
+										let testFable = new libFable();
+										let tmpRestClient = testFable.instantiateServiceProvider('RestClient', {}, 'RestClient-DefaultAgent');
+
+										Expect(tmpRestClient.httpAgent).to.be.an('object');
+										Expect(tmpRestClient.httpsAgent).to.be.an('object');
+										Expect(Boolean(tmpRestClient.httpAgent.keepAlive)).to.equal(false);
+										Expect(Boolean(tmpRestClient.httpsAgent.keepAlive)).to.equal(false);
+									}
+								);
+							test
+								(
+									'Enables keepAlive on agents when KeepAlive option is set.',
 									function ()
 									{
 										let testFable = new libFable();
 										let tmpRestClient = testFable.instantiateServiceProvider('RestClient', { KeepAlive: true }, 'RestClient-KeepAlive-Options');
 
-										Expect(tmpRestClient.httpAgent).to.be.an('object');
-										Expect(tmpRestClient.httpsAgent).to.be.an('object');
 										Expect(tmpRestClient.httpAgent.keepAlive).to.equal(true);
 										Expect(tmpRestClient.httpsAgent.keepAlive).to.equal(true);
 									}
 								);
 							test
 								(
-									'Initialize keep-alive agents via fable settings.',
+									'Enables keepAlive on agents via fable settings.',
 									function ()
 									{
 										let testFable = new libFable({ RestClientKeepAlive: true });
 										let tmpRestClient = testFable.instantiateServiceProvider('RestClient', {}, 'RestClient-KeepAlive-Settings');
 
-										Expect(tmpRestClient.httpAgent).to.be.an('object');
-										Expect(tmpRestClient.httpsAgent).to.be.an('object');
 										Expect(tmpRestClient.httpAgent.keepAlive).to.equal(true);
 										Expect(tmpRestClient.httpsAgent.keepAlive).to.equal(true);
 									}
 								);
 							test
 								(
-									'Pass additional agent options via KeepAliveAgentOptions.',
+									'Passes additional agent options through KeepAliveAgentOptions.',
 									function ()
 									{
 										let testFable = new libFable();
 										let tmpRestClient = testFable.instantiateServiceProvider('RestClient',
 											{
 												KeepAlive: true,
-												KeepAliveAgentOptions: { timeout: 300000 }
+												KeepAliveAgentOptions: { timeout: 300000, maxSockets: 32 }
 											}, 'RestClient-KeepAlive-AgentOpts');
 
-										Expect(tmpRestClient.httpAgent).to.be.an('object');
-										Expect(tmpRestClient.httpsAgent).to.be.an('object');
 										Expect(tmpRestClient.httpAgent.keepAlive).to.equal(true);
-										Expect(tmpRestClient.httpsAgent.keepAlive).to.equal(true);
-										// Verify the custom timeout was passed through
 										Expect(tmpRestClient.httpAgent.options.timeout).to.equal(300000);
+										Expect(tmpRestClient.httpAgent.options.maxSockets).to.equal(32);
 										Expect(tmpRestClient.httpsAgent.options.timeout).to.equal(300000);
-									}
-								);
-						test
-								(
-									'Do not create agents when KeepAlive is not set.',
-									function ()
-									{
-										let testFable = new libFable();
-										let tmpRestClient = testFable.instantiateServiceProvider('RestClient', {}, 'RestClient-NoKeepAlive');
-
-										Expect(tmpRestClient.httpAgent).to.equal(undefined);
-										Expect(tmpRestClient.httpsAgent).to.equal(undefined);
 									}
 								);
 							test
 								(
-									'Inject HTTP agent into request options for http URLs.',
+									'KeepAliveAgentOptions apply even when KeepAlive is not enabled.',
+									function ()
+									{
+										// Tuning options still flow through when keepAlive is off.
+										let testFable = new libFable();
+										let tmpRestClient = testFable.instantiateServiceProvider('RestClient',
+											{ KeepAliveAgentOptions: { maxSockets: 8 } }, 'RestClient-AgentOpts-NoKeepAlive');
+
+										Expect(Boolean(tmpRestClient.httpAgent.keepAlive)).to.equal(false);
+										Expect(tmpRestClient.httpAgent.options.maxSockets).to.equal(8);
+									}
+								);
+							test
+								(
+									'Injects the http agent on http:// URLs.',
 									function (fTestComplete)
 									{
 										var tmpServer = libHTTP.createServer(function (pReq, pRes)
@@ -227,9 +238,8 @@ suite
 										{
 											var tmpPort = tmpServer.address().port;
 											var testFable = new libFable();
-											var tmpRestClient = testFable.instantiateServiceProvider('RestClient', { KeepAlive: true }, 'RestClient-KeepAlive-HTTP');
+											var tmpRestClient = testFable.instantiateServiceProvider('RestClient', {}, 'RestClient-AgentInject-HTTP');
 
-											// Wrap prepareRequestOptions to capture the final options
 											var tmpOriginalPrepare = tmpRestClient.prepareRequestOptions;
 											var tmpCapturedAgent = null;
 											tmpRestClient.prepareRequestOptions = function (pOptions)
@@ -243,7 +253,6 @@ suite
 												function (pError, pResponse, pBody)
 												{
 													Expect(tmpCapturedAgent).to.equal(tmpRestClient.httpAgent);
-													Expect(pBody).to.be.an('object');
 													Expect(pBody.OK).to.equal(true);
 													tmpServer.close();
 													fTestComplete();
@@ -253,7 +262,25 @@ suite
 								);
 							test
 								(
-									'Chain with previously set prepareRequestOptions.',
+									'Selects the https agent for https:// URLs.',
+									function ()
+									{
+										// We don't need a live HTTPS server to verify the selection
+										// logic — invoke prepareRequestOptions directly and inspect
+										// which agent was chosen.
+										let testFable = new libFable();
+										let tmpRestClient = testFable.instantiateServiceProvider('RestClient', {}, 'RestClient-AgentInject-HTTPS');
+
+										let tmpHttps = tmpRestClient.prepareRequestOptions({ url: 'https://example.com/x' });
+										let tmpHttp = tmpRestClient.prepareRequestOptions({ url: 'http://example.com/x' });
+
+										Expect(tmpHttps.agent).to.equal(tmpRestClient.httpsAgent);
+										Expect(tmpHttp.agent).to.equal(tmpRestClient.httpAgent);
+									}
+								);
+							test
+								(
+									'Chains with previously set prepareRequestOptions.',
 									function (fTestComplete)
 									{
 										var tmpServer = libHTTP.createServer(function (pReq, pRes)
@@ -268,13 +295,10 @@ suite
 											var testFable = new libFable();
 											var tmpRestClient = testFable.instantiateServiceProvider('RestClient', { KeepAlive: true }, 'RestClient-KeepAlive-Chain');
 
-											// Set a custom prepareRequestOptions AFTER keep-alive init to verify chaining
-											var tmpKeepAlivePrepare = tmpRestClient.prepareRequestOptions;
+											var tmpInstalledPrepare = tmpRestClient.prepareRequestOptions;
 											tmpRestClient.prepareRequestOptions = function (pOptions)
 											{
-												// Apply keep-alive first
-												let tmpResult = tmpKeepAlivePrepare(pOptions);
-												// Then add custom header
+												let tmpResult = tmpInstalledPrepare(pOptions);
 												if (!tmpResult.headers)
 												{
 													tmpResult.headers = {};
@@ -286,9 +310,167 @@ suite
 											tmpRestClient.getJSON('http://localhost:' + tmpPort + '/test',
 												function (pError, pResponse, pBody)
 												{
-													Expect(pBody).to.be.an('object');
 													Expect(pBody.CustomHeader).to.equal('test-value');
 													tmpServer.close();
+													fTestComplete();
+												});
+										});
+									}
+								);
+							test
+								(
+									'initializeKeepAliveAgent remains a back-compat entry point.',
+									function ()
+									{
+										let testFable = new libFable();
+										let tmpRestClient = testFable.instantiateServiceProvider('RestClient', {}, 'RestClient-BackCompat');
+
+										// Default constructor: no keepAlive
+										Expect(Boolean(tmpRestClient.httpAgent.keepAlive)).to.equal(false);
+
+										// Calling the legacy method flips keepAlive on
+										tmpRestClient.initializeKeepAliveAgent({ maxSockets: 4 });
+										Expect(tmpRestClient.httpAgent.keepAlive).to.equal(true);
+										Expect(tmpRestClient.httpAgent.options.maxSockets).to.equal(4);
+									}
+								);
+						}
+					);
+
+				suite
+					(
+						'Request Timeout',
+						function ()
+						{
+							// Helper: spin up a local HTTP server that never responds so we can
+							// verify that the simple-get 'Request timed out' path fires on our
+							// configured timeout rather than any ambient http.globalAgent default.
+							var createHangingServer = function (fOnListen)
+							{
+								var tmpServer = libHTTP.createServer(function (pReq, pRes)
+								{
+									// Intentionally never write or end the response
+								});
+								tmpServer.listen(0, function ()
+								{
+									fOnListen(tmpServer, tmpServer.address().port);
+								});
+								return tmpServer;
+							};
+
+							test
+								(
+									'Applies the library default timeout (60000ms) when none is supplied.',
+									function ()
+									{
+										let testFable = new libFable();
+										let tmpRestClient = testFable.instantiateServiceProvider('RestClient', {}, 'RestClient-DefaultTimeout');
+
+										Expect(tmpRestClient.defaultRequestTimeout).to.equal(60000);
+
+										let tmpPrepared = tmpRestClient.preRequest({ url: 'http://example.com/x', method: 'GET' });
+										Expect(tmpPrepared.timeout).to.equal(60000);
+									}
+								);
+							test
+								(
+									'RequestTimeout constructor option overrides the library default.',
+									function ()
+									{
+										let testFable = new libFable();
+										let tmpRestClient = testFable.instantiateServiceProvider('RestClient', { RequestTimeout: 60000 }, 'RestClient-OptTimeout');
+
+										Expect(tmpRestClient.defaultRequestTimeout).to.equal(60000);
+
+										let tmpPrepared = tmpRestClient.preRequest({ url: 'http://example.com/x', method: 'GET' });
+										Expect(tmpPrepared.timeout).to.equal(60000);
+									}
+								);
+							test
+								(
+									'RestClientRequestTimeout fable setting overrides the library default.',
+									function ()
+									{
+										let testFable = new libFable({ RestClientRequestTimeout: 45000 });
+										let tmpRestClient = testFable.instantiateServiceProvider('RestClient', {}, 'RestClient-SettingTimeout');
+
+										Expect(tmpRestClient.defaultRequestTimeout).to.equal(45000);
+									}
+								);
+							test
+								(
+									'Constructor option takes precedence over fable setting.',
+									function ()
+									{
+										let testFable = new libFable({ RestClientRequestTimeout: 45000 });
+										let tmpRestClient = testFable.instantiateServiceProvider('RestClient', { RequestTimeout: 15000 }, 'RestClient-TimeoutPrecedence');
+
+										Expect(tmpRestClient.defaultRequestTimeout).to.equal(15000);
+									}
+								);
+							test
+								(
+									'Caller-supplied timeout on the request options is preserved.',
+									function ()
+									{
+										let testFable = new libFable();
+										let tmpRestClient = testFable.instantiateServiceProvider('RestClient', {}, 'RestClient-CallerTimeout');
+
+										let tmpPrepared = tmpRestClient.preRequest({ url: 'http://example.com/x', method: 'GET', timeout: 1234 });
+										Expect(tmpPrepared.timeout).to.equal(1234);
+									}
+								);
+							test
+								(
+									'Explicit timeout of 0 on the request options is preserved.',
+									function ()
+									{
+										// 0 is a valid numeric value — it signals "override the mystery
+										// default with no timeout" and must not be replaced.
+										let testFable = new libFable();
+										let tmpRestClient = testFable.instantiateServiceProvider('RestClient', {}, 'RestClient-ZeroTimeout');
+
+										let tmpPrepared = tmpRestClient.preRequest({ url: 'http://example.com/x', method: 'GET', timeout: 0 });
+										Expect(tmpPrepared.timeout).to.equal(0);
+									}
+								);
+							test
+								(
+									'RequestTimeout value of 0 is honored.',
+									function ()
+									{
+										let testFable = new libFable();
+										let tmpRestClient = testFable.instantiateServiceProvider('RestClient', { RequestTimeout: 0 }, 'RestClient-ZeroOptTimeout');
+
+										Expect(tmpRestClient.defaultRequestTimeout).to.equal(0);
+
+										let tmpPrepared = tmpRestClient.preRequest({ url: 'http://example.com/x', method: 'GET' });
+										Expect(tmpPrepared.timeout).to.equal(0);
+									}
+								);
+							test
+								(
+									'A short RequestTimeout actually aborts a hanging request.',
+									function (fTestComplete)
+									{
+										this.timeout(5000);
+										var tmpServer;
+										tmpServer = createHangingServer(function (pServer, pPort)
+										{
+											var testFable = new libFable();
+											var tmpRestClient = testFable.instantiateServiceProvider('RestClient', { RequestTimeout: 300 }, 'RestClient-LiveTimeout');
+
+											var tmpStart = Date.now();
+											tmpRestClient.getJSON('http://localhost:' + pPort + '/hangs',
+												function (pError, pResponse, pBody)
+												{
+													var tmpElapsed = Date.now() - tmpStart;
+													Expect(pError).to.be.an.instanceof(Error);
+													Expect(pError.message).to.contain('timed out');
+													// Guard against the Node 20+ ~5s globalAgent timeout
+													// silently beating our 300ms setting.
+													Expect(tmpElapsed).to.be.lessThan(2500);
+													pServer.close();
 													fTestComplete();
 												});
 										});

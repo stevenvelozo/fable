@@ -27,29 +27,63 @@ class FableServiceRestClient extends libFableServiceBase
 		// of the request options before they are passed to the request library.
 		this.prepareRequestOptions = (pOptions) => { return pOptions; };
 
-		// Check for keep-alive configuration (from options or fable settings)
-		// Useful in environments where connections are slow to establish
-		// (e.g. inside poorly configured customer networks / VPNs)
-		let tmpKeepAlive = this.options.KeepAlive || this.fable.settings.RestClientKeepAlive;
+		// Default per-request timeout (ms). Applied in preRequest when a caller
+		// does not supply their own. Node 20+ installs a ~5s socket timeout on
+		// http.globalAgent that aborts legitimately long-running requests; any
+		// explicit `timeout` on the request options takes that default out of
+		// play. See the "Request Timeout" test suite for the behaviors covered.
+		if (typeof this.options.RequestTimeout === 'number')
+		{
+			this.defaultRequestTimeout = this.options.RequestTimeout;
+		}
+		else if (typeof this.fable.settings.RestClientRequestTimeout === 'number')
+		{
+			this.defaultRequestTimeout = this.fable.settings.RestClientRequestTimeout;
+		}
+		else
+		{
+			this.defaultRequestTimeout = 60000;
+		}
+
+		// Always install our own http/https agents so every request bypasses
+		// http.globalAgent (and its Node 20+ mystery socket timeout). The
+		// KeepAlive flag only controls whether keepAlive is enabled on our own
+		// agents, not whether we have agents at all. Additional tuning
+		// (maxSockets, agent timeout, etc.) flows through KeepAliveAgentOptions.
+		let tmpKeepAlive = Boolean(this.options.KeepAlive || this.fable.settings.RestClientKeepAlive);
+		let tmpAgentOptions = Object.assign({}, this.options.KeepAliveAgentOptions);
 		if (tmpKeepAlive)
 		{
-			this.initializeKeepAliveAgent(this.options.KeepAliveAgentOptions);
+			tmpAgentOptions.keepAlive = true;
 		}
+		this._installHttpAgents(tmpAgentOptions);
 	}
 
 	/**
 	 * Initialize HTTP keep-alive agents and wire them into prepareRequestOptions.
-	 * Creates both an HTTP and HTTPS agent so the correct one is selected per-request
-	 * based on the URL protocol.
+	 * Back-compat entry point: always forces keepAlive on. Prefer configuring
+	 * the RestClient via the KeepAlive / KeepAliveAgentOptions constructor
+	 * options instead of calling this method directly.
 	 *
 	 * @param {Object} [pAgentOptions] - Additional options passed to the Http/Https Agent constructors (e.g. timeout).
 	 */
 	initializeKeepAliveAgent(pAgentOptions)
 	{
 		let tmpAgentOptions = Object.assign({ keepAlive: true }, pAgentOptions);
+		this._installHttpAgents(tmpAgentOptions);
+	}
 
-		this.httpAgent = new libHttp.Agent(tmpAgentOptions);
-		this.httpsAgent = new libHttps.Agent(tmpAgentOptions);
+	/**
+	 * Construct http/https Agents from the given options and wire them into
+	 * prepareRequestOptions so every request carries an explicit agent.
+	 *
+	 * @param {Object} pAgentOptions - Options passed directly to the Http/Https Agent constructors.
+	 * @private
+	 */
+	_installHttpAgents(pAgentOptions)
+	{
+		this.httpAgent = new libHttp.Agent(pAgentOptions);
+		this.httpsAgent = new libHttps.Agent(pAgentOptions);
 
 		// Capture any previously set prepareRequestOptions so we can chain
 		let tmpPreviousPrepareRequestOptions = this.prepareRequestOptions;
@@ -101,6 +135,14 @@ class FableServiceRestClient extends libFableServiceBase
 		if ('RestClientURLPrefix' in this.fable.settings)
 		{
 			tmpOptions.url = this.fable.settings.RestClientURLPrefix + tmpOptions.url;
+		}
+
+		// Apply the default request timeout when the caller hasn't supplied
+		// one. Setting any numeric value (including 0) suppresses the Node 20+
+		// http.globalAgent ~5s socket timeout.
+		if (typeof tmpOptions.timeout !== 'number')
+		{
+			tmpOptions.timeout = this.defaultRequestTimeout;
 		}
 
 		return this.prepareRequestOptions(tmpOptions);
