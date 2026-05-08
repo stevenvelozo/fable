@@ -548,6 +548,281 @@ suite
 
 				suite
 					(
+						'Redirect Following',
+						function ()
+						{
+							test
+								(
+									'Follows a basic 301 redirect end-to-end.',
+									function (fTestComplete)
+									{
+										// Single server: /start returns 301 to /dest, /dest returns 200 + JSON.
+										var tmpServer = libHTTP.createServer(function (pReq, pRes)
+										{
+											if (pReq.url === '/start')
+											{
+												pRes.writeHead(301, { Location: '/dest' });
+												pRes.end();
+												return;
+											}
+											pRes.writeHead(200, { 'Content-Type': 'application/json' });
+											pRes.end(JSON.stringify({ Reached: pReq.url }));
+										});
+										tmpServer.listen(0, function ()
+										{
+											var tmpPort = tmpServer.address().port;
+											var testFable = new libFable();
+											var tmpRestClient = testFable.instantiateServiceProvider('RestClient', {}, 'RestClient-Redirect-Basic');
+											tmpRestClient.getJSON('http://localhost:' + tmpPort + '/start',
+												function (pError, pResponse, pBody)
+												{
+													Expect(pError).to.equal(null);
+													Expect(pBody.Reached).to.equal('/dest');
+													tmpServer.close();
+													fTestComplete();
+												});
+										});
+									}
+								);
+							test
+								(
+									'Re-picks the agent on a protocol-changing redirect.',
+									function (fTestComplete)
+									{
+										// http server redirects to an https URL. We don't need the https
+										// destination to be reachable — we just need to verify that
+										// prepareRequestOptions runs again on the redirect target and
+										// stamps the httpsAgent on the second hop.
+										var tmpAssignedAgents = [];
+										var tmpServer = libHTTP.createServer(function (pReq, pRes)
+										{
+											pRes.writeHead(302, { Location: 'https://nowhere.invalid/x' });
+											pRes.end();
+										});
+										tmpServer.listen(0, function ()
+										{
+											var tmpPort = tmpServer.address().port;
+											var testFable = new libFable();
+											var tmpRestClient = testFable.instantiateServiceProvider('RestClient', {}, 'RestClient-Redirect-ProtoSwitch');
+
+											var tmpOriginalPrepare = tmpRestClient.prepareRequestOptions;
+											tmpRestClient.prepareRequestOptions = function (pOptions)
+											{
+												var tmpResult = tmpOriginalPrepare(pOptions);
+												tmpAssignedAgents.push({ url: tmpResult.url, agent: tmpResult.agent });
+												return tmpResult;
+											};
+
+											tmpRestClient.getJSON('http://localhost:' + tmpPort + '/start',
+												function (pError)
+												{
+													// The second hop will fail (DNS lookup of nowhere.invalid)
+													// but the agent re-pick must have already happened
+													// before that — and crucially, must NOT have thrown
+													// ERR_INVALID_PROTOCOL synchronously like the old code.
+													Expect(tmpAssignedAgents.length).to.be.at.least(2);
+													Expect(tmpAssignedAgents[0].agent).to.equal(tmpRestClient.httpAgent);
+													Expect(tmpAssignedAgents[1].agent).to.equal(tmpRestClient.httpsAgent);
+													Expect(tmpAssignedAgents[1].url).to.equal('https://nowhere.invalid/x');
+													tmpServer.close();
+													fTestComplete();
+												});
+										});
+									}
+								);
+							test
+								(
+									'Bails with "too many redirects" when the budget is exceeded.',
+									function (fTestComplete)
+									{
+										// Self-redirecting server. Cap at 3 hops so the test stays quick.
+										var tmpServer = libHTTP.createServer(function (pReq, pRes)
+										{
+											pRes.writeHead(302, { Location: pReq.url });
+											pRes.end();
+										});
+										tmpServer.listen(0, function ()
+										{
+											var tmpPort = tmpServer.address().port;
+											var testFable = new libFable();
+											var tmpRestClient = testFable.instantiateServiceProvider('RestClient', {}, 'RestClient-Redirect-Loop');
+											tmpRestClient.getJSON({ url: 'http://localhost:' + tmpPort + '/loop', maxRedirects: 3 },
+												function (pError)
+												{
+													Expect(pError).to.be.an.instanceof(Error);
+													Expect(pError.message).to.equal('too many redirects');
+													tmpServer.close();
+													fTestComplete();
+												});
+										});
+									}
+								);
+							test
+								(
+									'Drops cookie and authorization on cross-origin redirect.',
+									function (fTestComplete)
+									{
+										// Two servers on different ports. We use 127.0.0.1 vs localhost
+										// to make them count as different hostnames per
+										// _parseHostname's URL-string check.
+										var tmpReceivedAtA = null;
+										var tmpReceivedAtB = null;
+										var tmpServerB = libHTTP.createServer(function (pReq, pRes)
+										{
+											tmpReceivedAtB = pReq.headers;
+											pRes.writeHead(200, { 'Content-Type': 'application/json' });
+											pRes.end(JSON.stringify({ ok: true }));
+										});
+										tmpServerB.listen(0, function ()
+										{
+											var tmpPortB = tmpServerB.address().port;
+											var tmpServerA = libHTTP.createServer(function (pReq, pRes)
+											{
+												tmpReceivedAtA = pReq.headers;
+												pRes.writeHead(302, { Location: 'http://127.0.0.1:' + tmpPortB + '/dest' });
+												pRes.end();
+											});
+											tmpServerA.listen(0, function ()
+											{
+												var tmpPortA = tmpServerA.address().port;
+												var testFable = new libFable();
+												var tmpRestClient = testFable.instantiateServiceProvider('RestClient', {}, 'RestClient-Redirect-CrossOrigin');
+												tmpRestClient.getJSON({
+													url: 'http://localhost:' + tmpPortA + '/start',
+													headers: { cookie: 'session=abc', authorization: 'Bearer xyz' }
+												},
+												function (pError, pResponse, pBody)
+												{
+													Expect(pError).to.equal(null);
+													Expect(pBody.ok).to.equal(true);
+													Expect(tmpReceivedAtA.cookie).to.equal('session=abc');
+													Expect(tmpReceivedAtA.authorization).to.equal('Bearer xyz');
+													Expect(tmpReceivedAtB.cookie).to.equal(undefined);
+													Expect(tmpReceivedAtB.authorization).to.equal(undefined);
+													tmpServerA.close();
+													tmpServerB.close();
+													fTestComplete();
+												});
+											});
+										});
+									}
+								);
+							test
+								(
+									'Converts POST to GET on a 301/302 redirect and drops the body.',
+									function (fTestComplete)
+									{
+										var tmpDestRequest = null;
+										var tmpServer = libHTTP.createServer(function (pReq, pRes)
+										{
+											if (pReq.url === '/start')
+											{
+												pRes.writeHead(301, { Location: '/dest' });
+												pRes.end();
+												return;
+											}
+											tmpDestRequest = { method: pReq.method, headers: pReq.headers };
+											var tmpBody = '';
+											pReq.on('data', function (pChunk) { tmpBody += pChunk; });
+											pReq.on('end', function ()
+											{
+												tmpDestRequest.body = tmpBody;
+												pRes.writeHead(200, { 'Content-Type': 'application/json' });
+												pRes.end(JSON.stringify({ ok: true }));
+											});
+										});
+										tmpServer.listen(0, function ()
+										{
+											var tmpPort = tmpServer.address().port;
+											var testFable = new libFable();
+											var tmpRestClient = testFable.instantiateServiceProvider('RestClient', {}, 'RestClient-Redirect-PostToGet');
+											tmpRestClient.postJSON({ url: 'http://localhost:' + tmpPort + '/start', body: { foo: 'bar' } },
+												function (pError, pResponse, pBody)
+												{
+													Expect(pError).to.equal(null);
+													Expect(pBody.ok).to.equal(true);
+													Expect(tmpDestRequest.method).to.equal('GET');
+													Expect(tmpDestRequest.body).to.equal('');
+													Expect(tmpDestRequest.headers['content-type']).to.equal(undefined);
+													Expect(tmpDestRequest.headers['content-length']).to.equal(undefined);
+													tmpServer.close();
+													fTestComplete();
+												});
+										});
+									}
+								);
+							test
+								(
+									'Resolves a relative Location header against the current URL.',
+									function (fTestComplete)
+									{
+										// Server returns a relative Location ("dest" instead of "/dest").
+										// RFC 7231 allows this; the next hop's URL must be resolved
+										// against the URL that produced the redirect.
+										var tmpDestRequestURL = null;
+										var tmpServer = libHTTP.createServer(function (pReq, pRes)
+										{
+											if (pReq.url === '/section/start')
+											{
+												pRes.writeHead(302, { Location: 'dest' });
+												pRes.end();
+												return;
+											}
+											tmpDestRequestURL = pReq.url;
+											pRes.writeHead(200, { 'Content-Type': 'application/json' });
+											pRes.end(JSON.stringify({ ok: true }));
+										});
+										tmpServer.listen(0, function ()
+										{
+											var tmpPort = tmpServer.address().port;
+											var testFable = new libFable();
+											var tmpRestClient = testFable.instantiateServiceProvider('RestClient', {}, 'RestClient-Redirect-RelativeLocation');
+											tmpRestClient.getJSON('http://localhost:' + tmpPort + '/section/start',
+												function (pError, pResponse, pBody)
+												{
+													Expect(pError).to.equal(null);
+													Expect(pBody.ok).to.equal(true);
+													Expect(tmpDestRequestURL).to.equal('/section/dest');
+													tmpServer.close();
+													fTestComplete();
+												});
+										});
+									}
+								);
+							test
+								(
+									'Honors followRedirects: false by handing the 3xx straight back.',
+									function (fTestComplete)
+									{
+										// When the caller opts out, we shouldn't follow the redirect —
+										// the JSON parser will fail because the 3xx body is empty,
+										// which is the expected pre-fix behavior.
+										var tmpServer = libHTTP.createServer(function (pReq, pRes)
+										{
+											pRes.writeHead(302, { Location: '/dest' });
+											pRes.end();
+										});
+										tmpServer.listen(0, function ()
+										{
+											var tmpPort = tmpServer.address().port;
+											var testFable = new libFable();
+											var tmpRestClient = testFable.instantiateServiceProvider('RestClient', {}, 'RestClient-Redirect-OptOut');
+											tmpRestClient.getJSON({ url: 'http://localhost:' + tmpPort + '/start', followRedirects: false },
+												function (pError, pResponse)
+												{
+													Expect(pResponse.statusCode).to.equal(302);
+													Expect(pResponse.headers.location).to.equal('/dest');
+													tmpServer.close();
+													fTestComplete();
+												});
+										});
+									}
+								);
+						}
+					);
+
+				suite
+					(
 						'Error Handling',
 						function ()
 						{

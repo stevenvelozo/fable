@@ -155,6 +155,196 @@ class FableServiceRestClient extends libFableServiceBase
 		return this.prepareRequestOptions(tmpOptions);
 	}
 
+	/**
+	 * Extract the hostname from a URL string. Returns null for relative URLs
+	 * or anything else that doesn't parse cleanly.
+	 *
+	 * @private
+	 * @param {string} pUrl
+	 * @return {string|null}
+	 */
+	_parseHostname(pUrl)
+	{
+		if (typeof pUrl !== 'string')
+		{
+			return null;
+		}
+		try
+		{
+			return new URL(pUrl).hostname || null;
+		}
+		catch (e)
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * Resolve a Location header against the URL of the request that produced
+	 * it. Handles absolute Locations (returned as-is) and RFC 7231-compliant
+	 * relative Locations (resolved against the current URL).
+	 *
+	 * @private
+	 * @param {string} pCurrentURL - The URL of the request that produced the redirect.
+	 * @param {string} pLocation - The Location header value.
+	 * @return {string}
+	 */
+	_resolveRedirectURL(pCurrentURL, pLocation)
+	{
+		if (typeof pLocation !== 'string' || pLocation.length === 0)
+		{
+			return pLocation;
+		}
+		try
+		{
+			return new URL(pLocation, pCurrentURL).toString();
+		}
+		catch (e)
+		{
+			// Either pCurrentURL is itself relative or pLocation is malformed.
+			// Fall back to passing it through verbatim — simple-get's parser
+			// will give the next hop a final say.
+			return pLocation;
+		}
+	}
+
+	/**
+	 * Build the options object for the next hop of a redirect chain. Applies
+	 * the same hop-rewrite rules simple-get does, plus an RFC-correct relative
+	 * Location resolution that simple-get itself doesn't do:
+	 *   - Resolve the Location against the current URL (absolute or relative).
+	 *   - Strip simple-get's URL-derived state (protocol/hostname/port/path/auth)
+	 *     so the next hop re-parses the URL cleanly.
+	 *   - Drop the host header (re-derived from the new URL by simple-get).
+	 *   - Cross-origin: drop cookie + authorization to prevent leak.
+	 *   - 301/302 + POST: switch to GET, drop body and content headers.
+	 *
+	 * @private
+	 * @param {Object} pOptions - The options used for the previous hop (post-simple-get mutation).
+	 * @param {import('http').IncomingMessage} pResponse - The 3xx response.
+	 * @param {string|undefined} pOriginalURL - The URL of the previous hop, captured before simple-get deleted it.
+	 * @param {string|null} pOriginalHost - The hostname of the previous hop, for cross-origin detection.
+	 * @return {Object}
+	 */
+	_buildRedirectedOptions(pOptions, pResponse, pOriginalURL, pOriginalHost)
+	{
+		const tmpNew = Object.assign({}, pOptions);
+		tmpNew.url = this._resolveRedirectURL(pOriginalURL, pResponse.headers.location);
+
+		// Strip simple-get's own URL-derived fields so the next call re-parses cleanly.
+		delete tmpNew.protocol;
+		delete tmpNew.hostname;
+		delete tmpNew.port;
+		delete tmpNew.path;
+		delete tmpNew.auth;
+
+		// We set followRedirects=false on the previous hop to disable
+		// simple-get's auto-follow; that's our own internal flag, not caller
+		// intent. Drop it so the recursive _executeWithRedirects entry treats
+		// the next hop as another redirect-following call.
+		delete tmpNew.followRedirects;
+
+		// Headers — clone (don't mutate the caller's) and prune.
+		if (tmpNew.headers)
+		{
+			tmpNew.headers = Object.assign({}, tmpNew.headers);
+			delete tmpNew.headers.host;
+		}
+
+		// Cross-origin redirect: drop cookie and authorization to prevent leak (matches simple-get #73).
+		const tmpRedirectHost = this._parseHostname(tmpNew.url);
+		if (tmpRedirectHost !== null && tmpRedirectHost !== pOriginalHost && tmpNew.headers)
+		{
+			delete tmpNew.headers.cookie;
+			delete tmpNew.headers.authorization;
+		}
+
+		// 301/302 + POST → GET (matches simple-get #35 and RFC 7231 §6.4.2/6.4.3).
+		// Body and content headers come off; 307/308 preserve method/body so we leave them alone.
+		if (tmpNew.method === 'POST' && (pResponse.statusCode === 301 || pResponse.statusCode === 302))
+		{
+			tmpNew.method = 'GET';
+			if (tmpNew.headers)
+			{
+				delete tmpNew.headers['content-length'];
+				delete tmpNew.headers['content-type'];
+			}
+			delete tmpNew.body;
+			delete tmpNew.form;
+		}
+
+		return tmpNew;
+	}
+
+	/**
+	 * Dispatch a request via simple-get, transparently following 3xx redirects
+	 * until a non-redirect response or hard error.
+	 *
+	 * Why we drive the loop ourselves: simple-get's own redirect path
+	 * (index.js lines 50-69) recurses with the original opts.agent intact, so
+	 * an http→https redirect ends up calling https.request with an httpAgent
+	 * (or vice versa) and Node throws ERR_INVALID_PROTOCOL synchronously.
+	 * By disabling simple-get's auto-follow and running prepareRequestOptions
+	 * on each hop, the agent gets re-picked to match the new URL's protocol.
+	 *
+	 * Caller can opt out by setting `followRedirects: false` on options
+	 * (matches simple-get's contract) — in that case we hand the 3xx straight
+	 * back without following.
+	 *
+	 * @private
+	 * @param {Object} pOptions - Already passed through preRequest on the first call; on recursion, already passed through prepareRequestOptions.
+	 * @param {(err?: Error, res?: import('http').IncomingMessage) => void} fCallback
+	 */
+	_executeWithRedirects(pOptions, fCallback)
+	{
+		if (pOptions.followRedirects === false)
+		{
+			return libSimpleGet(pOptions, fCallback);
+		}
+
+		// Disable simple-get's own redirect loop — we own it from here.
+		pOptions.followRedirects = false;
+		const tmpOriginalURL = pOptions.url;
+		const tmpOriginalHost = this._parseHostname(tmpOriginalURL);
+
+		return libSimpleGet(pOptions, (pError, pResponse) =>
+		{
+			if (pError)
+			{
+				return fCallback(pError, pResponse);
+			}
+
+			if (pResponse.statusCode < 300 || pResponse.statusCode >= 400 || !pResponse.headers.location)
+			{
+				return fCallback(null, pResponse);
+			}
+
+			// 3xx with Location — drain and follow.
+			pResponse.resume();
+
+			let tmpRedirectsRemaining = (typeof pOptions.maxRedirects === 'number') ? pOptions.maxRedirects : 10;
+			if (tmpRedirectsRemaining <= 0)
+			{
+				return fCallback(new Error('too many redirects'));
+			}
+
+			const tmpNextOptions = this._buildRedirectedOptions(pOptions, pResponse, tmpOriginalURL, tmpOriginalHost);
+			tmpNextOptions.maxRedirects = tmpRedirectsRemaining - 1;
+
+			// Re-run the agent picker so the next hop's agent matches the
+			// (possibly different) protocol of the redirect target. We do
+			// NOT re-run preRequest in full — RestClientURLPrefix and
+			// prepareCookies are first-call-only.
+			const tmpPreparedNext = this.prepareRequestOptions(tmpNextOptions);
+
+			if (this.TraceLog)
+			{
+				this.fable.log.debug(`--> redirect ${pResponse.statusCode} to ${tmpPreparedNext.url}`);
+			}
+			return this._executeWithRedirects(tmpPreparedNext, fCallback);
+		});
+	}
+
 	executeChunkedRequest(pOptions, fCallback)
 	{
 		let tmpOptions = this.preRequest(pOptions);
@@ -166,7 +356,7 @@ class FableServiceRestClient extends libFableServiceBase
 			this.fable.log.debug(`Beginning ${tmpOptions.method} request to ${tmpOptions.url} at ${tmpOptions.RequestStartTime}`);
 		}
 
-		return libSimpleGet(tmpOptions,
+		return this._executeWithRedirects(tmpOptions,
 			(pError, pResponse)=>
 			{
 				if (pError)
@@ -219,7 +409,7 @@ class FableServiceRestClient extends libFableServiceBase
 		tmpOptions.json = false;
 		tmpOptions.encoding = null;
 
-		return libSimpleGet(tmpOptions,
+		return this._executeWithRedirects(tmpOptions,
 			(pError, pResponse)=>
 			{
 				if (pError)
@@ -290,7 +480,7 @@ class FableServiceRestClient extends libFableServiceBase
 			this.fable.log.debug(`Beginning ${tmpOptions.method} JSON request to ${tmpOptions.url} at ${tmpOptions.RequestStartTime}`);
 		}
 
-		return libSimpleGet(tmpOptions,
+		return this._executeWithRedirects(tmpOptions,
 			(pError, pResponse)=>
 			{
 				if (pError)
@@ -468,7 +658,7 @@ class FableServiceRestClient extends libFableServiceBase
 
 		tmpOptions.json = false;
 
-		return libSimpleGet(tmpOptions,
+		return this._executeWithRedirects(tmpOptions,
 			(pError, pResponse) =>
 			{
 				if (pError)
