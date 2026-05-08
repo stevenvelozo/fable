@@ -280,6 +280,73 @@ suite
 								);
 							test
 								(
+									'Selects the http agent for relative URLs and option objects without a URL.',
+									function ()
+									{
+										// simple-get's protocol decision is `opts.protocol === 'https:'
+										// ? https : http`, so a URL with no protocol — including a
+										// relative path or a pre-parsed options object — routes through
+										// the http module. The agent we stamp on must match, otherwise
+										// Node throws ERR_INVALID_PROTOCOL on dispatch.
+										let testFable = new libFable();
+										let tmpRestClient = testFable.instantiateServiceProvider('RestClient', {}, 'RestClient-AgentInject-Relative');
+
+										let tmpRelative = tmpRestClient.prepareRequestOptions({ url: '/1.0/Users/Count' });
+										let tmpNoUrl = tmpRestClient.prepareRequestOptions({ hostname: 'localhost', port: 8086, path: '/1.0/Users' });
+
+										Expect(tmpRelative.agent).to.equal(tmpRestClient.httpAgent);
+										Expect(tmpNoUrl.agent).to.equal(tmpRestClient.httpAgent);
+									}
+								);
+							test
+								(
+									'A relative URL is dispatched without throwing ERR_INVALID_PROTOCOL.',
+									function (fTestComplete)
+									{
+										// End-to-end regression: before the fix, fable stamped the
+										// httpsAgent on relative URLs while simple-get routed them
+										// through http.request, which made Node throw synchronously.
+										// We point fable at a real http server via RestClientURLPrefix
+										// so the relative URL becomes resolvable, and assert that the
+										// request completes (rather than throwing on dispatch).
+										var tmpServer = libHTTP.createServer(function (pReq, pRes)
+										{
+											pRes.writeHead(200, { 'Content-Type': 'application/json' });
+											pRes.end(JSON.stringify({ Path: pReq.url }));
+										});
+
+										tmpServer.listen(0, function ()
+										{
+											var tmpPort = tmpServer.address().port;
+											var testFable = new libFable({ RestClientURLPrefix: 'http://localhost:' + tmpPort });
+											var tmpRestClient = testFable.instantiateServiceProvider('RestClient', {}, 'RestClient-RelativeURL-Dispatch');
+
+											var tmpOriginalPrepare = tmpRestClient.prepareRequestOptions;
+											var tmpCapturedAgent = null;
+											tmpRestClient.prepareRequestOptions = function (pOptions)
+											{
+												let tmpResult = tmpOriginalPrepare(pOptions);
+												if (tmpCapturedAgent === null)
+												{
+													tmpCapturedAgent = tmpResult.agent;
+												}
+												return tmpResult;
+											};
+
+											tmpRestClient.getJSON('/relative/path',
+												function (pError, pResponse, pBody)
+												{
+													Expect(pError).to.equal(null);
+													Expect(tmpCapturedAgent).to.equal(tmpRestClient.httpAgent);
+													Expect(pBody.Path).to.equal('/relative/path');
+													tmpServer.close();
+													fTestComplete();
+												});
+										});
+									}
+								);
+							test
+								(
 									'Chains with previously set prepareRequestOptions.',
 									function (fTestComplete)
 									{

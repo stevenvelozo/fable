@@ -90,13 +90,20 @@ class FableServiceRestClient extends libFableServiceBase
 
 		this.prepareRequestOptions = (pOptions) =>
 		{
-			if (typeof pOptions.url === 'string' && pOptions.url.startsWith('http:'))
+			// Mirror simple-get's protocol decision exactly: it routes through
+			// the https module if and only if the parsed URL protocol is
+			// exactly 'https:'. Everything else — http: URLs, relative URLs
+			// (which simple-get treats as no-host http requests), and option
+			// objects with no .url at all — goes through the http module.
+			// Stamping an httpsAgent on an http request makes Node throw
+			// ERR_INVALID_PROTOCOL when http.request validates agent.protocol.
+			if (typeof pOptions.url === 'string' && pOptions.url.startsWith('https:'))
 			{
-				pOptions.agent = this.httpAgent;
+				pOptions.agent = this.httpsAgent;
 			}
 			else
 			{
-				pOptions.agent = this.httpsAgent;
+				pOptions.agent = this.httpAgent;
 			}
 			return tmpPreviousPrepareRequestOptions(pOptions);
 		};
