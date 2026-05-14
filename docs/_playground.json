@@ -1,0 +1,10 @@
+{
+	"Imports":
+	[
+		{ "Name": "fable",                    "Source": "bundled" },
+		{ "Name": "fable-uuid",               "Source": "bundled" },
+		{ "Name": "fable-settings",           "Source": "bundled" },
+		{ "Name": "fable-log",                "Source": "bundled" },
+		{ "Name": "fable-serviceproviderbase","Source": "bundled" }
+	]
+}
