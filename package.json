@@ -51,7 +51,7 @@
   },
   "homepage": "https://github.com/stevenvelozo/fable",
   "devDependencies": {
-    "pict-docuserve": "^0.1.5",
+    "pict-docuserve": "^1.0.1",
     "quackage": "^1.2.3"
   },
   "dependencies": {

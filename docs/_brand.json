@@ -1,0 +1,18 @@
+{
+	"Hash": "fable",
+	"Name": "Fable",
+	"Tagline": "Service dependency injection, configuration, and logging library — the foundation of every Retold application",
+	"Palette": "mix",
+	"Icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 96 96\" width=\"96\" height=\"96\">\n\t\t<defs>\n\t\t\t<clipPath id=\"frame-fable-filled-light\">\n\t\t\t\t<path d=\"M 24 2\n\t\tH 72\n\t\tQ 94 2 94 24\n\t\tV 72\n\t\tQ 94 94 72 94\n\t\tH 24\n\t\tQ 2 94 2 72\n\t\tV 24\n\t\tQ 2 2 24 2 Z\"/>\n\t\t\t</clipPath>\n\t\t</defs>\n\t\t<path d=\"M 24 2\n\t\tH 72\n\t\tQ 94 2 94 24\n\t\tV 72\n\t\tQ 94 94 72 94\n\t\tH 24\n\t\tQ 2 94 2 72\n\t\tV 24\n\t\tQ 2 2 24 2 Z\" fill=\"#af2aef\"/>\n\t\t<g clip-path=\"url(#frame-fable-filled-light)\"><circle cx=\"48\" cy=\"48\" r=\"36\" fill=\"none\" stroke=\"#4ed5e8\" stroke-width=\"2\" opacity=\"0.45\"/>\n\t\t\t\t\t<circle cx=\"48\" cy=\"48\" r=\"22\" fill=\"rgba(255,255,255,0.18)\"/>\n\t\t\t\t\t<circle cx=\"13.69\" cy=\"58.91\" r=\"9\" fill=\"#4ed5e8\"/></g>\n\t\t<text x=\"48\" y=\"50\" text-anchor=\"middle\" dominant-baseline=\"central\"\n\t\t\tfont-family=\"-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif\"\n\t\t\tfont-size=\"56\" font-weight=\"700\"\n\t\t\tfill=\"#ffffff\" letter-spacing=\"-1\">F</text>\n\t</svg>",
+	"IconType": "svg",
+	"Favicon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 96 96\" width=\"96\" height=\"96\">\n\t\t<defs>\n\t\t\t<clipPath id=\"fav-fable-light\">\n\t\t\t\t<path d=\"M 24 2\n\t\tH 72\n\t\tQ 94 2 94 24\n\t\tV 72\n\t\tQ 94 94 72 94\n\t\tH 24\n\t\tQ 2 94 2 72\n\t\tV 24\n\t\tQ 2 2 24 2 Z\"/>\n\t\t\t</clipPath>\n\t\t</defs>\n\t\t<path d=\"M 24 2\n\t\tH 72\n\t\tQ 94 2 94 24\n\t\tV 72\n\t\tQ 94 94 72 94\n\t\tH 24\n\t\tQ 2 94 2 72\n\t\tV 24\n\t\tQ 2 2 24 2 Z\" fill=\"#af2aef\"/>\n\t\t<g clip-path=\"url(#fav-fable-light)\"><circle cx=\"48\" cy=\"48\" r=\"28\" fill=\"rgba(255,255,255,0.22)\"/></g>\n\t\t<text x=\"48\" y=\"50\" text-anchor=\"middle\" dominant-baseline=\"central\"\n\t\t\tfont-family=\"-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif\"\n\t\t\tfont-size=\"60\" font-weight=\"800\"\n\t\t\tfill=\"#ffffff\" letter-spacing=\"-1\">F</text>\n\t</svg>",
+	"FaviconDark": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 96 96\" width=\"96\" height=\"96\">\n\t\t<defs>\n\t\t\t<clipPath id=\"fav-fable-dark\">\n\t\t\t\t<path d=\"M 24 2\n\t\tH 72\n\t\tQ 94 2 94 24\n\t\tV 72\n\t\tQ 94 94 72 94\n\t\tH 24\n\t\tQ 2 94 2 72\n\t\tV 24\n\t\tQ 2 2 24 2 Z\"/>\n\t\t\t</clipPath>\n\t\t</defs>\n\t\t<path d=\"M 24 2\n\t\tH 72\n\t\tQ 94 2 94 24\n\t\tV 72\n\t\tQ 94 94 72 94\n\t\tH 24\n\t\tQ 2 94 2 72\n\t\tV 24\n\t\tQ 2 2 24 2 Z\" fill=\"#ce84f2\"/>\n\t\t<g clip-path=\"url(#fav-fable-dark)\"><circle cx=\"48\" cy=\"48\" r=\"28\" fill=\"rgba(255,255,255,0.22)\"/></g>\n\t\t<text x=\"48\" y=\"50\" text-anchor=\"middle\" dominant-baseline=\"central\"\n\t\t\tfont-family=\"-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif\"\n\t\t\tfont-size=\"60\" font-weight=\"800\"\n\t\t\tfill=\"#101418\" letter-spacing=\"-1\">F</text>\n\t</svg>",
+	"Colors": {
+		"Primary": "#af2aef",
+		"Secondary": "#4ed5e8",
+		"PrimaryLight": "#af2aef",
+		"PrimaryDark": "#ce84f2",
+		"SecondaryLight": "#4ed5e8",
+		"SecondaryDark": "#a2e6ef"
+	}
+}
