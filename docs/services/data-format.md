@@ -5,8 +5,11 @@ The DataFormat service provides string manipulation, number formatting, and data
 ## Access
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
 // Auto-instantiated, available directly
-fable.DataFormat
+console.log('fable.DataFormat:', typeof fable.DataFormat);
 ```
 
 ## String Manipulation
@@ -14,42 +17,60 @@ fable.DataFormat
 ### Reverse String
 
 ```javascript
-fable.DataFormat.stringReverse('Hello');  // Returns 'olleH'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.stringReverse('Hello'));  // Returns 'olleH'
 ```
 
 ### String Starts/Ends With
 
 ```javascript
-fable.DataFormat.stringStartsWith('Hello World', 'Hello');  // true
-fable.DataFormat.stringEndsWith('Hello World', 'World');    // true
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.stringStartsWith('Hello World', 'Hello'));  // true
+console.log(fable.DataFormat.stringEndsWith('Hello World', 'World'));    // true
 
 // With index
-fable.DataFormat.stringStartsWith('Hello World', 'World', 6);  // true
+console.log(fable.DataFormat.stringStartsWith('Hello World', 'World', 6));  // true
 ```
 
 ### Capitalize Each Word
 
 ```javascript
-fable.DataFormat.capitalizeEachWord('hello world');  // Returns 'Hello World'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.capitalizeEachWord('hello world'));  // Returns 'Hello World'
 ```
 
 ### Clean Non-Alpha Characters
 
 ```javascript
-fable.DataFormat.cleanNonAlphaCharacters('Hello123World!');  // Returns 'HelloWorld'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.cleanNonAlphaCharacters('Hello123World!'));  // Returns 'HelloWorld'
 ```
 
 ### Sanitize Object Key
 
 ```javascript
-fable.DataFormat.sanitizeObjectKey('my-key name!');  // Returns 'my_key_name_'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.sanitizeObjectKey('my-key name!'));  // Returns 'my_key_name_'
 ```
 
 ### Clean Enclosure Wrap Characters
 
 ```javascript
-fable.DataFormat.cleanEnclosureWrapCharacters('"', '"hello"');  // Returns 'hello'
-fable.DataFormat.cleanEnclosureWrapCharacters("'", "'world'");  // Returns 'world'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.cleanEnclosureWrapCharacters('"', '"hello"'));  // Returns 'hello'
+console.log(fable.DataFormat.cleanEnclosureWrapCharacters("'", "'world'"));  // Returns 'world'
 ```
 
 ## String Concatenation
@@ -57,21 +78,30 @@ fable.DataFormat.cleanEnclosureWrapCharacters("'", "'world'");  // Returns 'worl
 ### Concatenate Strings
 
 ```javascript
-fable.DataFormat.concatenateStrings('Hello', ' ', 'World');  // Returns 'Hello World'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.concatenateStrings('Hello', ' ', 'World'));  // Returns 'Hello World'
 ```
 
 ### Join Strings
 
 ```javascript
-fable.DataFormat.joinStrings(', ', 'Apple', 'Banana', 'Cherry');
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.joinStrings(', ', 'Apple', 'Banana', 'Cherry'));
 // Returns 'Apple, Banana, Cherry'
 ```
 
 ### Raw Concatenation (includes non-strings)
 
 ```javascript
-fable.DataFormat.concatenateStringsRaw('Value: ', 42);  // Returns 'Value: 42'
-fable.DataFormat.joinStringsRaw('-', 1, 2, 3);          // Returns '1-2-3'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.concatenateStringsRaw('Value: ', 42));  // Returns 'Value: 42'
+console.log(fable.DataFormat.joinStringsRaw('-', 1, 2, 3));          // Returns '1-2-3'
 ```
 
 ## String Hashing
@@ -79,7 +109,10 @@ fable.DataFormat.joinStringsRaw('-', 1, 2, 3);          // Returns '1-2-3'
 Generate a simple (non-cryptographic) hash from a string:
 
 ```javascript
-fable.DataFormat.insecureStringHash('hello');  // Returns 'HSH99162322'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.insecureStringHash('hello'));  // Returns 'HSH99162322'
 ```
 
 ## Number Formatting
@@ -87,23 +120,32 @@ fable.DataFormat.insecureStringHash('hello');  // Returns 'HSH99162322'
 ### Add Commas to Numbers
 
 ```javascript
-fable.DataFormat.formatterAddCommasToNumber(1234567.89);
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.formatterAddCommasToNumber(1234567.89));
 // Returns '1,234,567.89'
 ```
 
 ### Format as Dollars
 
 ```javascript
-fable.DataFormat.formatterDollars(1234.5);      // Returns '$1,234.50'
-fable.DataFormat.formatterDollars(1234.567, 3); // Returns '$1,234.567' (3 decimals)
-fable.DataFormat.formatterDollars('invalid');   // Returns '--'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.formatterDollars(1234.5));      // Returns '$1,234.50'
+console.log(fable.DataFormat.formatterDollars(1234.567, 3)); // Returns '$1,234.567' (3 decimals)
+console.log(fable.DataFormat.formatterDollars('invalid'));   // Returns '--'
 ```
 
 ### Round Number
 
 ```javascript
-fable.DataFormat.formatterRoundNumber(3.14159, 2);  // Returns '3.14'
-fable.DataFormat.formatterRoundNumber(3.14159);     // Returns '3.14' (default 2 digits)
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.formatterRoundNumber(3.14159, 2));  // Returns '3.14'
+console.log(fable.DataFormat.formatterRoundNumber(3.14159));     // Returns '3.14' (default 2 digits)
 ```
 
 ## String Padding
@@ -111,15 +153,21 @@ fable.DataFormat.formatterRoundNumber(3.14159);     // Returns '3.14' (default 2
 ### Pad Start
 
 ```javascript
-fable.DataFormat.stringPadStart('5', 3, '0');     // Returns '005'
-fable.DataFormat.stringPadStart('42', 5, ' ');    // Returns '   42'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.stringPadStart('5', 3, '0'));     // Returns '005'
+console.log(fable.DataFormat.stringPadStart('42', 5, ' '));    // Returns '   42'
 ```
 
 ### Pad End
 
 ```javascript
-fable.DataFormat.stringPadEnd('5', 3, '0');       // Returns '500'
-fable.DataFormat.stringPadEnd('Hi', 5, '.');      // Returns 'Hi...'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.stringPadEnd('5', 3, '0'));       // Returns '500'
+console.log(fable.DataFormat.stringPadEnd('Hi', 5, '.'));      // Returns 'Hi...'
 ```
 
 ## Time Formatting
@@ -129,7 +177,10 @@ fable.DataFormat.stringPadEnd('Hi', 5, '.');      // Returns 'Hi...'
 Format milliseconds as HH:MM:SS.mmm:
 
 ```javascript
-fable.DataFormat.formatTimeSpan(3661234);  // Returns '01:01:01.234'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.formatTimeSpan(3661234));  // Returns '01:01:01.234'
 ```
 
 ### Format Time Delta
@@ -137,7 +188,12 @@ fable.DataFormat.formatTimeSpan(3661234);  // Returns '01:01:01.234'
 Format the difference between two timestamps:
 
 ```javascript
-fable.DataFormat.formatTimeDelta(startTime, endTime);  // Returns 'HH:MM:SS.mmm'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+const startTime = Date.now() - 3600000;
+const endTime   = Date.now();
+console.log(fable.DataFormat.formatTimeDelta(startTime, endTime));  // Returns 'HH:MM:SS.mmm'
 ```
 
 ## Date Formatting
@@ -145,38 +201,50 @@ fable.DataFormat.formatTimeDelta(startTime, endTime);  // Returns 'HH:MM:SS.mmm'
 ### Get Month Name
 
 ```javascript
-fable.DataFormat.getMonthFromDate(new Date('2024-06-15'));
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.getMonthFromDate(new Date('2024-06-15')));
 // Returns 'June'
 
-fable.DataFormat.getMonthAbbreviatedFromDate(new Date('2024-06-15'));
+console.log(fable.DataFormat.getMonthAbbreviatedFromDate(new Date('2024-06-15')));
 // Returns 'Jun'
 ```
 
 ### Format Month/Day/Year
 
 ```javascript
-fable.DataFormat.formatMonthDayYearFromDate(new Date('2024-06-15'));
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.formatMonthDayYearFromDate(new Date('2024-06-15')));
 // Returns '6/15/2024'
 
 // Strict mode (zero-padded)
-fable.DataFormat.formatMonthDayYearFromDate(new Date('2024-06-05'), true);
+console.log(fable.DataFormat.formatMonthDayYearFromDate(new Date('2024-06-05'), true));
 // Returns '06/05/2024'
 ```
 
 ### Sortable Date String
 
 ```javascript
-fable.DataFormat.formatSortableStringFromDate(new Date('2024-06-15'));
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.formatSortableStringFromDate(new Date('2024-06-15')));
 // Returns '20240515'
 ```
 
 ## HTML Entity Resolution
 
 ```javascript
-fable.DataFormat.resolveHtmlEntities('&amp; &lt; &gt;');
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.resolveHtmlEntities('&amp; &lt; &gt;'));
 // Returns '& < >'
 
-fable.DataFormat.resolveHtmlEntities('&#65;');  // Returns 'A'
+console.log(fable.DataFormat.resolveHtmlEntities('&#65;'));  // Returns 'A'
 ```
 
 ## String Tokenization
@@ -184,8 +252,11 @@ fable.DataFormat.resolveHtmlEntities('&#65;');  // Returns 'A'
 ### Before/After Match
 
 ```javascript
-fable.DataFormat.stringBeforeMatch('hello-world', '-');  // Returns 'hello'
-fable.DataFormat.stringAfterMatch('hello-world', '-');   // Returns 'world'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.stringBeforeMatch('hello-world', '-'));  // Returns 'hello'
+console.log(fable.DataFormat.stringAfterMatch('hello-world', '-'));   // Returns 'world'
 ```
 
 ### Count Segments
@@ -193,17 +264,23 @@ fable.DataFormat.stringAfterMatch('hello-world', '-');   // Returns 'world'
 Count segments respecting enclosures:
 
 ```javascript
-fable.DataFormat.stringCountSegments('a.b.c', '.');              // Returns 3
-fable.DataFormat.stringCountSegments('a.{b.c}.d', '.');          // Returns 3 (respects {})
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.stringCountSegments('a.b.c', '.'));              // Returns 3
+console.log(fable.DataFormat.stringCountSegments('a.{b.c}.d', '.'));          // Returns 3 (respects {})
 ```
 
 ### Get Segments
 
 ```javascript
-fable.DataFormat.stringGetSegments('a.b.c', '.');
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.stringGetSegments('a.b.c', '.'));
 // Returns ['a', 'b', 'c']
 
-fable.DataFormat.stringGetFirstSegment('a.b.c', '.');
+console.log(fable.DataFormat.stringGetFirstSegment('a.b.c', '.'));
 // Returns 'a'
 ```
 
@@ -212,24 +289,33 @@ fable.DataFormat.stringGetFirstSegment('a.b.c', '.');
 ### Count Enclosures
 
 ```javascript
-fable.DataFormat.stringCountEnclosures('(a) and (b)');  // Returns 2
-fable.DataFormat.stringCountEnclosures('((nested))');   // Returns 1 (outer only)
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.stringCountEnclosures('(a) and (b)'));  // Returns 2
+console.log(fable.DataFormat.stringCountEnclosures('((nested))'));   // Returns 1 (outer only)
 ```
 
 ### Get Enclosure Value
 
 ```javascript
-fable.DataFormat.stringGetEnclosureValueByIndex('(first) and (second)', 0);
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.stringGetEnclosureValueByIndex('(first) and (second)', 0));
 // Returns 'first'
 
-fable.DataFormat.stringGetEnclosureValueByIndex('(first) and (second)', 1);
+console.log(fable.DataFormat.stringGetEnclosureValueByIndex('(first) and (second)', 1));
 // Returns 'second'
 ```
 
 ### Remove Enclosure
 
 ```javascript
-fable.DataFormat.stringRemoveEnclosureByIndex('(remove) keep (this)', 0);
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.stringRemoveEnclosureByIndex('(remove) keep (this)', 0));
 // Returns ' keep (this)'
 ```
 
@@ -238,14 +324,20 @@ fable.DataFormat.stringRemoveEnclosureByIndex('(remove) keep (this)', 0);
 ### Encode URI Component
 
 ```javascript
-fable.DataFormat.stringEncodeURIComponent('hello world');
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.stringEncodeURIComponent('hello world'));
 // Returns 'hello%20world'
 ```
 
 ### Decode URI Component
 
 ```javascript
-fable.DataFormat.stringDecodeURIComponent('hello%20world');
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.stringDecodeURIComponent('hello%20world'));
 // Returns 'hello world'
 ```
 
@@ -254,10 +346,13 @@ fable.DataFormat.stringDecodeURIComponent('hello%20world');
 Encode/decode strings for safe embedding in JavaScript:
 
 ```javascript
-fable.DataFormat.stringEncodeForJavascript('Hello "World"');
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.DataFormat.stringEncodeForJavascript('Hello "World"'));
 // Returns 'Hello \\"World\\"'
 
-fable.DataFormat.stringDecodeForJavascript('Hello \\"World\\"');
+console.log(fable.DataFormat.stringDecodeForJavascript('Hello \\"World\\"'));
 // Returns 'Hello "World"'
 ```
 
@@ -266,6 +361,9 @@ fable.DataFormat.stringDecodeForJavascript('Hello \\"World\\"');
 The service uses configurable values:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataFormatDemo', ProductVersion: '1.0.0' });
+
 // Currency symbol (default: '$')
 fable.DataFormat._Value_MoneySign_Currency = '€';
 
@@ -274,4 +372,11 @@ fable.DataFormat._Value_NaN_Currency = 'N/A';
 
 // Group separator for numbers (default: ',')
 fable.DataFormat._Value_GroupSeparator_Number = '.';
+
+console.log('Configured DataFormat:', {
+    money:    fable.DataFormat._Value_MoneySign_Currency,
+    nanCur:   fable.DataFormat._Value_NaN_Currency,
+    grpSep:   fable.DataFormat._Value_GroupSeparator_Number
+});
+console.log(fable.DataFormat.formatterDollars(1234.5));
 ```

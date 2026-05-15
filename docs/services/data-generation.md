@@ -5,8 +5,12 @@ The DataGeneration service provides utilities for generating random data, useful
 ## Access
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataGenDemo', ProductVersion: '1.0.0' });
+
 // On-demand service - instantiate when needed
 const dataGen = fable.instantiateServiceProvider('DataGeneration');
+console.log('dataGen:', typeof dataGen);
 ```
 
 ## Random Integers
@@ -14,19 +18,31 @@ const dataGen = fable.instantiateServiceProvider('DataGeneration');
 ### Random Integer (Default Range)
 
 ```javascript
-dataGen.randomInteger();  // Random integer from 0 to default maximum
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataGenDemo', ProductVersion: '1.0.0' });
+const dataGen = fable.instantiateServiceProvider('DataGeneration');
+
+console.log(dataGen.randomInteger());  // Random integer from 0 to default maximum
 ```
 
 ### Random Integer Up To
 
 ```javascript
-dataGen.randomIntegerUpTo(100);  // Random integer from 0 (inclusive) to 100 (exclusive)
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataGenDemo', ProductVersion: '1.0.0' });
+const dataGen = fable.instantiateServiceProvider('DataGeneration');
+
+console.log(dataGen.randomIntegerUpTo(100));  // Random integer from 0 (inclusive) to 100 (exclusive)
 ```
 
 ### Random Integer Between
 
 ```javascript
-dataGen.randomIntegerBetween(10, 50);  // Random integer from 10 (inclusive) to 50 (exclusive)
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataGenDemo', ProductVersion: '1.0.0' });
+const dataGen = fable.instantiateServiceProvider('DataGeneration');
+
+console.log(dataGen.randomIntegerBetween(10, 50));  // Random integer from 10 (inclusive) to 50 (exclusive)
 ```
 
 ## Random Floats
@@ -34,13 +50,21 @@ dataGen.randomIntegerBetween(10, 50);  // Random integer from 10 (inclusive) to 
 ### Random Float (0 to 1)
 
 ```javascript
-dataGen.randomFloat();  // Random float between 0 and 1 (same as Math.random())
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataGenDemo', ProductVersion: '1.0.0' });
+const dataGen = fable.instantiateServiceProvider('DataGeneration');
+
+console.log(dataGen.randomFloat());  // Random float between 0 and 1 (same as Math.random())
 ```
 
 ### Random Float Up To
 
 ```javascript
-dataGen.randomFloatUpTo(7.65);  // Random float from 0 to 7.65
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataGenDemo', ProductVersion: '1.0.0' });
+const dataGen = fable.instantiateServiceProvider('DataGeneration');
+
+console.log(dataGen.randomFloatUpTo(7.65));  // Random float from 0 to 7.65
 ```
 
 ### Random Float Between
@@ -48,8 +72,12 @@ dataGen.randomFloatUpTo(7.65);  // Random float from 0 to 7.65
 Uses arbitrary precision math under the hood:
 
 ```javascript
-dataGen.randomFloatBetween(4.3, 5.1);  // Random float between 4.3 and 5.1
-dataGen.randomFloatBetween(0, 100);     // Random float between 0 and 100
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataGenDemo', ProductVersion: '1.0.0' });
+const dataGen = fable.instantiateServiceProvider('DataGeneration');
+
+console.log(dataGen.randomFloatBetween(4.3, 5.1));  // Random float between 4.3 and 5.1
+console.log(dataGen.randomFloatBetween(0, 100));     // Random float between 0 and 100
 ```
 
 ## Random Strings
@@ -59,8 +87,12 @@ dataGen.randomFloatBetween(0, 100);     // Random float between 0 and 100
 Generate a zero-padded random numeric string:
 
 ```javascript
-dataGen.randomNumericString();         // e.g., '0382917456' (default length 10, max 9999999999)
-dataGen.randomNumericString(6, 999999); // e.g., '042871' (length 6, max 999999)
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataGenDemo', ProductVersion: '1.0.0' });
+const dataGen = fable.instantiateServiceProvider('DataGeneration');
+
+console.log(dataGen.randomNumericString());         // e.g., '0382917456' (default length 10, max 9999999999)
+console.log(dataGen.randomNumericString(6, 999999)); // e.g., '042871' (length 6, max 999999)
 ```
 
 ## Random Selections from Default Data Sets
@@ -70,31 +102,51 @@ The service includes built-in data sets for generating human-readable random val
 ### Random Name (First Name)
 
 ```javascript
-dataGen.randomName();  // e.g., 'John'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataGenDemo', ProductVersion: '1.0.0' });
+const dataGen = fable.instantiateServiceProvider('DataGeneration');
+
+console.log(dataGen.randomName());  // e.g., 'John'
 ```
 
 ### Random Surname
 
 ```javascript
-dataGen.randomSurname();  // e.g., 'Smith'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataGenDemo', ProductVersion: '1.0.0' });
+const dataGen = fable.instantiateServiceProvider('DataGeneration');
+
+console.log(dataGen.randomSurname());  // e.g., 'Smith'
 ```
 
 ### Random Month
 
 ```javascript
-dataGen.randomMonth();  // e.g., 'January'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataGenDemo', ProductVersion: '1.0.0' });
+const dataGen = fable.instantiateServiceProvider('DataGeneration');
+
+console.log(dataGen.randomMonth());  // e.g., 'January'
 ```
 
 ### Random Day of Week
 
 ```javascript
-dataGen.randomDayOfWeek();  // e.g., 'Wednesday'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataGenDemo', ProductVersion: '1.0.0' });
+const dataGen = fable.instantiateServiceProvider('DataGeneration');
+
+console.log(dataGen.randomDayOfWeek());  // e.g., 'Wednesday'
 ```
 
 ### Random Color
 
 ```javascript
-dataGen.randomColor();  // e.g., 'Blue'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'DataGenDemo', ProductVersion: '1.0.0' });
+const dataGen = fable.instantiateServiceProvider('DataGeneration');
+
+console.log(dataGen.randomColor());  // e.g., 'Blue'
 ```
 
 ## Use Cases
@@ -102,8 +154,10 @@ dataGen.randomColor();  // e.g., 'Blue'
 ### Test Data Generation
 
 ```javascript
+const libFable = require('fable');
+
 function generateTestUsers(count) {
-    const fable = new Fable();
+    const fable = new libFable({ Product: 'TestUserGen', ProductVersion: '1.0.0' });
     const dataGen = fable.instantiateServiceProvider('DataGeneration');
     const users = [];
 
@@ -118,14 +172,21 @@ function generateTestUsers(count) {
 
     return users;
 }
+
+console.log(generateTestUsers(3));
 ```
 
 ### Database Seeding
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'SeedDemo', ProductVersion: '1.0.0' });
 const dataGen = fable.instantiateServiceProvider('DataGeneration');
 
-for (let i = 0; i < 50; i++) {
+// Stub db so the playground demo runs without a real database.
+const db = { products: { create: async (row) => { console.log('insert:', row); return row; } } };
+
+for (let i = 0; i < 3; i++) {  // 3 rows for the demo (real code might do 50)
     await db.products.create({
         name: `Product ${dataGen.randomNumericString(6, 999999)}`,
         price: dataGen.randomFloatBetween(9.99, 999.99),

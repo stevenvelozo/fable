@@ -5,11 +5,16 @@ The Template service provides underscore/lodash-style template compilation and r
 ## Access
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TemplateDemo', ProductVersion: '1.0.0' });
+
 // On-demand service - instantiate when needed
 const template = fable.instantiateServiceProvider('Template');
+console.log('template service:', typeof template);
 
 // Or use the Utility service shorthand
 const renderFn = fable.Utility.template('Hello, <%= name %>!');
+console.log('renderFn:', typeof renderFn);
 ```
 
 ## Template Syntax
@@ -19,10 +24,13 @@ const renderFn = fable.Utility.template('Hello, <%= name %>!');
 Output a value:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TemplateDemo', ProductVersion: '1.0.0' });
+
 const template = fable.instantiateServiceProvider('Template');
 const render = template.buildTemplateFunction('Hello, <%= name %>!');
 
-render({ name: 'World' });  // Returns 'Hello, World!'
+console.log(render({ name: 'World' }));  // Returns 'Hello, World!'
 ```
 
 ### Evaluation (`<% %>`)
@@ -30,13 +38,17 @@ render({ name: 'World' });  // Returns 'Hello, World!'
 Execute JavaScript code:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TemplateDemo', ProductVersion: '1.0.0' });
+const template = fable.instantiateServiceProvider('Template');
+
 const render = template.buildTemplateFunction(`
     <% for (var i = 0; i < items.length; i++) { %>
         Item: <%= items[i] %>
     <% } %>
 `);
 
-render({ items: ['Apple', 'Banana', 'Cherry'] });
+console.log(render({ items: ['Apple', 'Banana', 'Cherry'] }));
 ```
 
 ## Basic Usage
@@ -44,14 +56,17 @@ render({ items: ['Apple', 'Banana', 'Cherry'] });
 ### Create and Use Template
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TemplateDemo', ProductVersion: '1.0.0' });
+
 const template = fable.instantiateServiceProvider('Template');
 
 // Build the template function
 const greetingTemplate = template.buildTemplateFunction('Hello, <%= name %>!');
 
 // Use it multiple times
-greetingTemplate({ name: 'Alice' });  // 'Hello, Alice!'
-greetingTemplate({ name: 'Bob' });    // 'Hello, Bob!'
+console.log(greetingTemplate({ name: 'Alice' }));  // 'Hello, Alice!'
+console.log(greetingTemplate({ name: 'Bob' }));    // 'Hello, Bob!'
 ```
 
 ### Immediate Rendering
@@ -59,7 +74,12 @@ greetingTemplate({ name: 'Bob' });    // 'Hello, Bob!'
 Pass data as the second argument to render immediately:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TemplateDemo', ProductVersion: '1.0.0' });
+const template = fable.instantiateServiceProvider('Template');
+
 const result = template.buildTemplateFunction('Sum: <%= a + b %>', { a: 5, b: 3 });
+console.log(result);
 // Returns 'Sum: 8'
 ```
 
@@ -68,12 +88,15 @@ const result = template.buildTemplateFunction('Sum: <%= a + b %>', { a: 5, b: 3 
 The Utility service provides a convenient wrapper:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TemplateDemo', ProductVersion: '1.0.0' });
+
 // Create a template function
 const greet = fable.Utility.template('Hello, <%= name %>!');
-greet({ name: 'World' });
+console.log(greet({ name: 'World' }));
 
 // Or render immediately
-fable.Utility.template('Hello, <%= name %>!', { name: 'World' });
+console.log(fable.Utility.template('Hello, <%= name %>!', { name: 'World' }));
 ```
 
 ### Hashed Templates
@@ -81,6 +104,9 @@ fable.Utility.template('Hello, <%= name %>!', { name: 'World' });
 Register templates for reuse by name:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TemplateDemo', ProductVersion: '1.0.0' });
+
 // Register a template
 fable.Utility.buildHashedTemplate('user-card', `
     <div class="card">
@@ -90,7 +116,7 @@ fable.Utility.buildHashedTemplate('user-card', `
 `);
 
 // Use the registered template
-fable.Utility.templates['user-card']({ user: { name: 'John', email: 'john@example.com' } });
+console.log(fable.Utility.templates['user-card']({ user: { name: 'John', email: 'john@example.com' } }));
 ```
 
 ## Examples
@@ -98,6 +124,10 @@ fable.Utility.templates['user-card']({ user: { name: 'John', email: 'john@exampl
 ### HTML Generation
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TemplateDemo', ProductVersion: '1.0.0' });
+const template = fable.instantiateServiceProvider('Template');
+
 const cardTemplate = template.buildTemplateFunction(`
     <div class="card">
         <h2><%= title %></h2>
@@ -108,17 +138,21 @@ const cardTemplate = template.buildTemplateFunction(`
     </div>
 `);
 
-cardTemplate({
+console.log(cardTemplate({
     title: 'Welcome',
     description: 'This is a card component',
     showButton: true,
     buttonText: 'Click Me'
-});
+}));
 ```
 
 ### Lists and Loops
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TemplateDemo', ProductVersion: '1.0.0' });
+const template = fable.instantiateServiceProvider('Template');
+
 const listTemplate = template.buildTemplateFunction(`
     <ul>
         <% for (var i = 0; i < items.length; i++) { %>
@@ -127,33 +161,41 @@ const listTemplate = template.buildTemplateFunction(`
     </ul>
 `);
 
-listTemplate({
+console.log(listTemplate({
     items: [
-        { name: 'Apple', price: 1.50 },
+        { name: 'Apple',  price: 1.50 },
         { name: 'Banana', price: 0.75 }
     ]
-});
+}));
 ```
 
 ### Conditional Content
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TemplateDemo', ProductVersion: '1.0.0' });
+const template = fable.instantiateServiceProvider('Template');
+
 const statusTemplate = template.buildTemplateFunction(`
-    <% if (status === 'active') { %>
+    <% if (status === "active") { %>
         <span class="badge-green">Active</span>
-    <% } else if (status === 'pending') { %>
+    <% } else if (status === "pending") { %>
         <span class="badge-yellow">Pending</span>
     <% } else { %>
         <span class="badge-red">Inactive</span>
     <% } %>
 `);
 
-statusTemplate({ status: 'active' });
+console.log(statusTemplate({ status: 'active' }));
 ```
 
 ### Nested Data
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TemplateDemo', ProductVersion: '1.0.0' });
+const template = fable.instantiateServiceProvider('Template');
+
 const profileTemplate = template.buildTemplateFunction(`
     <div class="profile">
         <h1><%= user.name %></h1>
@@ -166,7 +208,7 @@ const profileTemplate = template.buildTemplateFunction(`
     </div>
 `);
 
-profileTemplate({
+console.log(profileTemplate({
     user: {
         name: 'John Doe',
         contact: {
@@ -178,7 +220,7 @@ profileTemplate({
             { street: '456 Oak Ave', city: 'Other City' }
         ]
     }
-});
+}));
 ```
 
 ### Print Function
@@ -186,11 +228,15 @@ profileTemplate({
 Use `print()` for inline output:
 
 ```javascript
-const template = template.buildTemplateFunction(`
-    <% print('Hello'); print(' '); print('World'); %>
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TemplateDemo', ProductVersion: '1.0.0' });
+const template = fable.instantiateServiceProvider('Template');
+
+const printTemplate = template.buildTemplateFunction(`
+    <% print("Hello"); print(" "); print("World"); %>
 `);
 
-template({});  // Returns 'Hello World'
+console.log(printTemplate({}));  // Returns 'Hello World'
 ```
 
 ## Template Source Access
@@ -198,12 +244,15 @@ template({});  // Returns 'Hello World'
 After building a template, you can access the generated source:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TemplateDemo', ProductVersion: '1.0.0' });
+
 const tpl = fable.instantiateServiceProvider('Template');
 tpl.buildTemplateFunction('Hello, <%= name %>!');
 
 // Access the generated function source
-console.log(tpl.TemplateSource);
-console.log(tpl.TemplateSourceCompiled);
+console.log('TemplateSource:',         tpl.TemplateSource);
+console.log('TemplateSourceCompiled:', tpl.TemplateSourceCompiled);
 ```
 
 ## Escape Handling

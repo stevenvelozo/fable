@@ -5,8 +5,13 @@ The FilePersistence service provides file system operations for reading and writ
 ## Access
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'FilePersistDemo', ProductVersion: '1.0.0' });
+
 // On-demand service - instantiate when needed
+// (Browser implementation is a stub; full file system access requires Node.js.)
 const filePersistence = fable.instantiateServiceProvider('FilePersistence');
+console.log('filePersistence:', typeof filePersistence);
 ```
 
 ## Browser vs Node.js
@@ -21,31 +26,31 @@ Fable automatically uses the appropriate implementation:
 ### Read File (Async)
 
 ```javascript
-filePersistence.readFile('/path/to/file.txt', 'utf8', (error, content) => {
-    if (error) {
-        console.error('Read error:', error);
-        return;
-    }
-    console.log('Content:', content);
-});
+// Node.js reference — browser playground has no fs.
+console.info("In Node.js:");
+console.info("    filePersistence.readFile('/path/to/file.txt', 'utf8', (error, content) => {");
+console.info("        if (error) { console.error('Read error:', error); return; }");
+console.info("        console.log('Content:', content);");
+console.info("    });");
 ```
 
 ### Read File Sync
 
 ```javascript
-const content = filePersistence.readFileSync('/path/to/file.txt', 'utf8');
+// Node.js reference — browser playground has no fs.
+console.info("In Node.js:");
+console.info("    const content = filePersistence.readFileSync('/path/to/file.txt', 'utf8');");
 ```
 
 ### Read JSON File
 
 ```javascript
-filePersistence.readJSONFile('/path/to/data.json', (error, data) => {
-    if (error) {
-        console.error('Failed to read JSON:', error);
-        return;
-    }
-    console.log('Data:', data);
-});
+// Node.js reference — browser playground has no fs.
+console.info("In Node.js:");
+console.info("    filePersistence.readJSONFile('/path/to/data.json', (error, data) => {");
+console.info("        if (error) { console.error('Failed to read JSON:', error); return; }");
+console.info("        console.log('Data:', data);");
+console.info("    });");
 ```
 
 ## Writing Files
@@ -53,33 +58,32 @@ filePersistence.readJSONFile('/path/to/data.json', (error, data) => {
 ### Write File (Async)
 
 ```javascript
-filePersistence.writeFile('/path/to/file.txt', 'Hello, World!', 'utf8', (error) => {
-    if (error) {
-        console.error('Write error:', error);
-        return;
-    }
-    console.log('File written successfully');
-});
+// Node.js reference — browser playground has no fs.
+console.info("In Node.js:");
+console.info("    filePersistence.writeFile('/path/to/file.txt', 'Hello, World!', 'utf8', (error) => {");
+console.info("        if (error) { console.error('Write error:', error); return; }");
+console.info("        console.log('File written successfully');");
+console.info("    });");
 ```
 
 ### Write File Sync
 
 ```javascript
-filePersistence.writeFileSync('/path/to/file.txt', 'Hello, World!', 'utf8');
+// Node.js reference — browser playground has no fs.
+console.info("In Node.js:");
+console.info("    filePersistence.writeFileSync('/path/to/file.txt', 'Hello, World!', 'utf8');");
 ```
 
 ### Write JSON File
 
 ```javascript
-const data = { name: 'John', age: 30 };
-
-filePersistence.writeJSONFile('/path/to/data.json', data, (error) => {
-    if (error) {
-        console.error('Failed to write JSON:', error);
-        return;
-    }
-    console.log('JSON written successfully');
-});
+// Node.js reference — browser playground has no fs.
+console.info("In Node.js:");
+console.info("    const data = { name: 'John', age: 30 };");
+console.info("    filePersistence.writeJSONFile('/path/to/data.json', data, (error) => {");
+console.info("        if (error) { console.error('Failed to write JSON:', error); return; }");
+console.info("        console.log('JSON written successfully');");
+console.info("    });");
 ```
 
 ## CSV File Operations
@@ -87,51 +91,41 @@ filePersistence.writeJSONFile('/path/to/data.json', data, (error) => {
 ### Read CSV File
 
 ```javascript
-filePersistence.readCSVFile('/path/to/data.csv', (error, rows) => {
-    if (error) {
-        console.error('Failed to read CSV:', error);
-        return;
-    }
-
-    // rows is an array of arrays
-    rows.forEach(row => {
-        console.log(row.join(', '));
-    });
-});
+// Node.js reference — browser playground has no fs.
+console.info("In Node.js:");
+console.info("    filePersistence.readCSVFile('/path/to/data.csv', (error, rows) => {");
+console.info("        if (error) { console.error('Failed to read CSV:', error); return; }");
+console.info("        // rows is an array of arrays");
+console.info("        rows.forEach(row => console.log(row.join(', ')));");
+console.info("    });");
 ```
 
 ### Read CSV to Objects
 
 ```javascript
-filePersistence.readCSVFileToObjects('/path/to/data.csv', (error, objects) => {
-    if (error) {
-        console.error('Failed to read CSV:', error);
-        return;
-    }
-
-    // objects is an array of objects with headers as keys
-    objects.forEach(obj => {
-        console.log(obj.name, obj.age);
-    });
-});
+// Node.js reference — browser playground has no fs.
+console.info("In Node.js:");
+console.info("    filePersistence.readCSVFileToObjects('/path/to/data.csv', (error, objects) => {");
+console.info("        if (error) { console.error('Failed to read CSV:', error); return; }");
+console.info("        // objects is an array of objects with headers as keys");
+console.info("        objects.forEach(obj => console.log(obj.name, obj.age));");
+console.info("    });");
 ```
 
 ### Write CSV File
 
 ```javascript
-const rows = [
-    ['name', 'age', 'city'],
-    ['John', '30', 'New York'],
-    ['Jane', '25', 'Los Angeles']
-];
-
-filePersistence.writeCSVFile('/path/to/output.csv', rows, (error) => {
-    if (error) {
-        console.error('Failed to write CSV:', error);
-        return;
-    }
-    console.log('CSV written successfully');
-});
+// Node.js reference — browser playground has no fs.
+console.info("In Node.js:");
+console.info("    const rows = [");
+console.info("        ['name', 'age', 'city'],");
+console.info("        ['John', '30', 'New York'],");
+console.info("        ['Jane', '25', 'Los Angeles']");
+console.info("    ];");
+console.info("    filePersistence.writeCSVFile('/path/to/output.csv', rows, (error) => {");
+console.info("        if (error) { console.error('Failed to write CSV:', error); return; }");
+console.info("        console.log('CSV written successfully');");
+console.info("    });");
 ```
 
 ## Directory Operations
@@ -139,43 +133,47 @@ filePersistence.writeCSVFile('/path/to/output.csv', rows, (error) => {
 ### Check if File Exists
 
 ```javascript
-const exists = filePersistence.fileExists('/path/to/file.txt');
+// Node.js reference — browser playground has no fs.
+console.info("In Node.js:");
+console.info("    const exists = filePersistence.fileExists('/path/to/file.txt');");
 ```
 
 ### Check if Directory Exists
 
 ```javascript
-const exists = filePersistence.directoryExists('/path/to/directory');
+// Node.js reference — browser playground has no fs.
+console.info("In Node.js:");
+console.info("    const exists = filePersistence.directoryExists('/path/to/directory');");
 ```
 
 ### Create Directory
 
 ```javascript
-filePersistence.createDirectory('/path/to/new/directory', (error) => {
-    if (error) {
-        console.error('Failed to create directory:', error);
-        return;
-    }
-    console.log('Directory created');
-});
+// Node.js reference — browser playground has no fs.
+console.info("In Node.js:");
+console.info("    filePersistence.createDirectory('/path/to/new/directory', (error) => {");
+console.info("        if (error) { console.error('Failed to create directory:', error); return; }");
+console.info("        console.log('Directory created');");
+console.info("    });");
 ```
 
 ### Create Directory Sync
 
 ```javascript
-filePersistence.createDirectorySync('/path/to/new/directory');
+// Node.js reference — browser playground has no fs.
+console.info("In Node.js:");
+console.info("    filePersistence.createDirectorySync('/path/to/new/directory');");
 ```
 
 ### List Directory
 
 ```javascript
-filePersistence.listDirectory('/path/to/directory', (error, files) => {
-    if (error) {
-        console.error('Failed to list directory:', error);
-        return;
-    }
-    files.forEach(file => console.log(file));
-});
+// Node.js reference — browser playground has no fs.
+console.info("In Node.js:");
+console.info("    filePersistence.listDirectory('/path/to/directory', (error, files) => {");
+console.info("        if (error) { console.error('Failed to list directory:', error); return; }");
+console.info("        files.forEach(file => console.log(file));");
+console.info("    });");
 ```
 
 ## Use Cases
@@ -183,92 +181,86 @@ filePersistence.listDirectory('/path/to/directory', (error, files) => {
 ### Configuration Loading
 
 ```javascript
-function loadConfig(configPath) {
-    const filePersistence = fable.instantiateServiceProvider('FilePersistence');
-
-    return new Promise((resolve, reject) => {
-        filePersistence.readJSONFile(configPath, (error, config) => {
-            if (error) reject(error);
-            else resolve(config);
-        });
-    });
-}
+// Node.js reference — wraps the callback API in a Promise. Browser playground has no fs.
+console.info("In Node.js:");
+console.info("    function loadConfig(configPath) {");
+console.info("        const filePersistence = fable.instantiateServiceProvider('FilePersistence');");
+console.info("        return new Promise((resolve, reject) => {");
+console.info("            filePersistence.readJSONFile(configPath, (error, config) => {");
+console.info("                if (error) reject(error);");
+console.info("                else resolve(config);");
+console.info("            });");
+console.info("        });");
+console.info("    }");
 ```
 
 ### Log File Writing
 
 ```javascript
-function appendToLog(message) {
-    const filePersistence = fable.instantiateServiceProvider('FilePersistence');
-    const logPath = '/var/log/myapp/app.log';
-    const timestamp = new Date().toISOString();
-    const line = `${timestamp} - ${message}\n`;
-
-    filePersistence.appendFile(logPath, line, 'utf8', (error) => {
-        if (error) console.error('Failed to write log:', error);
-    });
-}
+// Node.js reference — browser playground has no fs.
+console.info("In Node.js:");
+console.info("    function appendToLog(message) {");
+console.info("        const filePersistence = fable.instantiateServiceProvider('FilePersistence');");
+console.info("        const logPath = '/var/log/myapp/app.log';");
+console.info("        const timestamp = new Date().toISOString();");
+console.info("        const line = `${timestamp} - ${message}\\n`;");
+console.info("        filePersistence.appendFile(logPath, line, 'utf8', (error) => {");
+console.info("            if (error) console.error('Failed to write log:', error);");
+console.info("        });");
+console.info("    }");
 ```
 
 ### Data Export
 
 ```javascript
-async function exportData(data, format, outputPath) {
-    const filePersistence = fable.instantiateServiceProvider('FilePersistence');
-
-    return new Promise((resolve, reject) => {
-        if (format === 'json') {
-            filePersistence.writeJSONFile(outputPath, data, (err) => {
-                err ? reject(err) : resolve();
-            });
-        } else if (format === 'csv') {
-            filePersistence.writeCSVFile(outputPath, data, (err) => {
-                err ? reject(err) : resolve();
-            });
-        }
-    });
-}
+// Node.js reference — browser playground has no fs.
+console.info("In Node.js:");
+console.info("    async function exportData(data, format, outputPath) {");
+console.info("        const filePersistence = fable.instantiateServiceProvider('FilePersistence');");
+console.info("        return new Promise((resolve, reject) => {");
+console.info("            if (format === 'json') {");
+console.info("                filePersistence.writeJSONFile(outputPath, data, (err) => err ? reject(err) : resolve());");
+console.info("            } else if (format === 'csv') {");
+console.info("                filePersistence.writeCSVFile(outputPath, data, (err) => err ? reject(err) : resolve());");
+console.info("            }");
+console.info("        });");
+console.info("    }");
 ```
 
 ### Batch File Processing
 
 ```javascript
-function processFiles(directory, processor) {
-    const filePersistence = fable.instantiateServiceProvider('FilePersistence');
-
-    filePersistence.listDirectory(directory, (error, files) => {
-        if (error) throw error;
-
-        files.forEach(file => {
-            const fullPath = `${directory}/${file}`;
-            filePersistence.readFile(fullPath, 'utf8', (err, content) => {
-                if (err) {
-                    console.error(`Failed to read ${file}:`, err);
-                    return;
-                }
-                processor(file, content);
-            });
-        });
-    });
-}
+// Node.js reference — browser playground has no fs.
+console.info("In Node.js:");
+console.info("    function processFiles(directory, processor) {");
+console.info("        const filePersistence = fable.instantiateServiceProvider('FilePersistence');");
+console.info("        filePersistence.listDirectory(directory, (error, files) => {");
+console.info("            if (error) throw error;");
+console.info("            files.forEach(file => {");
+console.info("                const fullPath = `${directory}/${file}`;");
+console.info("                filePersistence.readFile(fullPath, 'utf8', (err, content) => {");
+console.info("                    if (err) { console.error(`Failed to read ${file}:`, err); return; }");
+console.info("                    processor(file, content);");
+console.info("                });");
+console.info("            });");
+console.info("        });");
+console.info("    }");
 ```
 
 ## Error Handling
 
 ```javascript
-filePersistence.readFile('/nonexistent/file.txt', 'utf8', (error, content) => {
-    if (error) {
-        if (error.code === 'ENOENT') {
-            console.log('File does not exist');
-        } else if (error.code === 'EACCES') {
-            console.log('Permission denied');
-        } else {
-            console.error('Unexpected error:', error);
-        }
-        return;
-    }
-    // Process content
-});
+// Node.js reference — browser playground has no fs.
+console.info("In Node.js:");
+console.info("    filePersistence.readFile('/nonexistent/file.txt', 'utf8', (error, content) => {");
+console.info("        if (error) {");
+console.info("            if (error.code === 'ENOENT') console.log('File does not exist');");
+console.info("            else if (error.code === 'EACCES') console.log('Permission denied');");
+console.info("            else console.error('Unexpected error:', error);");
+console.info("            return;");
+console.info("        }");
+console.info("        // Process content");
+console.info("    });");
 ```
 
 ## Notes

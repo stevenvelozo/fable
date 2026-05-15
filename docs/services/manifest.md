@@ -5,20 +5,26 @@ The Manifest service (powered by [manyfest](https://github.com/stevenvelozo/many
 ## Access
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ManifestDemo', ProductVersion: '1.0.0' });
+
 // On-demand service - instantiate when needed
-const manifest = fable.instantiateServiceProvider('Manifest');
+const manifestService = fable.instantiateServiceProvider('Manifest');
+console.log('manifestService:', typeof manifestService);
 
 // Or use the factory method (creates unregistered instance)
-const manifest = fable.newManyfest();
+const manifestEmpty = fable.newManyfest();
+console.log('manifestEmpty:', typeof manifestEmpty);
 
 // With definition
-const manifest = fable.newManyfest({
+const manifestDefined = fable.newManyfest({
     Scope: 'User',
     Descriptors: {
-        'Name': { Hash: 'name', Type: 'String' },
+        'Name':  { Hash: 'name',  Type: 'String' },
         'Email': { Hash: 'email', Type: 'String' }
     }
 });
+console.log('manifestDefined scope:', manifestDefined.scope);
 ```
 
 ## Core Concepts
@@ -28,6 +34,10 @@ const manifest = fable.newManyfest({
 Navigate objects using dot-notation paths:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ManifestDemo', ProductVersion: '1.0.0' });
+const manifest = fable.instantiateServiceProvider('Manifest');
+
 const obj = {
     user: {
         profile: {
@@ -39,8 +49,8 @@ const obj = {
     }
 };
 
-manifest.getValueByHash(obj, 'user.profile.name');           // 'John'
-manifest.getValueByHash(obj, 'user.profile.contacts[0].value'); // 'john@example.com'
+console.log(manifest.getValueByHash(obj, 'user.profile.name'));           // 'John'
+console.log(manifest.getValueByHash(obj, 'user.profile.contacts[0].value')); // 'john@example.com'
 ```
 
 ## Getting Values
@@ -48,26 +58,39 @@ manifest.getValueByHash(obj, 'user.profile.contacts[0].value'); // 'john@example
 ### getValueByHash
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ManifestDemo', ProductVersion: '1.0.0' });
+const manifest = fable.instantiateServiceProvider('Manifest');
+
 const data = { a: { b: { c: 'value' } } };
 
-manifest.getValueByHash(data, 'a.b.c');     // 'value'
-manifest.getValueByHash(data, 'a.b');       // { c: 'value' }
-manifest.getValueByHash(data, 'x.y.z');     // undefined
+console.log(manifest.getValueByHash(data, 'a.b.c'));     // 'value'
+console.log(manifest.getValueByHash(data, 'a.b'));       // { c: 'value' }
+console.log(manifest.getValueByHash(data, 'x.y.z'));     // undefined
 ```
 
 ### With Default Value
 
 ```javascript
-manifest.getValueByHash(data, 'missing.path', 'default');  // 'default'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ManifestDemo', ProductVersion: '1.0.0' });
+const manifest = fable.instantiateServiceProvider('Manifest');
+
+const data = { a: 'present' };
+console.log(manifest.getValueByHash(data, 'missing.path', 'default'));  // 'default'
 ```
 
 ### Array Access
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ManifestDemo', ProductVersion: '1.0.0' });
+const manifest = fable.instantiateServiceProvider('Manifest');
+
 const data = { items: ['a', 'b', 'c'] };
 
-manifest.getValueByHash(data, 'items[0]');  // 'a'
-manifest.getValueByHash(data, 'items[2]');  // 'c'
+console.log(manifest.getValueByHash(data, 'items[0]'));  // 'a'
+console.log(manifest.getValueByHash(data, 'items[2]'));  // 'c'
 ```
 
 ## Setting Values
@@ -75,30 +98,43 @@ manifest.getValueByHash(data, 'items[2]');  // 'c'
 ### setValueByHash
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ManifestDemo', ProductVersion: '1.0.0' });
+const manifest = fable.instantiateServiceProvider('Manifest');
+
 const data = {};
 
 manifest.setValueByHash(data, 'user.name', 'John');
-// data is now { user: { name: 'John' } }
+console.log('After name set:', data);
 
 manifest.setValueByHash(data, 'user.age', 30);
-// data is now { user: { name: 'John', age: 30 } }
+console.log('After age set:', data);
 ```
 
 ### Creating Nested Structures
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ManifestDemo', ProductVersion: '1.0.0' });
+const manifest = fable.instantiateServiceProvider('Manifest');
+
 const data = {};
 manifest.setValueByHash(data, 'deep.nested.path.value', 'hello');
+console.log('data:', data);
 // Creates: { deep: { nested: { path: { value: 'hello' } } } }
 ```
 
 ### Array Setting
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ManifestDemo', ProductVersion: '1.0.0' });
+const manifest = fable.instantiateServiceProvider('Manifest');
+
 const data = { items: [] };
 manifest.setValueByHash(data, 'items[0]', 'first');
 manifest.setValueByHash(data, 'items[1]', 'second');
-// data.items is ['first', 'second']
+console.log('data.items:', data.items);
 ```
 
 ## Checking Existence
@@ -106,11 +142,15 @@ manifest.setValueByHash(data, 'items[1]', 'second');
 ### checkAddressExists
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ManifestDemo', ProductVersion: '1.0.0' });
+const manifest = fable.instantiateServiceProvider('Manifest');
+
 const data = { a: { b: 'value' } };
 
-manifest.checkAddressExists(data, 'a.b');      // true
-manifest.checkAddressExists(data, 'a.c');      // false
-manifest.checkAddressExists(data, 'x.y.z');    // false
+console.log(manifest.checkAddressExists(data, 'a.b'));      // true
+console.log(manifest.checkAddressExists(data, 'a.c'));      // false
+console.log(manifest.checkAddressExists(data, 'x.y.z'));    // false
 ```
 
 ## Manifest Definitions
@@ -118,6 +158,9 @@ manifest.checkAddressExists(data, 'x.y.z');    // false
 Define schemas for structured data:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ManifestDemo', ProductVersion: '1.0.0' });
+
 const userManifest = fable.newManyfest({
     Scope: 'User',
     Descriptors: {
@@ -142,18 +185,33 @@ const userManifest = fable.newManyfest({
         }
     }
 });
+
+console.log('userManifest descriptors:', Object.keys(userManifest.elementDescriptors));
 ```
 
 ### Using Descriptors
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ManifestDemo', ProductVersion: '1.0.0' });
+
+const userManifest = fable.newManyfest({
+    Scope: 'User',
+    Descriptors: {
+        'Full Name': { Hash: 'profile.fullName', Type: 'String', Default: 'Unknown' },
+        'Age':       { Hash: 'profile.age',      Type: 'Number', Default: 0 },
+        'Email':     { Hash: 'contact.email',    Type: 'String' },
+        'Active':    { Hash: 'status.isActive',  Type: 'Boolean', Default: true }
+    }
+});
+
 // Get all descriptor names
 const names = userManifest.getDescriptorNames();
-// ['Full Name', 'Age', 'Email', 'Active']
+console.log('names:', names);
 
 // Get descriptor by name
 const emailDescriptor = userManifest.getDescriptor('Email');
-// { Hash: 'contact.email', Type: 'String' }
+console.log('emailDescriptor:', emailDescriptor);
 ```
 
 ## Boxed Properties
@@ -161,13 +219,17 @@ const emailDescriptor = userManifest.getDescriptor('Email');
 Access properties with special characters using brackets:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ManifestDemo', ProductVersion: '1.0.0' });
+const manifest = fable.instantiateServiceProvider('Manifest');
+
 const data = {
     'my-special-key': 'value1',
     'another key': 'value2'
 };
 
-manifest.getValueByHash(data, '["my-special-key"]');   // 'value1'
-manifest.getValueByHash(data, "['another key']");     // 'value2'
+console.log(manifest.getValueByHash(data, '["my-special-key"]'));   // 'value1'
+console.log(manifest.getValueByHash(data, "['another key']"));     // 'value2'
 ```
 
 ## Use Cases
@@ -175,6 +237,9 @@ manifest.getValueByHash(data, "['another key']");     // 'value2'
 ### Dynamic Form Handling
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ManifestDemo', ProductVersion: '1.0.0' });
+
 function updateFormData(formData, fieldPath, value) {
     const manifest = fable.newManyfest();
     manifest.setValueByHash(formData, fieldPath, value);
@@ -186,11 +251,20 @@ let form = {};
 form = updateFormData(form, 'user.firstName', 'John');
 form = updateFormData(form, 'user.lastName', 'Doe');
 form = updateFormData(form, 'user.address.city', 'New York');
+
+console.log('form:', form);
 ```
 
 ### Configuration Access
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({
+    Product: 'ManifestDemo',
+    API:     { timeout: 5000 },
+    Logging: { debug: true }
+});
+
 function getConfig(path, defaultValue) {
     const manifest = fable.newManyfest();
     return manifest.getValueByHash(fable.settings, path, defaultValue);
@@ -198,12 +272,16 @@ function getConfig(path, defaultValue) {
 
 // Usage
 const timeout = getConfig('API.timeout', 30000);
-const debug = getConfig('Logging.debug', false);
+const debug   = getConfig('Logging.debug', false);
+console.log('timeout:', timeout, 'debug:', debug);
 ```
 
 ### Data Transformation
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ManifestDemo', ProductVersion: '1.0.0' });
+
 function transformData(source, mappings) {
     const manifest = fable.newManyfest();
     const result = {};
@@ -219,16 +297,24 @@ function transformData(source, mappings) {
 }
 
 // Usage
+const apiResponse = {
+    data: { user: { name: 'Alice', contact: { email: 'alice@example.com' } } },
+    metadata: { created: '2024-01-01' }
+};
 const transformed = transformData(apiResponse, {
-    'userName': 'data.user.name',
+    'userName':  'data.user.name',
     'userEmail': 'data.user.contact.email',
     'createdAt': 'metadata.created'
 });
+console.log('transformed:', transformed);
 ```
 
 ### Safe Property Access
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ManifestDemo', ProductVersion: '1.0.0' });
+
 function safeGet(obj, path, defaultValue = null) {
     const manifest = fable.newManyfest();
     const value = manifest.getValueByHash(obj, path);
@@ -236,8 +322,10 @@ function safeGet(obj, path, defaultValue = null) {
 }
 
 // Safely access deeply nested properties
-const city = safeGet(user, 'address.city', 'Unknown');
-const phone = safeGet(user, 'contacts[0].phone', 'N/A');
+const user = { address: { city: 'NYC' }, contacts: [] };
+const city  = safeGet(user, 'address.city',         'Unknown');
+const phone = safeGet(user, 'contacts[0].phone',    'N/A');
+console.log('city:', city, 'phone:', phone);
 ```
 
 ## Integration with Other Services

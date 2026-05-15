@@ -5,8 +5,11 @@ The Utility service provides general-purpose helper functions including object m
 ## Access
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
 // Auto-instantiated, available directly
-fable.Utility
+console.log('fable.Utility:', typeof fable.Utility);
 ```
 
 ## Object Extension
@@ -14,12 +17,16 @@ fable.Utility
 Shallow merge objects (similar to `Object.assign` or lodash `_.extend`):
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
 const target = { a: 1 };
 const source1 = { b: 2 };
 const source2 = { c: 3 };
 
 fable.Utility.extend(target, source1, source2);
 // target is now { a: 1, b: 2, c: 3 }
+console.log('target:', target);
 ```
 
 ## Template Compilation
@@ -27,11 +34,14 @@ fable.Utility.extend(target, source1, source2);
 Create underscore/lodash-style templates:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
 // Create a template function
 const template = fable.Utility.template('Hello, <%= name %>!');
 
 // Use it
-template({ name: 'World' });  // Returns 'Hello, World!'
+console.log(template({ name: 'World' }));  // Returns 'Hello, World!'
 
 // With execution code
 const listTemplate = fable.Utility.template(`
@@ -42,7 +52,7 @@ const listTemplate = fable.Utility.template(`
     </ul>
 `);
 
-listTemplate({ items: ['Apple', 'Banana', 'Cherry'] });
+console.log(listTemplate({ items: ['Apple', 'Banana', 'Cherry'] }));
 ```
 
 ### Immediate Rendering
@@ -50,7 +60,10 @@ listTemplate({ items: ['Apple', 'Banana', 'Cherry'] });
 Pass data as the second argument to render immediately instead of getting a function:
 
 ```javascript
-fable.Utility.template('There are <%= Count %> things....', { Count: 1000 });
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.Utility.template('There are <%= Count %> things....', { Count: 1000 }));
 // Returns the string 'There are 1000 things....' directly (not a function)
 ```
 
@@ -59,11 +72,14 @@ fable.Utility.template('There are <%= Count %> things....', { Count: 1000 });
 Register templates for reuse:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
 // Build and register a template
 fable.Utility.buildHashedTemplate('greeting', 'Hello, <%= name %>!');
 
 // Access the compiled template
-fable.Utility.templates.greeting({ name: 'World' });
+console.log(fable.Utility.templates.greeting({ name: 'World' }));
 ```
 
 ## Array Operations
@@ -73,10 +89,13 @@ fable.Utility.templates.greeting({ name: 'World' });
 Split an array into chunks of specified size:
 
 ```javascript
-fable.Utility.chunk([1, 2, 3, 4, 5, 6, 7], 3);
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.Utility.chunk([1, 2, 3, 4, 5, 6, 7], 3));
 // Returns [[1, 2, 3], [4, 5, 6], [7]]
 
-fable.Utility.chunk([1, 2, 3, 4], 2);
+console.log(fable.Utility.chunk([1, 2, 3, 4], 2));
 // Returns [[1, 2], [3, 4]]
 ```
 
@@ -85,21 +104,30 @@ fable.Utility.chunk([1, 2, 3, 4], 2);
 Extract a portion of an array:
 
 ```javascript
-fable.Utility.slice([1, 2, 3, 4, 5], 1, 4);
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.Utility.slice([1, 2, 3, 4, 5], 1, 4));
 // Returns [2, 3, 4]
 ```
 
 ### Concatenate Arrays
 
 ```javascript
-fable.Utility.concatenateArrays([1, 2], [3, 4], [5, 6]);
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.Utility.concatenateArrays([1, 2], [3, 4], [5, 6]));
 // Returns [1, 2, 3, 4, 5, 6]
 ```
 
 ### Flatten Arrays
 
 ```javascript
-fable.Utility.flattenArrayOfSolverInputs([[1, 2], [3, 4]]);
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.Utility.flattenArrayOfSolverInputs([[1, 2], [3, 4]]));
 // Returns [1, 2, 3, 4]
 ```
 
@@ -108,14 +136,20 @@ fable.Utility.flattenArrayOfSolverInputs([[1, 2], [3, 4]]);
 ### Keys to Array
 
 ```javascript
-fable.Utility.objectKeysToArray({ a: 1, b: 2, c: 3 });
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.Utility.objectKeysToArray({ a: 1, b: 2, c: 3 }));
 // Returns ['a', 'b', 'c']
 ```
 
 ### Values to Array
 
 ```javascript
-fable.Utility.objectValuesToArray({ a: 1, b: 2, c: 3 });
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.Utility.objectValuesToArray({ a: 1, b: 2, c: 3 }));
 // Returns [1, 2, 3]
 ```
 
@@ -124,10 +158,13 @@ fable.Utility.objectValuesToArray({ a: 1, b: 2, c: 3 });
 Takes pairs of `(propertyName, valuesObject)` and zips them into an array of objects. Values are extracted from each object using `objectValuesToArray`:
 
 ```javascript
-fable.Utility.generateArrayOfObjectsFromSets(
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.Utility.generateArrayOfObjectsFromSets(
     'x', { a: 1, b: 2, c: 3 },
     'y', { d: 4, e: 5, f: 6 }
-);
+));
 // Returns [{ x: 1, y: 4 }, { x: 2, y: 5 }, { x: 3, y: 6 }]
 ```
 
@@ -140,18 +177,25 @@ Access nested object values using dot notation paths:
 ### Get Value
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
 const obj = { user: { profile: { name: 'John' } } };
 
-fable.Utility.getValueByHash(obj, 'user.profile.name');
+console.log(fable.Utility.getValueByHash(obj, 'user.profile.name'));
 // Returns 'John'
 ```
 
 ### Set Value
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
 const obj = {};
 fable.Utility.setValueByHash(obj, 'user.profile.name', 'John');
 // obj is now { user: { profile: { name: 'John' } } }
+console.log('obj:', obj);
 ```
 
 ### Get Internal Value
@@ -159,15 +203,21 @@ fable.Utility.setValueByHash(obj, 'user.profile.name', 'John');
 Access values from the Fable instance itself:
 
 ```javascript
-fable.Utility.getInternalValueByHash('settings.Product');
+const libFable = require('fable');
+const fable = new libFable({ Product: 'InternalDemoProduct', ProductVersion: '1.0.0' });
+
+console.log(fable.Utility.getInternalValueByHash('settings.Product'));
 ```
 
 ### Check for Null or Empty
 
 ```javascript
-fable.Utility.addressIsNullOrEmpty({ name: '' }, 'name');     // true
-fable.Utility.addressIsNullOrEmpty({ name: 'John' }, 'name'); // false
-fable.Utility.addressIsNullOrEmpty({}, 'name');               // true
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.Utility.addressIsNullOrEmpty({ name: '' }, 'name'));     // true
+console.log(fable.Utility.addressIsNullOrEmpty({ name: 'John' }, 'name')); // false
+console.log(fable.Utility.addressIsNullOrEmpty({}, 'name'));               // true
 ```
 
 ## Array Value Collection
@@ -175,16 +225,22 @@ fable.Utility.addressIsNullOrEmpty({}, 'name');               // true
 ### Create Value Array from Hashes
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
 const obj = { a: 1, b: 2, c: 3 };
-fable.Utility.createValueArrayByHashes(obj, ['a', 'c']);
+console.log(fable.Utility.createValueArrayByHashes(obj, ['a', 'c']));
 // Returns [1, 3]
 ```
 
 ### Create Value Object from Hashes
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
 const obj = { a: 1, b: 2, c: 3, d: 4 };
-fable.Utility.createValueObjectByHashes(obj, ['a', 'c']);
+console.log(fable.Utility.createValueObjectByHashes(obj, ['a', 'c']));
 // Returns { a: 1, c: 3 }
 ```
 
@@ -193,33 +249,42 @@ fable.Utility.createValueObjectByHashes(obj, ['a', 'c']);
 ### Find by String Includes
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
 const items = [
     { name: 'Apple iPhone', price: 999 },
     { name: 'Samsung Galaxy', price: 899 },
     { name: 'Google Pixel', price: 799 }
 ];
 
-fable.Utility.findFirstValueByStringIncludes(items, 'name', 'Samsung', 'price');
+console.log(fable.Utility.findFirstValueByStringIncludes(items, 'name', 'Samsung', 'price'));
 // Returns 899
 ```
 
 ### Find by Exact Match
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
 const items = [
     { id: 1, name: 'Alice' },
     { id: 2, name: 'Bob' }
 ];
 
-fable.Utility.findFirstValueByExactMatch(items, 'name', 'Bob', 'id');
+console.log(fable.Utility.findFirstValueByExactMatch(items, 'name', 'Bob', 'id'));
 // Returns 2
 ```
 
 ### Find Index
 
 ```javascript
-fable.Utility.findIndexInternal('5', [1, 3, 5, 7, 9], '0');  // Exact match, returns 2
-fable.Utility.findIndexInternal('4', [1, 3, 5, 7, 9], '1');  // Ascending search, returns 2
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.Utility.findIndexInternal('5', [1, 3, 5, 7, 9], '0'));  // Exact match, returns 2
+console.log(fable.Utility.findIndexInternal('4', [1, 3, 5, 7, 9], '1'));  // Ascending search, returns 2
 ```
 
 ## Sorting
@@ -227,6 +292,9 @@ fable.Utility.findIndexInternal('4', [1, 3, 5, 7, 9], '1');  // Ascending search
 ### Sort by External Array
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
 const values = [100, 200, 300];
 const objects = [
     { label: 'C' },
@@ -234,7 +302,7 @@ const objects = [
     { label: 'B' }
 ];
 
-fable.Utility.objectValuesSortByExternalArray(values, objects, false, 'label');
+console.log(fable.Utility.objectValuesSortByExternalArray(values, objects, false, 'label'));
 // Sorts values based on object labels: [200, 300, 100] (A, B, C order)
 ```
 
@@ -243,7 +311,10 @@ fable.Utility.objectValuesSortByExternalArray(values, objects, false, 'label');
 Convert ISO strings to JavaScript Date objects:
 
 ```javascript
-fable.Utility.isoStringToDate('2024-01-15T12:30:00.000Z');
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.Utility.isoStringToDate('2024-01-15T12:30:00.000Z'));
 // Returns JavaScript Date object
 ```
 
@@ -254,6 +325,9 @@ fable.Utility.isoStringToDate('2024-01-15T12:30:00.000Z');
 Execute functions in sequence, passing results to the next:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
 fable.Utility.waterfall([
     (callback) => {
         callback(null, 'one', 'two');
@@ -268,6 +342,7 @@ fable.Utility.waterfall([
     }
 ], (err, result) => {
     // result = 'done'
+    console.log('waterfall finished — err:', err, 'result:', result);
 });
 ```
 
@@ -276,6 +351,15 @@ fable.Utility.waterfall([
 Process array items in parallel with concurrency limit:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
+// Stub for the playground demo — real code would do real work per item
+function processItem(item, callback) {
+    console.log('processing item', item);
+    callback(null);
+}
+
 fable.Utility.eachLimit(
     [1, 2, 3, 4, 5],        // Array to process
     2,                       // Concurrency limit
@@ -283,7 +367,7 @@ fable.Utility.eachLimit(
         processItem(item, callback);
     },
     (err) => {               // Completion callback
-        console.log('All done');
+        console.log('All done — err:', err);
     }
 );
 ```
@@ -293,12 +377,20 @@ fable.Utility.eachLimit(
 Direct access to the big.js library for arbitrary precision:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
 const bigNum = new fable.Utility.bigNumber('123456789012345678901234567890');
+console.log('bigNum:', bigNum.toString());
+console.log('bigNum * 2:', bigNum.times(2).toString());
 ```
 
 ## Create Array from Values
 
 ```javascript
-fable.Utility.createArrayFromAbsoluteValues(1, 2, 3, 4, 5);
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.Utility.createArrayFromAbsoluteValues(1, 2, 3, 4, 5));
 // Returns [1, 2, 3, 4, 5]
 ```

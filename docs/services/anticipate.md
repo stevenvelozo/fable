@@ -5,11 +5,16 @@ The Anticipate service provides asynchronous operation sequencing, allowing you 
 ## Access
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'AnticipateDemo', ProductVersion: '1.0.0' });
+
 // On-demand service - instantiate when needed
-const tmpAnticipate = fable.instantiateServiceProvider('Anticipate');
+const tmpAnticipateService = fable.instantiateServiceProvider('Anticipate');
+console.log('Service instance:', typeof tmpAnticipateService);
 
 // Or use the factory method (creates unregistered instance)
-const tmpAnticipate = fable.newAnticipate();
+const tmpAnticipateFactory = fable.newAnticipate();
+console.log('Factory instance:', typeof tmpAnticipateFactory);
 ```
 
 ## Basic Usage
@@ -17,6 +22,9 @@ const tmpAnticipate = fable.newAnticipate();
 ### Sequential Operations
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'AnticipateDemo', ProductVersion: '1.0.0' });
+
 const tmpAnticipate = fable.newAnticipate();
 
 tmpAnticipate.anticipate(function (fCallback)
@@ -60,6 +68,14 @@ tmpAnticipate.wait(function (pError)
 Since Anticipate callbacks receive only `fCallback`, use closure scope or external variables to share data between steps:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'AnticipateDemo', ProductVersion: '1.0.0' });
+
+// Stubbed async helpers for the playground demo
+function fetchUser(pId, fCallback) { setTimeout(() => fCallback({ id: pId, name: 'User#' + pId }), 5); }
+function loadPreferences(pId, fCallback) { setTimeout(() => fCallback({ theme: 'dark' }), 5); }
+function render(pUser, pPrefs) { console.log('rendered:', pUser, pPrefs); }
+
 const tmpAnticipate = fable.newAnticipate();
 let tmpUser = null;
 let tmpPreferences = null;
@@ -91,6 +107,10 @@ tmpAnticipate.wait(function (pError)
 	{
 		console.error('Workflow failed:', pError);
 	}
+	else
+	{
+		console.log('Workflow done.');
+	}
 });
 ```
 
@@ -101,11 +121,17 @@ tmpAnticipate.wait(function (pError)
 Add an asynchronous operation to the queue. Operations run sequentially by default (one at a time).
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'AnticipateDemo', ProductVersion: '1.0.0' });
+const tmpAnticipate = fable.newAnticipate();
+
 tmpAnticipate.anticipate(function (fCallback)
 {
 	// Do async work
+	console.log('async work running');
 	fCallback();  // Call when done, or fCallback(pError) to signal failure
 });
+tmpAnticipate.wait(function (pError) { console.log('wait done, pError:', pError); });
 ```
 
 The step function receives one parameter:
@@ -116,11 +142,20 @@ The step function receives one parameter:
 Register a callback to run when all queued operations complete (or when an error occurs):
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'AnticipateDemo', ProductVersion: '1.0.0' });
+const tmpAnticipate = fable.newAnticipate();
+
+tmpAnticipate.anticipate(function (fCallback) { console.log('step done'); fCallback(); });
 tmpAnticipate.wait(function (pError)
 {
 	if (pError)
 	{
 		console.error('Error:', pError);
+	}
+	else
+	{
+		console.log('All operations completed');
 	}
 });
 ```
@@ -130,8 +165,12 @@ tmpAnticipate.wait(function (pError)
 Control concurrency. Default is `1` (sequential). Set higher for parallel execution:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'AnticipateDemo', ProductVersion: '1.0.0' });
+
 const tmpAnticipate = fable.newAnticipate();
 tmpAnticipate.maxOperations = 5;  // Run up to 5 operations concurrently
+console.log('maxOperations:', tmpAnticipate.maxOperations);
 ```
 
 ## Error Handling
@@ -141,6 +180,9 @@ tmpAnticipate.maxOperations = 5;  // Run up to 5 operations concurrently
 When an operation passes an error to its callback, remaining queued operations are skipped and the `wait` callback fires immediately with the error:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'AnticipateDemo', ProductVersion: '1.0.0' });
+
 const tmpAnticipate = fable.newAnticipate();
 let tmpPostErrorRan = false;
 
@@ -162,8 +204,8 @@ tmpAnticipate.anticipate(function (fCallback)
 });
 tmpAnticipate.wait(function (pError)
 {
-	console.log('Error:', pError);          // Error: Something went wrong
-	console.log('Step 3 ran:', tmpPostErrorRan);  // false
+	console.log('Caught error:', pError && pError.message);   // Something went wrong
+	console.log('Step 3 ran:',   tmpPostErrorRan);            // false
 });
 ```
 
@@ -172,6 +214,11 @@ tmpAnticipate.wait(function (pError)
 To handle errors without bailing out, catch them inside the step and continue:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'AnticipateDemo', ProductVersion: '1.0.0' });
+
+function riskyOperation() { throw new Error('demo failure'); }
+
 const tmpAnticipate = fable.newAnticipate();
 let tmpRecoveredError = null;
 
@@ -192,13 +239,13 @@ tmpAnticipate.anticipate(function (fCallback)
 {
 	if (tmpRecoveredError)
 	{
-		console.log('Recovered from:', tmpRecoveredError);
+		console.log('Recovered from:', tmpRecoveredError.message);
 	}
 	fCallback();
 });
 tmpAnticipate.wait(function (pError)
 {
-	console.log('Pipeline completed');
+	console.log('Pipeline completed, pError:', pError);
 });
 ```
 
@@ -207,6 +254,12 @@ tmpAnticipate.wait(function (pError)
 ### Database Migrations
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'AnticipateDemo', ProductVersion: '1.0.0' });
+
+// Stub DB driver for the playground demo
+const db = { query: (sql, cb) => { console.log('SQL:', sql); cb(null); } };
+
 const tmpMigrate = fable.newAnticipate();
 
 tmpMigrate.anticipate(function (fCallback)
@@ -231,6 +284,17 @@ tmpMigrate.wait(function (pError)
 ### API Request Chains
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'AnticipateDemo', ProductVersion: '1.0.0' });
+
+// Stub API + credentials + process for the playground demo
+const credentials = { user: 'demo', pass: 'demo' };
+const api = {
+	login:   (creds, cb) => setTimeout(() => cb('tok-' + Math.floor(Math.random() * 1000)), 5),
+	getData: (tok,   cb) => setTimeout(() => cb({ rows: 3, tok }), 5)
+};
+function processData(pData) { console.log('processed data:', pData); }
+
 const tmpWorkflow = fable.newAnticipate();
 let tmpToken = null;
 let tmpData = null;
@@ -253,33 +317,33 @@ tmpWorkflow.anticipate(function (fCallback)
 });
 tmpWorkflow.anticipate(function (fCallback)
 {
-	process(tmpData);
+	processData(tmpData);
 	fCallback();
 });
 tmpWorkflow.wait(function (pError)
 {
 	if (pError) console.error('Workflow failed:', pError);
+	else console.log('Workflow OK; token:', tmpToken);
 });
 ```
 
 ### Parallel Operations
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'AnticipateDemo', ProductVersion: '1.0.0' });
+
+// Stub fetchers for the playground demo
+function fetchFromServiceA(cb) { setTimeout(() => { console.log('A done'); cb(); }, 5); }
+function fetchFromServiceB(cb) { setTimeout(() => { console.log('B done'); cb(); }, 5); }
+function fetchFromServiceC(cb) { setTimeout(() => { console.log('C done'); cb(); }, 5); }
+
 const tmpParallel = fable.newAnticipate();
 tmpParallel.maxOperations = 3;  // Run up to 3 at a time
 
-tmpParallel.anticipate(function (fCallback)
-{
-	fetchFromServiceA(function () { fCallback(); });
-});
-tmpParallel.anticipate(function (fCallback)
-{
-	fetchFromServiceB(function () { fCallback(); });
-});
-tmpParallel.anticipate(function (fCallback)
-{
-	fetchFromServiceC(function () { fCallback(); });
-});
+tmpParallel.anticipate(function (fCallback) { fetchFromServiceA(function () { fCallback(); }); });
+tmpParallel.anticipate(function (fCallback) { fetchFromServiceB(function () { fCallback(); }); });
+tmpParallel.anticipate(function (fCallback) { fetchFromServiceC(function () { fCallback(); }); });
 tmpParallel.wait(function (pError)
 {
 	console.log('All fetches complete');
@@ -289,24 +353,21 @@ tmpParallel.wait(function (pError)
 ### Build Pipeline
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'AnticipateDemo', ProductVersion: '1.0.0' });
+
+// Stub build steps for the playground demo
+function cleanBuildDir(cb) { console.log('clean'); cb(); }
+function compile(cb)       { console.log('compile'); cb(); }
+function bundle(cb)        { console.log('bundle'); cb(); }
+function minify(cb)        { console.log('minify'); cb(); }
+
 const tmpBuild = fable.newAnticipate();
 
-tmpBuild.anticipate(function (fCallback)
-{
-	cleanBuildDir(fCallback);
-});
-tmpBuild.anticipate(function (fCallback)
-{
-	compile(fCallback);
-});
-tmpBuild.anticipate(function (fCallback)
-{
-	bundle(fCallback);
-});
-tmpBuild.anticipate(function (fCallback)
-{
-	minify(fCallback);
-});
+tmpBuild.anticipate(function (fCallback) { cleanBuildDir(fCallback); });
+tmpBuild.anticipate(function (fCallback) { compile(fCallback); });
+tmpBuild.anticipate(function (fCallback) { bundle(fCallback); });
+tmpBuild.anticipate(function (fCallback) { minify(fCallback); });
 tmpBuild.wait(function (pError)
 {
 	if (pError) throw pError;
@@ -319,13 +380,16 @@ tmpBuild.wait(function (pError)
 Create multiple independent workflows:
 
 ```javascript
-const tmpUserWorkflow = fable.newAnticipate();
+const libFable = require('fable');
+const fable = new libFable({ Product: 'AnticipateDemo', ProductVersion: '1.0.0' });
+
+const tmpUserWorkflow  = fable.newAnticipate();
 const tmpOrderWorkflow = fable.newAnticipate();
 
 // These run independently
-tmpUserWorkflow.anticipate(function (fCallback) { /* ... */ fCallback(); });
-tmpUserWorkflow.wait(function (pError) { /* ... */ });
+tmpUserWorkflow.anticipate(function (fCallback) { console.log('user step');  fCallback(); });
+tmpUserWorkflow.wait(function (pError) { console.log('user workflow done'); });
 
-tmpOrderWorkflow.anticipate(function (fCallback) { /* ... */ fCallback(); });
-tmpOrderWorkflow.wait(function (pError) { /* ... */ });
+tmpOrderWorkflow.anticipate(function (fCallback) { console.log('order step'); fCallback(); });
+tmpOrderWorkflow.wait(function (pError) { console.log('order workflow done'); });
 ```

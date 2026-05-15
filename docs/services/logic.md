@@ -5,8 +5,11 @@ The Logic service provides comparison and conditional operations, supporting bot
 ## Access
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'LogicDemo', ProductVersion: '1.0.0' });
+
 // Auto-instantiated, available directly
-fable.Logic
+console.log('fable.Logic:', typeof fable.Logic);
 ```
 
 ## Conditional Check (checkIf)
@@ -14,7 +17,11 @@ fable.Logic
 Perform comparisons and return different values based on the result:
 
 ```javascript
-fable.Logic.checkIf(left, operator, right, onTrue, onFalse);
+const libFable = require('fable');
+const fable = new libFable({ Product: 'LogicDemo', ProductVersion: '1.0.0' });
+
+// Signature shape — see the examples below for runnable invocations.
+console.log('checkIf signature: (left, operator, right, onTrue, onFalse) =>', typeof fable.Logic.checkIf);
 ```
 
 ### Parameters
@@ -43,13 +50,16 @@ fable.Logic.checkIf(left, operator, right, onTrue, onFalse);
 When both values can be parsed as numbers, arbitrary precision comparison is used:
 
 ```javascript
-fable.Logic.checkIf(10, '>', 5, 'greater', 'not greater');
+const libFable = require('fable');
+const fable = new libFable({ Product: 'LogicDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.Logic.checkIf(10, '>', 5, 'greater', 'not greater'));
 // Returns 'greater'
 
-fable.Logic.checkIf('3.14159', '==', '3.14159', 'equal', 'not equal');
+console.log(fable.Logic.checkIf('3.14159', '==', '3.14159', 'equal', 'not equal'));
 // Returns 'equal' (with small tolerance for ==)
 
-fable.Logic.checkIf('100', 'LTE', '50', 'yes', 'no');
+console.log(fable.Logic.checkIf('100', 'LTE', '50', 'yes', 'no'));
 // Returns 'no'
 ```
 
@@ -58,25 +68,31 @@ fable.Logic.checkIf('100', 'LTE', '50', 'yes', 'no');
 When either value is not a number, standard string comparison is used:
 
 ```javascript
-fable.Logic.checkIf('apple', '<', 'banana', 'first', 'second');
+const libFable = require('fable');
+const fable = new libFable({ Product: 'LogicDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.Logic.checkIf('apple', '<', 'banana', 'first', 'second'));
 // Returns 'first' (alphabetical order)
 
-fable.Logic.checkIf('Hello', '===', 'Hello', 'match', 'no match');
+console.log(fable.Logic.checkIf('Hello', '===', 'Hello', 'match', 'no match'));
 // Returns 'match'
 
-fable.Logic.checkIf('hello', '===', 'Hello', 'match', 'no match');
+console.log(fable.Logic.checkIf('hello', '===', 'Hello', 'match', 'no match'));
 // Returns 'no match' (case sensitive)
 ```
 
 #### Default False Values
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'LogicDemo', ProductVersion: '1.0.0' });
+
 // String comparison defaults to empty string
-fable.Logic.checkIf('a', '>', 'b', 'yes');
+console.log(JSON.stringify(fable.Logic.checkIf('a', '>', 'b', 'yes')));
 // Returns '' (empty string) when false
 
 // Numeric comparison defaults to '0'
-fable.Logic.checkIf(5, '>', 10, 'yes');
+console.log(fable.Logic.checkIf(5, '>', 10, 'yes'));
 // Returns '0' when false
 ```
 
@@ -85,7 +101,11 @@ fable.Logic.checkIf(5, '>', 10, 'yes');
 Return different values based on whether a value is truthy:
 
 ```javascript
-fable.Logic.when(checkValue, onTrue, onFalse);
+const libFable = require('fable');
+const fable = new libFable({ Product: 'LogicDemo', ProductVersion: '1.0.0' });
+
+// Signature shape — see the examples below for runnable invocations.
+console.log('when signature: (checkValue, onTrue, onFalse) =>', typeof fable.Logic.when);
 ```
 
 ### Parameters
@@ -104,23 +124,26 @@ The `when` method considers the following as falsy:
 ### Examples
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'LogicDemo', ProductVersion: '1.0.0' });
+
 // Basic truthy check
-fable.Logic.when(true, 'yes', 'no');      // Returns 'yes'
-fable.Logic.when(false, 'yes', 'no');     // Returns 'no'
-fable.Logic.when('hello', 'yes', 'no');   // Returns 'yes'
-fable.Logic.when('', 'yes', 'no');        // Returns 'no'
+console.log(fable.Logic.when(true, 'yes', 'no'));      // Returns 'yes'
+console.log(fable.Logic.when(false, 'yes', 'no'));     // Returns 'no'
+console.log(fable.Logic.when('hello', 'yes', 'no'));   // Returns 'yes'
+console.log(fable.Logic.when('', 'yes', 'no'));        // Returns 'no'
 
 // With numbers
-fable.Logic.when(42, 'has value', 'empty');     // Returns 'has value'
-fable.Logic.when(0, 'has value', 'empty');      // Returns 'empty'
+console.log(fable.Logic.when(42, 'has value', 'empty'));     // Returns 'has value'
+console.log(fable.Logic.when(0, 'has value', 'empty'));      // Returns 'empty'
 
 // With arrays
-fable.Logic.when([1, 2, 3], 'has items', 'empty');  // Returns 'has items'
-fable.Logic.when([], 'has items', 'empty');         // Returns 'empty'
+console.log(fable.Logic.when([1, 2, 3], 'has items', 'empty'));  // Returns 'has items'
+console.log(fable.Logic.when([], 'has items', 'empty'));         // Returns 'empty'
 
 // With objects
-fable.Logic.when({ a: 1 }, 'has props', 'empty');   // Returns 'has props'
-fable.Logic.when({}, 'has props', 'empty');         // Returns 'empty'
+console.log(fable.Logic.when({ a: 1 }, 'has props', 'empty'));   // Returns 'has props'
+console.log(fable.Logic.when({}, 'has props', 'empty'));         // Returns 'empty'
 ```
 
 ## Use Cases
@@ -128,24 +151,41 @@ fable.Logic.when({}, 'has props', 'empty');         // Returns 'empty'
 ### Form Validation
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'LogicDemo', ProductVersion: '1.0.0' });
+
+const formData = { age: 21 };
 const age = formData.age;
 const message = fable.Logic.checkIf(age, '>=', 18, 'Welcome!', 'Must be 18 or older');
+console.log(message);
 ```
 
 ### Conditional Display
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'LogicDemo', ProductVersion: '1.0.0' });
+
+function getItems() { return ['apple', 'banana']; }
+
 const items = getItems();
 const display = fable.Logic.when(items, `Found ${items.length} items`, 'No items found');
+console.log(display);
 ```
 
 ### Numeric Thresholds
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'LogicDemo', ProductVersion: '1.0.0' });
+
+function calculateScore() { return 85; }
+
 const score = calculateScore();
 const grade = fable.Logic.checkIf(score, '>=', 90, 'A',
               fable.Logic.checkIf(score, '>=', 80, 'B',
               fable.Logic.checkIf(score, '>=', 70, 'C', 'F')));
+console.log('score:', score, '-> grade:', grade);
 ```
 
 ### Template Conditionals
@@ -153,9 +193,17 @@ const grade = fable.Logic.checkIf(score, '>=', 90, 'A',
 Combined with the Template service:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'LogicDemo', ProductVersion: '1.0.0' });
+
+const user = { premium: true };
+// Use double-quoted strings inside <%= ... %> so underscore's template compiler
+// doesn't collide with the single-quoted wrapper it generates internally.
 const template = fable.Utility.template(`
-    <%= fable.Logic.when(user.premium, 'Premium Member', 'Free User') %>
+    <%= fable.Logic.when(user.premium, "Premium Member", "Free User") %>
 `);
+// The template references `fable` and `user`; pass them explicitly when rendering.
+console.log(template({ fable: fable, user: user }));
 ```
 
 ## Notes

@@ -24,15 +24,24 @@ Fable (Core ServiceManager)
 Services depend on Fable rather than creating their own dependencies. Each service receives a reference to the Fable instance during construction, providing access to all other services and shared configuration.
 
 ```javascript
+const libFable = require('fable');
+const libFableServiceBase = require('fable-serviceproviderbase');
+const fable = new libFable({ Product: 'ArchitectureDemo', ProductVersion: '1.0.0' });
+
 class MyService extends libFableServiceBase {
     constructor(pFable, pOptions, pServiceHash) {
         super(pFable, pOptions, pServiceHash);
+        this.serviceType = 'MyService';
 
         // Access other services through fable
-        this.log = this.fable.log;
+        this.log      = this.fable.log;
         this.settings = this.fable.settings;
     }
 }
+
+fable.addAndInstantiateServiceType('MyService', MyService);
+console.log('MyService wired up; log + settings accessible:',
+    typeof fable.MyService.log, typeof fable.MyService.settings);
 ```
 
 ### Lazy Instantiation
@@ -40,11 +49,25 @@ class MyService extends libFableServiceBase {
 Services can be registered without being instantiated, allowing for on-demand creation when first needed:
 
 ```javascript
+const libFable = require('fable');
+const libFableServiceBase = require('fable-serviceproviderbase');
+const fable = new libFable({ Product: 'ArchitectureDemo', ProductVersion: '1.0.0' });
+
+class ExpensiveServiceClass extends libFableServiceBase {
+    constructor(pFable, pOptions, pServiceHash) {
+        super(pFable, pOptions, pServiceHash);
+        this.serviceType = 'ExpensiveService';
+        console.log('ExpensiveServiceClass instantiated — work happens here.');
+    }
+}
+
 // Register without instantiating
 fable.addServiceType('ExpensiveService', ExpensiveServiceClass);
+console.log('Registered; no instance yet.');
 
 // Later, when needed
 const service = fable.instantiateServiceProvider('ExpensiveService');
+console.log('Instantiated:', service.serviceType);
 ```
 
 ### Service Containers
@@ -52,13 +75,16 @@ const service = fable.instantiateServiceProvider('ExpensiveService');
 Each service type maintains a map of instances, supporting multiple named instances of the same service type:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ArchitectureDemo', ProductVersion: '1.0.0' });
+
 // Create multiple instances of the same service type
 const clientA = fable.instantiateServiceProvider('RestClient', {}, 'api-client');
 const clientB = fable.instantiateServiceProvider('RestClient', {}, 'auth-client');
 
 // Access via services map
-fable.servicesMap.RestClient['api-client'];
-fable.servicesMap.RestClient['auth-client'];
+console.log('api-client:',  typeof fable.servicesMap.RestClient['api-client']);
+console.log('auth-client:', typeof fable.servicesMap.RestClient['auth-client']);
 ```
 
 ### Default Service Pattern
@@ -66,12 +92,15 @@ fable.servicesMap.RestClient['auth-client'];
 The first instance of each service type becomes the default accessor on the Fable object:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ArchitectureDemo', ProductVersion: '1.0.0' });
+
 // First instantiation becomes default
 fable.instantiateServiceProvider('RestClient', {}, 'primary');
 
 // Now accessible directly
-fable.RestClient;           // The 'primary' instance
-fable.services.RestClient;  // Same as above
+console.log('fable.RestClient:',           typeof fable.RestClient);           // The 'primary' instance
+console.log('fable.services.RestClient:',  typeof fable.services.RestClient);  // Same as above
 ```
 
 ## Initialization Phases
@@ -83,11 +112,21 @@ Fable initializes in distinct phases to ensure proper dependency ordering:
 The lowest level state and service infrastructure is established:
 
 ```javascript
-this.serviceType = 'ServiceManager';
-this.serviceTypes = [];      // Array of registered service types
-this.servicesMap = {};       // Map of instantiated services by type and hash
-this.services = {};          // Map of default service instances
-this.serviceClasses = {};    // Map of service class constructors
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ArchitectureDemo', ProductVersion: '1.0.0' });
+
+// Inside Fable's constructor, Phase 0 sets up its own service-manager state:
+//   this.serviceType    = 'ServiceManager';
+//   this.serviceTypes   = [];      // Array of registered service types
+//   this.servicesMap    = {};      // Map of instantiated services by type and hash
+//   this.services       = {};      // Map of default service instances
+//   this.serviceClasses = {};      // Map of service class constructors
+//
+// You can observe these on a constructed instance:
+console.log('serviceType:',         fable.serviceType);
+console.log('serviceTypes count:',  fable.serviceTypes.length);
+console.log('servicesMap keys:',    Object.keys(fable.servicesMap).slice(0, 5), '...');
+console.log('services keys:',       Object.keys(fable.services).slice(0, 5),    '...');
 ```
 
 ### Phase 1: Core Utility Services
@@ -95,10 +134,19 @@ this.serviceClasses = {};    // Map of service class constructors
 Fundamental services required for Fable to operate:
 
 ```javascript
-this.SettingsManager = new libFableSettings(pSettings);
-this.UUID = new libFableUUID(this.SettingsManager.settings);
-this.Logging = new libFableLog(this.SettingsManager.settings);
-this.Logging.initialize();
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ArchitectureDemo', ProductVersion: '1.0.0' });
+
+// Inside Fable's constructor, Phase 1 wires up the core utility services:
+//   this.SettingsManager = new libFableSettings(pSettings);
+//   this.UUID            = new libFableUUID(this.SettingsManager.settings);
+//   this.Logging         = new libFableLog(this.SettingsManager.settings);
+//   this.Logging.initialize();
+//
+// On the constructed instance these are all live:
+console.log('SettingsManager:', typeof fable.SettingsManager);
+console.log('UUID:',            typeof fable.UUID);
+console.log('Logging:',         typeof fable.Logging);
 ```
 
 ### Phase 1.5: Self-Registration
@@ -106,8 +154,15 @@ this.Logging.initialize();
 Fable registers itself as a service, enabling consistent service access patterns:
 
 ```javascript
-this.ServiceManager = this;
-this.connectFable(this);
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ArchitectureDemo', ProductVersion: '1.0.0' });
+
+// Inside Fable's constructor, Phase 1.5 self-registers:
+//   this.ServiceManager = this;
+//   this.connectFable(this);
+//
+// On the constructed instance, fable.ServiceManager === fable:
+console.log('fable.ServiceManager === fable:', fable.ServiceManager === fable);
 ```
 
 ### Phase 2: Default Built-in Services
@@ -115,16 +170,24 @@ this.connectFable(this);
 All default services are registered and optionally instantiated:
 
 ```javascript
-// Auto-instantiated (available immediately)
-this.addAndInstantiateServiceType('EnvironmentData', ...);
-this.addAndInstantiateServiceType('Dates', ...);
-this.addAndInstantiateServiceType('DataFormat', ...);
-// ... etc
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ArchitectureDemo', ProductVersion: '1.0.0' });
 
-// On-demand (registered but not instantiated)
-this.addServiceType('Template', ...);
-this.addServiceType('RestClient', ...);
-// ... etc
+// Inside Fable's constructor, Phase 2 registers all built-in services:
+//   // Auto-instantiated (available immediately)
+//   this.addAndInstantiateServiceType('EnvironmentData', ...);
+//   this.addAndInstantiateServiceType('Dates', ...);
+//   this.addAndInstantiateServiceType('DataFormat', ...);
+//   ...
+//   // On-demand (registered but not instantiated)
+//   this.addServiceType('Template', ...);
+//   this.addServiceType('RestClient', ...);
+//   ...
+//
+// On the constructed instance, you can see both:
+const autoInstantiated = Object.keys(fable.services).filter(k => fable[k]);
+console.log('Auto-instantiated services:', autoInstantiated.join(', '));
+console.log('Registered service types:',   fable.serviceTypes.join(', '));
 ```
 
 ## Service Base Class
@@ -132,6 +195,10 @@ this.addServiceType('RestClient', ...);
 All Fable services extend `CoreServiceProviderBase` from `fable-serviceproviderbase`:
 
 ```javascript
+const libFable = require('fable');
+const libFableServiceBase = require('fable-serviceproviderbase');
+const fable = new libFable({ Product: 'ArchitectureDemo', ProductVersion: '1.0.0' });
+
 class MyService extends libFableServiceBase {
     constructor(pFable, pOptions, pServiceHash) {
         super(pFable, pOptions, pServiceHash);
@@ -145,6 +212,14 @@ class MyService extends libFableServiceBase {
     // - this.options (passed options)
     // - this.Hash (unique service instance identifier)
 }
+
+fable.addAndInstantiateServiceType('MyService', MyService);
+const svc = fable.MyService;
+console.log('serviceType:',  svc.serviceType);
+console.log('fable ref:',    typeof svc.fable);
+console.log('log:',          typeof svc.log);
+console.log('options:',      typeof svc.options);
+console.log('Hash:',         svc.Hash);
 ```
 
 ## Service Registration Methods
@@ -154,7 +229,16 @@ class MyService extends libFableServiceBase {
 Registers a service class without instantiation:
 
 ```javascript
+const libFable = require('fable');
+const libFableServiceBase = require('fable-serviceproviderbase');
+const fable = new libFable({ Product: 'ArchitectureDemo', ProductVersion: '1.0.0' });
+
+class MyServiceClass extends libFableServiceBase {
+    constructor(pFable, pOptions, pServiceHash) { super(pFable, pOptions, pServiceHash); this.serviceType = 'MyService'; }
+}
+
 fable.addServiceType('MyService', MyServiceClass);
+console.log('Registered:', fable.serviceTypes.includes('MyService'));
 ```
 
 ### `addAndInstantiateServiceType(pServiceType, pServiceClass)`
@@ -162,8 +246,17 @@ fable.addServiceType('MyService', MyServiceClass);
 Registers and immediately creates a default instance:
 
 ```javascript
+const libFable = require('fable');
+const libFableServiceBase = require('fable-serviceproviderbase');
+const fable = new libFable({ Product: 'ArchitectureDemo', ProductVersion: '1.0.0' });
+
+class MyServiceClass extends libFableServiceBase {
+    constructor(pFable, pOptions, pServiceHash) { super(pFable, pOptions, pServiceHash); this.serviceType = 'MyService'; }
+}
+
 fable.addAndInstantiateServiceType('MyService', MyServiceClass);
 // Creates instance with hash 'MyService-Default'
+console.log('Default instance Hash:', fable.MyService.Hash);
 ```
 
 ### `instantiateServiceProvider(pServiceType, pOptions, pCustomServiceHash)`
@@ -171,10 +264,22 @@ fable.addAndInstantiateServiceType('MyService', MyServiceClass);
 Creates a new instance of a registered service:
 
 ```javascript
+const libFable = require('fable');
+const libFableServiceBase = require('fable-serviceproviderbase');
+const fable = new libFable({ Product: 'ArchitectureDemo', ProductVersion: '1.0.0' });
+
+class MyServiceClass extends libFableServiceBase {
+    constructor(pFable, pOptions, pServiceHash) { super(pFable, pOptions, pServiceHash); this.serviceType = 'MyService'; }
+}
+
+fable.addServiceType('MyService', MyServiceClass);
+
 const service = fable.instantiateServiceProvider('MyService',
     { option: 'value' },
     'my-custom-hash'
 );
+console.log('Service Hash:', service.Hash);
+console.log('Service options:', service.options);
 ```
 
 ### `instantiateServiceProviderFromPrototype(pServiceType, pOptions, pCustomServiceHash, pServicePrototype)`
@@ -182,14 +287,28 @@ const service = fable.instantiateServiceProvider('MyService',
 Creates an instance using a custom class that may differ from the registered class:
 
 ```javascript
-class CustomizedService extends MyServiceClass { /* ... */ }
+const libFable = require('fable');
+const libFableServiceBase = require('fable-serviceproviderbase');
+const fable = new libFable({ Product: 'ArchitectureDemo', ProductVersion: '1.0.0' });
 
+class MyServiceClass extends libFableServiceBase {
+    constructor(pFable, pOptions, pServiceHash) { super(pFable, pOptions, pServiceHash); this.serviceType = 'MyService'; }
+}
+fable.addServiceType('MyService', MyServiceClass);
+
+class CustomizedService extends MyServiceClass {
+    constructor(pFable, pOptions, pServiceHash) { super(pFable, pOptions, pServiceHash); this.flavor = 'custom'; }
+}
+
+const options = { mode: 'demo' };
 const service = fable.instantiateServiceProviderFromPrototype(
     'MyService',
     options,
     'customized',
     CustomizedService
 );
+console.log('Custom flavor:', service.flavor);
+console.log('Hash:',          service.Hash);
 ```
 
 ## Service Access Patterns
@@ -199,9 +318,12 @@ const service = fable.instantiateServiceProviderFromPrototype(
 Auto-instantiated services are available directly on the Fable instance:
 
 ```javascript
-fable.Dates.dayJS().format('YYYY-MM-DD');
-fable.Math.addPrecise('1.5', '2.5');
-fable.DataFormat.formatterDollars(1234.56);
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ArchitectureDemo', ProductVersion: '1.0.0' });
+
+console.log(fable.Dates.dayJS().format('YYYY-MM-DD'));
+console.log(fable.Math.addPrecise('1.5', '2.5'));
+console.log(fable.DataFormat.formatterDollars(1234.56));
 ```
 
 ### Services Map Access
@@ -209,8 +331,11 @@ fable.DataFormat.formatterDollars(1234.56);
 All instantiated services are accessible through the services map:
 
 ```javascript
-fable.services.Dates;
-fable.servicesMap.Dates['Dates-Default'];
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ArchitectureDemo', ProductVersion: '1.0.0' });
+
+console.log('fable.services.Dates:',                 typeof fable.services.Dates);
+console.log("fable.servicesMap.Dates['Dates-Default']:", typeof fable.servicesMap.Dates['Dates-Default']);
 ```
 
 ### Factory Methods
@@ -218,11 +343,17 @@ fable.servicesMap.Dates['Dates-Default'];
 Some services provide convenient factory methods:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ArchitectureDemo', ProductVersion: '1.0.0' });
+
 // Create a new Anticipate instance without registration
 const anticipate = fable.newAnticipate();
+console.log('anticipate:', typeof anticipate);
 
 // Create a new Manifest instance without registration
+const definition = { Scope: 'Demo', Descriptors: { Foo: { Hash: 'foo', Type: 'String' } } };
 const manifest = fable.newManyfest(definition);
+console.log('manifest scope:', manifest.scope);
 ```
 
 ## Configuration Flow
@@ -240,8 +371,16 @@ User Config -> SettingsManager -> Fable.settings -> All Services
 Services access configuration through:
 
 ```javascript
-this.fable.settings.SomeSetting;
-this.fable.SettingsManager.settings;
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ArchitectureDemo', SomeSetting: 'demo-value' });
+
+// Inside a service, you access config via:
+//   this.fable.settings.SomeSetting
+//   this.fable.SettingsManager.settings
+//
+// At the top level, drop "this.":
+console.log('settings.SomeSetting:',          fable.settings.SomeSetting);
+console.log('SettingsManager.settings type:', typeof fable.SettingsManager.settings);
 ```
 
 ## Logging Architecture
@@ -260,13 +399,22 @@ Log levels: `trace`, `debug`, `info`, `warn`, `error`, `fatal`
 Custom log providers can be created by extending `LogProviderBase`:
 
 ```javascript
-const LogProviderBase = require('fable').LogProviderBase;
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ArchitectureDemo', ProductVersion: '1.0.0' });
+
+const LogProviderBase = require('fable-log').LogProviderBase;
 
 class CustomLogProvider extends LogProviderBase {
     write(pLogEntry) {
         // Custom logging implementation
+        console.log('CustomLogProvider received:', pLogEntry.msg);
     }
 }
+
+const provider = new CustomLogProvider(fable.Logging, { level: 'trace' });
+provider.initialize();
+fable.Logging.addLogger(provider);
+fable.log.info('Hello from custom provider demo');
 ```
 
 ## Browser Compatibility
@@ -274,15 +422,16 @@ class CustomLogProvider extends LogProviderBase {
 Fable supports browser environments through service remapping:
 
 ```javascript
-// package.json browser field
-{
+// Shape of the browser remap declared in package.json:
+const packageJSONBrowserField = {
     "browser": {
         "./source/service/Fable-Service-EnvironmentData.js":
             "./source/service/Fable-Service-EnvironmentData-Web.js",
         "./source/service/Fable-Service-FilePersistence.js":
             "./source/service/Fable-Service-FilePersistence-Web.js"
     }
-}
+};
+console.log('Browser remap entries:', Object.keys(packageJSONBrowserField.browser).length);
 ```
 
 The `dist/` folder contains browserified bundles for direct browser use.
@@ -292,7 +441,9 @@ The `dist/` folder contains browserified bundles for direct browser use.
 ### Creating Custom Services
 
 ```javascript
+const libFable = require('fable');
 const libFableServiceBase = require('fable-serviceproviderbase');
+const fable = new libFable({ Product: 'ArchitectureDemo', ProductVersion: '1.0.0' });
 
 class MyCustomService extends libFableServiceBase {
     constructor(pFable, pOptions, pServiceHash) {
@@ -310,7 +461,7 @@ class MyCustomService extends libFableServiceBase {
 fable.addAndInstantiateServiceType('MyCustomService', MyCustomService);
 
 // Use it
-fable.MyCustomService.myMethod();
+console.log('myMethod() returns:', fable.MyCustomService.myMethod());
 ```
 
 ### Service Initialization Hook
@@ -318,9 +469,20 @@ fable.MyCustomService.myMethod();
 For advanced scenarios, Fable supports an extra initialization callback:
 
 ```javascript
+const libFable = require('fable');
+const libFableServiceBase = require('fable-serviceproviderbase');
+const fable = new libFable({ Product: 'ArchitectureDemo', ProductVersion: '1.0.0' });
+
 fable.extraServiceInitialization = (pService) => {
     // Perform additional setup on every service
     pService.customProperty = 'value';
     return pService;
 };
+
+// Subsequent service instantiations now pass through the hook:
+class DemoService extends libFableServiceBase {
+    constructor(pFable, pOptions, pServiceHash) { super(pFable, pOptions, pServiceHash); this.serviceType = 'DemoService'; }
+}
+fable.addAndInstantiateServiceType('DemoService', DemoService);
+console.log('DemoService.customProperty:', fable.DemoService.customProperty);
 ```

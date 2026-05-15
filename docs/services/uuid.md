@@ -5,9 +5,12 @@ The UUID service generates unique identifiers with optional DataCenter and Worke
 ## Access
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UUIDDemo', ProductVersion: '1.0.0' });
+
 // Pre-initialized, available directly
-fable.UUID
-fable.getUUID()  // Convenience method
+console.log('fable.UUID:',      typeof fable.UUID);
+console.log('fable.getUUID():', fable.getUUID());  // Convenience method
 ```
 
 ## Basic Usage
@@ -15,11 +18,16 @@ fable.getUUID()  // Convenience method
 ### Generate a UUID
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UUIDDemo', ProductVersion: '1.0.0' });
+
 const uuid = fable.getUUID();
+console.log('uuid (via convenience):', uuid);
 // Returns something like: '0x53c7c0bed0010000'
 
 // Or via the service directly
-const uuid = fable.UUID.getUUID();
+const uuidDirect = fable.UUID.getUUID();
+console.log('uuid (via service):', uuidDirect);
 ```
 
 ## Configuration
@@ -27,12 +35,15 @@ const uuid = fable.UUID.getUUID();
 Configure DataCenter and Worker IDs when creating Fable:
 
 ```javascript
-const fable = new Fable({
+const libFable = require('fable');
+const fable = new libFable({
     UUID: {
         DataCenter: 1,  // 0-31
         Worker: 5       // 0-31
     }
 });
+console.log('DataCenter:', fable.UUID.datacenter, 'Worker:', fable.UUID.worker);
+console.log('Sample UUID:', fable.getUUID());
 ```
 
 ### DataCenter and Worker
@@ -61,21 +72,30 @@ The generated UUIDs are based on the Snowflake pattern:
 ### Database Primary Keys
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UUIDDemo', ProductVersion: '1.0.0' });
+
 const user = {
     id: fable.getUUID(),
     name: 'John Doe',
     email: 'john@example.com'
 };
+console.log('user:', user);
 ```
 
 ### Request Tracing
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UUIDDemo', ProductVersion: '1.0.0' });
+
 const requestId = fable.getUUID();
 fable.log.info('Processing request', { requestId });
 
-// Pass through the system
+// Pass through the system (stubbed response object for playground demo)
+const response = { _headers: {}, setHeader(name, value) { this._headers[name] = value; } };
 response.setHeader('X-Request-ID', requestId);
+console.log('response headers:', response._headers);
 ```
 
 ### Distributed Systems
@@ -83,21 +103,29 @@ response.setHeader('X-Request-ID', requestId);
 Configure each node with unique DataCenter/Worker:
 
 ```javascript
+const libFable = require('fable');
+
 // Node 1 (DC 0, Worker 0)
-const fable1 = new Fable({ UUID: { DataCenter: 0, Worker: 0 } });
+const fable1 = new libFable({ UUID: { DataCenter: 0, Worker: 0 } });
 
 // Node 2 (DC 0, Worker 1)
-const fable2 = new Fable({ UUID: { DataCenter: 0, Worker: 1 } });
+const fable2 = new libFable({ UUID: { DataCenter: 0, Worker: 1 } });
 
 // Node 3 (DC 1, Worker 0)
-const fable3 = new Fable({ UUID: { DataCenter: 1, Worker: 0 } });
+const fable3 = new libFable({ UUID: { DataCenter: 1, Worker: 0 } });
 
 // All nodes can generate UUIDs without collision
+console.log('Node 1 UUID:', fable1.getUUID());
+console.log('Node 2 UUID:', fable2.getUUID());
+console.log('Node 3 UUID:', fable3.getUUID());
 ```
 
 ### Session IDs
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UUIDDemo', ProductVersion: '1.0.0' });
+
 function createSession(userId) {
     return {
         sessionId: fable.getUUID(),
@@ -105,12 +133,18 @@ function createSession(userId) {
         createdAt: new Date()
     };
 }
+
+console.log('session:', createSession('user-42'));
 ```
 
 ### File Names
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UUIDDemo', ProductVersion: '1.0.0' });
+
 const uniqueFileName = `upload_${fable.getUUID()}.jpg`;
+console.log('uniqueFileName:', uniqueFileName);
 ```
 
 ## Properties
@@ -118,13 +152,19 @@ const uniqueFileName = `upload_${fable.getUUID()}.jpg`;
 ### DataCenter ID
 
 ```javascript
-fable.UUID.datacenter  // Current DataCenter ID
+const libFable = require('fable');
+const fable = new libFable({ UUID: { DataCenter: 3, Worker: 7 } });
+
+console.log('Current DataCenter ID:', fable.UUID.datacenter);
 ```
 
 ### Worker ID
 
 ```javascript
-fable.UUID.worker  // Current Worker ID
+const libFable = require('fable');
+const fable = new libFable({ UUID: { DataCenter: 3, Worker: 7 } });
+
+console.log('Current Worker ID:', fable.UUID.worker);
 ```
 
 ## Best Practices
@@ -152,6 +192,9 @@ Fable UUIDs are:
 If migrating from UUID v4 or other formats:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'UUIDDemo', ProductVersion: '1.0.0' });
+
 // Continue supporting both formats
 function isValidId(id) {
     return id.startsWith('0x') || /^[0-9a-f-]{36}$/i.test(id);
@@ -159,4 +202,9 @@ function isValidId(id) {
 
 // Generate new IDs with Fable
 const newId = fable.getUUID();
+console.log('newId:', newId, '-> isValidId:', isValidId(newId));
+
+// Check a legacy UUID v4 string as well
+const legacy = '550e8400-e29b-41d4-a716-446655440000';
+console.log('legacy:', legacy, '-> isValidId:', isValidId(legacy));
 ```

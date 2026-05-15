@@ -5,8 +5,12 @@ The ExpressionParser service provides mathematical expression parsing and evalua
 ## Access
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+
 // On-demand service - instantiate when needed
 const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+console.log('parser:', typeof parser);
 ```
 
 ## Basic Usage
@@ -16,16 +20,26 @@ const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
 The primary method is `solve()`, which parses and evaluates expressions:
 
 ```javascript
-parser.solve('1 + 1');        // Returns '2'
-parser.solve('10 * 2');       // Returns '20'
-parser.solve('100 / 4');      // Returns '25'
-parser.solve('2 ^ 10');       // Returns '1024'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+console.log(parser.solve('1 + 1'));        // Returns '2'
+console.log(parser.solve('10 * 2'));       // Returns '20'
+console.log(parser.solve('100 / 4'));      // Returns '25'
+console.log(parser.solve('2 ^ 10'));       // Returns '1024'
 ```
 
 ### Full Signature
 
 ```javascript
-parser.solve(expression, dataObject, resultObject, manifest, destinationObject);
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+// Signature shape — see the runnable examples below for real invocations.
+console.log('solve signature: (expression, dataObject, resultObject, manifest, destinationObject) =>',
+    typeof parser.solve);
 ```
 
 - **expression** -- the expression string to evaluate
@@ -39,8 +53,13 @@ parser.solve(expression, dataObject, resultObject, manifest, destinationObject);
 Use `=` to assign a result to a named destination:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
 const dest = {};
 parser.solve('Area = 5 * 10', {}, {}, false, dest);
+console.log(dest);
 // dest.Area === '50'
 ```
 
@@ -49,8 +68,19 @@ parser.solve('Area = 5 * 10', {}, {}, false, dest);
 Use `?=` to only assign if the destination property doesn't already exist:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+fable.AppData = { Students: ['Alice', 'Bob'] };
+const data = fable;
+const dest = {};
 parser.solve('Name ?= GETVALUE("AppData.Students[0]")', data, {}, false, dest);
-// Only sets dest.Name if it was not previously set
+console.log('dest.Name (first run):', dest.Name);
+
+// Second run with Name already set — ?= leaves it alone:
+parser.solve('Name ?= "OverwriteAttempt"', data, {}, false, dest);
+console.log('dest.Name (after ?= retry):', dest.Name);
 ```
 
 ## Operators
@@ -80,14 +110,19 @@ Comparison operators evaluate to `'1'` (true) or `'0'` (false). They bind looser
 | `!=` | Not equal | `5 != 3` -> `'1'` |
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+const dest = {};
 parser.solve('Result = 5 > 3', {}, {}, false, dest);
-// dest.Result === '1'
+console.log("after '5 > 3':", dest.Result);
 
 parser.solve('Result = 2 + 3 > 1 + 2', {}, {}, false, dest);
-// dest.Result === '1' (evaluates as (2+3) > (1+2), i.e. 5 > 3)
+console.log("after '2 + 3 > 1 + 2':", dest.Result);
 
 parser.solve('Result = Height > Width', { Height: 10, Width: 5 }, {}, false, dest);
-// dest.Result === '1'
+console.log("after 'Height > Width':", dest.Result);
 ```
 
 ### Ternary Operator
@@ -101,25 +136,31 @@ condition ? trueValue :: falseValue
 The condition is typically a comparison expression. If it evaluates to a truthy value (non-zero, non-empty), the true branch is returned; otherwise the false branch is returned.
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+const dest = {};
+
 parser.solve('Result = 5 > 3 ? 100 :: 200', {}, {}, false, dest);
-// dest.Result === '100'
+console.log('5>3 ? 100 :: 200 =>', dest.Result);
 
 parser.solve('Result = 3 > 5 ? 100 :: 200', {}, {}, false, dest);
-// dest.Result === '200'
+console.log('3>5 ? 100 :: 200 =>', dest.Result);
 
 parser.solve('Winner = Height > Width ? Height :: Width',
     { Height: 10, Width: 5 }, {}, false, dest);
-// dest.Winner === '10'
+console.log('Winner =', dest.Winner);
 
 // Arithmetic in branches
 parser.solve('Result = A > B ? A + 1 :: B + 1',
     { A: 10, B: 5 }, {}, false, dest);
-// dest.Result === '11'
+console.log('Branch arithmetic =', dest.Result);
 
 // Nested ternary (use parentheses for inner ternary)
 parser.solve('Result = A > 0 ? (B > 0 ? 1 :: 2) :: 3',
     { A: 1, B: 1 }, {}, false, dest);
-// dest.Result === '1'
+console.log('Nested ternary =', dest.Result);
 ```
 
 The ternary operator uses `::` (double colon) instead of `:` for the false branch separator because `:` is already used as the Expression Begin token in directives like `MAP`, `SERIES`, etc.
@@ -129,19 +170,28 @@ Internally, `condition ? trueValue :: falseValue` is desugared to `ternary((cond
 ### Order of Operations
 
 ```javascript
-parser.solve('5 + 2 * 10');           // Returns '25'
-parser.solve('3.5 + 5 + 10 * 10 / 5');  // Returns '28.5'
-parser.solve('(100 - 10)');           // Returns '90'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+console.log(parser.solve('5 + 2 * 10'));           // Returns '25'
+console.log(parser.solve('3.5 + 5 + 10 * 10 / 5'));  // Returns '28.5'
+console.log(parser.solve('(100 - 10)'));           // Returns '90'
 ```
 
 ### Negative Numbers
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+const dest = {};
 parser.solve('Value = -3', {}, {}, false, dest);
-// dest.Value === '-3'
+console.log('dest.Value:', dest.Value);
 
 parser.solve('Value2 = (4 + -3)', {}, {}, false, dest);
-// dest.Value2 === '1'
+console.log('dest.Value2:', dest.Value2);
 ```
 
 ## Variables
@@ -149,10 +199,15 @@ parser.solve('Value2 = (4 + -3)', {}, {}, false, dest);
 ### Using Data Objects
 
 ```javascript
-parser.solve('X * Y * Z', { X: 5, Y: 3.1, Z: 75 });  // Returns '1162.5'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
 
+console.log(parser.solve('X * Y * Z', { X: 5, Y: 3.1, Z: 75 }));
+
+const dest = {};
 parser.solve('Area = X * Y * Z', { X: 5.867, Y: 3.1, Z: 75 }, {}, false, dest);
-// dest.Area === '1364.0775'
+console.log('dest.Area:', dest.Area);
 ```
 
 ### Accessing Fable AppData
@@ -160,13 +215,19 @@ parser.solve('Area = X * Y * Z', { X: 5.867, Y: 3.1, Z: 75 }, {}, false, dest);
 Use `GETVALUE()` to read from `fable.AppData`:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+const dest = {};
+
 fable.AppData = { Pit: 'Bottomless' };
-parser.solve('PitSize = getvalue("AppData.Pit")', {}, {}, false, dest);
-// dest.PitSize === 'Bottomless'
+parser.solve('PitSize = getvalue("AppData.Pit")', fable, {}, false, dest);
+console.log('PitSize:', dest.PitSize);
 
 fable.AppData = { Students: ['Kim', 'Jim', 'Joan Jett', 'Tank Girl'] };
-parser.solve('Name = GETVALUE("AppData.Students[1]")', {}, {}, false, dest);
-// dest.Name === 'Jim'
+parser.solve('Name = GETVALUE("AppData.Students[1]")', fable, {}, false, dest);
+console.log('Name:', dest.Name);
 ```
 
 ## Built-in Functions
@@ -174,40 +235,61 @@ parser.solve('Name = GETVALUE("AppData.Students[1]")', {}, {}, false, dest);
 ### Math Functions
 
 ```javascript
-parser.solve('sqrt(16)');           // '4'
-parser.solve('sin(rad(60))');       // '0.8660254037844386'
-parser.solve('1.5 * sqrt(8 * 2.423782342^2) / 10');  // '1.02832375808904701855'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+console.log(parser.solve('sqrt(16)'));
+console.log(parser.solve('sin(rad(60))'));
+console.log(parser.solve('1.5 * sqrt(8 * 2.423782342^2) / 10'));
 ```
 
 ### Rounding
 
 ```javascript
-parser.solve('ROUND(X * Y * Z)', { X: 5.867, Y: 3.1, Z: 75 });      // '1364'
-parser.solve('ROUND(X * Y * Z, 2)', { X: 5.867, Y: 3.1, Z: 75 });    // '1364.08'
-parser.solve('ROUND(X * Y * Z, 3, 3)', { X: 5.867, Y: 3.5, Z: 75.248923423 });  // '1545.2'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+console.log(parser.solve('ROUND(X * Y * Z)', { X: 5.867, Y: 3.1, Z: 75 }));
+console.log(parser.solve('ROUND(X * Y * Z, 2)', { X: 5.867, Y: 3.1, Z: 75 }));
+console.log(parser.solve('ROUND(X * Y * Z, 3, 3)', { X: 5.867, Y: 3.5, Z: 75.248923423 }));
 ```
 
 ### Aggregate Functions (on Arrays)
 
 ```javascript
-parser.solve('SUM(ItemCosts)', { ItemCosts: [100, 200, 50, 45, 5] });     // '400'
-parser.solve('MEAN(ItemCosts)', { ItemCosts: [100, 200, 50, 45, 5] });    // '80'
-parser.solve('MEDIAN(ItemCosts)', { ItemCosts: [100, 200, 50, 45, 5] });  // '50'
-parser.solve('COUNT(ItemCosts)', { ItemCosts: [100, 200, 50, 45, 5] });   // '5'
-parser.solve('STDEV(Values)', { Values: [1,2,3,4,5,6,7,8,9,10,11] });     // ~3.3166
-parser.solve('STDEVP(Values)', { Values: [1,2,3,4,5,6,7,8,9,10,11] });    // ~3.1623
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+console.log(parser.solve('SUM(ItemCosts)',    { ItemCosts: [100, 200, 50, 45, 5] }));
+console.log(parser.solve('MEAN(ItemCosts)',   { ItemCosts: [100, 200, 50, 45, 5] }));
+console.log(parser.solve('MEDIAN(ItemCosts)', { ItemCosts: [100, 200, 50, 45, 5] }));
+console.log(parser.solve('COUNT(ItemCosts)',  { ItemCosts: [100, 200, 50, 45, 5] }));
+console.log(parser.solve('STDEV(Values)',     { Values: [1,2,3,4,5,6,7,8,9,10,11] }));
+console.log(parser.solve('STDEVP(Values)',    { Values: [1,2,3,4,5,6,7,8,9,10,11] }));
 ```
 
 ### String Functions
 
 ```javascript
-parser.solve('Names = concat(AppData.Cities[].city)', fable);
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+fable.AppData = {
+    Cities:    [{ city: 'Phoenix' }, { city: 'Denver' }, { city: 'Boston' }],
+    CityNames: ['Phoenix', 'Denver', 'Boston']
+};
+
+console.log(parser.solve('Names = concat(AppData.Cities[].city)', fable));
 // Concatenates all city names (skipping non-string values)
 
-parser.solve('JoinedNames = join("&comma; ", AppData.CityNames)', fable);
+console.log(parser.solve('JoinedNames = join("&comma; ", AppData.CityNames)', fable));
 // Joins with separator, resolving HTML entities
 
-parser.solve('NameList = STRINGGETSEGMENTS(Names, ",")', { Names: 'Jane,John' });
+console.log(parser.solve('NameList = STRINGGETSEGMENTS(Names, ",")', { Names: 'Jane,John' }));
 // Returns ['Jane', 'John']
 ```
 
@@ -218,8 +300,13 @@ parser.solve('NameList = STRINGGETSEGMENTS(Names, ",")', { Names: 'Jane,John' })
 The preferred way to write inline conditionals is with the ternary operator:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+const dest = {};
 parser.solve('Label = Score >= 70 ? "Pass" :: "Fail"', { Score: 85 }, {}, false, dest);
-// dest.Label === 'Pass'
+console.log('dest.Label:', dest.Label);
 ```
 
 See [Ternary Operator](#ternary-operator) above and the [ternary function reference](./expression-parser-functions/ternary.md).
@@ -227,34 +314,45 @@ See [Ternary Operator](#ternary-operator) above and the [ternary function refere
 #### When (truthy check)
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+fable.AppData = { Cities: [{ city: 'Phoenix' }] };
+const dest = {};
 parser.solve('Name = When(AppData.Cities[0].city, AppData.Cities[0].city)', fable, {}, false, dest);
-// If first arg is truthy, returns second arg; otherwise returns ''
+console.log('dest.Name:', dest.Name);
 ```
 
 #### If (comparison)
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+const data = { latitude: 42, city: 'New York' };
+const dest = {};
 parser.solve('GTE = If(latitude, "<", "50", "west", "east")', data, {}, false, dest);
-// If latitude < 50, returns 'west', else 'east'
+console.log('dest.GTE:', dest.GTE);
 
 // Supports ==, ===, <, >, LT, LTE, GT, GTE operators
 parser.solve('Equals = If(city, "==", "New York", "yes", "no")', data, {}, false, dest);
+console.log('dest.Equals:', dest.Equals);
 ```
 
 ### Date Functions
 
 ```javascript
-parser.solve('Result = datemilliseconddifference("2023-08-10T05:00:00.000Z", "2023-08-11T05:00:00.000Z")');
-// Returns '86400000'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
 
-parser.solve('Result = datehourdifference(StartDate, EndDate)', { StartDate: '2023-08-10T05:00:00.000Z', EndDate: '2023-08-11T05:00:00.000Z' });
-// Returns '24'
-
-parser.solve('DATEFROMPARTS(2025, 4, 1)');
-// Returns '2025-04-01T00:00:00.000Z'
-
-parser.solve('DATEADDDAYS(DATEFROMPARTS(2025, 4, 1, 13, 03, 51, 761), 87)');
-// Returns '2025-06-27T13:03:51.761Z'
+console.log(parser.solve('Result = datemilliseconddifference("2023-08-10T05:00:00.000Z", "2023-08-11T05:00:00.000Z")'));
+console.log(parser.solve('Result = datehourdifference(StartDate, EndDate)',
+    { StartDate: '2023-08-10T05:00:00.000Z', EndDate: '2023-08-11T05:00:00.000Z' }));
+console.log(parser.solve('DATEFROMPARTS(2025, 4, 1)'));
+console.log(parser.solve('DATEADDDAYS(DATEFROMPARTS(2025, 4, 1, 13, 03, 51, 761), 87)'));
 ```
 
 Also available: `dateseconddifference`, `dateminutedifference`, `datedaydifference`, `dateweekdifference`, `datemonthdifference`, `dateyeardifference`.
@@ -262,29 +360,58 @@ Also available: `dateseconddifference`, `dateminutedifference`, `datedaydifferen
 ### Histogram and Aggregation Functions
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+fable.AppData = {
+    Cities: [
+        { state: 'Alabama',  population: 1000 },
+        { state: 'Alabama',  population: 2000 },
+        { state: 'Colorado', population: 3000 }
+    ]
+};
+
+const dest = {};
+
 // Count distribution by field
 parser.solve('Result = distributionhistogram("AppData.Cities", "state")', fable, {}, false, dest);
-// dest.Result = { Alabama: 12, Colorado: 21, ... }
+console.log('distribution:', dest.Result);
 
 // Sum a numeric field grouped by another field
 parser.solve('Result = aggregationHistogram("AppData.Cities", "state", "population")', fable, {}, false, dest);
-// dest.Result = { Alabama: '1279813', ... }
+console.log('aggregation:', dest.Result);
 ```
 
 ### Data Generation Functions
 
 ```javascript
-parser.solve('RandomIntValue = RANDOMINTEGER()');
-parser.solve('RandomIntValueBetween = RANDOMINTEGERBETWEEN(10, 13)');
-parser.solve('RandomFloatValue = randomFloat()');
-parser.solve('RandomFloatValueBetween = randomFloatBetween(10.5, 13.78)');
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+console.log(parser.solve('RandomIntValue = RANDOMINTEGER()'));
+console.log(parser.solve('RandomIntValueBetween = RANDOMINTEGERBETWEEN(10, 13)'));
+console.log(parser.solve('RandomFloatValue = randomFloat()'));
+console.log(parser.solve('RandomFloatValueBetween = randomFloatBetween(10.5, 13.78)'));
 ```
 
 ### Array Functions
 
 ```javascript
-parser.solve('SLICE(W, 0, 1)', { W: ['3', '4', '5'] });  // Returns ['5'] (first element)
-parser.solve('FLATTEN(AppData.Cities[].population, AppData.Cities[].latitude)', fable);
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+fable.AppData = {
+    Cities: [
+        { population: 100, latitude: 40 },
+        { population: 200, latitude: 41 }
+    ]
+};
+
+console.log(parser.solve('SLICE(W, 0, 1)', { W: ['3', '4', '5'] }));
+console.log(parser.solve('FLATTEN(AppData.Cities[].population, AppData.Cities[].latitude)', fable));
 ```
 
 ## Advanced Features
@@ -294,14 +421,23 @@ parser.solve('FLATTEN(AppData.Cities[].population, AppData.Cities[].latitude)', 
 Map over arrays to transform values:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+const manifest = fable.newManyfest();
+const dest = {};
+
 // Simple map
 parser.solve('Result = MAP VAR x FROM Values : x + 100',
     { Values: [1, 2, 3, 4, 5] }, {}, manifest, dest);
-// dest.Result === ['101', '102', '103', '104', '105']
+console.log('Simple map:', dest.Result);
 
 // Multi-variable map (cross product)
+const data = { Cities: [{ population: 1 }, { population: 2 }], Values: [10, 20] };
 parser.solve('Result = MAP VAR city FROM Cities VAR x FROM Values : city.population + (x * 1000000000000000)',
     data, {}, manifest, dest);
+console.log('Cross-product map:', dest.Result);
 ```
 
 ### SERIES Expressions
@@ -309,17 +445,27 @@ parser.solve('Result = MAP VAR city FROM Cities VAR x FROM Values : city.populat
 Generate series of computed values:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+const manifest = fable.newManyfest();
+const dest = {};
+
 parser.solve('Result = SERIES FROM 13.2 TO 25 STEP 0.2 : 1000 + (n / 2)',
     {}, {}, manifest, dest);
-// dest.Result[0] === '1006.6'
+console.log('Series first elt:', dest.Result[0]);
 
 // With stepIndex variable
 parser.solve('Result = SERIES FROM 13.2 TO 25 STEP 0.5 : (1000 * stepIndex) + n',
     {}, {}, manifest, dest);
+console.log('stepIndex series first elt:', dest.Result[0]);
 
 // Variables can be used for FROM, TO, STEP
+const appData = { StartValue: 1, EndValue: 5, StepValue: 1, BaseValue: 100 };
 parser.solve('XValues = SERIES FROM StartValue TO EndValue STEP StepValue : (BaseValue * stepIndex) + n',
     appData, {}, manifest, appData);
+console.log('appData.XValues:', appData.XValues);
 ```
 
 ### MONTECARLO Expressions
@@ -327,13 +473,21 @@ parser.solve('XValues = SERIES FROM StartValue TO EndValue STEP StepValue : (Bas
 Run Monte Carlo simulations:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+const manifest = fable.newManyfest();
+const dest = {};
+
 parser.solve('Result = MONTECARLO SAMPLECOUNT 1000 VAR x PT x 50 PT x 100 : 10000000 + x',
     {}, {}, manifest, dest);
-// dest.Result.Samples.length === 1000
+console.log('Samples count:', dest.Result.Samples.length);
 
 // Multi-variable Rosenbrock function
 parser.solve('Result = MONTECARLO SAMPLECOUNT 5000 VAR x PT x -3 PT x 3 VAR y PT y -1 PT y 5 : (1 - x)^2 + 100 * (y - x^2)^2',
     {}, {}, manifest, dest);
+console.log('Rosenbrock samples:', dest.Result.Samples.length);
 ```
 
 ### MULTIROWMAP Expressions
@@ -341,6 +495,13 @@ parser.solve('Result = MONTECARLO SAMPLECOUNT 5000 VAR x PT x -3 PT x 3 VAR y PT
 Iterate over an array of objects (rows) with multi-row lookback and lookahead. Each variable can reference the current row or any row at a relative offset, with configurable defaults for out-of-bounds access.
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+const manifest = fable.newManyfest();
+const dest = {};
+
 // Syntax:
 // Result = MULTIROWMAP ROWS FROM <address>
 //   [SERIESSTART <n>] [SERIESSTEP <n>]
@@ -350,39 +511,54 @@ Iterate over an array of objects (rows) with multi-row lookback and lookahead. E
 // Basic: compute area from each row's Width and Height
 parser.solve('Areas = MULTIROWMAP ROWS FROM Rows VAR w FROM Width VAR h FROM Height : w * h',
     { Rows: [{Width:10,Height:20}, {Width:30,Height:40}] }, {}, manifest, dest);
-// dest.Areas === ['200', '1200']
+console.log('Areas:', dest.Areas);
+
+// Sample data for the remaining MULTIROWMAP variants
+const data = {
+    Prices:  [{ Close: 100 }, { Close: 102 }, { Close: 101 }, { Close: 105 }, { Close: 110 }],
+    FibRows: [{ Fib: 0 }, { Fib: 1 }, { Fib: 1 }, { Fib: 2 }, { Fib: 3 }, { Fib: 5 }],
+    Rows:    [{ Value: 1 }, { Value: 2 }, { Value: 3 }, { Value: 4 }]
+};
 
 // Previous row lookback (day-over-day change)
 parser.solve('Change = MULTIROWMAP ROWS FROM Prices VAR Today FROM Close VAR Yesterday FROM Close OFFSET -1 DEFAULT 0 : Today - Yesterday',
     data, {}, manifest, dest);
+console.log('Change:', dest.Change);
 
 // Two-row lookback (Fibonacci verification)
 parser.solve('Check = MULTIROWMAP ROWS FROM FibRows VAR Cur FROM Fib VAR P1 FROM Fib OFFSET -1 DEFAULT 0 VAR P2 FROM Fib OFFSET -2 DEFAULT 0 : Cur - (P1 + P2)',
     data, {}, manifest, dest);
+console.log('Fib Check:', dest.Check);
 
 // Forward lookback (next row reference)
 parser.solve('NextDiff = MULTIROWMAP ROWS FROM Rows VAR Cur FROM Value VAR Next FROM Value OFFSET 1 DEFAULT 0 : Next - Cur',
     data, {}, manifest, dest);
+console.log('NextDiff:', dest.NextDiff);
 
 // Central difference (both directions)
 parser.solve('Deriv = MULTIROWMAP ROWS FROM Rows VAR Prev FROM Value OFFSET -1 DEFAULT 0 VAR Next FROM Value OFFSET 1 DEFAULT 0 : (Next - Prev) / 2',
     data, {}, manifest, dest);
+console.log('Deriv:', dest.Deriv);
 
 // SERIESSTART: skip initial rows (start from row 2)
 parser.solve('MA = MULTIROWMAP ROWS FROM Prices SERIESSTART 2 VAR c0 FROM Close VAR c1 FROM Close OFFSET -1 DEFAULT 0 VAR c2 FROM Close OFFSET -2 DEFAULT 0 : (c0 + c1 + c2) / 3',
     data, {}, manifest, dest);
+console.log('MA:', dest.MA);
 
 // Negative SERIESSTART: start from 2 rows before end
 parser.solve('LastTwo = MULTIROWMAP ROWS FROM Rows SERIESSTART -2 VAR v FROM Value : v + 0',
     data, {}, manifest, dest);
+console.log('LastTwo:', dest.LastTwo);
 
 // SERIESSTEP -1: iterate backwards
 parser.solve('Reversed = MULTIROWMAP ROWS FROM Rows SERIESSTART -1 SERIESSTEP -1 VAR v FROM Value : v + 0',
     data, {}, manifest, dest);
+console.log('Reversed:', dest.Reversed);
 
 // SERIESSTEP 2: every other row
 parser.solve('Sampled = MULTIROWMAP ROWS FROM Rows SERIESSTEP 2 VAR v FROM Value : v + 0',
     data, {}, manifest, dest);
+console.log('Sampled:', dest.Sampled);
 ```
 
 **Available variables in MULTIROWMAP expressions:**
@@ -400,20 +576,42 @@ parser.solve('Sampled = MULTIROWMAP ROWS FROM Rows SERIESSTEP 2 VAR v FROM Value
 Run cumulative computations over arrays:
 
 ```javascript
-parser.solve('Result = ITERATIVESERIES(Values, "Value", "Resultant", 1, "add")',
-    { Values: [{ Value: 10 }, { Value: 20 }, { Value: 5 }] });
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+console.log(parser.solve('Result = ITERATIVESERIES(Values, "Value", "Resultant", 1, "add")',
+    { Values: [{ Value: 10 }, { Value: 20 }, { Value: 5 }] }));
 // Returns [{ Value: 10, Resultant: '10' }, { Value: 20, Resultant: '30' }, { Value: 5, Resultant: '35' }]
 ```
 
 ### Linear Regression
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+fable.AppData = {
+    Cities: [
+        { latitude: 40, population: 100 },
+        { latitude: 41, population: 200 },
+        { latitude: 42, population: 300 }
+    ]
+};
+
+const results = {};
+
 // Compute regression coefficients
 parser.solve('Coefficients = LINEST(FLATTEN(AppData.Cities[].latitude), FLATTEN(AppData.Cities[].population))',
     fable, results, false, fable.AppData);
+console.log('Coefficients:', fable.AppData.Coefficients);
 
 // Predict from coefficients
+const data = { Coefficients: fable.AppData.Coefficients, vector: 43 };
+const dest = {};
 parser.solve('Predicted = PREDICT(Coefficients, vector)', data, results, false, dest);
+console.log('Predicted:', dest.Predicted);
 ```
 
 ### Custom Solver Functions
@@ -421,18 +619,32 @@ parser.solve('Predicted = PREDICT(Coefficients, vector)', data, results, false, 
 Register custom functions that can be called from expressions:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+const dest = {};
+
 fable.MonkeyFunction = (pParameter) => { return `Monkey says hello to ${pParameter}`; };
 parser.addSolverFunction('monkeypatchedfunction', 'fable.MonkeyFunction', 'Documentation string');
 
 parser.solve('Result = monkeypatchedfunction("Jerry")', fable, {}, false, dest);
-// dest.Result === 'Monkey says hello to Jerry'
+console.log('dest.Result:', dest.Result);
 ```
 
 ## Logging and Debugging
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
+const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
+
+const resultObject = {};
+parser.solve('Z = 1 + 1', {}, resultObject, false, {});
+
 // Access solver result logs
 parser.Messaging.logFunctionSolve(resultObject);
+console.log('resultObject keys:', Object.keys(resultObject));
 ```
 
 ## Notes

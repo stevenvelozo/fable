@@ -45,23 +45,35 @@ These services are created when first requested:
 ### Accessing Services
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ServicesDemo', ProductVersion: '1.0.0' });
+
 // Auto-instantiated services are available directly
-fable.Dates.dayJS().format('YYYY-MM-DD');
-fable.Math.addPrecise('1', '2');
+console.log('Today:',    fable.Dates.dayJS().format('YYYY-MM-DD'));
+console.log('1 + 2 =',   fable.Math.addPrecise('1', '2'));
 
 // On-demand services need to be instantiated first
 const restClient = fable.instantiateServiceProvider('RestClient');
-restClient.getJSON('https://api.example.com/data', (err, res, data) => {
-    console.log(data);
-});
+console.log('restClient instantiated:', typeof restClient);
+
+// In Node.js you would then call:
+// restClient.getJSON('https://api.example.com/data', (err, res, data) => console.log(data));
+// (Network calls are skipped here so the playground demo stays self-contained.)
 ```
 
 ### Creating Multiple Instances
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ServicesDemo', ProductVersion: '1.0.0' });
+
 // Create named instances for different purposes
-const apiClient = fable.instantiateServiceProvider('RestClient', {}, 'api');
+const apiClient  = fable.instantiateServiceProvider('RestClient', {}, 'api');
 const authClient = fable.instantiateServiceProvider('RestClient', {}, 'auth');
+console.log('apiClient typeof:',  typeof apiClient);
+console.log('authClient typeof:', typeof authClient);
+console.log('Both instances live in fable.servicesMap.RestClient — keys:',
+    Object.keys(fable.servicesMap.RestClient));
 ```
 
 ### Service Options
@@ -69,8 +81,13 @@ const authClient = fable.instantiateServiceProvider('RestClient', {}, 'auth');
 Most services accept an options object during instantiation:
 
 ```javascript
-const service = fable.instantiateServiceProvider('ServiceType', {
-    option1: 'value1',
-    option2: 'value2'
+const libFable = require('fable');
+const fable = new libFable({ Product: 'ServicesDemo', ProductVersion: '1.0.0' });
+
+// Shape of the call — replace 'Template' with whichever service you want.
+const service = fable.instantiateServiceProvider('Template', {
+    // option1: 'value1',
+    // option2: 'value2'
 }, 'optional-hash');
+console.log('Service instantiated via the generic pattern:', typeof service);
 ```

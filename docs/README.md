@@ -16,10 +16,10 @@ Fable is a comprehensive framework that provides a service-oriented architecture
 ## Quick Start
 
 ```javascript
-const Fable = require('fable');
+const libFable = require('fable');
 
 // Create a new Fable instance with optional configuration
-const fable = new Fable({
+const fable = new libFable({
     Product: 'MyApplication',
     ProductVersion: '1.0.0',
     LogStreams: [
@@ -54,14 +54,32 @@ Fable services fall into three categories:
 ### Service Registration
 
 ```javascript
+const libFable = require('fable');
+const libFableServiceBase = require('fable-serviceproviderbase');
+const fable = new libFable({ Product: 'ServiceRegistrationDemo', ProductVersion: '1.0.0' });
+
+// A trivial service class for demonstration purposes
+class MyServiceClass extends libFableServiceBase
+{
+    constructor(pFable, pOptions, pServiceHash)
+    {
+        super(pFable, pOptions, pServiceHash);
+        this.serviceType = 'MyService';
+    }
+}
+const options = { greeting: 'hello' };
+
 // Add a service type without instantiating
 fable.addServiceType('MyService', MyServiceClass);
+console.log('Registered service types include MyService:', 'MyService' in fable.serviceTypes);
 
 // Add and immediately instantiate a service
-fable.addAndInstantiateServiceType('MyService', MyServiceClass);
+fable.addAndInstantiateServiceType('AnotherService', MyServiceClass);
+console.log('AnotherService instantiated:', typeof fable.AnotherService);
 
 // Instantiate a service on-demand
 const myService = fable.instantiateServiceProvider('MyService', options, 'custom-hash');
+console.log('myService.serviceType:', myService.serviceType);
 ```
 
 ## Configuration
@@ -69,16 +87,22 @@ const myService = fable.instantiateServiceProvider('MyService', options, 'custom
 Fable accepts a configuration object that controls various aspects of behavior:
 
 ```javascript
-const fable = new Fable({
+const libFable = require('fable');
+
+const fable = new libFable({
     Product: 'MyApp',
     ProductVersion: '1.0.0',
     UUID: { DataCenter: 0, Worker: 0 },
     LogStreams: [
-        { level: 'info' },
-        { level: 'error', path: '/var/log/myapp/error.log' }
+        { level: 'info' }
+        // In Node.js you can also write a file-based stream, e.g.:
+        // { level: 'error', path: '/var/log/myapp/error.log' }
     ],
     RestClientURLPrefix: 'https://api.example.com'
 });
+
+console.log('Configured fable:', fable.settings.Product, 'v' + fable.settings.ProductVersion);
+console.log('RestClientURLPrefix setting:', fable.settings.RestClientURLPrefix);
 ```
 
 ## Documentation

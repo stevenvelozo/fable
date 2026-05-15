@@ -5,8 +5,12 @@ The CSVParser service provides line-by-line CSV parsing with support for multi-l
 ## Access
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'CSVDemo', ProductVersion: '1.0.0' });
+
 // On-demand service - instantiate when needed
 const csvParser = fable.instantiateServiceProvider('CSVParser', {}, 'CSV Parser-123');
+console.log('csvParser:', typeof csvParser);
 ```
 
 ## Basic Usage
@@ -16,28 +20,32 @@ const csvParser = fable.instantiateServiceProvider('CSVParser', {}, 'CSV Parser-
 The primary method is `parseCSVLine()`, which processes one line at a time and returns a parsed record (or `false` if the line is part of a multi-line quoted field or is the header row):
 
 ```javascript
-const libFS = require('fs');
-const libReadline = require('readline');
-
+const libFable = require('fable');
+const fable = new libFable({ Product: 'CSVDemo', ProductVersion: '1.0.0' });
 const csvParser = fable.instantiateServiceProvider('CSVParser');
-const records = [];
 
-const rl = libReadline.createInterface({
-    input: libFS.createReadStream('data.csv'),
-    crlfDelay: Infinity
-});
+// In Node.js the typical streaming pattern is:
+//   const libFS = require('fs');
+//   const libReadline = require('readline');
+//   const rl = libReadline.createInterface({ input: libFS.createReadStream('data.csv'), crlfDelay: Infinity });
+//   rl.on('line', line => { const rec = csvParser.parseCSVLine(line); if (rec) records.push(rec); });
+//   rl.on('close', () => console.log(`Parsed ${records.length} records`));
+//
+// The browser playground has no fs/readline, so the snippet below parses an
+// in-memory CSV string line-by-line using the exact same parseCSVLine() loop:
 
-rl.on('line', (line) => {
-    let record = csvParser.parseCSVLine(line);
-    if (record) {
+const csvSource = "name,age,city\nJohn,30,New York\nJane,25,Boston";
+const records   = [];
+for (const line of csvSource.split('\n'))
+{
+    const record = csvParser.parseCSVLine(line);
+    if (record)
+    {
         records.push(record);
     }
-});
-
-rl.on('close', () => {
-    console.log(`Parsed ${records.length} records`);
-    // records[0] is an object like { name: 'John', age: '30', city: 'New York' }
-});
+}
+console.log(`Parsed ${records.length} records`);
+console.log('records[0]:', records[0]);
 ```
 
 ### Using FilePersistence Wrapper
@@ -45,17 +53,13 @@ rl.on('close', () => {
 The FilePersistence service provides a convenience method for CSV reading:
 
 ```javascript
-fable.instantiateServiceProvider('FilePersistence');
-
-fable.FilePersistence.readFileCSV('data.csv', {},
-    (record) => {
-        // Called for each parsed record (as a JSON object)
-        console.log(record.name, record.age);
-    },
-    () => {
-        // Called when parsing is complete
-        console.log('Done!');
-    });
+// Node.js reference — fable.FilePersistence.readFileCSV uses fs, which the
+// browser playground doesn't expose. The shape of the call:
+console.info("In Node.js:");
+console.info("    fable.instantiateServiceProvider('FilePersistence');");
+console.info("    fable.FilePersistence.readFileCSV('data.csv', {},");
+console.info("        (record) => console.log(record.name, record.age),");
+console.info("        () => console.log('Done!'));");
 ```
 
 ## How Parsing Works
@@ -77,6 +81,9 @@ The CSVParser is stateful and processes lines sequentially:
 Set these properties on the parser instance after creation:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'CSVDemo', ProductVersion: '1.0.0' });
+
 const csvParser = fable.instantiateServiceProvider('CSVParser');
 
 csvParser.Delimiter = ';';           // Default: ','
@@ -86,6 +93,11 @@ csvParser.HeaderLineIndex = 0;       // Default: 0 - which line is the header
 csvParser.EmitJSON = true;           // Default: true - emit objects vs arrays
 csvParser.EmitHeader = false;        // Default: false - return header row or skip it
 csvParser.EscapedQuoteString = '&quot;';  // Default: '&quot;' - replacement for escaped quotes
+
+console.log('Delimiter:',       csvParser.Delimiter);
+console.log('QuoteCharacter:',  csvParser.QuoteCharacter);
+console.log('HasHeader:',       csvParser.HasHeader);
+console.log('EmitJSON:',        csvParser.EmitJSON);
 ```
 
 ## Methods
@@ -99,7 +111,12 @@ Parse a single line of CSV. Returns a record object, an array, or `false`.
 Manually set column headers (an array of strings):
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'CSVDemo', ProductVersion: '1.0.0' });
+const csvParser = fable.instantiateServiceProvider('CSVParser');
+
 csvParser.setHeader(['name', 'age', 'city']);
+console.log('Header set; field names:', csvParser.HeaderFieldNames);
 ```
 
 ### `marshalRowToJSON(rowArray)`
@@ -107,8 +124,12 @@ csvParser.setHeader(['name', 'age', 'city']);
 Convert a row array into a JSON object using the current headers:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'CSVDemo', ProductVersion: '1.0.0' });
+const csvParser = fable.instantiateServiceProvider('CSVParser');
+
 csvParser.setHeader(['name', 'age']);
-csvParser.marshalRowToJSON(['John', '30']);
+console.log(csvParser.marshalRowToJSON(['John', '30']));
 // Returns { name: 'John', age: '30' }
 ```
 
@@ -123,11 +144,18 @@ Emit the currently accumulated row. If `formatAsJSON` is true (default), returns
 ## Parser State Properties
 
 ```javascript
-csvParser.LinesParsed   // Total number of lines processed
-csvParser.RowsEmitted   // Total number of data rows emitted
-csvParser.InQuote       // Whether currently inside a quoted field
-csvParser.Header        // Current header array
-csvParser.HeaderFieldNames  // Trimmed header field names used as object keys
+const libFable = require('fable');
+const fable = new libFable({ Product: 'CSVDemo', ProductVersion: '1.0.0' });
+const csvParser = fable.instantiateServiceProvider('CSVParser');
+
+// Parse a small CSV inline so the state properties have something to show:
+for (const line of "name,age\nJohn,30".split('\n')) csvParser.parseCSVLine(line);
+
+console.log('LinesParsed:',       csvParser.LinesParsed);
+console.log('RowsEmitted:',       csvParser.RowsEmitted);
+console.log('InQuote:',           csvParser.InQuote);
+console.log('Header:',            csvParser.Header);
+console.log('HeaderFieldNames:',  csvParser.HeaderFieldNames);
 ```
 
 ## Handling Special Cases

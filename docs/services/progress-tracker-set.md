@@ -5,8 +5,12 @@ The ProgressTrackerSet service manages named progress trackers for tracking the 
 ## Access
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TrackerDemo', ProductVersion: '1.0.0' });
+
 // On-demand service - instantiate when needed
 const trackerSet = fable.instantiateServiceProvider('ProgressTrackerSet');
+console.log('trackerSet:', typeof trackerSet);
 ```
 
 ## Basic Usage
@@ -14,6 +18,8 @@ const trackerSet = fable.instantiateServiceProvider('ProgressTrackerSet');
 ### Create and Start a Tracker
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TrackerDemo', ProductVersion: '1.0.0' });
 const trackerSet = fable.instantiateServiceProvider('ProgressTrackerSet');
 
 // Create a tracker with 100 total operations
@@ -21,38 +27,62 @@ trackerSet.createProgressTracker('download', 100);
 
 // Start the tracker (begins timing)
 trackerSet.startProgressTracker('download');
+console.log('Started:', trackerSet.getProgressTrackerStatusString('download'));
 ```
 
 ### Increment Progress
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TrackerDemo', ProductVersion: '1.0.0' });
+const trackerSet = fable.instantiateServiceProvider('ProgressTrackerSet');
+trackerSet.createProgressTracker('download', 100);
+trackerSet.startProgressTracker('download');
+
 // Increment by 1
 trackerSet.incrementProgressTracker('download');
 
 // Increment by a specific amount
 trackerSet.incrementProgressTracker('download', 10);
+
+console.log('Completed:', trackerSet.getProgressTrackerCompletedOperationCountString('download'));
 ```
 
 ### End the Tracker
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TrackerDemo', ProductVersion: '1.0.0' });
+const trackerSet = fable.instantiateServiceProvider('ProgressTrackerSet');
+trackerSet.createProgressTracker('download', 100);
+trackerSet.startProgressTracker('download');
+trackerSet.incrementProgressTracker('download', 100);
+
 trackerSet.endProgressTracker('download');
+console.log('End status:', trackerSet.getProgressTrackerStatusString('download'));
 ```
 
 ### Get Status
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TrackerDemo', ProductVersion: '1.0.0' });
+const trackerSet = fable.instantiateServiceProvider('ProgressTrackerSet');
+trackerSet.createProgressTracker('download', 100);
+trackerSet.startProgressTracker('download');
+trackerSet.incrementProgressTracker('download', 45);
+
 // Get a human-readable status string
 const status = trackerSet.getProgressTrackerStatusString('download');
-// e.g., "ProgressTracker download is 45.000% completed - 45 / 100 operations over 2s 150ms (median 47ms per). Estimated completion: 2s 585ms"
+console.log('status:', status);
 
 // Get just the percent complete
 const percent = trackerSet.getProgressTrackerPercentCompleteString('download');
-// e.g., "45.000%"
+console.log('percent:', percent);
 
 // Get completed count
 const count = trackerSet.getProgressTrackerCompletedOperationCountString('download');
-// e.g., "45"
+console.log('count:', count);
 
 // Log status directly
 trackerSet.logProgressTrackerStatus('download');
@@ -65,7 +95,12 @@ trackerSet.logProgressTrackerStatus('download');
 Create a new progress tracker. Default hash is `'Default'`, default total is `100`.
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TrackerDemo', ProductVersion: '1.0.0' });
+const trackerSet = fable.instantiateServiceProvider('ProgressTrackerSet');
+
 const tracker = trackerSet.createProgressTracker('import-records', 500);
+console.log('Tracker data:', tracker);
 ```
 
 Returns the tracker data object.
@@ -75,7 +110,12 @@ Returns the tracker data object.
 Start timing a progress tracker. Creates the tracker if it doesn't exist.
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TrackerDemo', ProductVersion: '1.0.0' });
+const trackerSet = fable.instantiateServiceProvider('ProgressTrackerSet');
+
 trackerSet.startProgressTracker('import-records');
+console.log('Started import-records');
 ```
 
 ### `endProgressTracker(hash)`
@@ -83,7 +123,13 @@ trackerSet.startProgressTracker('import-records');
 Mark the tracker as complete, recording the end timestamp.
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TrackerDemo', ProductVersion: '1.0.0' });
+const trackerSet = fable.instantiateServiceProvider('ProgressTrackerSet');
+trackerSet.startProgressTracker('import-records');
+
 trackerSet.endProgressTracker('import-records');
+console.log('Ended import-records');
 ```
 
 ### `incrementProgressTracker(hash, amount)`
@@ -91,8 +137,15 @@ trackerSet.endProgressTracker('import-records');
 Increment the current operation count. Defaults to incrementing by 1. Auto-starts the tracker if not started.
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TrackerDemo', ProductVersion: '1.0.0' });
+const trackerSet = fable.instantiateServiceProvider('ProgressTrackerSet');
+trackerSet.createProgressTracker('import-records', 100);
+trackerSet.startProgressTracker('import-records');
+
 trackerSet.incrementProgressTracker('import-records');
 trackerSet.incrementProgressTracker('import-records', 5);
+console.log('Completed:', trackerSet.getProgressTrackerCompletedOperationCountString('import-records'));
 ```
 
 ### `updateProgressTracker(hash, currentOperations)`
@@ -100,7 +153,14 @@ trackerSet.incrementProgressTracker('import-records', 5);
 Set the current operation count to an absolute value.
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TrackerDemo', ProductVersion: '1.0.0' });
+const trackerSet = fable.instantiateServiceProvider('ProgressTrackerSet');
+trackerSet.createProgressTracker('import-records', 500);
+trackerSet.startProgressTracker('import-records');
+
 trackerSet.updateProgressTracker('import-records', 250);
+console.log('Status:', trackerSet.getProgressTrackerStatusString('import-records'));
 ```
 
 ### `setProgressTrackerTotalOperations(hash, total)`
@@ -108,7 +168,13 @@ trackerSet.updateProgressTracker('import-records', 250);
 Change the total number of expected operations.
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TrackerDemo', ProductVersion: '1.0.0' });
+const trackerSet = fable.instantiateServiceProvider('ProgressTrackerSet');
+trackerSet.createProgressTracker('import-records', 500);
+
 trackerSet.setProgressTrackerTotalOperations('import-records', 1000);
+console.log('Total updated; data:', trackerSet.getProgressTrackerData('import-records').TotalCount);
 ```
 
 ### `getProgressTracker(hash)`
@@ -116,9 +182,16 @@ trackerSet.setProgressTrackerTotalOperations('import-records', 1000);
 Get a ProgressTracker wrapper object for a given hash. This provides convenience methods for working with the tracker:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TrackerDemo', ProductVersion: '1.0.0' });
+const trackerSet = fable.instantiateServiceProvider('ProgressTrackerSet');
+trackerSet.createProgressTracker('import-records', 100);
+trackerSet.startProgressTracker('import-records');
+
 const tracker = trackerSet.getProgressTracker('import-records');
 tracker.incrementProgressTracker(1);
 tracker.setProgressTrackerTotalOperations(500);
+console.log('Tracker after wrapper ops:', trackerSet.getProgressTrackerData('import-records'));
 ```
 
 ### `getProgressTrackerData(hash)`
@@ -126,7 +199,15 @@ tracker.setProgressTrackerTotalOperations(500);
 Get the raw tracker data object:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TrackerDemo', ProductVersion: '1.0.0' });
+const trackerSet = fable.instantiateServiceProvider('ProgressTrackerSet');
+trackerSet.createProgressTracker('import-records', 100);
+trackerSet.startProgressTracker('import-records');
+trackerSet.incrementProgressTracker('import-records', 45);
+
 const data = trackerSet.getProgressTrackerData('import-records');
+console.log(data);
 // {
 //     Hash: 'import-records',
 //     StartTimeStamp: 1700000000000,
@@ -162,6 +243,12 @@ Each tracker data object contains:
 ### Batch Processing with Progress
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TrackerDemo', ProductVersion: '1.0.0' });
+
+// Stubbed processItem for the playground demo
+function processItem(item, cb) { console.log('processed:', item); cb(); }
+
 function processBatch(fable, items, fCallback) {
     const trackerSet = fable.instantiateServiceProvider('ProgressTrackerSet');
 
@@ -190,6 +277,8 @@ function processBatch(fable, items, fCallback) {
         fCallback();
     });
 }
+
+processBatch(fable, ['a', 'b', 'c', 'd'], () => console.log('Batch done.'));
 ```
 
 ### Integration with Operation Service
@@ -197,6 +286,13 @@ function processBatch(fable, items, fCallback) {
 The Operation service uses ProgressTrackerSet internally. Each step gets its own progress tracker, and the overall operation has one too. Inside a step, use `this.ProgressTracker`:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'TrackerDemo', ProductVersion: '1.0.0' });
+
+const operation = fable.instantiateServiceProvider('Operation', { Name: 'Items' }, 'ITEMS-OP');
+const items = ['a', 'b', 'c'];
+function processItem(item) { console.log('processed:', item); }
+
 operation.addStep(
     function (fStepComplete) {
         this.ProgressTracker.setProgressTrackerTotalOperations(items.length);
@@ -211,6 +307,8 @@ operation.addStep(
     },
     {}, 'Process', 'Process all items', 'PROCESS'
 );
+
+operation.execute((pError) => console.log('Op done — pError:', pError));
 ```
 
 ## Notes

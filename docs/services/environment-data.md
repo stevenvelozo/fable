@@ -5,8 +5,11 @@ The EnvironmentData service identifies the runtime environment (Node.js or brows
 ## Access
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'EnvironmentDataDemo', ProductVersion: '1.0.0' });
+
 // Auto-instantiated, available directly
-fable.EnvironmentData
+console.log('fable.EnvironmentData:', fable.EnvironmentData);
 ```
 
 ## Available Properties
@@ -14,7 +17,10 @@ fable.EnvironmentData
 ### Environment
 
 ```javascript
-fable.EnvironmentData.Environment
+const libFable = require('fable');
+const fable = new libFable({ Product: 'EnvironmentDataDemo', ProductVersion: '1.0.0' });
+
+console.log('Environment:', fable.EnvironmentData.Environment);
 // Returns 'node.js' in Node.js
 // Returns 'web' in the browser
 ```
@@ -31,10 +37,15 @@ Fable automatically uses the appropriate implementation:
 ### Environment-Specific Behavior
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'EnvironmentDataDemo', ProductVersion: '1.0.0' });
+
 if (fable.EnvironmentData.Environment === 'node.js') {
     // Node.js-specific code (e.g., file system access)
+    console.log('Running in Node.js — file system access available');
 } else {
     // Browser-specific code (e.g., DOM manipulation)
+    console.log('Running in browser — Environment is:', fable.EnvironmentData.Environment);
 }
 ```
 

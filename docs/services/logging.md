@@ -5,9 +5,12 @@ The Logging service provides a pluggable logging system that supports multiple o
 ## Access
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'LoggingDemo', ProductVersion: '1.0.0' });
+
 // Pre-initialized, available directly
-fable.log
-fable.Logging
+console.log('fable.log:',     typeof fable.log);
+console.log('fable.Logging:', typeof fable.Logging);
 ```
 
 ## Log Levels
@@ -24,6 +27,9 @@ From most to least verbose:
 ## Basic Logging
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'LoggingDemo', ProductVersion: '1.0.0' });
+
 fable.log.trace('Detailed trace information');
 fable.log.debug('Debug message');
 fable.log.info('Application started');
@@ -37,6 +43,9 @@ fable.log.fatal('Critical system failure');
 Pass additional context as a second parameter:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'LoggingDemo', ProductVersion: '1.0.0' });
+
 fable.log.info('User logged in', { userId: 123, username: 'john' });
 fable.log.error('Database connection failed', { host: 'db.example.com', port: 5432 });
 ```
@@ -46,28 +55,23 @@ fable.log.error('Database connection failed', { host: 'db.example.com', port: 54
 Configure logging when creating a Fable instance:
 
 ```javascript
-const fable = new Fable({
+const libFable = require('fable');
+
+const fable = new libFable({
     Product: 'MyApp',
     ProductVersion: '1.0.0',
 
     LogStreams: [
         // Console output at info level
-        { level: 'info' },
+        { level: 'info' }
 
-        // File output for errors
-        {
-            level: 'error',
-            path: '/var/log/myapp/error.log'
-        },
-
-        // MongoDB stream
-        {
-            level: 'warn',
-            streamtype: 'mongodb',
-            // MongoDB-specific configuration
-        }
+        // In Node.js you can add file and external streams:
+        // { level: 'error', path: '/var/log/myapp/error.log' },
+        // { level: 'warn',  streamtype: 'mongodb' /* MongoDB-specific config */ }
     ]
 });
+
+fable.log.info('Logging configured with', fable.settings.LogStreams.length, 'stream(s)');
 ```
 
 ### Stream Configuration
@@ -85,7 +89,11 @@ Each log stream can have:
 Get the current timestamp:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'LoggingDemo', ProductVersion: '1.0.0' });
+
 const timestamp = fable.log.getTimeStamp();
+console.log('timestamp:', timestamp);
 // Returns milliseconds since epoch
 ```
 
@@ -94,12 +102,21 @@ const timestamp = fable.log.getTimeStamp();
 Create custom log providers by extending `LogProviderBase`:
 
 ```javascript
-const LogProviderBase = require('fable').LogProviderBase;
+const libFable = require('fable');
+const fable = new libFable({ Product: 'LoggingDemo', ProductVersion: '1.0.0' });
+
+// A stub connection for the playground demo
+function createConnection() {
+    return { send: (entry) => console.log('CustomLogProvider received entry:', entry) };
+}
+
+const LogProviderBase = require('fable-log').LogProviderBase;
 
 class CustomLogProvider extends LogProviderBase {
     initialize() {
         // Setup code
         this.myConnection = createConnection();
+        console.log('CustomLogProvider initialized');
     }
 
     write(pLogEntry) {
@@ -114,20 +131,24 @@ class CustomLogProvider extends LogProviderBase {
     }
 }
 
-// Register the custom provider
-fable.Logging.addStream(new CustomLogProvider(fable.Logging));
+// Register the custom provider with fable.Logging
+const customProvider = new CustomLogProvider(fable.Logging, { level: 'trace' });
+customProvider.initialize();
+fable.Logging.addLogger(customProvider);
+fable.log.info('CustomLogProvider registered — fable.log calls now also hit it');
 ```
 
 ### Log Entry Structure
 
 ```javascript
-{
+const sampleLogEntry = {
     dt: 1704067200000,           // Timestamp (milliseconds)
     lvl: 'info',                 // Log level
     src: 'MyApp v1.0.0',         // Product/version
     msg: 'User logged in',       // Message
     dat: { userId: 123 }         // Additional data (optional)
-}
+};
+console.log('sampleLogEntry:', sampleLogEntry);
 ```
 
 ## Log Streams
@@ -137,20 +158,22 @@ fable.Logging.addStream(new CustomLogProvider(fable.Logging));
 Outputs to standard console:
 
 ```javascript
-{
+const consoleStreamConfig = {
     level: 'info'  // Shows info and above
-}
+};
+console.log('consoleStreamConfig:', consoleStreamConfig);
 ```
 
 ### File Stream
 
-Writes to a file:
+Writes to a file (Node.js only):
 
 ```javascript
-{
+const fileStreamConfig = {
     level: 'error',
     path: '/var/log/myapp/error.log'
-}
+};
+console.log('fileStreamConfig:', fileStreamConfig);
 ```
 
 ### Multiple Streams
@@ -158,18 +181,21 @@ Writes to a file:
 Configure multiple outputs:
 
 ```javascript
-const fable = new Fable({
+const libFable = require('fable');
+
+const fable = new libFable({
     LogStreams: [
         // Development console (all levels)
-        { level: 'trace' },
+        { level: 'trace' }
 
-        // Production file (warnings and above)
-        { level: 'warn', path: '/var/log/app.log' },
-
-        // Error alerting service
-        { level: 'error', streamtype: 'alerting' }
+        // In Node.js you can add file and external streams:
+        // { level: 'warn',  path: '/var/log/app.log' },
+        // { level: 'error', streamtype: 'alerting' }
     ]
 });
+
+console.log('Configured streams:', fable.settings.LogStreams.length);
+fable.log.trace('Trace-level message (visible because lowest stream level is trace)');
 ```
 
 ## Noisiness Control
@@ -177,9 +203,17 @@ const fable = new Fable({
 Control the verbosity of internal Fable logging:
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'LoggingDemo', ProductVersion: '1.0.0' });
+
 fable.LogNoisiness = 0;  // Quiet (default)
+console.log('LogNoisiness =', fable.LogNoisiness);
+
 fable.LogNoisiness = 1;  // Normal
+console.log('LogNoisiness =', fable.LogNoisiness);
+
 fable.LogNoisiness = 2;  // Verbose
+console.log('LogNoisiness =', fable.LogNoisiness);
 ```
 
 ## Integration with Services
@@ -187,20 +221,29 @@ fable.LogNoisiness = 2;  // Verbose
 All Fable services have access to logging via `this.log`:
 
 ```javascript
+const libFable = require('fable');
+const libFableServiceBase = require('fable-serviceproviderbase');
+const fable = new libFable({ Product: 'LoggingDemo', ProductVersion: '1.0.0' });
+
 class MyService extends libFableServiceBase {
     constructor(pFable, pOptions, pServiceHash) {
         super(pFable, pOptions, pServiceHash);
+        this.serviceType = 'MyService';
     }
 
     doSomething() {
         this.log.info('Doing something');
         try {
             // operation
+            throw new Error('demo failure');
         } catch (error) {
             this.log.error('Operation failed', { error: error.message });
         }
     }
 }
+
+fable.addAndInstantiateServiceType('MyService', MyService);
+fable.MyService.doSomething();
 ```
 
 ## Best Practices
@@ -212,6 +255,11 @@ class MyService extends libFableServiceBase {
 5. **Use trace for detailed debugging**: Enable only when needed
 
 ```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'LoggingDemo', ProductVersion: '1.0.0' });
+
+const order = { id: 'order-001', total: 49.99 };
+
 // Good
 fable.log.info('Order processed', { orderId: order.id, total: order.total });
 
@@ -224,14 +272,22 @@ fable.log.info('Order processed: ' + JSON.stringify(order));
 Set up different logging based on environment:
 
 ```javascript
-const logStreams = process.env.NODE_ENV === 'production'
+const libFable = require('fable');
+
+const nodeEnv = (typeof process !== 'undefined' && process.env)
+    ? process.env.NODE_ENV
+    : 'browser';
+
+const logStreams = nodeEnv === 'production'
     ? [
-        { level: 'warn', path: '/var/log/app.log' },
+        { level: 'warn',  path: '/var/log/app.log' },
         { level: 'error', streamtype: 'alerting' }
       ]
     : [
         { level: 'trace' }  // Console only in development
       ];
 
-const fable = new Fable({ LogStreams: logStreams });
+const fable = new libFable({ LogStreams: logStreams });
+console.log('nodeEnv:', nodeEnv);
+console.log('LogStreams configured:', fable.settings.LogStreams);
 ```
