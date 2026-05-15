@@ -1,6 +1,21 @@
 # MetaTemplate Service
 
-> **Note on examples**: MetaTemplate's actual surface is `addPattern(start, end, parserFn)` + `parseString(string, data, callback, ...)`. The simplified `metaTemplate.render(template, data)` examples below are conceptual demonstrations of the `{~ ~}` templating syntax — they show what a configured MetaTemplate produces, not the literal method call. See `Fable-Service-MetaTemplate.js` for the real `parseString` signature.
+The MetaTemplate service is a **low-level pattern-replacement primitive**.
+You register one or more `(start, end, parserFn)` patterns; `parseString()`
+then walks the template string character by character, hands each
+between-tag region to the matching parser function, and emits the
+function's return value into the output.
+
+It is intentionally minimal: there are no built-in tags. The `{~Name~}` /
+`{~Begin:Each:Items~}` syntax shown below is just convention — every
+pattern is something you wire up yourself with `addPattern()`.
+
+> **Pattern engine limitation.** End strings of three or more characters
+> (e.g. `{~/If~}`, `~End:Each:Items~}`) currently fail with an internal
+> "Cannot read properties of undefined" inside the WordTree end-leaf
+> traversal. The examples below stick to 1- and 2-character end strings
+> (`~}`, `>>`, etc.) — that's the entire supported design space until
+> the engine is enhanced.
 
 ## Access
 
@@ -10,29 +25,35 @@ const fable = new libFable({ Product: 'MetaTemplateDemo', ProductVersion: '1.0.0
 
 // On-demand service - instantiate when needed
 const metaTemplate = fable.instantiateServiceProvider('MetaTemplate');
-console.log('metaTemplate:', typeof metaTemplate);
+console.log('parseString:', typeof metaTemplate.parseString);
+console.log('addPattern:',  typeof metaTemplate.addPattern);
 ```
 
 ## Basic Usage
 
-### Simple Template
+### Register a Substitution Pattern
+
+The minimum useful setup: one `{~name~}` pattern whose parser function
+resolves `name` against the data object using dot/bracket notation.
 
 ```javascript
 const libFable = require('fable');
 const fable = new libFable({ Product: 'MetaTemplateDemo', ProductVersion: '1.0.0' });
 const metaTemplate = fable.instantiateServiceProvider('MetaTemplate');
 
-// Conceptual demonstration — the real API is metaTemplate.parseString(...)
-// with patterns registered via metaTemplate.addPattern(start, end, parserFn):
-console.info("Template:  'Hello, {~Name~}!'");
-console.info("Data:      { Name: 'World' }");
-console.info("Output:    'Hello, World!'");
-console.log('metaTemplate service ready:', typeof metaTemplate.parseString);
+metaTemplate.addPattern('{~', '~}', (pInner, pData) => {
+    const value = fable.Utility.getValueByHash(pData, pInner.trim());
+    return value == null ? '' : String(value);
+});
+
+const result = metaTemplate.parseString('Hello, {~Name~}!', { Name: 'World' });
+console.log(result);  // 'Hello, World!'
 ```
 
-### Template Syntax
+### Template Syntax (this convention)
 
-MetaTemplate uses a different syntax from the standard Template service:
+With the `{~ ~}` pattern registered above, these all work because
+`fable.Utility.getValueByHash` understands dot/bracket paths:
 
 | Pattern | Description | Example |
 |---------|-------------|---------|
@@ -40,40 +61,78 @@ MetaTemplate uses a different syntax from the standard Template service:
 | `{~Object.Property~}` | Nested property | `{~User.Name~}` |
 | `{~Array[0]~}` | Array access | `{~Items[0]~}` |
 
-## Advanced Features
-
-### Conditional Rendering
-
 ```javascript
 const libFable = require('fable');
 const fable = new libFable({ Product: 'MetaTemplateDemo', ProductVersion: '1.0.0' });
 const metaTemplate = fable.instantiateServiceProvider('MetaTemplate');
 
-const template = `
-{~Begin:If:ShowGreeting~}
-Hello, {~Name~}!
-{~End:If:ShowGreeting~}
-`;
+metaTemplate.addPattern('{~', '~}', (pInner, pData) => {
+    const value = fable.Utility.getValueByHash(pData, pInner.trim());
+    return value == null ? '' : String(value);
+});
 
-// Conceptual rendering — see top-of-file note about the real parseString API.
-console.info('Template:', template);
-console.info('With ShowGreeting=true  -> "Hello, World!"');
-console.info('With ShowGreeting=false -> ""');
-console.log('metaTemplate.parseString is available:', typeof metaTemplate.parseString);
+const data = {
+    User:  { Name: 'Alice' },
+    Items: ['first', 'second', 'third']
+};
+
+console.log(metaTemplate.parseString('Name: {~User.Name~}, Item 1: {~Items[0]~}, Item 3: {~Items[2]~}', data));
 ```
 
-### Iteration
+## Conditional Rendering (via parser-function logic)
+
+Because end tokens must stay at 1–2 characters, you can't express a
+`{~Begin:If~}…{~End:If~}` block natively. The idiomatic alternative is
+to put the conditional inside the parser function, with the body delimited
+inside the inner content:
 
 ```javascript
 const libFable = require('fable');
 const fable = new libFable({ Product: 'MetaTemplateDemo', ProductVersion: '1.0.0' });
 const metaTemplate = fable.instantiateServiceProvider('MetaTemplate');
 
-const template = `
-{~Begin:Each:Items~}
-- {~Record.Name~}: {~Record.Value~}
-{~End:Each:Items~}
-`;
+// {~if Cond|yes-body|no-body~} — vertical bar separates the three parts.
+metaTemplate.addPattern('{~if ', '~}', (pInner, pData) => {
+    const parts = pInner.split('|');
+    const cond  = fable.Utility.getValueByHash(pData, parts[0].trim());
+    return cond ? (parts[1] || '') : (parts[2] || '');
+});
+
+const tmpl = '{~if ShowGreeting|Hello, World!|~}';
+console.log('with show=true:',  metaTemplate.parseString(tmpl, { ShowGreeting: true }));
+console.log('with show=false:', metaTemplate.parseString(tmpl, { ShowGreeting: false }));
+```
+
+For multi-line bodies, embed `\n` in the inner content or build the
+template with concatenation in JS first.
+
+## Iteration (via parser-function logic)
+
+Same approach as conditionals — the parser function receives the
+iterator name and inline body separated by `|`, looks up the array, and
+joins the rendered bodies:
+
+```javascript
+const libFable = require('fable');
+const fable = new libFable({ Product: 'MetaTemplateDemo', ProductVersion: '1.0.0' });
+const metaTemplate = fable.instantiateServiceProvider('MetaTemplate');
+
+// {~each ItemsAddress|template-using-{{Record.Field}}~}
+// Use {{ }} inside the body to reference per-row fields; the parser
+// substitutes them per iteration.
+metaTemplate.addPattern('{~each ', '~}', (pInner, pData) => {
+    const sepIndex = pInner.indexOf('|');
+    const address  = pInner.slice(0, sepIndex).trim();
+    const body     = pInner.slice(sepIndex + 1);
+    const list     = fable.Utility.getValueByHash(pData, address) || [];
+
+    return list.map((Record) =>
+        body.replace(/\{\{([^}]+)\}\}/g, (_, hash) => {
+            const v = fable.Utility.getValueByHash({ Record }, hash.trim());
+            return v == null ? '' : String(v);
+        })
+    ).join('');
+});
 
 const data = {
     Items: [
@@ -82,73 +141,80 @@ const data = {
     ]
 };
 
-// Conceptual rendering — see top-of-file note.
-console.info('Template:', template);
-console.info('Data:',     data);
-console.info('Expected output:\n- Apple: 1.50\n- Banana: 0.75');
-console.log('metaTemplate ready:', typeof metaTemplate);
+const out = metaTemplate.parseString('{~each Items|- {{Record.Name}}: {{Record.Value}}\n~}', data);
+console.log(out);
 ```
 
-### Nested Templates
+## Nested Templates (two-pass rendering)
+
+`parseString` is sync when no callback is provided. Render the inner
+fragment first, then drop the result into the outer template's data:
 
 ```javascript
 const libFable = require('fable');
 const fable = new libFable({ Product: 'MetaTemplateDemo', ProductVersion: '1.0.0' });
 const metaTemplate = fable.instantiateServiceProvider('MetaTemplate');
 
-const outerTemplate = `
-<div class="container">
-{~InnerContent~}
-</div>
-`;
+metaTemplate.addPattern('{~', '~}', (pInner, pData) => {
+    const value = fable.Utility.getValueByHash(pData, pInner.trim());
+    return value == null ? '' : String(value);
+});
 
 const innerContent = '<p>Hello, {~Name~}!</p>';
+const outerTemplate = '<div class="container">\n{~InnerContent~}\n</div>';
 
-// Conceptual two-pass rendering — see top-of-file note.
-console.info('Inner template:', innerContent);
-console.info('Inner data:    { Name: "World" }  -> "<p>Hello, World!</p>"');
-console.info('Outer template:', outerTemplate);
-console.info('Outer data:    { InnerContent: <inner-result> }  ->  full <div>...</div>');
-console.log('metaTemplate ready:', typeof metaTemplate);
+const inner = metaTemplate.parseString(innerContent, { Name: 'World' });
+const outer = metaTemplate.parseString(outerTemplate, { InnerContent: inner });
+console.log(outer);
 ```
 
-## Template Inheritance
+## Template Inheritance (compose strings, render once)
 
-### Define Base Template
+There is no native template-inheritance system — the same effect is
+achieved by composing the final template string in JS, then calling
+`parseString` once.
+
+### Define a Base Template
 
 ```javascript
-const baseTemplate = `
-<!DOCTYPE html>
-<html>
-<head><title>{~Title~}</title></head>
-<body>
-    <header>{~Header~}</header>
-    <main>{~Content~}</main>
-    <footer>{~Footer~}</footer>
-</body>
-</html>
-`;
+const baseTemplate = [
+    '<!DOCTYPE html>',
+    '<html>',
+    '<head><title>{~Title~}</title></head>',
+    '<body>',
+    '    <header>{~Header~}</header>',
+    '    <main>{~Content~}</main>',
+    '    <footer>{~Footer~}</footer>',
+    '</body>',
+    '</html>'
+].join('\n');
+
 console.log('baseTemplate length:', baseTemplate.length, 'chars');
 ```
 
-### Extend Template
+### Use the Base Template
 
 ```javascript
 const libFable = require('fable');
 const fable = new libFable({ Product: 'MetaTemplateDemo', ProductVersion: '1.0.0' });
 const metaTemplate = fable.instantiateServiceProvider('MetaTemplate');
 
-const baseTemplate = `
-<!DOCTYPE html>
-<html>
-<head><title>{~Title~}</title></head>
-<body>
-    <header>{~Header~}</header>
-    <main>{~Content~}</main>
-    <footer>{~Footer~}</footer>
-</body>
-</html>
-`;
+metaTemplate.addPattern('{~', '~}', (pInner, pData) => {
+    const value = fable.Utility.getValueByHash(pData, pInner.trim());
+    return value == null ? '' : String(value);
+});
+
+const baseTemplate = [
+    '<!DOCTYPE html>',
+    '<html>',
+    '<head><title>{~Title~}</title></head>',
+    '<body>',
+    '    <header>{~Header~}</header>',
+    '    <main>{~Content~}</main>',
+    '    <footer>{~Footer~}</footer>',
+    '</body>',
+    '</html>'
+].join('\n');
 
 const pageData = {
     Title:   'My Page',
@@ -157,46 +223,51 @@ const pageData = {
     Footer:  '<p>&copy; 2024</p>'
 };
 
-// Conceptual rendering — see top-of-file note.
-console.info('Base template length:', baseTemplate.length);
-console.info('Page data:',             pageData);
-console.log('Would render a full HTML document with {~Title~}, {~Header~}, {~Content~}, {~Footer~} interpolated.');
+const page = metaTemplate.parseString(baseTemplate, pageData);
+console.log(page);
 ```
 
 ## Use Cases
 
-### Email Templates
+### Email Templates (substitution + iteration patterns)
 
 ```javascript
 const libFable = require('fable');
 const fable = new libFable({ Product: 'MetaTemplateDemo', ProductVersion: '1.0.0' });
 const metaTemplate = fable.instantiateServiceProvider('MetaTemplate');
 
-const emailTemplate = `
-Dear {~Recipient.Name~},
+metaTemplate.addPattern('{~', '~}', (pInner, pData) => {
+    const value = fable.Utility.getValueByHash(pData, pInner.trim());
+    return value == null ? '' : String(value);
+});
+metaTemplate.addPattern('{~each ', '~}', (pInner, pData) => {
+    const sepIndex = pInner.indexOf('|');
+    const address  = pInner.slice(0, sepIndex).trim();
+    const body     = pInner.slice(sepIndex + 1);
+    const list     = fable.Utility.getValueByHash(pData, address) || [];
+    return list.map((Record) =>
+        body.replace(/\{\{([^}]+)\}\}/g, (_, hash) => {
+            const v = fable.Utility.getValueByHash({ Record }, hash.trim());
+            return v == null ? '' : String(v);
+        })
+    ).join('');
+});
 
-{~Begin:If:HasOrder~}
-Your order #{~Order.Number~} has been {~Order.Status~}.
-
-Items:
-{~Begin:Each:Order.Items~}
-- {~Record.Name~} x {~Record.Quantity~}: ${~Record.Price~}
-{~End:Each:Order.Items~}
-
-Total: ${~Order.Total~}
-{~End:If:HasOrder~}
-
-{~Begin:If:IsPromotion~}
-Special offer: {~Promotion.Message~}
-{~End:If:IsPromotion~}
-
-Best regards,
-{~Sender.Name~}
-`;
+const emailTemplate = [
+    'Dear {~Recipient.Name~},',
+    '',
+    'Your order #{~Order.Number~} has been {~Order.Status~}.',
+    '',
+    'Items:',
+    '{~each Order.Items|- {{Record.Name}} x {{Record.Quantity}}: ${{Record.Price}}\n~}',
+    'Total: ${~Order.Total~}',
+    '',
+    'Best regards,',
+    '{~Sender.Name~}'
+].join('\n');
 
 const emailData = {
     Recipient: { Name: 'John' },
-    HasOrder: true,
     Order: {
         Number: '12345',
         Status: 'shipped',
@@ -206,61 +277,59 @@ const emailData = {
         ],
         Total: '109.97'
     },
-    IsPromotion: false,
     Sender: { Name: 'Support Team' }
 };
 
-// Conceptual rendering — see top-of-file note.
-console.info('Email template length:', emailTemplate.length);
-console.info('Email data:',            emailData);
-console.log('Would render an email with order details, items, totals, and signature.');
+console.log(metaTemplate.parseString(emailTemplate, emailData));
 ```
 
-### Report Generation
+### Report Generation (substitution + iteration)
 
 ```javascript
 const libFable = require('fable');
 const fable = new libFable({ Product: 'MetaTemplateDemo', ProductVersion: '1.0.0' });
 const metaTemplate = fable.instantiateServiceProvider('MetaTemplate');
 
-const reportTemplate = `
-# {~Report.Title~}
-Generated: {~Report.Date~}
+metaTemplate.addPattern('{~', '~}', (pInner, pData) => {
+    const value = fable.Utility.getValueByHash(pData, pInner.trim());
+    return value == null ? '' : String(value);
+});
+metaTemplate.addPattern('{~each ', '~}', (pInner, pData) => {
+    const sepIndex = pInner.indexOf('|');
+    const address  = pInner.slice(0, sepIndex).trim();
+    const body     = pInner.slice(sepIndex + 1);
+    const list     = fable.Utility.getValueByHash(pData, address) || [];
+    return list.map((Record) =>
+        body.replace(/\{\{([^}]+)\}\}/g, (_, hash) => {
+            const v = fable.Utility.getValueByHash({ Record }, hash.trim());
+            return v == null ? '' : String(v);
+        })
+    ).join('');
+});
 
-## Summary
-- Total Records: {~Summary.TotalRecords~}
-- Processed: {~Summary.Processed~}
-- Errors: {~Summary.Errors~}
+const reportTemplate = [
+    '# {~Report.Title~}',
+    'Generated: {~Report.Date~}',
+    '',
+    '## Summary',
+    '- Total Records: {~Summary.TotalRecords~}',
+    '- Processed: {~Summary.Processed~}',
+    '- Errors: {~Summary.Errors~}',
+    '',
+    '## Details',
+    '{~each Details|### {{Record.Category}}\n{{Record.Description}}\nCount: {{Record.Count}}\n\n~}'
+].join('\n');
 
-## Details
-{~Begin:Each:Details~}
-### {~Record.Category~}
-{~Record.Description~}
-Count: {~Record.Count~}
-{~End:Each:Details~}
-
-{~Begin:If:HasWarnings~}
-## Warnings
-{~Begin:Each:Warnings~}
-- {~Record~}
-{~End:Each:Warnings~}
-{~End:If:HasWarnings~}
-`;
-
-// Conceptual rendering — see top-of-file note.
 const reportData = {
     Report:  { Title: 'Sales Report', Date: '2024-01-15' },
     Summary: { TotalRecords: 1000, Processed: 980, Errors: 20 },
     Details: [
-        { Category: 'Q1', Description: 'First-quarter results', Count: 240 },
+        { Category: 'Q1', Description: 'First-quarter results',  Count: 240 },
         { Category: 'Q2', Description: 'Second-quarter results', Count: 260 }
-    ],
-    HasWarnings: true,
-    Warnings:    ['Two outliers detected', 'Network timeout on row 412']
+    ]
 };
-console.info('Report template length:', reportTemplate.length);
-console.info('Report data:',             reportData);
-console.log('Would render a Markdown report with summary, details, and warnings sections.');
+
+console.log(metaTemplate.parseString(reportTemplate, reportData));
 ```
 
 ### Configuration File Generation
@@ -270,40 +339,49 @@ const libFable = require('fable');
 const fable = new libFable({ Product: 'MetaTemplateDemo', ProductVersion: '1.0.0' });
 const metaTemplate = fable.instantiateServiceProvider('MetaTemplate');
 
-const configTemplate = `
-# Application Configuration
-# Generated for {~Environment~}
+metaTemplate.addPattern('{~', '~}', (pInner, pData) => {
+    const value = fable.Utility.getValueByHash(pData, pInner.trim());
+    return value == null ? '' : String(value);
+});
+metaTemplate.addPattern('{~each ', '~}', (pInner, pData) => {
+    const sepIndex = pInner.indexOf('|');
+    const address  = pInner.slice(0, sepIndex).trim();
+    const body     = pInner.slice(sepIndex + 1);
+    const list     = fable.Utility.getValueByHash(pData, address) || [];
+    return list.map((Record) =>
+        body.replace(/\{\{([^}]+)\}\}/g, (_, hash) => {
+            const v = fable.Utility.getValueByHash({ Record }, hash.trim());
+            return v == null ? '' : String(v);
+        })
+    ).join('');
+});
 
-server:
-  host: {~Server.Host~}
-  port: {~Server.Port~}
+const configTemplate = [
+    '# Application Configuration',
+    '# Generated for {~Environment~}',
+    '',
+    'server:',
+    '  host: {~Server.Host~}',
+    '  port: {~Server.Port~}',
+    '',
+    'database:',
+    '  host: {~Database.Host~}',
+    '  name: {~Database.Name~}',
+    '',
+    '{~each Features|{{Record.Name}}:\n  enabled: {{Record.Enabled}}\n\n~}'
+].join('\n');
 
-database:
-  host: {~Database.Host~}
-  name: {~Database.Name~}
-  {~Begin:If:Database.UseSSL~}
-  ssl: true
-  {~End:If:Database.UseSSL~}
-
-{~Begin:Each:Features~}
-{~Record.Name~}:
-  enabled: {~Record.Enabled~}
-{~End:Each:Features~}
-`;
-
-// Conceptual rendering — see top-of-file note.
-const configData = {
+const config = metaTemplate.parseString(configTemplate, {
     Environment: 'production',
-    Server:   { Host: '0.0.0.0',       Port: 8080 },
-    Database: { Host: 'db.example.com', Name: 'myapp', UseSSL: true },
+    Server:   { Host: '0.0.0.0', Port: 8080 },
+    Database: { Host: 'db.example.com', Name: 'myapp' },
     Features: [
         { Name: 'cache', Enabled: true },
         { Name: 'debug', Enabled: false }
     ]
-};
-console.info('Config template length:', configTemplate.length);
-console.info('Config data:',             configData);
-console.log('Would render a YAML-like configuration file.');
+});
+
+console.log(config);
 ```
 
 ### Dynamic Forms
@@ -313,56 +391,66 @@ const libFable = require('fable');
 const fable = new libFable({ Product: 'MetaTemplateDemo', ProductVersion: '1.0.0' });
 const metaTemplate = fable.instantiateServiceProvider('MetaTemplate');
 
-const formTemplate = `
-<form action="{~Form.Action~}" method="{~Form.Method~}">
-{~Begin:Each:Form.Fields~}
-    <div class="field">
-        <label for="{~Record.Id~}">{~Record.Label~}</label>
-        <input type="{~Record.Type~}" id="{~Record.Id~}" name="{~Record.Name~}"
-               {~Begin:If:Record.Required~}required{~End:If:Record.Required~}>
-    </div>
-{~End:Each:Form.Fields~}
-    <button type="submit">{~Form.SubmitText~}</button>
-</form>
-`;
+metaTemplate.addPattern('{~', '~}', (pInner, pData) => {
+    const value = fable.Utility.getValueByHash(pData, pInner.trim());
+    return value == null ? '' : String(value);
+});
+metaTemplate.addPattern('{~each ', '~}', (pInner, pData) => {
+    const sepIndex = pInner.indexOf('|');
+    const address  = pInner.slice(0, sepIndex).trim();
+    const body     = pInner.slice(sepIndex + 1);
+    const list     = fable.Utility.getValueByHash(pData, address) || [];
+    return list.map((Record) =>
+        body.replace(/\{\{([^}]+)\}\}/g, (_, hash) => {
+            const v = fable.Utility.getValueByHash({ Record }, hash.trim());
+            return v == null ? '' : String(v);
+        })
+    ).join('');
+});
 
-// Conceptual rendering — see top-of-file note.
-const formData = {
+const formTemplate = [
+    '<form action="{~Form.Action~}" method="{~Form.Method~}">',
+    '{~each Form.Fields|    <div class="field"><label for="{{Record.Id}}">{{Record.Label}}</label><input type="{{Record.Type}}" id="{{Record.Id}}" name="{{Record.Name}}"></div>\n~}',
+    '    <button type="submit">{~Form.SubmitText~}</button>',
+    '</form>'
+].join('\n');
+
+console.log(metaTemplate.parseString(formTemplate, {
     Form: {
         Action:     '/signup',
         Method:     'POST',
         SubmitText: 'Sign Up',
         Fields: [
-            { Id: 'email', Name: 'email', Label: 'Email', Type: 'email', Required: true },
-            { Id: 'name',  Name: 'name',  Label: 'Name',  Type: 'text',  Required: false }
+            { Id: 'email', Name: 'email', Label: 'Email', Type: 'email' },
+            { Id: 'name',  Name: 'name',  Label: 'Name',  Type: 'text'  }
         ]
     }
-};
-console.info('Form template length:', formTemplate.length);
-console.info('Form data:',             formData);
-console.log('Would render an HTML form with two fields.');
+}));
 ```
+
+## Async Mode
+
+Pass a callback to `parseString` to run asynchronously — parser
+functions can complete on their own schedule (via the WordTree's
+`addPatternBoth` async-parser slot). The sync mode used above is
+selected automatically when no callback is supplied.
 
 ## Comparison with Template Service
 
-| Feature | Template | MetaTemplate |
-|---------|----------|--------------|
-| Syntax | `<%= %>` / `<% %>` | `{~ ~}` |
-| Conditionals | JavaScript `if` | `{~Begin:If~}` |
-| Loops | JavaScript `for` | `{~Begin:Each~}` |
-| JavaScript execution | Yes | Limited |
-| Use case | Code-heavy templates | Data-driven templates |
-
-## Best Practices
-
-1. **Use MetaTemplate for data-driven content**: When templates are mostly about inserting values
-2. **Use Template for logic-heavy content**: When you need complex JavaScript logic
-3. **Keep templates readable**: Use clear section names
-4. **Validate data before rendering**: Ensure required properties exist
+| Feature | Template (`fable.Utility.template`) | MetaTemplate |
+|---------|-------------------------------------|--------------|
+| Syntax | `<%= %>` / `<% %>` (underscore) | Whatever you register via `addPattern` |
+| Built-in conditionals | JavaScript `<% if %>` | None — write parser-function logic |
+| Built-in loops | JavaScript `<% for %>` | None — write parser-function logic |
+| JavaScript execution | Yes (compiled function body) | No — pure callbacks |
+| Use case | Code-heavy templates | Custom tag syntaxes, replacement-only templates |
 
 ## Notes
 
-- MetaTemplate is designed for safer, more declarative templates
-- Less JavaScript execution means less risk of injection
-- Templates can be stored in files and loaded dynamically
-- The `Record` variable is special within `Each` blocks
+- MetaTemplate has no built-in tag vocabulary; everything is `addPattern`.
+- `parseString` is synchronous unless you pass a callback.
+- The `Record` variable convention used in the iteration examples above
+  is a JS-side helper inside the iteration parser function — there is
+  nothing in MetaTemplate that names it.
+- For pattern end strings longer than 2 characters, see the limitation
+  note at the top — keep ends short.
