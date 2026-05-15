@@ -6,16 +6,11 @@ then walks the template string character by character, hands each
 between-tag region to the matching parser function, and emits the
 function's return value into the output.
 
-It is intentionally minimal: there are no built-in tags. The `{~Name~}` /
-`{~Begin:Each:Items~}` syntax shown below is just convention — every
-pattern is something you wire up yourself with `addPattern()`.
-
-> **Pattern engine limitation.** End strings of three or more characters
-> (e.g. `{~/If~}`, `~End:Each:Items~}`) currently fail with an internal
-> "Cannot read properties of undefined" inside the WordTree end-leaf
-> traversal. The examples below stick to 1- and 2-character end strings
-> (`~}`, `>>`, etc.) — that's the entire supported design space until
-> the engine is enhanced.
+It is intentionally minimal: there are no built-in tags. The `{~Name~}`
+syntax shown below is just convention — every pattern is something you
+wire up yourself with `addPattern()`. End markers are short by design
+(typically 1–2 characters such as `~}`, `>>`, `}`); the engine's
+character-by-character WordTree match is built around that.
 
 ## Access
 
@@ -79,38 +74,10 @@ const data = {
 console.log(metaTemplate.parseString('Name: {~User.Name~}, Item 1: {~Items[0]~}, Item 3: {~Items[2]~}', data));
 ```
 
-## Conditional Rendering (via parser-function logic)
-
-Because end tokens must stay at 1–2 characters, you can't express a
-`{~Begin:If~}…{~End:If~}` block natively. The idiomatic alternative is
-to put the conditional inside the parser function, with the body delimited
-inside the inner content:
-
-```javascript
-const libFable = require('fable');
-const fable = new libFable({ Product: 'MetaTemplateDemo', ProductVersion: '1.0.0' });
-const metaTemplate = fable.instantiateServiceProvider('MetaTemplate');
-
-// {~if Cond|yes-body|no-body~} — vertical bar separates the three parts.
-metaTemplate.addPattern('{~if ', '~}', (pInner, pData) => {
-    const parts = pInner.split('|');
-    const cond  = fable.Utility.getValueByHash(pData, parts[0].trim());
-    return cond ? (parts[1] || '') : (parts[2] || '');
-});
-
-const tmpl = '{~if ShowGreeting|Hello, World!|~}';
-console.log('with show=true:',  metaTemplate.parseString(tmpl, { ShowGreeting: true }));
-console.log('with show=false:', metaTemplate.parseString(tmpl, { ShowGreeting: false }));
-```
-
-For multi-line bodies, embed `\n` in the inner content or build the
-template with concatenation in JS first.
-
 ## Iteration (via parser-function logic)
 
-Same approach as conditionals — the parser function receives the
-iterator name and inline body separated by `|`, looks up the array, and
-joins the rendered bodies:
+The parser function receives the iterator address and inline body
+separated by `|`, looks up the array, and joins the rendered bodies:
 
 ```javascript
 const libFable = require('fable');
@@ -440,8 +407,7 @@ selected automatically when no callback is supplied.
 | Feature | Template (`fable.Utility.template`) | MetaTemplate |
 |---------|-------------------------------------|--------------|
 | Syntax | `<%= %>` / `<% %>` (underscore) | Whatever you register via `addPattern` |
-| Built-in conditionals | JavaScript `<% if %>` | None — write parser-function logic |
-| Built-in loops | JavaScript `<% for %>` | None — write parser-function logic |
+| Control flow | JavaScript `<% if %>` / `<% for %>` | None built in; write parser-function logic for what you need |
 | JavaScript execution | Yes (compiled function body) | No — pure callbacks |
 | Use case | Code-heavy templates | Custom tag syntaxes, replacement-only templates |
 
@@ -452,5 +418,5 @@ selected automatically when no callback is supplied.
 - The `Record` variable convention used in the iteration examples above
   is a JS-side helper inside the iteration parser function — there is
   nothing in MetaTemplate that names it.
-- For pattern end strings longer than 2 characters, see the limitation
-  note at the top — keep ends short.
+- Keep end markers short (1–2 characters); the WordTree match is built
+  around that.
