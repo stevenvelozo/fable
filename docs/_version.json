@@ -1,7 +1,7 @@
 {
 	"Name": "fable",
-	"Version": "3.1.68",
+	"Version": "3.1.72",
 	"Description": "A service dependency injection, configuration and logging library.",
-	"GeneratedAt": "2026-04-10T17:19:38.218Z",
-	"GitCommit": "70452b7"
+	"GeneratedAt": "2026-05-15T13:50:08.507Z",
+	"GitCommit": "3564579"
 }
