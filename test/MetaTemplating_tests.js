@@ -392,6 +392,83 @@ suite
 							}, null, { ScopeValue: 1 });
 					}
 				);
+
+				// Regression tests for the partial-end-pattern rollback fix:
+				// when the parser begins matching an end pattern but the next
+				// character breaks it, the parser must roll Pattern back to
+				// the start node so subsequent characters re-scan for the end
+				// pattern from the beginning.  Without that rollback, content
+				// containing the end pattern's leading character followed
+				// later by its trailing character (e.g. `>` ... `}` for the
+				// `{<...>}` syntax) was misread as a closing delimiter.
+				test
+				(
+					'End-pattern rollback: stray leading-char in content does not falsely close.',
+					(fDone) =>
+					{
+						let testMetaTemplate = loadMetaTemplateModule();
+						testMetaTemplate.addPattern('{<', '>}',
+							(pHash) => `[${pHash}]`);
+
+						// `> ... }` appears in the body but `>}` only appears at the very end.
+						// Before the fix, the partial end-match at the first `>` would
+						// leave Pattern at the `>`-node, and the later `}` would falsely
+						// close the block.
+						let tmpResult = testMetaTemplate.parseString('{<a > b > c }}}>}');
+						Expect(tmpResult).to.equal('[a > b > c }}}]');
+						fDone();
+					}
+				);
+				test
+				(
+					'End-pattern rollback (async): stray leading-char in content does not falsely close.',
+					(fDone) =>
+					{
+						let testMetaTemplate = loadMetaTemplateModule();
+						testMetaTemplate.addPatternBoth('{<', '>}',
+							(pHash) => `[${pHash}]`,
+							(pHash, pData, fCallback) => fCallback(null, `[async:${pHash}]`));
+
+						testMetaTemplate.parseString('{<a > b > c }}}>}', {},
+							(pError, pValue) =>
+							{
+								Expect(pValue).to.equal('[async:a > b > c }}}]');
+								fDone();
+							});
+					}
+				);
+				test
+				(
+					'End-pattern rollback: false-start of end pattern followed by literal end pattern.',
+					(fDone) =>
+					{
+						let testMetaTemplate = loadMetaTemplateModule();
+						testMetaTemplate.addPattern('{~', '~}',
+							(pHash) => `<${pHash}>`);
+
+						// `~` (end-leading char) followed by content and then a real `~}`.
+						let tmpResult = testMetaTemplate.parseString('{~Foo~Bar Baz~Qux~}');
+						Expect(tmpResult).to.equal('<Foo~Bar Baz~Qux>');
+						fDone();
+					}
+				);
+				test
+				(
+					'End-pattern rollback: false-start in middle does not eat a trailing end-char.',
+					(fDone) =>
+					{
+						let testMetaTemplate = loadMetaTemplateModule();
+						testMetaTemplate.addPattern('{~', '~}',
+							(pHash) => `<${pHash}>`);
+
+						// `~xyz}` in the middle -- the `~` is the leading end char and `}`
+						// is the trailing end char, but they don't appear adjacent.  Before
+						// the fix, the parser would close at the `}` after `xyz`.
+						let tmpResult = testMetaTemplate.parseString('{~before~xyz}after~}');
+						Expect(tmpResult).to.equal('<before~xyz}after>');
+						fDone();
+					}
+				);
 			}
 		);
 	}

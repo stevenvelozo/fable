@@ -129,7 +129,10 @@ class StringParser
 				}
 				else
 				{
+					// Partial end-pattern match aborted -- roll Pattern back to the start node so
+					// subsequent characters scan for the end pattern from the beginning again.
 					pParserState.EndPatternMatchBegan = false;
+					pParserState.Pattern = pParserState.PatternStartNode;
 					this.appendOutputBuffer(pCharacter, pParserState);
 				}
 			}
@@ -303,7 +306,10 @@ class StringParser
 				}
 				else
 				{
+					// Partial end-pattern match aborted -- roll Pattern back to the start node so
+					// subsequent characters scan for the end pattern from the beginning again.
 					pParserState.EndPatternMatchBegan = false;
+					pParserState.Pattern = pParserState.PatternStartNode;
 					this.appendOutputBuffer(pCharacter, pParserState);
 				}
 			}
