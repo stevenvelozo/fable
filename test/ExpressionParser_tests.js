@@ -331,6 +331,8 @@ suite
 									let tmpResultPrecise = _Parser.solve('Result = (160 * PR * Z) / (C / 100) * PR * Z + (160 * (1 - C / 100))', { C: "-13", PR: "1.5", Z: "20.03" })
 									Expect(tmpResultPrecise).to.equal("-1110837.0769230769230769230307");
 
+									Expect(_Parser.solve('Result = generateguid()').length).to.equal(36);
+
 									return fDone();
 								}
 							);

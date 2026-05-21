@@ -161,6 +161,10 @@ Basic math operations with arbitrary precision:
 - [bezierpoint](./bezierpoint.md) - Evaluate point on cubic Bezier curve
 - [beziercurvefit](./beziercurvefit.md) - Fit cubic Bezier curve to data points
 
+### Identifier Generation
+
+- [generateguid](./generateguid.md) - Generate a unique GUID string
+
 ### Other Utilities
 
 - [generatearrayofobjectsfromsets](./generatearrayofobjectsfromsets.md) - Generate objects from sets

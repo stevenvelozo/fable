@@ -520,5 +520,10 @@
 	"beziercurvefit": {
 		"Name": "Fit a Cubic Bezier Curve to a Set of Data Points",
 		"Address": "fable.Math.bezierCurveFit"
+	},
+
+	"generateguid": {
+		"Name": "Generate a GUID string",
+		"Address": "fable.getUUID"
 	}
 }

@@ -1,5 +1,5 @@
 {
-	"Generated": "2026-05-15T13:50:08.244Z",
+	"Generated": "2026-05-21T02:49:08.490Z",
 	"GitHubOrg": "stevenvelozo",
 	"DefaultBranch": "master",
 	"Groups": [
@@ -62,18 +62,6 @@
 			"Key": "docs",
 			"Description": "",
 			"Modules": [
-				{
-					"Name": "css",
-					"Repo": "css",
-					"Group": "docs",
-					"Branch": "master",
-					"HasDocs": true,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": [
-						"css/docuserve.css"
-					]
-				},
 				{
 					"Name": "services",
 					"Repo": "services",
@@ -141,6 +129,7 @@
 						"services/expression-parser-functions/floor.md",
 						"services/expression-parser-functions/gaussianelimination.md",
 						"services/expression-parser-functions/generatearrayofobjectsfromsets.md",
+						"services/expression-parser-functions/generateguid.md",
 						"services/expression-parser-functions/getvalue.md",
 						"services/expression-parser-functions/getvaluearray.md",
 						"services/expression-parser-functions/getvalueobject.md",
