@@ -1,6 +1,6 @@
 # ObjectCache Service
 
-The ObjectCache service (powered by [cachetrax](https://github.com/stevenvelozo/cachetrax)) provides in-memory object caching with size-based and time-based expiration, backed by a linked list for efficient eviction.
+The ObjectCache service (powered by [cachetrax](https://github.com/fable-retold/cachetrax)) provides in-memory object caching with size-based and time-based expiration, backed by a linked list for efficient eviction.
 
 ## Access
 

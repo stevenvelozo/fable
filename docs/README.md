@@ -112,8 +112,8 @@ console.log('RestClientURLPrefix setting:', fable.settings.RestClientURLPrefix);
 
 ## Related Packages
 
-- [fable-log](https://github.com/stevenvelozo/fable-log) - Logging framework
-- [fable-settings](https://github.com/stevenvelozo/fable-settings) - Settings management
-- [fable-uuid](https://github.com/stevenvelozo/fable-uuid) - UUID generation
-- [fable-serviceproviderbase](https://github.com/stevenvelozo/fable-serviceproviderbase) - Service provider base class
-- [pict](https://github.com/stevenvelozo/pict) - UI framework
+- [fable-log](https://github.com/fable-retold/fable-log) - Logging framework
+- [fable-settings](https://github.com/fable-retold/fable-settings) - Settings management
+- [fable-uuid](https://github.com/fable-retold/fable-uuid) - UUID generation
+- [fable-serviceproviderbase](https://github.com/fable-retold/fable-serviceproviderbase) - Service provider base class
+- [pict](https://github.com/fable-retold/pict) - UI framework

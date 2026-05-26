@@ -381,10 +381,10 @@ See the [Services Documentation](./docs/services/README.md) for detailed informa
 
 ## Related Packages
 
-- [fable-log](https://github.com/stevenvelozo/fable-log) - Logging services
-- [fable-settings](https://github.com/stevenvelozo/fable-settings) - Settings management
-- [fable-serviceproviderbase](https://github.com/stevenvelozo/fable-serviceproviderbase) - Service provider base class
-- [fable-uuid](https://github.com/stevenvelozo/fable-uuid) - UUID generation service
+- [fable-log](https://github.com/fable-retold/fable-log) - Logging services
+- [fable-settings](https://github.com/fable-retold/fable-settings) - Settings management
+- [fable-serviceproviderbase](https://github.com/fable-retold/fable-serviceproviderbase) - Service provider base class
+- [fable-uuid](https://github.com/fable-retold/fable-uuid) - UUID generation service
 
 ## License
 

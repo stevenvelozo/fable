@@ -8,4 +8,4 @@
 - Works in both Node.js and browser environments
 
 [Get Started](README.md)
-[GitHub](https://github.com/stevenvelozo/fable)
+[GitHub](https://github.com/fable-retold/fable)
