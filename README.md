@@ -1,6 +1,8 @@
 Fable
 =====
 
+> **[Read the Fable Documentation](https://fable-retold.github.io/fable/)**
+
 A comprehensive Node.js service dependency injection, configuration management, and logging library. Fable provides a service-oriented architecture with built-in dependency injection, making it easy to build modular, testable applications.
 
 ## Features
