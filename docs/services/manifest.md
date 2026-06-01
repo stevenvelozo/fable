@@ -1,6 +1,6 @@
 # Manifest Service
 
-The Manifest service (powered by [manyfest](https://github.com/fable-retold/manyfest)) provides object navigation and manipulation using hash/address paths, supporting complex data access patterns.
+The Manifest service (powered by [manyfest](https://fable-retold.github.io/manyfest/)) provides object navigation and manipulation using hash/address paths, supporting complex data access patterns.
 
 ## Access
 

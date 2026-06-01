@@ -84,7 +84,7 @@ const defaultSettingsShape = {
 console.log('defaultSettingsShape:', defaultSettingsShape);
 ```
 
-Your settings are merged with these defaults using [precedent](https://github.com/fable-retold/precedent).
+Your settings are merged with these defaults using [precedent](https://fable-retold.github.io/precedent/).
 
 ## Environment-Aware Configuration
 
