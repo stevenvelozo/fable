@@ -7,9 +7,9 @@ between-tag region to the matching parser function, and emits the
 function's return value into the output.
 
 It is intentionally minimal: there are no built-in tags. The `{~Name~}`
-syntax shown below is just convention — every pattern is something you
+syntax shown below is just convention - every pattern is something you
 wire up yourself with `addPattern()`. End markers are short by design
-(typically 1–2 characters such as `~}`, `>>`, `}`); the engine's
+(typically 1-2 characters such as `~}`, `>>`, `}`); the engine's
 character-by-character WordTree match is built around that.
 
 ## Access
@@ -137,7 +137,7 @@ console.log(outer);
 
 ## Template Inheritance (compose strings, render once)
 
-There is no native template-inheritance system — the same effect is
+There is no native template-inheritance system - the same effect is
 achieved by composing the final template string in JS, then calling
 `parseString` once.
 
@@ -397,7 +397,7 @@ console.log(metaTemplate.parseString(formTemplate, {
 
 ## Async Mode
 
-Pass a callback to `parseString` to run asynchronously — parser
+Pass a callback to `parseString` to run asynchronously - parser
 functions can complete on their own schedule (via the WordTree's
 `addPatternBoth` async-parser slot). The sync mode used above is
 selected automatically when no callback is supplied.
@@ -408,7 +408,7 @@ selected automatically when no callback is supplied.
 |---------|-------------------------------------|--------------|
 | Syntax | `<%= %>` / `<% %>` (underscore) | Whatever you register via `addPattern` |
 | Control flow | JavaScript `<% if %>` / `<% for %>` | None built in; write parser-function logic for what you need |
-| JavaScript execution | Yes (compiled function body) | No — pure callbacks |
+| JavaScript execution | Yes (compiled function body) | No - pure callbacks |
 | Use case | Code-heavy templates | Custom tag syntaxes, replacement-only templates |
 
 ## Notes
@@ -416,7 +416,7 @@ selected automatically when no callback is supplied.
 - MetaTemplate has no built-in tag vocabulary; everything is `addPattern`.
 - `parseString` is synchronous unless you pass a callback.
 - The `Record` variable convention used in the iteration examples above
-  is a JS-side helper inside the iteration parser function — there is
+  is a JS-side helper inside the iteration parser function - there is
   nothing in MetaTemplate that names it.
-- Keep end markers short (1–2 characters); the WordTree match is built
+- Keep end markers short (1-2 characters); the WordTree match is built
   around that.

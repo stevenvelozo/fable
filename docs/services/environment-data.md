@@ -42,10 +42,10 @@ const fable = new libFable({ Product: 'EnvironmentDataDemo', ProductVersion: '1.
 
 if (fable.EnvironmentData.Environment === 'node.js') {
     // Node.js-specific code (e.g., file system access)
-    console.log('Running in Node.js — file system access available');
+    console.log('Running in Node.js - file system access available');
 } else {
     // Browser-specific code (e.g., DOM manipulation)
-    console.log('Running in browser — Environment is:', fable.EnvironmentData.Environment);
+    console.log('Running in browser - Environment is:', fable.EnvironmentData.Environment);
 }
 ```
 

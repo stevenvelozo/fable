@@ -72,7 +72,7 @@ const apiClient  = fable.instantiateServiceProvider('RestClient', {}, 'api');
 const authClient = fable.instantiateServiceProvider('RestClient', {}, 'auth');
 console.log('apiClient typeof:',  typeof apiClient);
 console.log('authClient typeof:', typeof authClient);
-console.log('Both instances live in fable.servicesMap.RestClient — keys:',
+console.log('Both instances live in fable.servicesMap.RestClient - keys:',
     Object.keys(fable.servicesMap.RestClient));
 ```
 
@@ -84,7 +84,7 @@ Most services accept an options object during instantiation:
 const libFable = require('fable');
 const fable = new libFable({ Product: 'ServicesDemo', ProductVersion: '1.0.0' });
 
-// Shape of the call — replace 'Template' with whichever service you want.
+// Shape of the call - replace 'Template' with whichever service you want.
 const service = fable.instantiateServiceProvider('Template', {
     // option1: 'value1',
     // option2: 'value2'

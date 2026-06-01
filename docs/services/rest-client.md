@@ -53,7 +53,7 @@ console.info("    restClient.getJSON('/users', callback);  // -> https://api.exa
 ### GET JSON
 
 ```javascript
-// Node.js reference — real HTTP requests don't run in the browser playground (CORS).
+// Node.js reference - real HTTP requests don't run in the browser playground (CORS).
 console.info("In Node.js:");
 console.info("    // Simple URL");
 console.info("    restClient.getJSON('https://api.example.com/users', (error, response, data) => {");
@@ -71,7 +71,7 @@ console.info("    }, (error, response, data) => { console.log(data); });");
 ### POST JSON
 
 ```javascript
-// Node.js reference — real HTTP requests don't run in the browser playground.
+// Node.js reference - real HTTP requests don't run in the browser playground.
 console.info("In Node.js:");
 console.info("    restClient.postJSON({");
 console.info("        url: 'https://api.example.com/users',");
@@ -82,7 +82,7 @@ console.info("    }, (error, response, data) => { console.log('Created user:', d
 ### PUT JSON
 
 ```javascript
-// Node.js reference — real HTTP requests don't run in the browser playground.
+// Node.js reference - real HTTP requests don't run in the browser playground.
 console.info("In Node.js:");
 console.info("    restClient.putJSON({");
 console.info("        url: 'https://api.example.com/users/123',");
@@ -93,7 +93,7 @@ console.info("    }, (error, response, data) => { console.log('Updated user:', d
 ### PATCH JSON
 
 ```javascript
-// Node.js reference — real HTTP requests don't run in the browser playground.
+// Node.js reference - real HTTP requests don't run in the browser playground.
 console.info("In Node.js:");
 console.info("    restClient.patchJSON({");
 console.info("        url: 'https://api.example.com/users/123',");
@@ -104,7 +104,7 @@ console.info("    }, (error, response, data) => { console.log('Patched user:', d
 ### DELETE JSON
 
 ```javascript
-// Node.js reference — real HTTP requests don't run in the browser playground.
+// Node.js reference - real HTTP requests don't run in the browser playground.
 console.info("In Node.js:");
 console.info("    restClient.delJSON({");
 console.info("        url: 'https://api.example.com/users/123'");
@@ -114,7 +114,7 @@ console.info("    }, (error, response, data) => { console.log('Deleted user'); }
 ### HEAD JSON
 
 ```javascript
-// Node.js reference — real HTTP requests don't run in the browser playground.
+// Node.js reference - real HTTP requests don't run in the browser playground.
 console.info("In Node.js:");
 console.info("    restClient.headJSON({");
 console.info("        url: 'https://api.example.com/users/123',");
@@ -127,7 +127,7 @@ console.info("    }, (error, response, data) => { console.log('Headers:', respon
 ### GET Raw Text
 
 ```javascript
-// Node.js reference — real HTTP requests don't run in the browser playground.
+// Node.js reference - real HTTP requests don't run in the browser playground.
 console.info("In Node.js:");
 console.info("    restClient.getRawText('https://example.com/page.html', (error, response, text) => {");
 console.info("        console.log('HTML:', text);");
@@ -141,7 +141,7 @@ For streaming or large responses:
 ### Text Chunks
 
 ```javascript
-// Node.js reference — real HTTP requests don't run in the browser playground.
+// Node.js reference - real HTTP requests don't run in the browser playground.
 console.info("In Node.js:");
 console.info("    restClient.executeChunkedRequest({");
 console.info("        method: 'GET',");
@@ -152,7 +152,7 @@ console.info("    }, (error, response, data) => { console.log('Complete data:', 
 ### Binary Chunks
 
 ```javascript
-// Node.js reference — real HTTP + fs don't run in the browser playground.
+// Node.js reference - real HTTP + fs don't run in the browser playground.
 console.info("In Node.js:");
 console.info("    restClient.executeChunkedRequestBinary({");
 console.info("        method: 'GET',");
@@ -275,7 +275,7 @@ Beginning GET request to https://api.example.com/users at 1704067200000
 Access the underlying `simple-get` library directly:
 
 ```javascript
-// Node.js reference — real HTTP requests don't run in the browser playground.
+// Node.js reference - real HTTP requests don't run in the browser playground.
 console.info("In Node.js:");
 console.info("    restClient.simpleGet({");
 console.info("        method: 'GET',");
@@ -287,7 +287,7 @@ console.info("    }, callback);");
 ## Error Handling
 
 ```javascript
-// Node.js reference — real HTTP requests don't run in the browser playground.
+// Node.js reference - real HTTP requests don't run in the browser playground.
 console.info("In Node.js:");
 console.info("    restClient.getJSON('https://api.example.com/users', (error, response, data) => {");
 console.info("        if (error) { console.error('Network error:', error.message); return; }");

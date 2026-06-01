@@ -342,7 +342,7 @@ fable.Utility.waterfall([
     }
 ], (err, result) => {
     // result = 'done'
-    console.log('waterfall finished — err:', err, 'result:', result);
+    console.log('waterfall finished - err:', err, 'result:', result);
 });
 ```
 
@@ -354,7 +354,7 @@ Process array items in parallel with concurrency limit:
 const libFable = require('fable');
 const fable = new libFable({ Product: 'UtilityDemo', ProductVersion: '1.0.0' });
 
-// Stub for the playground demo — real code would do real work per item
+// Stub for the playground demo - real code would do real work per item
 function processItem(item, callback) {
     console.log('processing item', item);
     callback(null);
@@ -367,7 +367,7 @@ fable.Utility.eachLimit(
         processItem(item, callback);
     },
     (err) => {               // Completion callback
-        console.log('All done — err:', err);
+        console.log('All done - err:', err);
     }
 );
 ```

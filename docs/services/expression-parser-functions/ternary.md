@@ -171,7 +171,7 @@ Name = When(UserName, UserName, "Anonymous")
 
 - The `::` separator must be used (not `:`) to avoid conflicts with directive syntax
 - Comparison operators (`>`, `>=`, `<`, `<=`, `==`, `!=`) return `"1"` or `"0"`, which the ternary function interprets correctly
-- The ternary operator desugaring happens before expression evaluation, so it works seamlessly with all other expression features
+- The ternary operator desugaring happens before expression evaluation, so it works smoothly with all other expression features
 - Nested ternary expressions require parentheses around the inner ternary
 
 ## Related Functions

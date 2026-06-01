@@ -322,13 +322,13 @@ const fable = new libFable(config);
 if (!fable.settings.Database?.Host) {
     throw new Error('Database.Host is required');
 }
-console.log('Validation passed — Database.Host =', fable.settings.Database.Host);
+console.log('Validation passed - Database.Host =', fable.settings.Database.Host);
 ```
 
 ## Reading External Config Files
 
 ```javascript
-// Node.js reference — this pattern uses fs which is not available in the browser playground.
+// Node.js reference - this pattern uses fs which is not available in the browser playground.
 console.info("In Node.js:");
 console.info("    const fs   = require('fs');");
 console.info("    const path = require('path');");

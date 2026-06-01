@@ -37,7 +37,7 @@ const libFable = require('fable');
 const fable = new libFable({ Product: 'ExpressionParserDemo', ProductVersion: '1.0.0' });
 const parser = fable.instantiateServiceProviderIfNotExists('ExpressionParser');
 
-// Signature shape — see the runnable examples below for real invocations.
+// Signature shape - see the runnable examples below for real invocations.
 console.log('solve signature: (expression, dataObject, resultObject, manifest, destinationObject) =>',
     typeof parser.solve);
 ```
@@ -78,7 +78,7 @@ const dest = {};
 parser.solve('Name ?= GETVALUE("AppData.Students[0]")', data, {}, false, dest);
 console.log('dest.Name (first run):', dest.Name);
 
-// Second run with Name already set — ?= leaves it alone:
+// Second run with Name already set - ?= leaves it alone:
 parser.solve('Name ?= "OverwriteAttempt"', data, {}, false, dest);
 console.log('dest.Name (after ?= retry):', dest.Name);
 ```

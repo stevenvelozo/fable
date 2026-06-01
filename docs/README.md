@@ -11,7 +11,7 @@ Fable is a comprehensive framework that provides a service-oriented architecture
 - **Pluggable Logging** - Multiple log destinations including console, files, and external services
 - **UUID Generation** - Unique identifier generation with DataCenter and Worker encoding
 - **Service Lifecycle Management** - Automatic instantiation and registration of services
-- **Browser & Node.js** - Works seamlessly in both environments
+- **Browser & Node.js** - Works smoothly in both environments
 
 ## Quick Start
 

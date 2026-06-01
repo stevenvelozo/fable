@@ -26,7 +26,7 @@ Fable automatically uses the appropriate implementation:
 ### Read File (Async)
 
 ```javascript
-// Node.js reference — browser playground has no fs.
+// Node.js reference - browser playground has no fs.
 console.info("In Node.js:");
 console.info("    filePersistence.readFile('/path/to/file.txt', 'utf8', (error, content) => {");
 console.info("        if (error) { console.error('Read error:', error); return; }");
@@ -37,7 +37,7 @@ console.info("    });");
 ### Read File Sync
 
 ```javascript
-// Node.js reference — browser playground has no fs.
+// Node.js reference - browser playground has no fs.
 console.info("In Node.js:");
 console.info("    const content = filePersistence.readFileSync('/path/to/file.txt', 'utf8');");
 ```
@@ -45,7 +45,7 @@ console.info("    const content = filePersistence.readFileSync('/path/to/file.tx
 ### Read JSON File
 
 ```javascript
-// Node.js reference — browser playground has no fs.
+// Node.js reference - browser playground has no fs.
 console.info("In Node.js:");
 console.info("    filePersistence.readJSONFile('/path/to/data.json', (error, data) => {");
 console.info("        if (error) { console.error('Failed to read JSON:', error); return; }");
@@ -58,7 +58,7 @@ console.info("    });");
 ### Write File (Async)
 
 ```javascript
-// Node.js reference — browser playground has no fs.
+// Node.js reference - browser playground has no fs.
 console.info("In Node.js:");
 console.info("    filePersistence.writeFile('/path/to/file.txt', 'Hello, World!', 'utf8', (error) => {");
 console.info("        if (error) { console.error('Write error:', error); return; }");
@@ -69,7 +69,7 @@ console.info("    });");
 ### Write File Sync
 
 ```javascript
-// Node.js reference — browser playground has no fs.
+// Node.js reference - browser playground has no fs.
 console.info("In Node.js:");
 console.info("    filePersistence.writeFileSync('/path/to/file.txt', 'Hello, World!', 'utf8');");
 ```
@@ -77,7 +77,7 @@ console.info("    filePersistence.writeFileSync('/path/to/file.txt', 'Hello, Wor
 ### Write JSON File
 
 ```javascript
-// Node.js reference — browser playground has no fs.
+// Node.js reference - browser playground has no fs.
 console.info("In Node.js:");
 console.info("    const data = { name: 'John', age: 30 };");
 console.info("    filePersistence.writeJSONFile('/path/to/data.json', data, (error) => {");
@@ -91,7 +91,7 @@ console.info("    });");
 ### Read CSV File
 
 ```javascript
-// Node.js reference — browser playground has no fs.
+// Node.js reference - browser playground has no fs.
 console.info("In Node.js:");
 console.info("    filePersistence.readCSVFile('/path/to/data.csv', (error, rows) => {");
 console.info("        if (error) { console.error('Failed to read CSV:', error); return; }");
@@ -103,7 +103,7 @@ console.info("    });");
 ### Read CSV to Objects
 
 ```javascript
-// Node.js reference — browser playground has no fs.
+// Node.js reference - browser playground has no fs.
 console.info("In Node.js:");
 console.info("    filePersistence.readCSVFileToObjects('/path/to/data.csv', (error, objects) => {");
 console.info("        if (error) { console.error('Failed to read CSV:', error); return; }");
@@ -115,7 +115,7 @@ console.info("    });");
 ### Write CSV File
 
 ```javascript
-// Node.js reference — browser playground has no fs.
+// Node.js reference - browser playground has no fs.
 console.info("In Node.js:");
 console.info("    const rows = [");
 console.info("        ['name', 'age', 'city'],");
@@ -133,7 +133,7 @@ console.info("    });");
 ### Check if File Exists
 
 ```javascript
-// Node.js reference — browser playground has no fs.
+// Node.js reference - browser playground has no fs.
 console.info("In Node.js:");
 console.info("    const exists = filePersistence.fileExists('/path/to/file.txt');");
 ```
@@ -141,7 +141,7 @@ console.info("    const exists = filePersistence.fileExists('/path/to/file.txt')
 ### Check if Directory Exists
 
 ```javascript
-// Node.js reference — browser playground has no fs.
+// Node.js reference - browser playground has no fs.
 console.info("In Node.js:");
 console.info("    const exists = filePersistence.directoryExists('/path/to/directory');");
 ```
@@ -149,7 +149,7 @@ console.info("    const exists = filePersistence.directoryExists('/path/to/direc
 ### Create Directory
 
 ```javascript
-// Node.js reference — browser playground has no fs.
+// Node.js reference - browser playground has no fs.
 console.info("In Node.js:");
 console.info("    filePersistence.createDirectory('/path/to/new/directory', (error) => {");
 console.info("        if (error) { console.error('Failed to create directory:', error); return; }");
@@ -160,7 +160,7 @@ console.info("    });");
 ### Create Directory Sync
 
 ```javascript
-// Node.js reference — browser playground has no fs.
+// Node.js reference - browser playground has no fs.
 console.info("In Node.js:");
 console.info("    filePersistence.createDirectorySync('/path/to/new/directory');");
 ```
@@ -168,7 +168,7 @@ console.info("    filePersistence.createDirectorySync('/path/to/new/directory');
 ### List Directory
 
 ```javascript
-// Node.js reference — browser playground has no fs.
+// Node.js reference - browser playground has no fs.
 console.info("In Node.js:");
 console.info("    filePersistence.listDirectory('/path/to/directory', (error, files) => {");
 console.info("        if (error) { console.error('Failed to list directory:', error); return; }");
@@ -181,7 +181,7 @@ console.info("    });");
 ### Configuration Loading
 
 ```javascript
-// Node.js reference — wraps the callback API in a Promise. Browser playground has no fs.
+// Node.js reference - wraps the callback API in a Promise. Browser playground has no fs.
 console.info("In Node.js:");
 console.info("    function loadConfig(configPath) {");
 console.info("        const filePersistence = fable.instantiateServiceProvider('FilePersistence');");
@@ -197,7 +197,7 @@ console.info("    }");
 ### Log File Writing
 
 ```javascript
-// Node.js reference — browser playground has no fs.
+// Node.js reference - browser playground has no fs.
 console.info("In Node.js:");
 console.info("    function appendToLog(message) {");
 console.info("        const filePersistence = fable.instantiateServiceProvider('FilePersistence');");
@@ -213,7 +213,7 @@ console.info("    }");
 ### Data Export
 
 ```javascript
-// Node.js reference — browser playground has no fs.
+// Node.js reference - browser playground has no fs.
 console.info("In Node.js:");
 console.info("    async function exportData(data, format, outputPath) {");
 console.info("        const filePersistence = fable.instantiateServiceProvider('FilePersistence');");
@@ -230,7 +230,7 @@ console.info("    }");
 ### Batch File Processing
 
 ```javascript
-// Node.js reference — browser playground has no fs.
+// Node.js reference - browser playground has no fs.
 console.info("In Node.js:");
 console.info("    function processFiles(directory, processor) {");
 console.info("        const filePersistence = fable.instantiateServiceProvider('FilePersistence');");
@@ -250,7 +250,7 @@ console.info("    }");
 ## Error Handling
 
 ```javascript
-// Node.js reference — browser playground has no fs.
+// Node.js reference - browser playground has no fs.
 console.info("In Node.js:");
 console.info("    filePersistence.readFile('/nonexistent/file.txt', 'utf8', (error, content) => {");
 console.info("        if (error) {");

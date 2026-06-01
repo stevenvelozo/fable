@@ -53,7 +53,7 @@ console.log('records[0]:', records[0]);
 The FilePersistence service provides a convenience method for CSV reading:
 
 ```javascript
-// Node.js reference — fable.FilePersistence.readFileCSV uses fs, which the
+// Node.js reference - fable.FilePersistence.readFileCSV uses fs, which the
 // browser playground doesn't expose. The shape of the call:
 console.info("In Node.js:");
 console.info("    fable.instantiateServiceProvider('FilePersistence');");

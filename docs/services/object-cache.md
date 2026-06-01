@@ -62,7 +62,7 @@ cache.put('some-data', 'my-key');
 console.log(cache.expire('my-key'));
 // Removes the entry from the cache and returns the removed node
 // Returns false if the key doesn't exist
-console.log('After expire — read:', cache.read('my-key'));
+console.log('After expire - read:', cache.read('my-key'));
 ```
 
 ### Touch (Refresh)
@@ -76,7 +76,7 @@ cache.put('some-data', 'my-key');
 cache.touch('my-key');
 // Moves the entry to the tail of the list and resets its timestamp
 // Useful for keeping frequently accessed items fresh
-console.log('after touch — my-key still present:', cache.read('my-key'));
+console.log('after touch - my-key still present:', cache.read('my-key'));
 ```
 
 ## Size-Based Expiration

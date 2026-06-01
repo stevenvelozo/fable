@@ -308,7 +308,7 @@ operation.addStep(
     {}, 'Process', 'Process all items', 'PROCESS'
 );
 
-operation.execute((pError) => console.log('Op done — pError:', pError));
+operation.execute((pError) => console.log('Op done - pError:', pError));
 ```
 
 ## Notes

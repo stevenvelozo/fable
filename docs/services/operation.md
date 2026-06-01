@@ -154,7 +154,7 @@ operation.addStep(
     {}, 'Process Items', 'Process each item with tracking', 'ITEMS-STEP'
 );
 
-operation.execute((pError) => console.log('Done — pError:', pError));
+operation.execute((pError) => console.log('Done - pError:', pError));
 ```
 
 ## Operation State and Logging
@@ -256,7 +256,7 @@ function createImportOperation(fable, records) {
 }
 
 const op = createImportOperation(fable, [{ id: 1 }, { id: 2 }, { id: 3 }]);
-op.execute((pError) => console.log('Import done — pError:', pError));
+op.execute((pError) => console.log('Import done - pError:', pError));
 ```
 
 ## Notes

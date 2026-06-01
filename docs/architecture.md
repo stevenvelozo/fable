@@ -57,7 +57,7 @@ class ExpensiveServiceClass extends libFableServiceBase {
     constructor(pFable, pOptions, pServiceHash) {
         super(pFable, pOptions, pServiceHash);
         this.serviceType = 'ExpensiveService';
-        console.log('ExpensiveServiceClass instantiated — work happens here.');
+        console.log('ExpensiveServiceClass instantiated - work happens here.');
     }
 }
 

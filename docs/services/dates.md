@@ -274,7 +274,7 @@ console.log('UTC date:',       dayjs.utc('2024-01-01').toISOString());
 Day.js supports localization. You can add locales as needed:
 
 ```javascript
-// Node.js reference — requires loading dayjs locale packages which are not bundled in the browser playground.
+// Node.js reference - requires loading dayjs locale packages which are not bundled in the browser playground.
 console.info("In Node.js:");
 console.info("    const localeDE = require('dayjs/locale/de');");
 console.info("    fable.Dates.dayJS.locale('de');");

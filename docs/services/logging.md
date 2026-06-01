@@ -135,7 +135,7 @@ class CustomLogProvider extends LogProviderBase {
 const customProvider = new CustomLogProvider(fable.Logging, { level: 'trace' });
 customProvider.initialize();
 fable.Logging.addLogger(customProvider);
-fable.log.info('CustomLogProvider registered — fable.log calls now also hit it');
+fable.log.info('CustomLogProvider registered - fable.log calls now also hit it');
 ```
 
 ### Log Entry Structure

@@ -20,7 +20,7 @@ Perform comparisons and return different values based on the result:
 const libFable = require('fable');
 const fable = new libFable({ Product: 'LogicDemo', ProductVersion: '1.0.0' });
 
-// Signature shape — see the examples below for runnable invocations.
+// Signature shape - see the examples below for runnable invocations.
 console.log('checkIf signature: (left, operator, right, onTrue, onFalse) =>', typeof fable.Logic.checkIf);
 ```
 
@@ -104,7 +104,7 @@ Return different values based on whether a value is truthy:
 const libFable = require('fable');
 const fable = new libFable({ Product: 'LogicDemo', ProductVersion: '1.0.0' });
 
-// Signature shape — see the examples below for runnable invocations.
+// Signature shape - see the examples below for runnable invocations.
 console.log('when signature: (checkValue, onTrue, onFalse) =>', typeof fable.Logic.when);
 ```
 
