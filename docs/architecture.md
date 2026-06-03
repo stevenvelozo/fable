@@ -6,16 +6,8 @@ This document describes the internal architecture and design patterns used in Fa
 
 Fable is built on a **Service Provider Pattern** architecture that provides dependency injection, service lifecycle management, and centralized configuration.
 
-```
-Fable (Core ServiceManager)
-    ├── Settings Manager (fable-settings)
-    ├── UUID Generator (fable-uuid)
-    ├── Logging System (fable-log)
-    └── Service Registry
-         ├── Default Single-Instance Services (auto-instantiated)
-         ├── On-Demand Services (instantiated when needed)
-         └── Custom Service Types (user-defined)
-```
+<!-- bespoke diagram: edit diagrams/overview.mmd or .hints.json, then: npx pict-renderer-graph build modules/fable/fable/docs -->
+![Overview](diagrams/overview.svg)
 
 ## Design Principles
 
